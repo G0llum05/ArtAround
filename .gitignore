@@ -1,0 +1,40 @@
+# --- NODE / EXPRESS (Backend) ---
+node_modules/
+jspm_packages/
+debug.log
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# --- ANGULAR (Frontend) ---
+.angular/
+/dist
+/coverage
+/.cache
+.npm
+
+# --- DOCKER ---
+# Ignora i dati persistenti dei volumi (se mappati in locale)
+/data/
+/db_data/
+mongo_data/
+
+# File di stato e log di Docker
+.docker/
+docker-compose.override.yml.backup
+
+# --- SICUREZZA & AMBIENTE ---
+# Fondamentale: ignora le credenziali
+.env
+.env.local
+.env.dev
+.env.prod
+docker-compose.override.yml
+
+# --- SISTEMA E IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.bak

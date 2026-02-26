@@ -28,6 +28,20 @@ services:
     depends_on:
       - mongodb
 
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+    environment:
+      NODE_ENV: development
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - api
+
 # Volumi per la persistenza dei dati
 volumes:
   mongo_data:

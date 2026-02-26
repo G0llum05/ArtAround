@@ -1,53 +1,73 @@
-<main class="dashboard">
-  <header class="header">
-    <h1>ArtAround 🎨</h1>
-    <p>La tua galleria d'arte personale. Aggiungi e scopri nuove opere.</p>
-  </header>
+<nav class="navbar">
+  <div class="nav-content">
+    <div class="logo">ArtAround <span>Bulugna</span></div>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Collezione</a></li>
+      <li><a href="#">Esposizioni</a></li>
+      <li><a href="#">Contatti</a></li>
+    </ul>
+  </div>
+</nav>
 
-  <!-- [()] Two-way data binding per i campi del form] -->
-  <section class="form-section">
+<header class="hero">
+  <div class="hero-content">
+    <h1>Art Around</h1>
+    <p>Custodisci e condividi la tua collezione personale in una galleria senza tempo.</p>
+  </div>
+</header>
+
+<main class="dashboard">
+
+  <section class="form-section fade-in">
+    <h2 class="section-title">Aggiungi un'Opera</h2>
     <form class="input-group" (ngSubmit)="addArt()">
-      <input
-        type="text"
-        name="titolo"
-        [(ngModel)]="newArt.title"
-        placeholder="Titolo dell'opera..."
-      >
-      <input
-        type="text"
-        name="descrizione"
-        [(ngModel)]="newArt.description"
-        placeholder="Descrizione dell'opera..."
-      >
-      <button class="btn-primario">
-        Aggiungi Opera
+      <input type="text" name="titolo" [(ngModel)]="newArt.title" placeholder="Titolo dell'opera..." required>
+      <input type="text" name="descrizione" [(ngModel)]="newArt.description" placeholder="Descrizione o storia..." required>
+      <button type="submit" class="btn-primario" [disabled]="!newArt.title || !newArt.description">
+        Esponi
       </button>
     </form>
   </section>
 
   <section class="gallery-section">
+    @if (isLoading) {
+      <div class="loader-container">
+        <div class="classic-loader"></div>
+        <p>Apertura delle sale in corso...</p>
+      </div>
+    } @else {
 
-    @if (arts.length === 0) {
-      <div class="stato-vuoto">
-        Nessuna opera presente. Inizia la tua collezione! 🖼️
-      </div>
-    }
-    @else {
-      <div class="art-grid">
-        @for (art of arts; track art.title) {
-          <article class="art-card">
-            <h3>{{ art.title }}</h3>
-            <p>{{ art.description }}</p>
-          </article>
-        }
-      </div>
+      @if (arts.length === 0) {
+        <div class="stato-vuoto fade-in">
+          Le pareti sono spoglie. Inizia la tua collezione.
+        </div>
+      } @else {
+        <div class="art-grid">
+          @for (art of arts; track art.title) {
+            <article class="art-card fade-in">
+              <div class="frame-container">
+                <img src="/Gambero.png" alt="{{ art.title }}" class="art-image">
+              </div>
+              <section>
+                <h3>{{ art.title }}</h3>
+                <p>{{ art.description }}</p>
+              </section>
+            </article>
+          }
+        </div>
+      }
+
     }
   </section>
 </main>
 
+<footer class="footer">
+  <p>&copy; 2026 ArtAround Gallery. Tutti i diritti riservati.</p>
+</footer>
+
 @if (errorMessage) {
   <div class="error-notification">
-    <span>⚠️ {{ errorMessage }}</span>
+    <span>{{ errorMessage }}</span>
     <button (click)="errorMessage = null" class="close-btn">&times;</button>
   </div>
 }

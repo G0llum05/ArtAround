@@ -1,0 +1,53 @@
+<main class="dashboard">
+  <header class="header">
+    <h1>ArtAround 🎨</h1>
+    <p>La tua galleria d'arte personale. Aggiungi e scopri nuove opere.</p>
+  </header>
+
+  <!-- [()] Two-way data binding per i campi del form] -->
+  <section class="form-section">
+    <form class="input-group" (ngSubmit)="addArt()">
+      <input
+        type="text"
+        name="titolo"
+        [(ngModel)]="newArt.title"
+        placeholder="Titolo dell'opera..."
+      >
+      <input
+        type="text"
+        name="descrizione"
+        [(ngModel)]="newArt.description"
+        placeholder="Descrizione dell'opera..."
+      >
+      <button class="btn-primario">
+        Aggiungi Opera
+      </button>
+    </form>
+  </section>
+
+  <section class="gallery-section">
+
+    @if (arts.length === 0) {
+      <div class="stato-vuoto">
+        Nessuna opera presente. Inizia la tua collezione! 🖼️
+      </div>
+    }
+    @else {
+      <div class="art-grid">
+        @for (art of arts; track art.title) {
+          <article class="art-card">
+            <h3>{{ art.title }}</h3>
+            <p>{{ art.description }}</p>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</main>
+
+@if (errorMessage) {
+  <div class="error-notification">
+    <span>⚠️ {{ errorMessage }}</span>
+    <button (click)="errorMessage = null" class="close-btn">&times;</button>
+  </div>
+}

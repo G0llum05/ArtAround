@@ -1,73 +1,30 @@
 <nav class="navbar">
-  <div class="nav-content">
-    <div class="logo">ArtAround <span>Bulugna</span></div>
-    <ul class="nav-links">
-      <li><a href="#" class="active">Collezione</a></li>
-      <li><a href="#">Esposizioni</a></li>
-      <li><a href="#">Contatti</a></li>
-    </ul>
-  </div>
+  <div class="logo"> ArtAround</div>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Collezione</a></li>
+    <li><a href="#">Esposizioni</a></li>
+    <li><a href="#">Contatti</a></li>
+  </ul>
 </nav>
 
-<header class="hero">
-  <div class="hero-content">
-    <h1>Art Around</h1>
-    <p>Custodisci e condividi la tua collezione personale in una galleria senza tempo.</p>
-  </div>
-</header>
-
 <main class="dashboard">
-
-  <section class="form-section fade-in">
-    <h2 class="section-title">Aggiungi un'Opera</h2>
-    <form class="input-group" (ngSubmit)="addArt()">
-      <input type="text" name="titolo" [(ngModel)]="newArt.title" placeholder="Titolo dell'opera..." required>
-      <input type="text" name="descrizione" [(ngModel)]="newArt.description" placeholder="Descrizione o storia..." required>
-      <button type="submit" class="btn-primario" [disabled]="!newArt.title || !newArt.description">
-        Esponi
-      </button>
-    </form>
-  </section>
-
-  <section class="gallery-section">
-    @if (isLoading) {
-      <div class="loader-container">
-        <div class="classic-loader"></div>
-        <p>Apertura delle sale in corso...</p>
-      </div>
-    } @else {
-
-      @if (arts.length === 0) {
-        <div class="stato-vuoto fade-in">
-          Le pareti sono spoglie. Inizia la tua collezione.
-        </div>
-      } @else {
-        <div class="art-grid">
-          @for (art of arts; track art.title) {
-            <article class="art-card fade-in">
-              <div class="frame-container">
-                <img src="/Gambero.png" alt="{{ art.title }}" class="art-image">
-              </div>
-              <section>
-                <h3>{{ art.title }}</h3>
-                <p>{{ art.description }}</p>
-              </section>
-            </article>
-          }
-        </div>
-      }
-
+  <section class="gallery-wall">
+    @for (quadro of quadri; track $index) {
+      <app-quadro
+        [dimension]="quadro.dimension"
+        [url]="quadro.url">
+      </app-quadro>
     }
+  </section>
+  <section class="overlay-ui">
+    <div class="titolo-container">
+      <h1>Art Around</h1>
+    </div>
+
+    <button class="btn-inizia">Inizia la Visita</button>
   </section>
 </main>
 
 <footer class="footer">
   <p>&copy; 2026 ArtAround Gallery. Tutti i diritti riservati.</p>
 </footer>
-
-@if (errorMessage) {
-  <div class="error-notification">
-    <span>{{ errorMessage }}</span>
-    <button (click)="errorMessage = null" class="close-btn">&times;</button>
-  </div>
-}

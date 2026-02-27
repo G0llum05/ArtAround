@@ -2,10 +2,18 @@
 :root {
   --gold-primary: #c5a059;
   --gold-hover: #a68444;
-  --marble-bg: #faf9f6;
+  --marble-bg: #fffef8;
   --pure-white: #ffffff;
   --text-dark: #1a1a1a;
+  --black: #000000;
   --text-muted: #666666;
   --border-subtle: #e6e4df;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--marble-bg);
+}

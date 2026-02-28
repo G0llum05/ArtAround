@@ -6,11 +6,10 @@ require('dotenv').config();
 const visitRoutes = require('./controller/visit/visitRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 
-const MONGO_URI = 'mongodb://mongodb:27017/site252623';
-
+const MONGO_URI = 'mongodb://mongo_site252623:27017/site252623';
 
 mongoose.connect(MONGO_URI, {
   user: process.env.LAB_MONGO_USER,
@@ -39,7 +38,7 @@ app.use(express.static(angularDistPath));
 
 // 2. Catch-all route: Qualsiasi altra richiesta (che non sia un'API come /api/visits)
 // verrà reindirizzata all'index.html di Angular. Questo fa funzionare il routing interno del frontend.
-app.get('*', (req, res) => {
+app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(angularDistPath, 'index.html'));
 });
 

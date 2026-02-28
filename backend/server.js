@@ -20,7 +20,6 @@ app.use(cors()); // Abilita CORS per tutte le richieste
 app.use(express.json()); // Permette al server di parsare il body delle richieste come JSON
 
 // --- Definizione delle Route ---
-// Applica il router delle visite con il prefisso /api/visits
 app.use('/api/visits', visitRoutes);
 
 app.get('/', (req, res) => {

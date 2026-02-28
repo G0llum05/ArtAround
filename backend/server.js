@@ -7,14 +7,19 @@ const visitRoutes = require('./controller/visit/visitRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const MONGO_URI = 'mongodb://mongodb:27017/ArtAroundDB';
 
-mongoose.connect(MONGO_URI)
+const MONGO_URI = 'mongodb://mongodb:27017/site252623';
+
+
+mongoose.connect(MONGO_URI, {
+  user: process.env.LAB_MONGO_USER,
+  pass: process.env.LAB_MONGO_PW,
+})
   .then(() => console.log('Successfully connected to MongoDB.'))
   .catch(err => {
     console.error('Connection error', err);
     process.exit();
-  });
+  })
 
 // --- Middleware ---
 app.use(cors()); // Abilita CORS per tutte le richieste

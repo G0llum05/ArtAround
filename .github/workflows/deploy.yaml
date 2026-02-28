@@ -17,27 +17,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Build Backend
-        run: |
-          cd backend
-          nmp ci
-          npm run build
+    #   - name: Build Backend
+    #     run: |
+    #       cd backend
+    #       npm ci
+    #       npm run build
       - name: Build Frontend
         run: |
           cd frontend
           npm ci
           npm run build
-
-  deploy:
-    needs: build
-    uses: appleboy/scp-action@v0.1.7
-    with:
-        host: ${{ secrets.LAB_SERVER_HOST }}
-        username: ${{ secrets.LAB_SERVER_USER }}
-        key: ${{ secrets.LAB_SERVER_SSH_KEY }}
-        port: ${{ secrets.LAB_SERVER_PORT }} 
-        # Specifica le cartelle e i file che servono alla tua macchina per far girare docker
-        source: "frontend/dist/, backend/" 
-        # source: "frontend/dist/, backend/, docker-compose.yml, Dockerfile" 
-        # Specifica il percorso esatto sul server del laboratorio dove vuoi i file
-        target: "/home/web/site252623/"
+      - name: Deploy
+        uses: appleboy/scp-action@v0.1.7
+        with:
+            host: ${{ secrets.LAB_SERVER_HOST }}
+            username: ${{ secrets.LAB_SERVER_USER }}
+            key: ${{ secrets.LAB_SERVER_SSH_KEY }}
+            port: ${{ secrets.LAB_SERVER_PORT }} 
+            # Specifica le cartelle e i file che servono alla tua macchina per far girare docker
+            source: "frontend/dist/, backend/" 
+            # source: "frontend/dist/, backend/, docker-compose.yml, Dockerfile" 
+            # Specifica il percorso esatto sul server del laboratorio dove vuoi i file
+            target: "/home/web/site252623/"

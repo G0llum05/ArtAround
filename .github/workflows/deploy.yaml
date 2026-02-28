@@ -20,8 +20,8 @@ jobs:
       - name: Build Backend
         uses: actions/setup-node@v4
         env:
-          LAB_MONGO_USER: ${{ secrets.LAB_MONGO_USER }}
-          LAB_MONGO_PW: ${{ secrets.LAB_MONGO_PW }}
+          LAB_MONGO_USER: ${{ secrets.LAB_MONGO_USER }} >> .env
+          LAB_MONGO_PW: ${{ secrets.LAB_MONGO_PW }} >> .env
     #     run: |
     #       cd backend
     #       npm ci

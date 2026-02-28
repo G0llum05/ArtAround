@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path'); // <-- AGGIUNTO: Necessario per gestire i percorsi delle cartelle
+require('dotenv').config();
 const visitRoutes = require('./controller/visit/visitRoutes');
 
 const app = express();

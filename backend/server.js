@@ -25,14 +25,16 @@ app.use('/api/visits', visitRoutes);
 
 // --- Integrazione Frontend Angular ---
 
+const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
+
 // 1. Diciamo a Express di servire i file statici compilati di Angular
 // (Il nostro nuovo Dockerfile li metterà in una cartella chiamata 'public')
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(angularDistPath));
 
 // 2. Catch-all route: Qualsiasi altra richiesta (che non sia un'API come /api/visits)
 // verrà reindirizzata all'index.html di Angular. Questo fa funzionare il routing interno del frontend.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(angularDistPath, 'index.html'));
 });
 
 // --- Avvio del Server ---

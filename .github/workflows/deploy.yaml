@@ -17,11 +17,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Build Backend
-        run: |
-          cd backend
-          npm ci
-          npm run build
+    #   - name: Build Backend
+    #     run: |
+    #       cd backend
+    #       npm ci
+    #       npm run build
       - name: Build Frontend
         run: |
           cd frontend

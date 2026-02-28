@@ -1,5 +1,5 @@
 # 1. Usiamo l'immagine Node (stessa versione del backend per coerenza)
-FROM node:20-alpine
+FROM node:22
 
 # 2. Impostiamo la cartella di lavoro (deve coincidere con il volume nel compose)
 WORKDIR /usr/src/app

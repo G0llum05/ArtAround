@@ -30,7 +30,8 @@ app.use('/api/visits', visitRoutes);
 
 // --- 2. Servire Angular (SOLO per Gocker / Produzione) ---
 // Controlliamo se stiamo girando in produzione
-if (process.env.NODE_ENV === 'production') {
+nodeMode = process.env.NODE_ENV || 'production';
+if (nodeMode === 'production') {
   // Riprendiamo il tuo percorso originale!
   const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
   

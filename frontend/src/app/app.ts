@@ -47,7 +47,7 @@ export class App implements OnInit {
 
   loadArts() {
     this.isLoading = true; // Accendiamo il caricamento
-    this.http.get<Art[]>('http://localhost:3000/api/visits')
+    this.http.get<Art[]>('/api/visits')
       .subscribe({
         next: (contents: Art[]) => {
           this.arts = contents;
@@ -66,7 +66,7 @@ export class App implements OnInit {
   ]
 
   addArt() {
-    this.http.post<Art>('http://localhost:3000/api/visits', this.newArt)
+    this.http.post<Art>('/api/visits', this.newArt)
       .subscribe({
         next: (art: Art) => {
           this.arts.unshift(art); // Usiamo unshift per metterla in cima alla lista!

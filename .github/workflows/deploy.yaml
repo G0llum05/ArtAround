@@ -26,17 +26,9 @@ jobs:
       - name: Crea file .env
         run: |
           cd backend
-          echo "LAB_MONGO_USER=${{ secrets.LAB_MONGO_USER }}" >> .env
-          echo "LAB_MONGO_PW=${{ secrets.LAB_MONGO_PW }}" >> .env
-      # - name: Build Backend
-      #   uses: actions/setup-node@v4
-      #   env:
-      #     LAB_MONGO_USER: ${{ secrets.LAB_MONGO_USER }} >> .env
-      #     LAB_MONGO_PW: ${{ secrets.LAB_MONGO_PW }} >> .env
-    #     run: |
-    #       cd backend
-    #       npm ci
-    #       npm run build
+          echo "MONGO_USER=${{ secrets.LAB_MONGO_USER }}" >> .env
+          echo "MONGO_PW=${{ secrets.LAB_MONGO_PW }}" >> .env
+          echo "MONGO_DATABASE=${{ secrets.LAB_MONGO_DATABASE }}" >> .env
       - name: Build Frontend
         run: |
           cd frontend

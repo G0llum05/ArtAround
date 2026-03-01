@@ -1,32 +1,31 @@
 services:
-  # --- DATABASE: MongoDB ---
-  mongodb:
+  mongo_site252623:
     image: mongo:latest
     container_name: mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
 
-  # --- BACKEND: Node.js / Express ---
-  api:
+  backend:
     build: ./backend
     container_name: node
     restart: always
     environment:
       NODE_ENV: development
-      DB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/meanapp?authSource=admin
+      DB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo_site252623:27017/${MONGO_DATABASE}?authSource=admin
     ports:
-      - "3000:3000"
+      - "8000:8000"
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
-      - mongodb
+      - mongo_site252623
 
   frontend:
     build: ./frontend
@@ -40,7 +39,7 @@ services:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
-      - api
+      - backend
 
 # Volumi per la persistenza dei dati
 volumes:

@@ -1,80 +1,43 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path'); // <-- AGGIUNTO: Necessario per gestire i percorsi delle cartelle
+const path = require('path');
 require('dotenv').config();
 const visitRoutes = require('./controller/visit/visitRoutes');
 
 const app = express();
+// Gocker ti inietterà probabilmente la sua porta, altrimenti usa la 8000 in locale
 const PORT = process.env.PORT || 8000;
 
+// Se c'è DB_URI (es. da Docker) usa quella, altrimenti metti il percorso per Gocker/Locale
+const MONGO_URI = process.env.DB_URI || 'mongodb://localhost:27017/site252623';
 
-const MONGO_URI = 'mongodb://mongo_site252623:27017/site252623';
-
-mongoose.connect(MONGO_URI, {
-  user: process.env.LAB_MONGO_USER,
-  pass: process.env.LAB_MONGO_PW,
-})
+mongoose.connect(MONGO_URI)
   .then(() => console.log('Successfully connected to MongoDB.'))
   .catch(err => {
     console.error('Connection error', err);
     process.exit();
-  })
+  });
 
-// --- Middleware ---
-app.use(cors()); // Abilita CORS per tutte le richieste
-app.use(express.json()); // Permette al server di parsare il body delle richieste come JSON
+app.use(cors());
+app.use(express.json());
 
-// --- Definizione delle Route API ---
+// --- 1. Route API (Funzionano sempre, sia in locale che su Gocker) ---
 app.use('/api/visits', visitRoutes);
 
-// --- Integrazione Frontend Angular ---
+// --- 2. Servire Angular (SOLO per Gocker / Produzione) ---
+// Controlliamo se stiamo girando in produzione
+if (process.env.NODE_ENV === 'production') {
+  // Riprendiamo il tuo percorso originale!
+  const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
+  
+  app.use(express.static(angularDistPath));
 
-const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(angularDistPath, 'index.html'));
+  });
+}
 
-// 1. Diciamo a Express di servire i file statici compilati di Angular
-// (Il nostro nuovo Dockerfile li metterà in una cartella chiamata 'public')
-app.use(express.static(angularDistPath));
-
-// 2. Catch-all route: Qualsiasi altra richiesta (che non sia un'API come /api/visits)
-// verrà reindirizzata all'index.html di Angular. Questo fa funzionare il routing interno del frontend.
-app.get(/(.*)/, (req, res) => {
-  res.sendFile(path.join(angularDistPath, 'index.html'));
-});
-
-// --- Avvio del Server ---
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
-
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const cors = require('cors');
-// const visitRoutes = require('./controller/visit/visitRoutes');
-//
-// const app = express();
-// const PORT = process.env.PORT || 3000;
-//
-// const MONGO_URI = 'mongodb://mongodb:27017/ArtAroundDB';
-//
-// mongoose.connect(MONGO_URI)
-//   .then(() => console.log('Successfully connected to MongoDB.'))
-//   .catch(err => {
-//     console.error('Connection error', err);
-//     process.exit();
-//   });
-//
-// // --- Middleware ---
-// app.use(cors()); // Abilita CORS per tutte le richieste
-// app.use(express.json()); // Permette al server di parsare il body delle richieste come JSON
-//
-// // --- Definizione delle Route ---
-// app.use('/api/visits', visitRoutes);
-//
-// app.get('/', (req, res) => {
-//   res.send('ArtAround Backend is running!');
-// });
-//
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });

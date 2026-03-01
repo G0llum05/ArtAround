@@ -29,6 +29,7 @@ jobs:
           echo "MONGO_USER=${{ secrets.LAB_MONGO_USER }}" >> .env
           echo "MONGO_PASSWORD=${{ secrets.LAB_MONGO_PW }}" >> .env
           echo "MONGO_DATABASE=${{ secrets.LAB_MONGO_DATABASE }}" >> .env
+          echo "NODE_ENV=production" >> .env
       - name: Build Frontend
         run: |
           cd frontend

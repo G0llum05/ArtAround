@@ -1,0 +1,74 @@
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--marble-bg);
+  text-align: center;
+  padding: 2rem;
+}
+
+.container {
+  /* Animazione per far apparire la pagina dolcemente */
+  animation: fadeIn 0.8s ease-out forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Titolo 404 in stile Monoton o Playfair */
+.title {
+  font-family: 'Lato', sans-serif;
+  font-weight: 900;
+  font-size: clamp(3rem, 10vw, 5rem);
+  color: var(--text-dark);
+  margin-bottom: 10px;
+  letter-spacing: -2px;
+  span {
+    font-family: 'Monoton', sans-serif;
+    font-size: clamp(3rem, 10vw, 5rem);
+  }
+}
+
+/* Sottotitolo elegante */
+.subtitle {
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--gold-primary);
+  margin-bottom: 40px;
+}
+
+/* Bottone basato sul tuo stile .btn-primario */
+.button.is-primary {
+  display: inline-block;
+  text-decoration: none;
+  background: var(--text-dark);
+  color: var(--pure-white);
+  border: 1px solid var(--text-dark);
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.button.is-primary:hover {
+  background: var(--gold-primary);
+  border-color: var(--gold-primary);
+  box-shadow: 0 10px 25px rgba(197, 160, 89, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Animazione fluida */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -37,7 +37,7 @@ if (nodeMode === 'production') {
   
   app.use(express.static(angularDistPath));
 
-  app.get('*', (req, res) => {
+  app.get(/(.*)/, (req, res) => {
     res.sendFile(path.join(angularDistPath, 'index.html'));
   });
 }

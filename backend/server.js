@@ -10,9 +10,12 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Se c'è DB_URI (es. da Docker) usa quella, altrimenti metti il percorso per Gocker/Locale
-const MONGO_URI = process.env.DB_URI || 'mongodb://localhost:27017/site252623';
+const MONGO_URI = process.env.DB_URI || 'mongodb://mongo_site252623:27017/site252623';
 
-mongoose.connect(MONGO_URI)
+mongoose.connect(MONGO_URI, {
+  user: process.env.MONGO_USER,
+  pass: process.env.MONGO_PASSWORD,
+})
   .then(() => console.log('Successfully connected to MongoDB.'))
   .catch(err => {
     console.error('Connection error', err);

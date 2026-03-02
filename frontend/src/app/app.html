@@ -1,29 +1,13 @@
 <nav class="navbar">
   <div class="logo"> ArtAround</div>
   <ul class="nav-links">
-    <li><a href="#" class="active">Collezione</a></li>
-    <li><a href="#">Esposizioni</a></li>
-    <li><a href="#">Contatti</a></li>
+    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Collezione</a></li>
+    <li><a routerLink="#">Esposizioni</a></li>
+    <li><a routerLink="#">Contatti</a></li>
   </ul>
 </nav>
 
-<main class="dashboard">
-  <section class="gallery-wall">
-    @for (quadro of quadri; track $index) {
-      <app-quadro
-        [dimension]="quadro.dimension"
-        [url]="quadro.url">
-      </app-quadro>
-    }
-  </section>
-  <section class="overlay-ui">
-    <div class="titolo-container">
-      <h1>Art Around</h1>
-    </div>
-
-    <button class="btn-inizia">Inizia la Visita</button>
-  </section>
-</main>
+<router-outlet> </router-outlet>
 
 <footer class="footer">
   <p>&copy; 2026 ArtAround Gallery. Tutti i diritti riservati.</p>

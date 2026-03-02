@@ -6,16 +6,15 @@ export interface Picture {
 }
 
 @Component({
-  selector: 'app-quadro',
+  selector: 'picture-component',
   standalone: true,
   template: `
     <div class="paint">
       @if(url){
-        <img [src]="url" alt="Quadro" style="width: 100%; height: 100%; object-fit: cover">
+        <img [src]="url" alt="Quadro">
       }
     </div>
-    `
-  ,
+    `,
   styles: [`
     /* :host si riferisce al tag <app-quadro> stesso, non al suo contenuto */
     /* In generele <app-quadro> è detto host element, e tutto l'html finisce dentro di lui */
@@ -29,7 +28,16 @@ export interface Picture {
       height: 100%;
       border: 5px solid var(--black);
       box-sizing: border-box;
+      padding: 0;
+      overflow: hidden;
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
+
   `]
 })
 export class PictureComponent {

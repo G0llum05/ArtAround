@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {PictureComponent, Picture} from './picture/picture';
+import {RouterOutlet, RouterLink, RouterLinkActive} from '@angular/router';
 
 export interface Art {
   title: string;
@@ -9,34 +9,16 @@ export interface Art {
 
 @Component({
   selector: 'app-root',
-  imports: [
-    PictureComponent
-  ],
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],  // Importiamo RouterOutlet che serve a mostrare i componenti in base alla rotta, e RouterLink per i link di navigazione
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
+
 export class App implements OnInit {
   private http = inject(HttpClient);
   arts: Art[] = [];
   newArt: Art = {title: '', description: ''};
-
-  quadri: Picture[] = [
-    { dimension: 'invisible', url: "" },
-    { dimension: 'invisible', url: "" },
-    { dimension: 'huge', url: "/GamberettoAllaBolognese.jpeg"},
-    { dimension: 'large', url: "/Gamberone.jpeg" },
-    { dimension: 'small', url: "/ImpressioneDiGambero.png" },
-    { dimension: 'invisible', url: "" },
-
-    { dimension: 'large', url: "/DavideEGr8lia.jpeg" },
-    { dimension: 'tall', url: "/Gambero.png" },
-    { dimension: 'huge', url: "/GamberoPop.png" },
-    { dimension: 'small', url: "/GamberoLove.png" },
-
-    { dimension: 'invisible', url: "/Gambero.png" },
-    { dimension: 'large', url: "/DenunciaSociale.jpeg" },
-    { dimension: 'small', url: "/CuboGambero.png" },
-  ] as const;
 
   errorMessage: string | null = null;
   isLoading: boolean = false; // <-- Nuovo stato per il caricamento
@@ -60,10 +42,6 @@ export class App implements OnInit {
         },
       });
   }
-
-  immaginiDisponibili = [
-    '/Gambero.png'
-  ]
 
   addArt() {
     this.http.post<Art>('/api/visits', this.newArt)

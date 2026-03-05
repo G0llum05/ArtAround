@@ -1,0 +1,19 @@
+<ng-template #contenutoBottone>
+  <ng-content></ng-content>
+</ng-template>
+
+@if (path) {
+  <a [routerLink]="path" class="btn">
+    <ng-container *ngTemplateOutlet="contenutoBottone"></ng-container>
+  </a>
+}
+@else {
+  <button (click)="onClick()" class="btn">
+    <ng-container *ngTemplateOutlet="contenutoBottone"></ng-container>
+  </button>
+}
+
+<!-- ng content è il contenuto/Testo passato dal padre => <primary-button>Testo</primary-button>
+È un link se è presente la proprietà path, altrimenti è un bottone normale che esegue una funzione onClick() passata dal padre
+-->
+<!-- Non si può usare più volte ng-content, per questo si usa ng-template e ng-container -->

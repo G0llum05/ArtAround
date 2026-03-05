@@ -1,0 +1,13 @@
+<nav aria-label="Menu principale" [class.scrolled]="isScrolled()">
+      <ul role="list">
+        @for (item of navItems; track item.label) {
+          <li>
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+          >{{ item.label }}</a>
+          </li>
+        }
+      </ul>
+</nav>

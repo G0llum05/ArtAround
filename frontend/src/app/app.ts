@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {RouterOutlet, RouterLink, RouterLinkActive} from '@angular/router';
+import {ToolbarComponent} from './components/toolbar/toolbar';
 
 export interface Art {
   title: string;
@@ -10,52 +11,16 @@ export interface Art {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],  // Importiamo RouterOutlet che serve a mostrare i componenti in base alla rotta, e RouterLink per i link di navigazione
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    ToolbarComponent
+  ],  // Importiamo RouterOutlet che serve a mostrare i componenti in base alla rotta, e RouterLink per i link di navigazione
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 
-export class App implements OnInit {
-  private http = inject(HttpClient);
-  arts: Art[] = [];
-  newArt: Art = {title: '', description: ''};
+export class App {
 
-  errorMessage: string | null = null;
-  isLoading: boolean = false; // <-- Nuovo stato per il caricamento
-
-  ngOnInit() {
-    this.loadArts();
-  }
-
-  loadArts() {
-    this.isLoading = true; // Accendiamo il caricamento
-    this.http.get<Art[]>('/api/visits')
-      .subscribe({
-        next: (contents: Art[]) => {
-          this.arts = contents;
-          this.isLoading = false; // Spegniamo il caricamento
-        },
-        error: (error) => {
-          console.log(error);
-          this.errorMessage = "Errore di connessione. La galleria è attualmente in restauro.";
-          this.isLoading = false;
-        },
-      });
-  }
-
-  addArt() {
-    this.http.post<Art>('/api/visits', this.newArt)
-      .subscribe({
-        next: (art: Art) => {
-          this.arts.unshift(art); // Usiamo unshift per metterla in cima alla lista!
-          this.newArt = {title: '', description: ''};
-          this.errorMessage = null;
-        },
-        error: (error) => {
-          console.log(error);
-          this.errorMessage = "Impossibile esporre l'opera in questo momento.";
-          setTimeout(() => { this.errorMessage = null; }, 4000);
-        },
-      });
-  }
 }

@@ -1,1 +1,18 @@
-<p>gallery works!</p>
+<main class="dashboard">
+  <section class="gallery-wall">
+    @for (quadro of pictures; track $index) {
+      <picture-component
+        [dimension]="quadro.dimension"
+        [url]="quadro.url">
+      </picture-component>
+    }
+  </section>
+  <section class="overlay-ui" [style.opacity]="overlayOpacity">
+    <div class="titolo-container">
+      <h1>Art Around</h1>
+    </div>
+  </section>
+</main>
+
+<gallery-wall></gallery-wall>
+

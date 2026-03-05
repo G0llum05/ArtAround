@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
-const visitRoutes = require('./controller/visit/visitRoutes');
+const visitRoutes = require('./controller/visit/VisitRoutes');
+const operaRoutes = require('./controller/opera/OperaRouter');
 
 const app = express();
 // Gocker ti inietterà probabilmente la sua porta, altrimenti usa la 8000 in locale
@@ -27,12 +28,13 @@ app.use(express.json());
 
 // --- 1. Route API (Funzionano sempre, sia in locale che su Gocker) ---
 app.use('/api/visits', visitRoutes);
+app.use('/api/opera', operaRoutes);
 
 // --- 2. Servire Angular (SOLO per Gocker / Produzione) ---
 // Controlliamo se stiamo girando in produzione
 nodeMode = process.env.NODE_ENV || 'production';
-if (nodeMode === 'production') {
   // Riprendiamo il tuo percorso originale!
+if (nodeMode === 'production') {
   const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
   
   app.use(express.static(angularDistPath));
@@ -43,5 +45,5 @@ if (nodeMode === 'production') {
 }
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(`Server is running on port ${PORT} in ${process.env.NODE_ENV || 'production'} mode`);
 });

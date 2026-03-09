@@ -1,4 +1,22 @@
 {
+  "name": "artaround",
+  "version": "1.0.0",
+  "description": "Progetto Tecnologie Web A.A. 2025/26",
+  "homepage": "https://github.com/G0llum05/ArtAround#readme",
+  "bugs": {
+    "url": "https://github.com/G0llum05/ArtAround/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/G0llum05/ArtAround.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "dotenv": "^17.3.1"
   }

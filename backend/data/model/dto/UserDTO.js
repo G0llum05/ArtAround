@@ -7,7 +7,7 @@ class UserResponseDTO {
         this.role = role;
     }
 }
-
+// crezione  e update letsgoski :)
 class UserRequestDTO {
     constructor(name, surname, mail, password, role) {
         this.name =  name;
@@ -18,7 +18,14 @@ class UserRequestDTO {
     }
 }
 
+class LoginRequestDTO {
+    constructor(mail, password) {
+        this.mail = mail;
+        this.password = password;
+    }
+}
 module.exports = {
     UserResponseDTO,
-    UserRequestDTO
+    UserRequestDTO,
+    LoginRequestDTO
 }

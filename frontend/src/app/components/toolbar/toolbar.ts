@@ -19,5 +19,6 @@ export class ToolbarComponent {
     { label: 'Home',        path: '/'            },
     { label: 'Visite',      path: '/visite'      },
     { label: 'Contatti',    path: '/contatti'    },
+    { label: 'Test', path: '/test'}
   ] as const;
 }

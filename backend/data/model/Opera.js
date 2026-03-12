@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const OperaLocationSchema = require('./OperaPlaceSchema');
-const OperaDimensionsSchema = require('./OperaDimensionsSchema');
-const OperaDetailsSchema = require('./OperaDetailsSchema');
+const OperaLocationSchema = require('./schemas/OperaLocationSchema');
+const OperaDimensionsSchema = require('./schemas/OperaDimensionsSchema');
+const OperaDetailsSchema = require('./schemas/OperaDetailsSchema');
 
 const operaSchema = new mongoose.Schema({
   title: {

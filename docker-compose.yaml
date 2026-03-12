@@ -35,6 +35,7 @@ services:
       NODE_ENV: development
     ports:
       - "4200:4200"
+    command: ["npx", "ng", "serve", "--host", "0.0.0.0"]
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules

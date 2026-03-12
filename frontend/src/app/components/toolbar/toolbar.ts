@@ -1,4 +1,4 @@
-import { Component, HostListener, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterLinkActive, RouterLink } from '@angular/router';
 
@@ -15,19 +15,9 @@ import { RouterModule, RouterLinkActive, RouterLink } from '@angular/router';
   styleUrl: './toolbar.css'
 })
 export class ToolbarComponent {
-  isScrolled = signal(false);
-
   navItems = [
     { label: 'Home',        path: '/'            },
-    { label: 'Marketplace', path: '/marketplace' },
     { label: 'Visite',      path: '/visite'      },
     { label: 'Contatti',    path: '/contatti'    },
   ] as const;
-
-  @HostListener('window:scroll')
-  onScroll(): void {
-    if (window.scrollY > 20) {
-      this.isScrolled.set(true);
-    }
-  }
 }

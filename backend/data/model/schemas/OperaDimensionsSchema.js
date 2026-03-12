@@ -6,3 +6,5 @@ const OperaDimensionsSchema = new mongoose.Schema({
     depth: Number,
     unit: String
 }, { _id: false });
+
+module.exports = OperaDimensionsSchema;

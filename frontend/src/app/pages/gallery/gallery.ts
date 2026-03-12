@@ -16,19 +16,19 @@ export class GalleryPage {
   pictures: Picture[] = [
     { dimension: 'invisible', url: "" },
     { dimension: 'invisible', url: "" },
-    { dimension: 'huge', url: "/GamberettoAllaBolognese.jpeg"},
-    { dimension: 'large', url: "/Gamberone.jpeg" },
-    { dimension: 'small', url: "/ImpressioneDiGambero.png" },
+    { dimension: 'huge', url: "/images/GamberettoAllaBolognese.jpeg"},
+    { dimension: 'large', url: "/images/Gamberone.jpeg" },
+    { dimension: 'small', url: "/images/ImpressioneDiGambero.png" },
     { dimension: 'invisible', url: "" },
 
-    { dimension: 'large', url: "/DavideEGr8lia.jpeg" },
-    { dimension: 'tall', url: "/Gambero.png" },
-    { dimension: 'huge', url: "/GamberoPop.png" },
-    { dimension: 'small', url: "/GamberoLove.png" },
+    { dimension: 'large', url: "/images/DavideEGr8lia.jpeg" },
+    { dimension: 'tall', url: "/images/Gambero.png" },
+    { dimension: 'huge', url: "/images/GamberoPop.png" },
+    { dimension: 'small', url: "/images/GamberoLove.png" },
 
     { dimension: 'invisible', url: "" },
-    { dimension: 'large', url: "/DenunciaSociale.jpeg" },
-    { dimension: 'small', url: "/CuboGambero.png" },
+    { dimension: 'large', url: "/images/DenunciaSociale.jpeg" },
+    { dimension: 'small', url: "/images/CuboGambero.png" },
   ] as const;
 
   overlayOpacity: number = 1;

@@ -1,13 +1,14 @@
 const Visit = require('../data/model/Visit');
+const Mapper = require('../data/mapper/VisitMapper');
 
 class VisitService {
   static async getAllVisits() {
-    return Visit.find().lean();
+    return await Visit.find().lean();
   }
 
-  static async createVisit(visitData) {
-    const newVisit = new Visit(visitData);
-    return newVisit.save();
+  static async createVisit(visitRequest) {
+    const visit = Mapper.toVisit(visitRequest);
+    return await visit.save().toObject();
   }
 }
 

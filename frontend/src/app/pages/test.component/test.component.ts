@@ -1,11 +1,67 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { UserService } from '../../services/user.service';
+import { UserRequest, UserResponse } from '../../models/user.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-test.component',
-  imports: [],
+  selector: 'app-test',
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './test.component.html',
   styleUrl: './test.component.css',
 })
 export class TestComponent {
+  userForm: FormGroup;
+  users: WritableSignal<UserResponse[]> = signal([]);
+  isLoading: WritableSignal<boolean> = signal(false);
 
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+  ) {
+    this.userForm = this.fb.group({
+      name: ['', Validators.required],
+      surname: ['', Validators.required],
+      mail: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      role: ['', Validators.required],
+    });
+  }
+
+  onCreateSubmit(): void {
+    if (this.userForm.valid) {
+      const userData: UserRequest = this.userForm.value;
+      this.userService.createUser(userData).subscribe({
+        next: () => {
+          console.log('User created successfully!');
+          this.userForm.reset();
+          this.loadAllUsers(); // Reload users after creation
+        },
+        error: (err) => console.error('Error creating user:', err),
+      });
+    } else {
+      console.error('Form is invalid');
+    }
+  }
+
+  loadAllUsers(): void {
+    this.isLoading.set(true);
+    this.userService.getAllUsers().subscribe({
+      next: (data) => {
+        this.users.set(data);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+        this.isLoading.set(false);
+      },
+    });
+  }
 }
+

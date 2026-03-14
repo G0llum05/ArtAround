@@ -1,10 +1,13 @@
+// Microservices
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+// Routes
 const visitRoutes = require('./controller/visit/VisitRoutes');
 const operaRoutes = require('./controller/opera/OperaRouter');
+const userRoutes = require('./controller/user/UserRouter');
 
 const app = express();
 // Gocker ti inietterà probabilmente la sua porta, altrimenti usa la 8000 in locale
@@ -23,17 +26,26 @@ mongoose.connect(MONGO_URI, {
     process.exit();
   });
 
-app.use(cors());
 app.use(express.json());
 
+const nodeMode = process.env.NODE_ENV || 'production';
+
+if (nodeMode === process.env.NODE_ENV) {
+  // In sviluppo, abilitiamo CORS per le richieste da ng serve
+  const options = {
+    origin: 'http://localhost:4200'
+  }
+  app.use(cors(options));
+} else {
+  app.use(cors());
+}
+
 // --- 1. Route API (Funzionano sempre, sia in locale che su Gocker) ---
-app.use('/api/visits', visitRoutes);
+app.use('/api/visit', visitRoutes);
 app.use('/api/opera', operaRoutes);
+app.use('/api/user', userRoutes);
 
 // --- 2. Servire Angular (SOLO per Gocker / Produzione) ---
-// Controlliamo se stiamo girando in produzione
-nodeMode = process.env.NODE_ENV || 'production';
-  // Riprendiamo il tuo percorso originale!
 if (nodeMode === 'production') {
   const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
   
@@ -42,7 +54,7 @@ if (nodeMode === 'production') {
   app.get(/(.*)/, (req, res) => {
     res.sendFile(path.join(angularDistPath, 'index.html'));
   });
-}
+} 
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT} in ${process.env.NODE_ENV || 'production'} mode`);

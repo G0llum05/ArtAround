@@ -14,7 +14,7 @@ services:
 
   backend:
     build: ./backend
-    container_name: node
+    container_name: backend
     restart: always
     environment:
       NODE_ENV: development
@@ -26,6 +26,8 @@ services:
       - /usr/src/app/node_modules
     depends_on:
       - mongo_site252623
+    env_file:
+      - .env
 
   frontend:
     build: ./frontend

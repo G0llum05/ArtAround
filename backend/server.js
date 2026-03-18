@@ -1,15 +1,22 @@
+require('dotenv').config();
 // Microservices
 const express = require('express');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config();
+
+const app = express();
+
+const passport = require('./config/passport');
+app.use(passport.initialize());
+
 // Routes
+const authRoutes = require('./controller/auth/AuthRouter');
 const visitRoutes = require('./controller/visit/VisitRoutes');
 const operaRoutes = require('./controller/opera/OperaRouter');
 const userRoutes = require('./controller/user/UserRouter');
 
-const app = express();
 // Gocker ti inietterà probabilmente la sua porta, altrimenti usa la 8000 in locale
 const PORT = process.env.PORT || 8000;
 
@@ -41,6 +48,7 @@ if (nodeMode === process.env.NODE_ENV) {
 }
 
 // --- 1. Route API (Funzionano sempre, sia in locale che su Gocker) ---
+app.use('/api/auth', authRoutes);
 app.use('/api/visit', visitRoutes);
 app.use('/api/opera', operaRoutes);
 app.use('/api/user', userRoutes);

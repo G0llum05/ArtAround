@@ -1,1 +1,25 @@
-<p>test-login.component works!</p>
+<div class="login-container">
+  <h2>Accedi ad ArtAround</h2>
+
+  <div *ngIf="errorMessage" style="color: red;">
+    {{ errorMessage }}
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div>
+      <label>Mail:</label>
+      <input type="mail" [(ngModel)]="mail" name="mail" required>
+    </div>
+    <div>
+      <label>Password:</label>
+      <input type="password" [(ngModel)]="password" name="password" required>
+    </div>
+    <button type="submit">Accedi (Classico)</button>
+  </form>
+
+  <hr>
+
+  <button type="button" (click)="onGoogleLogin()" style="background: #4285F4; color: white;">
+    Accedi con Google
+  </button>
+</div>

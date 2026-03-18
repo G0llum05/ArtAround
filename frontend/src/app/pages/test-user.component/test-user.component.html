@@ -1,1 +1,78 @@
-<p>test-user.component works!</p>
+<main>
+  <div class="container">
+    <h1 class="title">Test</h1>
+    <!-- <p class="subtitle">Users test</p> -->
+
+    <div class="submit-form">
+      <form [formGroup]="userForm" (ngSubmit)="onCreateSubmit()">
+        <div class="form-field">
+          <label for="name">Name: </label>
+          <input type="text" placeholder="name" formControlName="name" />
+        </div>
+        <div class="form-field">
+          <label for="surname">Surname: </label>
+          <input type="text" placeholder="surname" formControlName="surname" />
+        </div>
+        <div class="form-field">
+          <label for="mail">Mail: </label>
+          <input type="mail" placeholder="mail" formControlName="mail" />
+        </div>
+        <div class="form-field">
+          <label for="password">Password: </label>
+          <input
+            type="password"
+            placeholder="password"
+            formControlName="password"
+          />
+        </div>
+        <div class="form-field">
+          <label for="role">Role: </label>
+          <input type="role" placeholder="role" formControlName="role" />
+        </div>
+        <button type="submit" [disabled]="userForm.invalid">Invia</button>
+      </form>
+    </div>
+
+    <div class="user-list">
+      <h2>Lista Utenti</h2>
+      <button (click)="loadAllUsers()">Carica Utenti</button>
+
+      <div>
+        @if (isLoading()) {
+            <p>Caricamento in corso...</p>
+        }
+      </div>
+
+      <table class="user-table">
+        @if (!isLoading() && users().length > 0) {
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Mail</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (user of users(); track user.id) {
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.surname }}</td>
+                        <td>{{ user.mail }}</td>
+                        <td>{{ user.role }}</td>
+                    </tr>
+                }
+            </tbody>
+        } @else if (!isLoading() && users().length === 0) {
+            <tbody>
+                <tr>
+                    <td colspan="5">Nessun utente trovato.</td>
+                </tr>
+            </tbody>
+        }
+      </table>
+    </div>
+  </div>
+</main>

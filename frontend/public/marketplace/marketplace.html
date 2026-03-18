@@ -1,46 +1,40 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketplace</title>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Marketplace</title>
 
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        /* CSS Interno per test rapidi */
-        body {
-            font-family: sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-        }
-    </style>
-
+  <link href="marketplace.css" rel="stylesheet">
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Posto del Mercato</h1>
-        </header>
+<nav aria-label="Menu principale">
+  <ul role="list">
+    <li><a class="active" href="/marketplace/marketplace.html"> Marketplace </a></li>
+    <li><a href="/"> Home </a></li>
+    <li><a href="/visite"> Visite </a></li>
+    <li><a href="/contatti"> Contatti </a></li>
+  </ul>
+</nav>
 
-        <main>
-            <p>Venite alla pesca che si vince sempre</p>
-        </main>
+<div class="container">
+  <header>
+    <h1>Posto del Mercato</h1>
+    <p>Venite alla pesca che si vince sempre</p>
+  </header>
 
-        <footer>
-            <p>&copy; 2028 - Creato con cura da Davidoski.spg</p>
-        </footer>
-    </div>
+  <main>
+    <button id="test-btn" style="font-size: 2rem; padding: 1rem; background-color: gold">Bottone</button>
+    <div id="test-container" style="padding: 3rem; display: flex; justify-content: center"> </div>
+  </main>
+</div>
 
-    <script src="script.js"></script>
+<footer class="footer">
+  <p>&copy; 2026 ArtAround Gallery. Tutti i diritti riservati.</p>
+</footer>
+
+<script src="marketplace.js"></script>
+
 </body>
 </html>

@@ -1,37 +1,32 @@
-import { Component, signal, WritableSignal } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { UserService } from '../../services/user.service';
-import { UserRequest, UserResponse } from '../../models/user.model';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-test',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './test.component.html',
   styleUrl: './test.component.css',
 })
 export class TestComponent {
 
+  constructor(private router: Router) {}
+
   onTestUserSubmit(): void {
-    window.open('/userTest');
+    this.router.navigate(['/userTest']);
   }
 
   onTestMuseumSubmit(): void {
-    window.open('/museumTest')
+    this.router.navigate(['/museumTest'])
   }
 
   onTestLoginSubmit(): void {
-    window.open('/loginTest')
+    this.router.navigate(['/loginTest'])
   }
   
   onTestVisitSubmit(): void {
-    window.open('/visitTest')
+    this.router.navigate(['/visitTest'])
   }
 }
 

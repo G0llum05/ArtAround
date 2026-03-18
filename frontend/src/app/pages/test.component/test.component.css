@@ -23,6 +23,10 @@ main {
   gap: 2rem;
 }
 
+.btn-test button {
+  margin: 10px;
+}
+
 /* Titolo 404 in stile Monoton o Playfair */
 .title {
   font-family: 'Lato', sans-serif;

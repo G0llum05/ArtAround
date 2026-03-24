@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { AlertService } from '../../services/alert.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -18,15 +19,11 @@ export class TestLoginComponent {
   name = '';
   surname = '';
   role = 'guest'; // Default role
-  errorMessage = '';
-  successMessage = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private alertService: AlertService, private router: Router) {}
 
   toggleMode() {
     this.isLoginMode = !this.isLoginMode;
-    this.errorMessage = '';
-    this.successMessage = '';
     this.resetFields();
   }
 
@@ -39,31 +36,31 @@ export class TestLoginComponent {
   }
 
   onSubmit() {
-    this.errorMessage = '';
-    this.successMessage = '';
-
     if (this.isLoginMode) {
       // LOGICA LOGIN
       if (!this.email || !this.password) {
-        this.errorMessage = 'Per favore, inserisci email e password!';
+        this.alertService.error('Per favore, inserisci email e password!');
         return;
       }
 
       this.authService.login(this.email, this.password).subscribe({
         next: (res) => {
           console.log('Login riuscito!', res);
-          this.router.navigate(['/gallery']);
+          this.alertService.success('Login Riscito')
+          setTimeout(() => {
+            this.router.navigate(['/gallery']);
+          }, 2000);
         },
         error: (err) => {
           console.error('Errore di login', err);
-          this.errorMessage = 'Email o password errati!';
+          this.alertService.error('Email o password errati!');
         }
       });
 
     } else {
       // LOGICA REGISTRAZIONE
       if (!this.email || !this.password || !this.name || !this.surname) {
-        this.errorMessage = 'Tutti i campi sono obbligatori!';
+        this.alertService.error('Tutti i campi sono obbligatori!');
         return;
       }
 
@@ -78,20 +75,21 @@ export class TestLoginComponent {
       this.authService.register(userData).subscribe({
         next: (res) => {
           console.log('Registrazione riuscita!', res);
-          this.successMessage = 'Registrazione completata con successo! Ora puoi accedere.';
+          this.alertService.success('Registrazione completata con successo! Ora puoi accedere.');
           // RESET E CAMBIO SCHERMATA
           this.resetFields();
           this.isLoginMode = true; // Torna al login
         },
         error: (err) => {
           console.error('Errore di registrazione', err);
+          this.alertService.error('Errore di registrazione')
           // Se l'errore è 400 (Bad Request), cerchiamo di estrarre il messaggio specifico
           if (err.error && err.error.error) {
-              this.errorMessage = err.error.error;
+              this.alertService.error(err.error.message);
           } else if (err.status === 400) {
-              this.errorMessage = "Errore: questa email potrebbe essere già registrata.";
+              this.alertService.warning("Errore: questa email potrebbe essere già registrata.");
           } else {
-              this.errorMessage = "Si è verificato un errore durante la registrazione.";
+              this.alertService.warning("Si è verificato un errore durante la registrazione.");
           }
         }
       });

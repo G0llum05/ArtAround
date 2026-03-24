@@ -1,0 +1,128 @@
+#toastBox {
+    position: absolute;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    overflow: hidden;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    padding: var(--spacing-lg);
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.toast {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 400px;
+    height: 80px;
+    background: #fff;
+    font-weight: 500;
+    margin: 15px 0;
+    box-shadow: 0 0 var(--radius-xl) rgba(0, 0, 0, 0.3);
+    transform: translateX(100%);
+    animation:
+        moveLeft 0.5s ease forwards,
+        fadeOut 0.3s ease forwards;
+    animation-delay: 0s, 5s;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+
+    &.error {
+        background-color: #ffcccc; /* Light red */
+        color: #cc0000; /* Dark red text */
+    }
+
+    &.warning {
+        background-color: #ffe0b3; /* Light orange */
+        color: #e68a00; /* Dark orange text */
+    }
+
+    &.successful {
+        background-color: #ccffcc; /* Light green */
+        color: #008000; /* Dark green text */
+    }
+
+    & i {
+        margin: 0 10px;
+        font-size: 2rem;
+    }
+
+    &.error i{
+        color: red;
+    }
+    &.warning i{
+        color: yellow;
+    }
+    &.successful i{
+        color: green;
+    }
+
+    .close-toast-button {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            width: 24px;
+            height: 24px;
+        }
+    }
+}
+
+.toast.error::after {
+    position: absolute;
+    content: '';
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 5px;
+    background: red;
+    border-radius: var(--radius-md);
+    animation: anim 5s linear forwards;
+}
+.toast.successful::after {
+    position: absolute;
+    content: '';
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 5px;
+    background: green;
+    border-radius: var(--radius-md);
+    animation: anim 5s linear forwards;
+}
+.toast.warning::after {
+    position: absolute;
+    content: '';
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 5px;
+    background: yellow;
+    border-radius: var(--radius-md);
+    animation: anim 5s linear forwards;
+}
+
+@keyframes anim {
+    100% {
+        width: 0;
+    }
+}
+
+@keyframes moveLeft {
+    100% {
+        transform: translateX(0);
+    }
+}

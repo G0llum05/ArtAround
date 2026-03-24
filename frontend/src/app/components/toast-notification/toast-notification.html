@@ -1,0 +1,8 @@
+<div id="toastBox">
+    <div *ngFor="let toast of toasts" [ngClass]="getCssClass(toast)">
+        {{ toast.message }}
+        <button class="close-toast-button" (click)="removeToast(toast)">
+            <img [src]="getCloseIcon(toast.type)" alt="Close">
+        </button>
+    </div>
+</div>

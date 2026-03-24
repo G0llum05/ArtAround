@@ -14,7 +14,7 @@ class AuthController {
       await authService.registerLocalUser(req.body);
       res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res.status(400).json({ message: error.message });
     }
   }
 

@@ -86,8 +86,8 @@ export class TestLoginComponent {
         error: (err) => {
           console.error('Errore di registrazione', err);
           // Se l'errore è 400 (Bad Request), cerchiamo di estrarre il messaggio specifico
-          if (err.error && err.error.error) {
-              this.errorMessage = err.error.error;
+          if (err.error && err.error.message) {
+              this.errorMessage = err.error.message;
           } else if (err.status === 400) {
               this.errorMessage = "Errore: questa email potrebbe essere già registrata.";
           } else {

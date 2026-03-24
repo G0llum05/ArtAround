@@ -16,6 +16,8 @@ const authRoutes = require('./controller/auth/AuthRouter');
 const visitRoutes = require('./controller/visit/VisitRoutes');
 const operaRoutes = require('./controller/opera/OperaRouter');
 const userRoutes = require('./controller/user/UserRouter');
+const museumRoutes = require('./controller/museum/MuseumRouter');
+const makerRoutes = require('./controller/operaMaker/OperaMakerRouter');
 
 // Gocker ti inietterà probabilmente la sua porta, altrimenti usa la 8000 in locale
 const PORT = process.env.PORT || 8000;
@@ -35,6 +37,9 @@ mongoose.connect(MONGO_URI, {
 
 app.use(express.json());
 
+// Serve static files from the frontend/public directory
+app.use(express.static(path.join(__dirname, '../frontend/public')));
+
 const nodeMode = process.env.NODE_ENV || 'production';
 
 if (nodeMode === process.env.NODE_ENV) {
@@ -52,6 +57,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/visit', visitRoutes);
 app.use('/api/opera', operaRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/museum', museumRoutes);
+app.use('/api/maker', makerRoutes);
 
 // --- 2. Servire Angular (SOLO per Gocker / Produzione) ---
 if (nodeMode === 'production') {

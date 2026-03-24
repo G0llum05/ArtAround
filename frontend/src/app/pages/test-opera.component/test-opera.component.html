@@ -1,0 +1,138 @@
+<div style="padding: 20px; max-width: 1000px; margin: auto;">
+  <h1>Gestione Catalogo Opere d'Arte</h1>
+
+  <div style="display: flex; gap: 20px;">
+    <!-- Form Creazione Museo -->
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; flex: 1;">
+      <h3>1. Crea Museo</h3>
+      <input [(ngModel)]="newMuseum.name" placeholder="Nome Museo" style="width: 100%; margin-bottom: 5px;"><br>
+      <input [(ngModel)]="newMuseum.city" placeholder="Città" style="width: 100%; margin-bottom: 5px;"><br>
+      <button (click)="createMuseum()">Crea Museo</button>
+    </div>
+
+    <!-- Form Creazione Maker -->
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; flex: 1;">
+      <h3>2. Crea Autore</h3>
+      <input [(ngModel)]="newMaker.name" placeholder="Nome" style="width: 100%; margin-bottom: 5px;"><br>
+      <input [(ngModel)]="newMaker.surname" placeholder="Cognome" style="width: 100%; margin-bottom: 5px;"><br>
+      <button (click)="createMaker()">Crea Autore</button>
+    </div>
+  </div>
+
+  <!-- Form Creazione Opera -->
+  <div style="border: 2px solid green; padding: 20px; border-radius: 8px; margin-top: 20px; background: #f9fff9;">
+    <h2>3. Nuova Opera</h2>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      
+      <!-- Sezione Base -->
+      <div>
+        <h3>Informazioni Base</h3>
+        <label>Titolo:</label><br>
+        <input [(ngModel)]="newOpera.title" placeholder="Titolo" style="width: 100%;"><br><br>
+        
+        <label>Descrizione:</label><br>
+        <textarea [(ngModel)]="newOpera.description" placeholder="Descrizione" style="width: 100%; height: 60px;"></textarea><br><br>
+        
+        <label>Periodo (Anni):</label><br>
+        <div style="display: flex; gap: 5px;">
+            <input type="number" [(ngModel)]="newOpera.startYear" placeholder="Inizio" style="flex: 1;">
+            <input type="number" [(ngModel)]="newOpera.endYear" placeholder="Fine" style="flex: 1;">
+        </div><br>
+
+        <label>Museo:</label><br>
+        <select [(ngModel)]="newOpera.museum" style="width: 100%;">
+          <option value="">Nessuno</option>
+          <option *ngFor="let m of museums" [value]="m._id">{{ m.name }} ({{ m.city }})</option>
+        </select><br><br>
+
+        <label>Autori:</label><br>
+        <div style="display: flex; gap: 5px;">
+          <select [(ngModel)]="selectedMaker" style="flex: 1;">
+            <option *ngFor="let m of makers" [value]="m._id">{{ m.name }} {{ m.surname }}</option>
+          </select>
+          <button (click)="addMakerToOpera()">Aggiungi</button>
+        </div>
+        <small>ID aggiunti: {{ newOpera.makers.join(', ') }}</small>
+      </div>
+
+      <!-- Sezione Dettagli Tecnici -->
+      <div>
+        <h3>Dettagli Tecnici</h3>
+        <label>Posizione (Stanza, Piano, Edificio):</label><br>
+        <div style="display: flex; gap: 5px;">
+            <input [(ngModel)]="newOpera.location.room" placeholder="Stanza" style="width: 30%;">
+            <input [(ngModel)]="newOpera.location.floor" placeholder="Piano" style="width: 30%;">
+            <input [(ngModel)]="newOpera.location.building" placeholder="Edificio" style="width: 30%;">
+        </div><br>
+
+        <label>Dimensioni (H x L x P + Unità):</label><br>
+        <div style="display: flex; gap: 5px;">
+            <input type="number" [(ngModel)]="newOpera.dimensions.height" placeholder="H" style="width: 20%;">
+            <input type="number" [(ngModel)]="newOpera.dimensions.width" placeholder="L" style="width: 20%;">
+            <input type="number" [(ngModel)]="newOpera.dimensions.depth" placeholder="P" style="width: 20%;">
+            <input [(ngModel)]="newOpera.dimensions.unit" placeholder="Unit" style="width: 20%;">
+        </div><br>
+
+        <label>Tipo Oggetto:</label><br>
+        <input [(ngModel)]="newOpera.details.objectType" placeholder="es. Dipinto, Scultura" style="width: 100%;"><br><br>
+
+        <label>Materiali e Tecniche:</label><br>
+        <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+            <input [(ngModel)]="newMaterial" placeholder="Nuovo materiale" style="flex: 1;">
+            <button (click)="addMaterial()">+</button>
+        </div>
+        <small>Materiali: {{ newOpera.details.materials.join(', ') }}</small><br><br>
+
+        <div style="display: flex; gap: 5px;">
+            <input [(ngModel)]="newTechnique" placeholder="Nuova tecnica" style="flex: 1;">
+            <button (click)="addTechnique()">+</button>
+        </div>
+        <small>Tecniche: {{ newOpera.details.techniques.join(', ') }}</small>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
+        <label>Correnti Artistiche:</label><br>
+        <div style="display: flex; gap: 5px;">
+            <input [(ngModel)]="newCurrent" placeholder="Aggiungi corrente" style="flex: 1;">
+            <button (click)="addCurrent()">Aggiungi</button>
+        </div>
+        <small>Correnti: {{ newOpera.artisticCurrents.join(', ') }}</small>
+    </div>
+
+    <div style="margin-top: 20px; text-align: right;">
+        <button (click)="createOpera()" style="background: green; color: white; padding: 15px 40px; font-weight: bold; border-radius: 4px; cursor: pointer;">
+            CREA OPERA NEL CATALOGO
+        </button>
+    </div>
+  </div>
+
+  <hr style="margin: 40px 0;">
+
+  <h3>Catalogo Opere Registrate</h3>
+  <table border="1" style="width: 100%; border-collapse: collapse; background: white;">
+    <thead>
+      <tr style="background: #eee;">
+        <th>Titolo</th>
+        <th>Periodo</th>
+        <th>Autori</th>
+        <th>Museo</th>
+        <th>Dimensioni</th>
+        <th>Azioni</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of operas">
+        <td><strong>{{ o.title }}</strong><br><small>{{ o.details?.objectType }}</small></td>
+        <td>{{ o.startYear }} - {{ o.endYear }}</td>
+        <td>{{ getMakerNames(o.makers) }}</td>
+        <td>{{ o.museum?.name }} ({{ o.museum?.city }})</td>
+        <td>{{ o.dimensions?.height }}x{{ o.dimensions?.width }} {{ o.dimensions?.unit }}</td>
+        <td>
+          <button (click)="deleteOpera(o.id)" style="color: red;">Elimina</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

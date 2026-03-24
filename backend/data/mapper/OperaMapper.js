@@ -1,23 +1,45 @@
-const { OperaResponseDTO, OperaPlaceResponseDTO, OperaMakerResponseDTO, OperaRequestDTO } = require('../model/dto/OperaDTO');
+const { OperaResponseDTO, OperaRequestDTO } = require('../model/dto/OperaDTO');
 
 class OperaMapper {
   static toOperaResponseDTO(operaModel) {
-    return new OperaResponseDTO(operaModel._id, operaModel.title, operaModel.maker, operaModel.place);
-  }
-  
-  static toOperaPlaceResponseDTO(operaModel) {
-    return new OperaPlaceResponseDTO(operaModel._id, operaModel.title, operaModel.place);
+    if (!operaModel) return null;
+    return new OperaResponseDTO(
+      operaModel._id,
+      operaModel.title,
+      operaModel.description,
+      operaModel.startYear,
+      operaModel.endYear,
+      operaModel.makers,
+      operaModel.museum,
+      operaModel.location,
+      operaModel.dimensions,
+      operaModel.artisticCurrents,
+      operaModel.details,
+      operaModel.copyOf,
+      operaModel.falsificationOf
+    );
   }
 
-  static toOperaMakerResponseDTO(operaModel) {
-    return new OperaMakerResponseDTO(operaModel._id, operaModel.title, operaModel.maker);
-  }
+  static toOperaModel(dto) {
+    if (!dto) return null;
 
-  static toOperaModel(operaRequestDTO) {
+    // Funzione di utilità per pulire gli ID: se è una stringa vuota, diventa undefined
+    const cleanId = (id) => (id && id.trim() !== "") ? id : undefined;
+
     return {
-      title: operaRequestDTO.title,
-      maker: operaRequestDTO.maker,
-      place: operaRequestDTO.place,
+      title: dto.title,
+      description: dto.description,
+      startYear: dto.startYear,
+      endYear: dto.endYear,
+      // Puliamo gli ID nell'array makers
+      makers: Array.isArray(dto.makers) ? dto.makers.filter(id => id && id.trim() !== "") : [],
+      museum: cleanId(dto.museum),
+      location: dto.location,
+      dimensions: dto.dimensions,
+      artisticCurrents: dto.artisticCurrents,
+      details: dto.details,
+      copyOf: cleanId(dto.copyOf),
+      falsificationOf: cleanId(dto.falsificationOf)
     };
   }
 }

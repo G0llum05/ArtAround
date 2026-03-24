@@ -31,7 +31,7 @@ class UserController {
             const userRequestDTO = new UserRequestDTO(
                 req.body.name,
                 req.body.surname,
-                req.body.mail,
+                req.body.email,
                 req.body.password,
                 req.body.role
             );

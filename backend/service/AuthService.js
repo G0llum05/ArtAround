@@ -8,8 +8,8 @@ class AuthService {
       return await User.findOne({ googleId: id }).lean();
   }
 
-  async getUserByMail(mail) {
-      return await User.findOne( {mail} ).lean();
+  async getUserByEmail(email) {
+      return await User.findOne( {email} ).lean();
   }
 
 
@@ -22,8 +22,8 @@ class AuthService {
           return user;
         }
   
-        // If an user is found with the same mail (i.e. with the internal registration), link the Google ID to that user and merge the accounts log in
-        user = await this.getUserByMail(profile.emails[0].value);
+        // If an user is found with the same email (i.e. with the internal registration), link the Google ID to that user and merge the accounts log in
+        user = await this.getUserByEmail(profile.emails[0].value);
         if (user) {
           user.googleId = profile.id;
           await user.save();
@@ -34,7 +34,7 @@ class AuthService {
       const email = profile.emails[0].value;
 
       // if (email.endsWith('@unibo.it')) {
-      //   assignedRole = 'prof'; // Esempio: se è una mail istituzionale
+      //   assignedRole = 'prof'; // Esempio: se è una email istituzionale
       // }
       // Puoi aggiungere una lista di email per gli admin
       // if (email === 'tuamail@gmail.com') {
@@ -43,7 +43,7 @@ class AuthService {
 
       const newUser = new User({
         googleId: profile.id,
-        mail: email,
+        email: email,
         name: profile.name.givenName || profile.displayName,
         surname: profile.name.familyName || ' ', // some Google profiles might not have a surname
         role: assignedRole
@@ -59,8 +59,8 @@ class AuthService {
 
 
     async registerLocalUser(loginData) {
-      const existingUser = await this.getUserByMail(loginData.mail);
-      if (existingUser) throw new Error('Mail già in uso');
+      const existingUser = await this.getUserByEmail(loginData.email);
+      if (existingUser) throw new Error('Email già in uso');
 
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(loginData.password, salt);
@@ -68,7 +68,7 @@ class AuthService {
       const newUser = new User({
         name: loginData.name,
         surname: loginData.surname,
-        mail: loginData.mail,
+        email: loginData.email,
         password: hashedPassword,
         role: loginData.role
       });
@@ -77,8 +77,8 @@ class AuthService {
       return newUser;
     }
 
-    async verifyLocalUser(mail, password) {
-      const user = await this.getUserByMail(mail);
+    async verifyLocalUser(email, password) {
+      const user = await this.getUserByEmail(email);
       // user doesn't exist
       if (!user) throw new Error('Invalid credentials');
 
@@ -94,7 +94,7 @@ class AuthService {
     }
   
     generateToken(user) {
-      const payload = { id: user._id, mail: user.mail, role: user.role };
+      const payload = { id: user._id, email: user.email, role: user.role };
       return jwt.sign(payload, process.env.JWT_SECRET || 'SEGRETO', { expiresIn: '8h' });
     }
 }

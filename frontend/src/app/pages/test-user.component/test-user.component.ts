@@ -28,7 +28,7 @@ export class TestUserComponent {
     this.userForm = this.fb.group({
       name: ['', Validators.required],
       surname: ['', Validators.required],
-      mail: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       role: ['', Validators.required],
     });

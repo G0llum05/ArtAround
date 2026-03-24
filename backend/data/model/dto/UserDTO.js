@@ -1,26 +1,26 @@
 class UserResponseDTO {
-    constructor(id, name, surname, mail, role) {
+    constructor(id, name, surname, email, role) {
         this.id = id;
         this.name =  name;
         this.surname = surname;
-        this.mail =  mail;
+        this.email =  email;
         this.role = role;
     }
 }
 // crezione  e update letsgoski :)
 class UserRequestDTO {
-    constructor(name, surname, mail, password, role) {
+    constructor(name, surname, email, password, role) {
         this.name =  name;
         this.surname = surname;
-        this.mail =  mail;
+        this.email =  email;
         this.password = password;
         this.role = role;
     }
 }
 
 class LoginRequestDTO {
-    constructor(mail, password) {
-        this.mail = mail;
+    constructor(email, password) {
+        this.email = email;
         this.password = password;
     }
 }

@@ -2,19 +2,19 @@ export interface UserResponse {
     id: number,
     name: string,
     surname: string,
-    mail: string,
+    email: string,
     role: string
 }
 
 export interface UserRequest {
     name: string,
     surname: string,
-    mail: string,
+    email: string,
     password: string,
     role: string
 }
 
 export interface LoginRequest {
-    mail: string,
+    email: string,
     password: string
 }

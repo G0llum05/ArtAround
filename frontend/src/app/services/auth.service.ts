@@ -11,14 +11,19 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   // 1. Login classico (Email/Password)
-  login(mail: string, password: string) {
-    return this.http.post<{token: string, message: string}>(`${this.apiUrl}/login`, { mail, password })
+  login(email: string, password: string) {
+    return this.http.post<{token: string, message: string}>(`${this.apiUrl}/login`, { email, password })
       .pipe(
         tap(response => this.saveToken(response.token))
       );
   }
 
-  // 2. Login con Google
+  // 2. Registrazione Locale
+  register(userData: any) {
+    return this.http.post<{message: string}>(`${this.apiUrl}/register`, userData);
+  }
+
+  // 3. Login con Google
   // Non serve una chiamata HTTP di Angular, ma un redirect vero e proprio del browser
   loginWithGoogle() {
     window.location.href = `${this.apiUrl}/google`;

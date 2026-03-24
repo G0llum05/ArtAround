@@ -1,26 +1,63 @@
 <main>
-  <div class="container">
-    <h2>Accedi ad ArtAround</h2>
+  <div class="container" style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+    <h2>{{ isLoginMode ? 'Accedi ad ArtAround' : 'Registrati su ArtAround' }}</h2>
 
-    <div *ngIf="errorMessage" style="color: red;">
+    <!-- Messaggi di errore o successo -->
+    <div *ngIf="errorMessage" style="color: red; margin-bottom: 10px;">
       {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" style="color: green; margin-bottom: 10px;">
+      {{ successMessage }}
     </div>
 
     <form (ngSubmit)="onSubmit()">
-      <div class="form-field">
-        <label>Mail:</label>
-        <input type="mail" [(ngModel)]="mail" name="mail" required>
+      <!-- Campi aggiuntivi per la registrazione -->
+      <div *ngIf="!isLoginMode" class="form-field" style="margin-bottom: 10px;">
+        <label>Nome:</label><br>
+        <input type="text" [(ngModel)]="name" name="name" required style="width: 100%;">
       </div>
-      <div class="form-field">
-        <label>Password:</label>
-        <input type="password" [(ngModel)]="password" name="password" required>
+
+      <div *ngIf="!isLoginMode" class="form-field" style="margin-bottom: 10px;">
+        <label>Cognome:</label><br>
+        <input type="text" [(ngModel)]="surname" name="surname" required style="width: 100%;">
       </div>
-      <button type="submit">Accedi (Classico)</button>
+
+      <!-- Campi comuni -->
+      <div class="form-field" style="margin-bottom: 10px;">
+        <label>Email:</label><br>
+        <input type="email" [(ngModel)]="email" name="email" required style="width: 100%;">
+      </div>
+
+      <div class="form-field" style="margin-bottom: 10px;">
+        <label>Password:</label><br>
+        <input type="password" [(ngModel)]="password" name="password" required style="width: 100%;">
+      </div>
+
+      <!-- Scelta Ruolo solo per registrazione -->
+      <div *ngIf="!isLoginMode" class="form-field" style="margin-bottom: 10px;">
+        <label>Ruolo:</label><br>
+        <select [(ngModel)]="role" name="role" style="width: 100%;">
+          <option value="guest">Guest (Visitatore)</option>
+          <option value="prof">Prof (Curatore)</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <button type="submit" style="width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        {{ isLoginMode ? 'Accedi' : 'Registrati' }}
+      </button>
     </form>
 
-    <button type="button" (click)="onGoogleLogin()" style="background: #4285F4; color: white;">
-      Accedi con Google
+    <div style="margin-top: 15px; text-align: center;">
+      <button type="button" (click)="toggleMode()" style="background: none; border: none; color: blue; cursor: pointer; text-decoration: underline;">
+        {{ isLoginMode ? 'Non hai un account? Registrati' : 'Hai già un account? Accedi' }}
+      </button>
+    </div>
+
+    <hr style="margin: 20px 0;">
+
+    <button type="button" (click)="onGoogleLogin()" style="width: 100%; padding: 10px; background: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+      <span style="margin-right: 10px;">G</span> {{ isLoginMode ? 'Accedi con Google' : 'Registrati con Google' }}
     </button>
   </div>
-  
 </main>

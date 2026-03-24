@@ -5,13 +5,13 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const authService = require('../service/AuthService');
 
 passport.use(new LocalStrategy({
-    usernameField: 'mail', // Diciamo a Passport che usiamo 'mail' e non 'username'
+    usernameField: 'email', // Diciamo a Passport che usiamo 'email' e non 'username'
     passwordField: 'password'
   },
-  async (mail, password, done) => {
+  async (email, password, done) => {
     try {
       // Usiamo il metodo che hai creato tu nel Service!
-      const user = await authService.verifyLocalUser(mail, password);
+      const user = await authService.verifyLocalUser(email, password);
       
       // Se verifyLocalUser lancia un errore (es. "Invalid credentials"), 
       // finisce nel catch qui sotto. Se invece va tutto bene:

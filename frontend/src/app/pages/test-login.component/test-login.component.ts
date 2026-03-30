@@ -47,9 +47,7 @@ export class TestLoginComponent {
         next: (res) => {
           console.log('Login riuscito!', res);
           this.alertService.success('Login Riscito')
-          setTimeout(() => {
-            this.router.navigate(['/gallery']);
-          }, 2000);
+          this.router.navigate(['/gallery']);
         },
         error: (err) => {
           console.error('Errore di login', err);

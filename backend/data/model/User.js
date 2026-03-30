@@ -25,10 +25,14 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['guest', 'prof', 'admin'],
+        enum: ['guest', 'prof', 'museum', 'admin'],
         default: 'guest',
         required: true
-    }
+    },
+    likedVistis: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Visit'
+    }]
 });
 
 module.exports = mongoose.model('User', userSchema);

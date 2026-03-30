@@ -14,10 +14,6 @@ const operaSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'OperaMaker',
   }],
-  museum: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Museum',
-  },
 
   location: OperaLocationSchema,
   dimensions: OperaDimensionsSchema,
@@ -26,7 +22,7 @@ const operaSchema = new mongoose.Schema({
   details: OperaDetailsSchema,
   copyOf: { type: mongoose.Schema.Types.ObjectId, ref: 'Opera' },
   falsificationOf: { type: mongoose.Schema.Types.ObjectId, ref: 'Opera' },
-  
+  isActive: Bool,  
   description: String
 });
 

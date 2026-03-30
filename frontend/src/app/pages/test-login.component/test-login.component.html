@@ -2,13 +2,6 @@
   <div class="container" style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
     <h2>{{ isLoginMode ? 'Accedi ad ArtAround' : 'Registrati su ArtAround' }}</h2>
 
-    <!-- Messaggi di errore o successo -->
-    <div *ngIf="errorMessage" style="color: red; margin-bottom: 10px;">
-      {{ errorMessage }}
-    </div>
-    <div *ngIf="successMessage" style="color: green; margin-bottom: 10px;">
-      {{ successMessage }}
-    </div>
 
     <form (ngSubmit)="onSubmit()">
       <!-- Campi aggiuntivi per la registrazione -->

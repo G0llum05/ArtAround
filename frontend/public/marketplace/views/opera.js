@@ -1,4 +1,3 @@
-// public/marketplace/views/opera.js
 window.MarketplaceViews = window.MarketplaceViews || {};
 
 window.MarketplaceViews.opera = function () {

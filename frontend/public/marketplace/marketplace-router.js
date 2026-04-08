@@ -20,19 +20,72 @@ window.MarketplaceApp = class MarketplaceApp {
 
   // Routing interno
   renderPath(path) {
-    // /marketplace              → lista opere
-    // /marketplace/opera/:id   → dettaglio opera
-    // /marketplace/artist/:id  → dettaglio artista
-
+    const artistAdminMatch = path.match(/^\/marketplace\/artists$/);
     const operaMatch  = path.match(/^\/marketplace\/opera(\/|$)/);
-    const artistMatch = path.match(/^\/marketplace\/artist(\/|$)/);
+    const artistMatch = path.match(/^\/marketplace\/artist\/([^/]+)$/);
 
-    console.log('Routing path:', path);
-    console.log('Opera match:', operaMatch);
-
+    if (artistAdminMatch) return this.renderArtistAdmin();
     if (operaMatch)       return this.renderOpera();
     if (artistMatch)      return this.renderArtist(artistMatch[1]);
     return this.renderHome();
+  }
+
+  async renderArtistAdmin() {
+    this.container.innerHTML = '<p class="mkt-loading">Caricamento artisti...</p>';
+    try {
+      const res = await this._fetch('/api/artist');
+      const artists = await res.json();
+      this.container.innerHTML = window.MarketplaceViews.artistAdmin(artists);
+
+      // Gestione Form
+      const form = document.getElementById('artist-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('artist-id').value;
+        const payload = {
+          name: document.getElementById('artist-name').value,
+          surname: document.getElementById('artist-surname').value,
+          artisticCurrents: document.getElementById('artist-currents').value.split(',').map(s => s.trim()).filter(s => s)
+        };
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/artist/${id}` : '/api/artist';
+
+        await this._fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        this.renderArtistAdmin(); // Refresh
+      });
+
+      // Edit e Delete
+      this.container.querySelectorAll('.edit-artist').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const artist = artists.find(a => a._id === btn.dataset.id);
+          document.getElementById('artist-id').value = artist._id;
+          document.getElementById('artist-name').value = artist.name;
+          document.getElementById('artist-surname').value = artist.surname;
+          document.getElementById('artist-currents').value = artist.artisticCurrents?.join(', ') || '';
+          document.getElementById('form-title').innerText = 'Modifica Artista';
+          document.getElementById('cancel-artist-edit').style.display = 'inline-block';
+        });
+      });
+
+      this.container.querySelectorAll('.delete-artist').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (confirm('Eliminare questo artista?')) {
+            await this._fetch(`/api/artist/${btn.dataset.id}`, { method: 'DELETE' });
+            this.renderArtistAdmin();
+          }
+        });
+      });
+
+      document.getElementById('cancel-artist-edit')?.addEventListener('click', () => this.renderArtistAdmin());
+
+    } catch (err) {
+      this.container.innerHTML = window.MarketplaceViews.error(err);
+    }
   }
 
   // Views

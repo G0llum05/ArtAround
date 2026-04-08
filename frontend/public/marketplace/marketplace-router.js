@@ -24,10 +24,13 @@ window.MarketplaceApp = class MarketplaceApp {
     // /marketplace/opera/:id   → dettaglio opera
     // /marketplace/artist/:id  → dettaglio artista
 
-    const operaMatch  = path.match(/^\/marketplace\/opera\/([^/]+)$/);
-    const artistMatch = path.match(/^\/marketplace\/artist\/([^/]+)$/);
+    const operaMatch  = path.match(/^\/marketplace\/opera(\/|$)/);
+    const artistMatch = path.match(/^\/marketplace\/artist(\/|$)/);
 
-    if (operaMatch)       return this.renderOpera(operaMatch[1]);
+    console.log('Routing path:', path);
+    console.log('Opera match:', operaMatch);
+
+    if (operaMatch)       return this.renderOpera();
     if (artistMatch)      return this.renderArtist(artistMatch[1]);
     return this.renderHome();
   }
@@ -42,12 +45,10 @@ window.MarketplaceApp = class MarketplaceApp {
     }
   }
 
-  async renderOpera(id) {
-    this.container.innerHTML = '<p class="mkt-loading">Caricamento...</p>';
+  async renderOpera() {
+    console.log('Rendering opera with id:');
     try {
-      const res   = await this._fetch(`/api/opera/${id}`);
-      const opera = await res.json();
-      this.container.innerHTML = window.MarketplaceViews.opera(opera);
+      this.container.innerHTML = window.MarketplaceViews.opera();
     } catch (err) {
       this.container.innerHTML = window.MarketplaceViews.error(err);
     }

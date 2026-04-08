@@ -52,7 +52,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   }
 
   isActive(path: string): boolean {
-    console.log('Checking active for path:', path, 'Current path:', window.location.pathname);
     const currentPath = window.location.pathname;
     if (path === '/') return currentPath === '/';
     return currentPath.startsWith(path);

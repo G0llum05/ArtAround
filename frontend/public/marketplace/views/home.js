@@ -5,6 +5,7 @@ window.MarketplaceViews.home = function () {
   return `
     <div class="mkt-container">
       <h1 class="mkt-title">Marketplace</h1>
+      <a class="mkt-link" data-navigate="/marketplace/opera">Vai alla pagina di un'opera</a>
     </div>
   `;
 };

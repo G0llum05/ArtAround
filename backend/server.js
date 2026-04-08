@@ -17,7 +17,7 @@ const visitRoutes = require('./controller/visit/VisitRoutes');
 const operaRoutes = require('./controller/opera/OperaRouter');
 const userRoutes = require('./controller/user/UserRouter');
 const museumRoutes = require('./controller/museum/MuseumRouter');
-const makerRoutes = require('./controller/operaMaker/OperaMakerRouter');
+const artistRoutes = require('./controller/artist/ArtistRouter');
 
 // Gocker ti inietterà probabilmente la sua porta, altrimenti usa la 8000 in locale
 const PORT = process.env.PORT || 8000;
@@ -58,7 +58,7 @@ app.use('/api/visit', visitRoutes);
 app.use('/api/opera', operaRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/museum', museumRoutes);
-app.use('/api/maker', makerRoutes);
+app.use('/api/artist', artistRoutes);
 
 // --- 2. Servire Angular (SOLO per Gocker / Produzione) ---
 if (nodeMode === 'production') {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const VisitingHoursSchema = require('./schemas/VisitingHoursSchema');
+const ScheduleSchema = require('./schemas/VisitingHoursSchema');
 const SocialSchema = require('./schemas/SocialSchema');
 
 const museumSchema = new mongoose.Schema({
@@ -55,7 +55,7 @@ const museumSchema = new mongoose.Schema({
     ref: 'Opera'  
   }],
   // Orari generali del museo (riutilizzando la logica di prima)
-  openingHours: [scheduleSchema],
+  openingHours: [ScheduleSchema],
 
   ticketInfo: {
     prices: [{
@@ -66,7 +66,7 @@ const museumSchema = new mongoose.Schema({
     discountCode: [String]
   },
   
-  isActive: Bool,
+  isActive: Boolean,
 
   disableFriendly: {
     type: Boolean

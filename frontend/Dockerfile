@@ -11,7 +11,7 @@ RUN npm install -g @angular/cli
 COPY package*.json ./
 
 # 5. Installiamo le dipendenze locali
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # 6. Copiamo il resto del codice (utile per la prima build)
 COPY . .

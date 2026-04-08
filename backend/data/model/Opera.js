@@ -10,9 +10,9 @@ const operaSchema = new mongoose.Schema({
   },
   startYear: Number,
   endYear: Number,
-  makers: [{
+  artists: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'OperaMaker',
+    ref: 'Artist',
   }],
 
   location: OperaLocationSchema,
@@ -22,7 +22,7 @@ const operaSchema = new mongoose.Schema({
   details: OperaDetailsSchema,
   copyOf: { type: mongoose.Schema.Types.ObjectId, ref: 'Opera' },
   falsificationOf: { type: mongoose.Schema.Types.ObjectId, ref: 'Opera' },
-  isActive: Bool,  
+  isActive: Boolean,  
   description: String
 });
 

@@ -1,12 +1,12 @@
 // RESPONSES
 class OperaResponseDTO {
-    constructor(id, title, description, startYear, endYear, makers, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf) {
+    constructor(id, title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.startYear = startYear;
         this.endYear = endYear;
-        this.makers = makers; // can be IDs or populated objects
+        this.artists = artists; // can be IDs or populated objects
         this.museum = museum; // can be ID or populated object
         this.location = location;
         this.dimensions = dimensions;
@@ -19,12 +19,12 @@ class OperaResponseDTO {
 
 // REQUESTS
 class OperaRequestDTO {
-    constructor(title, description, startYear, endYear, makers, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf) {
+    constructor(title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf) {
         this.title = title;
         this.description = description;
         this.startYear = startYear;
         this.endYear = endYear;
-        this.makers = makers; // Array of IDs
+        this.artists = artists; // Array of IDs
         this.museum = museum; // ID
         this.location = location; // Object { room, floor, building }
         this.dimensions = dimensions; // Object { height, width, depth, unit }

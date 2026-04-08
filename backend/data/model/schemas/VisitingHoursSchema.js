@@ -1,29 +1,31 @@
-const openingWindowSchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+
+const OpeningWindowSchema = new mongoose.Schema({
   startTime: { type: String, required: true },
   endTime: { type: String, required: true }
 }, { _id: false });
 
-const visitingHoursSchema = new mongoose.Schema({
+const VisitingHoursSchema = new mongoose.Schema({
   day: {
     type: Number, 
     required: true,
     min: 0, 
     max: 6 
   },
-  slots: [openingWindowSchema],
+  slots: [OpeningWindowSchema],
   closed: { type: Boolean, default: false }
 }, { _id: false });
 
-const exceptionSchema = new mongoose.Schema({
+const ExceptionSchema = new mongoose.Schema({
   date: { type: Date, required: true },
-  slots: [openingWindowSchema],
+  slots: [OpeningWindowSchema],
   closed: { type: Boolean, default: false },
   reason: String
 }, { _id: false });
 
-const scheduleSchema = new mongoose.Schema({
+const ScheduleSchema = new mongoose.Schema({
   weeklyStandard: {
-    type: [visitingHoursSchema],
+    type: [VisitingHoursSchema],
     validate: [
       {
         validator: (v) => v.length <= 7,
@@ -37,7 +39,7 @@ const scheduleSchema = new mongoose.Schema({
   },
 
   exceptions: {
-    type: [exceptionSchema],
+    type: [ExceptionSchema],
     validate: {
       validator: function(v) {
         // Controllo che non ci siano due eccezioni per lo stesso giorno (Y-M-D)
@@ -51,10 +53,10 @@ const scheduleSchema = new mongoose.Schema({
 
 // TODO: Da spostare in service (Inserimento)
 // Middleware per tenere tutto in ordine (opzionale ma consigliato)
-scheduleSchema.pre('save', function(next) {
+ScheduleSchema.pre('save', function(next) {
   if (this.weeklyStandard) this.weeklyStandard.sort((a, b) => a.day - b.day);
   if (this.exceptions) this.exceptions.sort((a, b) => a.date - b.date);
   next();
 });
 
-const Schedule = mongoose.model('Schedule', scheduleSchema);
+const Schedule = mongoose.model('Schedule', ScheduleSchema);

@@ -15,6 +15,8 @@ import { RouterModule, RouterLinkActive, RouterLink } from '@angular/router';
   styleUrl: './toolbar.css'
 })
 export class ToolbarComponent {
+  isSPA = !!document.querySelector('app-root');
+
   navItems = [
     { label: 'Home',        path: '/'            },
     { label: 'Visite',      path: '/visite'      },

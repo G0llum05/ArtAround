@@ -3,8 +3,7 @@ const Opera = require('../data/model/Opera');
 class OperaService {
   static async getAllOperas() {
     return await Opera.find()
-      .populate('makers')
-      .populate('museum')
+      .populate('artists')
       .populate('copyOf')
       .populate('falsificationOf')
       .lean();
@@ -12,8 +11,7 @@ class OperaService {
 
   static async getOperaById(id) {
     return await Opera.findById(id)
-      .populate('makers')
-      .populate('museum')
+      .populate('artists')
       .populate('copyOf')
       .populate('falsificationOf')
       .lean();

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const VisitingHoursSchema = require('./schemas/VisitingHoursSchema');
+const ScheduleSchema = require('./schemas/VisitingHoursSchema');
 
 
 const visitSchema = new mongoose.Schema({
@@ -38,7 +38,7 @@ const visitSchema = new mongoose.Schema({
     required: true
   },
 
-  isActive: Bool,
+  isActive: Boolean,
 
   availability: {
     always: {
@@ -53,7 +53,7 @@ const visitSchema = new mongoose.Schema({
   },
 
   // Domenica = [0] -> Lunedi = [6]
-  weeklySchedule: [scheduleSchema],
+  weeklySchedule: [ScheduleSchema],
 
   disableFriendly: {
     type: Boolean

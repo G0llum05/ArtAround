@@ -9,7 +9,7 @@ class OperaMapper {
       operaModel.description,
       operaModel.startYear,
       operaModel.endYear,
-      operaModel.makers,
+      operaModel.artists,
       operaModel.museum,
       operaModel.location,
       operaModel.dimensions,
@@ -31,8 +31,8 @@ class OperaMapper {
       description: dto.description,
       startYear: dto.startYear,
       endYear: dto.endYear,
-      // Puliamo gli ID nell'array makers
-      makers: Array.isArray(dto.makers) ? dto.makers.filter(id => id && id.trim() !== "") : [],
+      // Puliamo gli ID nell'array artists
+      artists: Array.isArray(dto.artists) ? dto.artists.filter(id => id && id.trim() !== "") : [],
       museum: cleanId(dto.museum),
       location: dto.location,
       dimensions: dto.dimensions,

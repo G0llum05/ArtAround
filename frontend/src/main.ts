@@ -19,7 +19,11 @@ const appRootElement = document.querySelector('app-root');
 
 if (appRootElement) {
   // Angular
-  bootstrapApplication(App, appConfig).catch((err) => console.error(err));
+  bootstrapApplication(App, appConfig)
+    .then((appRef) => {
+      registerCustomElements(appRef.injector);
+    })
+    .catch((err) => console.error(err));
 } else {
   // Vanilla JS
   createApplication(appConfig)

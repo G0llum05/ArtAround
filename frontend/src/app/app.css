@@ -7,11 +7,6 @@
   overflow-x: hidden;
 }
 
-.page-content {
-  min-height: 100vh;
-  display: block;
-}
-
 router-outlet + * {
   flex: 1;
 }

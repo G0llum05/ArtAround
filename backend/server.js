@@ -37,12 +37,10 @@ mongoose.connect(MONGO_URI, {
 
 app.use(express.json());
 
-// Serve static files from the frontend/public directory
-app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 const nodeMode = process.env.NODE_ENV || 'production';
 
-if (nodeMode === process.env.NODE_ENV) {
+if (nodeMode !== 'production') {
   // In sviluppo, abilitiamo CORS per le richieste da ng serve
   const options = {
     origin: 'http://localhost:4200'
@@ -70,6 +68,25 @@ if (nodeMode === 'production') {
     res.sendFile(path.join(angularDistPath, 'index.html'));
   });
 } 
+
+// Serve static files from the frontend/public directory
+app.use(express.static(path.join(__dirname, '../frontend/public')));
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+app.get(/(.*)/, (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
+  const fallbackPath = path.join(__dirname, '../frontend/dist/index.html');
+  
+  if (require('fs').existsSync(path.join(angularDistPath, 'index.html'))) {
+    res.sendFile(path.join(angularDistPath, 'index.html'));
+  } else if (require('fs').existsSync(fallbackPath)) {
+    res.sendFile(fallbackPath);
+  } else {
+    // Se non troviamo Angular built, serviamo un errore o lasciamo fare ad express.static
+    next();
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT} in ${process.env.NODE_ENV || 'production'} mode`);

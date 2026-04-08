@@ -9,7 +9,6 @@ export interface Art {
   title: string;
   description: string;
 }
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -23,34 +22,43 @@ export interface Art {
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
+
 export class App implements OnInit {
-  // Invece del costruttore, usiamo la funzione inject() che avevi già importato!
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private authService = inject(AuthService);
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    // Angular "ascolta" i parametri nell'URL.
-    // Se vede un ?token=... significa che stiamo tornando dal backend dopo il login con Google!
-    this.route.queryParams.subscribe(params => {
-      const token = params['token'];
-      if (token) {
-        // Salviamo il token nel localStorage tramite il nostro servizio
-        this.authService.saveToken(token);
-        console.log('Token catturato dall\'URL e salvato con successo!');
-
-        // Puliamo l'URL rimuovendo il parametro "?token=..."
-        // così non rimane visibile nella barra degli indirizzi dell'utente
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { token: null },
-          queryParamsHandling: 'merge', // Mantiene eventuali altri parametri intatti
-          replaceUrl: true // Sostituisce la cronologia del browser per non far tornare indietro l'utente al token
-        });
-      }
-    });
+    // Esponi il router alla shell
+    (window as any).__angularRouter = this.router;
   }
 }
+// export class App implements OnInit {
+//   // Invece del costruttore, usiamo la funzione inject() che avevi già importato!
+//   private route = inject(ActivatedRoute);
+//   private router = inject(Router);
+//   private authService = inject(AuthService);
+//
+//   ngOnInit() {
+//     // Angular "ascolta" i parametri nell'URL.
+//     // Se vede un ?token=... significa che stiamo tornando dal backend dopo il login con Google!
+//     this.route.queryParams.subscribe(params => {
+//       const token = params['token'];
+//       if (token) {
+//         // Salviamo il token nel localStorage tramite il nostro servizio
+//         this.authService.saveToken(token);
+//         console.log('Token catturato dall\'URL e salvato con successo!');
+//
+//         // Puliamo l'URL rimuovendo il parametro "?token=..."
+//         // così non rimane visibile nella barra degli indirizzi dell'utente
+//         this.router.navigate([], {
+//           relativeTo: this.route,
+//           queryParams: { token: null },
+//           queryParamsHandling: 'merge', // Mantiene eventuali altri parametri intatti
+//           replaceUrl: true // Sostituisce la cronologia del browser per non far tornare indietro l'utente al token
+//         });
+//       }
+//     });
+//   }
+// }
 
 
 // import { Component, OnInit, inject } from '@angular/core';

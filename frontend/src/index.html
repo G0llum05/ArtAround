@@ -1,13 +1,29 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>ArtAround</title>
-    <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image" href="/images/gamba_miniatura.png" />
-  </head>
-  <body>
-    <app-root></app-root>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <title>ArtAround</title>
+  <base href="/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image" href="/images/gamba_miniatura.png" />
+
+  <script src="/shell/shell-store.js" defer></script>
+  <script src="/shell/shell-router.js" defer></script>
+
+  <!-- Script per il Marketplace (Vanilla JS) -->
+  <script src="/marketplace/views/home.js" defer></script>
+  <script src="/marketplace/views/opera.js" defer></script>
+  <script src="/marketplace/views/artist.js" defer></script>
+  <script src="/marketplace/marketplace-router.js" defer></script>
+</head>
+
+<body>
+  <!-- Il toolbar è fuori dai root per essere condiviso -->
+  <art-toolbar></art-toolbar>
+
+  <app-root id="angular-root"></app-root>
+  <div id="vanilla-root" class="page-content" style="display:none"></div>
+</body>
+
 </html>

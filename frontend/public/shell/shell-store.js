@@ -1,5 +1,5 @@
 // accessibile a tutti i file js e angular
-window.ShellStore = (function () {
+export const ShellStore = (function () {
   const state = {
     user: null,
     token: localStorage.getItem('token') || null,
@@ -27,3 +27,5 @@ window.ShellStore = (function () {
   // Interfacce per interagire con gli attributi della funzione
   return { get, set, on };
 })();
+
+window.ShellStore = ShellStore; // Rende ShellStore accessibile globalmente

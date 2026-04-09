@@ -1,12 +1,15 @@
-window.ShellRouter = (function () {
+import { ShellStore } from '/shell/shell-store.js';
+import { MarketplaceApp } from '../marketplace/app.js';
+
+export const ShellRouter = (function () {
 
   let vanillaApp = null;
 
   // Navigazione
   function navigate(path) {
     history.pushState({}, '', path);
-    if (window.ShellStore) {
-      window.ShellStore.set('currentPath', path);
+    if (ShellStore) {
+      ShellStore.set('currentPath', path);
     }
     dispatch(path);
   }
@@ -43,7 +46,7 @@ window.ShellRouter = (function () {
     // Smonta la view precedente se esiste
     if (vanillaApp) vanillaApp.teardown();
 
-    vanillaApp = new window.MarketplaceApp(
+    vanillaApp = new MarketplaceApp(
       document.getElementById('vanilla-root'),
       path
     );
@@ -68,9 +71,10 @@ window.ShellRouter = (function () {
   });
 
   // Init
-  document.addEventListener('DOMContentLoaded', function () {
-    dispatch(location.pathname);
-  });
+  dispatch(location.pathname);
 
   return { navigate };
 })();
+
+// Per esporre su Angular
+window.ShellRouter = ShellRouter;

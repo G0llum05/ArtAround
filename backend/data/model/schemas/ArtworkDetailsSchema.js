@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const OperaDetailsSchema = new mongoose.Schema({
+const ArtworkDetailsSchema = new mongoose.Schema({
   subjects: [String],
   colors: [String],
   places: [String],
@@ -9,5 +9,4 @@ const OperaDetailsSchema = new mongoose.Schema({
   techniques: [String]
 }, { _id: false });
 
-module.exports = OperaDetailsSchema;
-
+module.exports = ArtworkDetailsSchema;

@@ -50,9 +50,9 @@ const museumSchema = new mongoose.Schema({
     ref: 'Visit'
   }],
   
-  operas: [{
+  artworks: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Opera'  
+    ref: 'Artwork'
   }],
   // Orari generali del museo (riutilizzando la logica di prima)
   openingHours: [ScheduleSchema],

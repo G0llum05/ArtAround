@@ -6,7 +6,6 @@ import {TestLoginComponent} from './pages/test-login.component/test-login.compon
 import {TestUserComponent} from './pages/test-user.component/test-user.component';
 import {TestMuseumComponent} from './pages/test-museum.component/test-museum.component';
 import {TestVisitComponent} from './pages/test-visit.component/test-visit.component';
-import {TestOperaComponent} from './pages/test-opera.component/test-opera.component';
 
 export const routes: Routes = [
   {path: '', component: GalleryPage},
@@ -15,7 +14,6 @@ export const routes: Routes = [
   {path: 'userTest', component: TestUserComponent},
   {path: 'museumTest', component: TestMuseumComponent},
   {path: 'visitTest', component: TestVisitComponent},
-  {path: 'operaTest', component: TestOperaComponent},
   {path: '**', component: PageNotFoundPage} // Questa è una rotta di fallback, che reindirizza a '' (Gallery) se l'utente inserisce una rotta non valida
 ]
 

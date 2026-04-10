@@ -5,28 +5,28 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class OperaService {
-  private apiUrl = 'http://localhost:8000/api/opera';
+export class ArtworkService {
+  private apiUrl = 'http://localhost:8000/api/artwork';
 
   constructor(private http: HttpClient) {}
 
-  getAllOperas(): Observable<any[]> {
+  getAllArtworks(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  getOperaById(id: string): Observable<any> {
+  getArtworkById(id: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  createOpera(operaData: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, operaData);
+  createArtwork(artworkData: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, artworkData);
   }
 
-  updateOpera(id: string, operaData: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, operaData);
+  updateArtwork(id: string, artworkData: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, artworkData);
   }
 
-  deleteOpera(id: string): Observable<any> {
+  deleteArtwork(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 }

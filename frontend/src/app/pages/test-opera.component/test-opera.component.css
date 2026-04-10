@@ -1,9 +1,0 @@
-/* Stili base per il test */
-table td, table th {
-  padding: 8px;
-  text-align: left;
-}
-input, select, textarea {
-  padding: 5px;
-  margin-bottom: 5px;
-}

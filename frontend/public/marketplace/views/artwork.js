@@ -1,5 +1,5 @@
-export const OperaViews = {
-  opera() {
+export const ArtworkViews = {
+  artwork() {
     return `
       <div class="mkt-container">
         <h1 class="mkt-title">Opera Dettagli</h1>

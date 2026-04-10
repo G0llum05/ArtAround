@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const OperaLocationSchema = new mongoose.Schema({
+const ArtworkLocationSchema = new mongoose.Schema({
   room: String,
   floor: String,
   building: String
 }, { _id: false });
 
-module.exports = OperaLocationSchema;
+module.exports = ArtworkLocationSchema;

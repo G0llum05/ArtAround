@@ -1,6 +1,6 @@
 import { HomeRouter } from './home.router.js';
 import { ArtistRouter } from './artist.router.js';
-import { OperaRouter } from './opera.router.js';
+import { ArtworkRouter } from './artwork.router.js';
 
 const routes = [
   {
@@ -11,10 +11,10 @@ const routes = [
     }
   },
   {
-    prefix: '/marketplace/opera',
+    prefix: '/marketplace/artwork',
     loadRouter: async () => {
-      const module = await import('./opera.router.js');
-      return module.OperaRouter;
+      const module = await import('./artwork.router.js');
+      return module.ArtworkRouter;
     }
   },
   {

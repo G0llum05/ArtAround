@@ -22,9 +22,9 @@ const visitSchema = new mongoose.Schema({
     ref: 'User'
   },
   
-  operas: [{
+  artworks: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Opera'
+    ref: 'Artwork'
   }],
 
   // Duration in minutes

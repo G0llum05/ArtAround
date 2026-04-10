@@ -3,13 +3,13 @@ const Artist = require('../data/model/Artist');
 class ArtistService {
   static async getAll() {
     return await Artist.find()
-      .populate('operas')
+      .populate('artworks')
       .lean();
   }
 
   static async getById(id) {
     return await Artist.findById(id)
-      .populate('operas')
+      .populate('artworks')
       .lean();
   }
   

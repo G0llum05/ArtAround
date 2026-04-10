@@ -14,7 +14,7 @@ app.use(passport.initialize());
 // Routes
 const authRoutes = require('./controller/auth/AuthRouter');
 const visitRoutes = require('./controller/visit/VisitRoutes');
-const operaRoutes = require('./controller/opera/OperaRouter');
+const artworkRoutes = require('./controller/artwork/ArtworkRouter');
 const userRoutes = require('./controller/user/UserRouter');
 const museumRoutes = require('./controller/museum/MuseumRouter');
 const artistRoutes = require('./controller/artist/ArtistRouter');
@@ -53,7 +53,7 @@ if (nodeMode !== 'production') {
 // --- 1. Route API (Funzionano sempre, sia in locale che su Gocker) ---
 app.use('/api/auth', authRoutes);
 app.use('/api/visit', visitRoutes);
-app.use('/api/opera', operaRoutes);
+app.use('/api/artwork', artworkRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/museum', museumRoutes);
 app.use('/api/artist', artistRoutes);

@@ -1,26 +1,26 @@
-const { OperaResponseDTO, OperaRequestDTO } = require('../model/dto/OperaDTO');
+const { ArtworkResponseDTO, ArtworkRequestDTO } = require('../model/dto/ArtworkDTO');
 
-class OperaMapper {
-  static toOperaResponseDTO(operaModel) {
-    if (!operaModel) return null;
-    return new OperaResponseDTO(
-      operaModel._id,
-      operaModel.title,
-      operaModel.description,
-      operaModel.startYear,
-      operaModel.endYear,
-      operaModel.artists,
-      operaModel.museum,
-      operaModel.location,
-      operaModel.dimensions,
-      operaModel.artisticCurrents,
-      operaModel.details,
-      operaModel.copyOf,
-      operaModel.falsificationOf
+class ArtworkMapper {
+  static toArtworkResponseDTO(artworkModel) {
+    if (!artworkModel) return null;
+    return new ArtworkResponseDTO(
+      artworkModel._id,
+      artworkModel.title,
+      artworkModel.description,
+      artworkModel.startYear,
+      artworkModel.endYear,
+      artworkModel.artists,
+      artworkModel.museum,
+      artworkModel.location,
+      artworkModel.dimensions,
+      artworkModel.artisticCurrents,
+      artworkModel.details,
+      artworkModel.copyOf,
+      artworkModel.falsificationOf
     );
   }
 
-  static toOperaModel(dto) {
+  static toArtworkModel(dto) {
     if (!dto) return null;
 
     // Funzione di utilità per pulire gli ID: se è una stringa vuota, diventa undefined
@@ -44,4 +44,4 @@ class OperaMapper {
   }
 }
 
-module.exports = OperaMapper;
+module.exports = ArtworkMapper;

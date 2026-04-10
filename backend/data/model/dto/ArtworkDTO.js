@@ -1,5 +1,5 @@
 // RESPONSES
-class OperaResponseDTO {
+class ArtworkResponseDTO {
     constructor(id, title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf) {
         this.id = id;
         this.title = title;
@@ -18,7 +18,7 @@ class OperaResponseDTO {
 }
 
 // REQUESTS
-class OperaRequestDTO {
+class ArtworkRequestDTO {
     constructor(title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf) {
         this.title = title;
         this.description = description;
@@ -36,6 +36,6 @@ class OperaRequestDTO {
 }
 
 module.exports = {
-    OperaResponseDTO,
-    OperaRequestDTO
+    ArtworkResponseDTO,
+    ArtworkRequestDTO
 };

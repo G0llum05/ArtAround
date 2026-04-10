@@ -1,9 +1,23 @@
 export const ArtistViews = {
-  artist() {
+  artist(artists = []) {
+    console.log('Rendering artist view with artists:', artists);
+    const artistList = artists.map(a => `
+      <div class="mkt-item" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+        <h3>${a.name} ${a.surname}</h3>
+      </div>
+    `).join('');
+
+
     return `
       <div class="mkt-container">
+        <h1 class="mkt-title">Artisti</h1>
         <a class="mkt-back" data-navigate="/marketplace">← Torna al marketplace</a>
+        <br>
         <a class="mkt-link" data-navigate="/marketplace/artists/add">Aggiungi Artista</a>
+
+        <div class="mkt-list">
+          ${artists.length > 0 ? artistList : '<p>Nessun artista trovato.</p>'}
+        </div>
       </div>
     `;
   },
@@ -14,7 +28,7 @@ export const ArtistViews = {
         <a class="mkt-back" data-navigate="/marketplace/artists">← Torna agli artisti</a>
         <form class="mkt-form" id="add-artist-form">
           <h1 class="mkt-title">Aggiungi Artista</h1>
-          
+
           <div class="mkt-field">
             <label for="name">Nome:</label>
             <input type="text" id="name" name="name" required>

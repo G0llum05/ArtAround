@@ -1,6 +1,8 @@
 export const ArtistService = {
+  getAll(fetchFn) {
+    return fetchFn('/api/artist').then(r => r.json());
+  },
   create(payload, fetchFn) {
-    console.log('Creating artist with payload:', payload);
     return fetchFn('/api/artist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

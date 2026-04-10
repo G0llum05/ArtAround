@@ -4,8 +4,10 @@ import { ArtistViews } from '../views/artist.js';
 export const ArtistController = {
 
   async render(app) {
+    app.container.innerHTML = '<p class="mkt-loading">Caricamento artisti...</p>';
     try {
-      app.container.innerHTML = ArtistViews.artist();
+      const artists = await ArtistService.getAll(app._fetch.bind(app));
+      app.container.innerHTML = ArtistViews.artist(artists);
     } catch (err) {
       app.container.innerHTML = ArtistViews.error(err);
     }

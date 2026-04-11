@@ -18,6 +18,13 @@ const routes = [
     }
   },
   {
+    prefix: '/marketplace/museum',
+    loadRouter: async () => {
+      const module = await import('./museum.router.js');
+      return module.MuseumRouter;
+    }
+  },
+  {
     default: '/marketplace',
     loadRouter: async () => {
       const module = await import('./home.router.js');
@@ -35,8 +42,8 @@ export const Router = {
 
     }
     if (!route) {
-        console.warn(`No route found for path: ${path}`);
-        return;
+      console.warn(`No route found for path: ${path}`);
+      return;
     }
 
     const specificRouter = await route.loadRouter();

@@ -18,7 +18,7 @@ const routes = [
     }
   },
   {
-    prefix: '/marketplace/museum',
+    prefix: '/marketplace/museums',
     loadRouter: async () => {
       const module = await import('./museum.router.js');
       return module.MuseumRouter;

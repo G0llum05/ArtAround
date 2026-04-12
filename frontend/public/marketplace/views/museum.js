@@ -1,6 +1,6 @@
 export const MuseumViews = {
     museum(museums = []) {
-        console.log('Rendering musuem view with museums:', museums);
+        console.log('Rendering museum view with museums:', museums);
         const museumList = museums.map(museum => `
             <div class="mkt-item">
                 <p>${museum.name}</p>
@@ -24,7 +24,7 @@ export const MuseumViews = {
          <div class="mkt-container">                                                                                
          <a class="mkt-back" data-navigate="/marketplace/museums">← Torna agli artisti</a>                          
          <a class="mkt-back" data-navigate="/marketplace/museums">← Torna ai musei</a>                              
-         <form class="mkt-form" id="add-museums-form">                                                              
+         <form class="mkt-form" id="add-museum-form">                                                              
              <h1 class="mkt-title">Aggiungi Museo</h1>                                                              
                                                                                                                     
              <div class="mkt-field">                                                                                

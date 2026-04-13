@@ -1,0 +1,30 @@
+.mkt-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mkt-title {
+    padding-top: 0.5rem;
+}
+
+.mkt-link {
+    color:blue;
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+}
+
+.mkt-back:hover {
+    text-decoration: underline;
+    cursor: pointer;
+} 
+
+.mkt-field {
+    padding-top: .35rem;
+}
+
+
+

@@ -11,13 +11,9 @@ const app = express();
 const passport = require('./config/passport');
 app.use(passport.initialize());
 
-// Routes
-const authRoutes = require('./controller/auth/AuthRouter');
-const visitRoutes = require('./controller/visit/VisitRoutes');
-const artworkRoutes = require('./controller/artwork/ArtworkRouter');
-const userRoutes = require('./controller/user/UserRouter');
-const museumRoutes = require('./controller/museum/MuseumRouter');
-const artistRoutes = require('./controller/artist/ArtistRouter');
+const fs = require('fs');
+const swaggerUi = require('swagger-ui-express');
+const { loadRoutes } = require('./config/routerLoader');
 
 // Gocker ti inietterà probabilmente la sua porta, altrimenti usa la 8000 in locale
 const PORT = process.env.PORT || 8000;
@@ -50,13 +46,16 @@ if (nodeMode !== 'production') {
   app.use(cors());
 }
 
-// --- 1. Route API (Funzionano sempre, sia in locale che su Gocker) ---
-app.use('/api/auth', authRoutes);
-app.use('/api/visit', visitRoutes);
-app.use('/api/artwork', artworkRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/museum', museumRoutes);
-app.use('/api/artist', artistRoutes);
+// --- 0. Documentazione Swagger / OpenAPI ---
+const swaggerJsonPath = path.join(__dirname, 'swagger-output.json');
+if (fs.existsSync(swaggerJsonPath)) {
+  const swaggerDocument = require(swaggerJsonPath);
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  console.log('[Swagger] UI disponibile all\'indirizzo: /api-docs');
+}
+
+// --- 1. Route API (Caricamento automatico di tutti i moduli in controller/) ---
+loadRoutes(app);
 
 // --- 2. Servire Angular (SOLO per Gocker / Produzione) ---
 if (nodeMode === 'production') {

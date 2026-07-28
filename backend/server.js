@@ -1,92 +1,77 @@
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
-// Microservices
+
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const cors = require('cors');
-
-const app = express();
+const swaggerUi = require('swagger-ui-express');
 
 const passport = require('./config/passport');
-app.use(passport.initialize());
-
-const fs = require('fs');
-const swaggerUi = require('swagger-ui-express');
 const { loadRoutes } = require('./config/routerLoader');
 
-// Gocker ti inietterà probabilmente la sua porta, altrimenti usa la 8000 in locale
+const app = express();
 const PORT = process.env.PORT || 8000;
-
-// Se c'è DB_URI (es. da Docker) usa quella, altrimenti metti il percorso per Gocker/Locale
 const MONGO_URI = process.env.DB_URI || 'mongodb://mongo_site252623:27017/site252623';
+const nodeEnv = process.env.NODE_ENV || 'production';
 
+// --- Database Connection ---
 mongoose.connect(MONGO_URI, {
   user: process.env.MONGO_USER,
   pass: process.env.MONGO_PASSWORD,
 })
-  .then(() => console.log('Successfully connected to MongoDB.'))
+  .then(() => console.log('[MongoDB] Successfully connected.'))
   .catch(err => {
-    console.error('Connection error', err);
-    process.exit();
+    console.error('[MongoDB] Connection error:', err);
+    process.exit(1);
   });
 
+// --- Middlewares ---
 app.use(express.json());
+app.use(passport.initialize());
 
-
-const nodeMode = process.env.NODE_ENV || 'production';
-
-if (nodeMode !== 'production') {
-  // In sviluppo, abilitiamo CORS per le richieste da ng serve
-  const options = {
-    origin: 'http://localhost:4200'
-  }
-  app.use(cors(options));
+if (nodeEnv !== 'production') {
+  app.use(cors({ origin: 'http://localhost:4200' }));
 } else {
   app.use(cors());
 }
 
-// --- 0. Documentazione Swagger / OpenAPI ---
+// --- Swagger Documentation ---
 const swaggerJsonPath = path.join(__dirname, 'swagger-output.json');
 if (fs.existsSync(swaggerJsonPath)) {
   const swaggerDocument = require(swaggerJsonPath);
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-  console.log('[Swagger] UI disponibile all\'indirizzo: /api-docs');
+  console.log('[Swagger] UI available at: /api-docs');
 }
 
-// --- 1. Route API (Caricamento automatico di tutti i moduli in controller/) ---
+// --- API Routes (Auto-loaded from controller/ directory) ---
 loadRoutes(app);
 
-// --- 2. Servire Angular (SOLO per Gocker / Produzione) ---
-if (nodeMode === 'production') {
-  const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
-  
-  app.use(express.static(angularDistPath));
+// --- Static Asset & Angular SPA Handlers ---
+const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
+const fallbackDistPath = path.join(__dirname, '../frontend/dist/index.html');
+const frontendPublicPath = path.join(__dirname, '../frontend/public');
 
-  app.get(/(.*)/, (req, res) => {
-    res.sendFile(path.join(angularDistPath, 'index.html'));
-  });
-} 
-
-// Serve static files from the frontend/public directory
-app.use(express.static(path.join(__dirname, '../frontend/public')));
+app.use(express.static(angularDistPath));
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
+app.use(express.static(frontendPublicPath));
 
+// Catch-all handler for Angular client-side routing (ignoring API & Swagger requests)
 app.get(/(.*)/, (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
-  const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
-  const fallbackPath = path.join(__dirname, '../frontend/dist/index.html');
-  
-  if (require('fs').existsSync(path.join(angularDistPath, 'index.html'))) {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+
+  if (fs.existsSync(path.join(angularDistPath, 'index.html'))) {
     res.sendFile(path.join(angularDistPath, 'index.html'));
-  } else if (require('fs').existsSync(fallbackPath)) {
-    res.sendFile(fallbackPath);
+  } else if (fs.existsSync(fallbackDistPath)) {
+    res.sendFile(fallbackDistPath);
   } else {
-    // Se non troviamo Angular built, serviamo un errore o lasciamo fare ad express.static
     next();
   }
 });
 
+// --- Server Listener ---
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT} in ${process.env.NODE_ENV || 'production'} mode`);
+  console.log(`[Server] Running on port ${PORT} in ${nodeEnv} mode`);
 });

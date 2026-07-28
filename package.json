@@ -21,5 +21,10 @@
     "create:module": "npm --prefix backend run create:module --",
     "generate:module": "npm --prefix backend run generate:module --",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "swagger": "^0.0.1",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }

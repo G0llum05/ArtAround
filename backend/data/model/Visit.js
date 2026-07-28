@@ -62,6 +62,11 @@ const visitSchema = new mongoose.Schema({
   // Description of what we need for the visit
   requirements: {
     type: String
+  },
+  
+  quiz: { // Se il creatore della visita vuole mettere delle domande fatte da lui può farlo, altrimenti vengono generate
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Quiz'
   }
 
 });

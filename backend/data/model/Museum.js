@@ -76,6 +76,8 @@ const museumSchema = new mongoose.Schema({
   requirements: {
     type: String
   }
+  
+  // CHECK TODO: AGGIUNGERE informazioni su accessibilità, servizi, parcheggio, trasporti pubblici, bar interno, shop, audioguide, scale, ascensori, bagni, piani, ristoranti interni, accessi per disabili, accessi per bambini, accessi per animali, aria condizionata, riscaldamento, wifi, guide turistiche, visite guidate, eventi speciali, mostre temporanee, entrate, uscite
 
 });
 

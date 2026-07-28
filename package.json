@@ -15,14 +15,11 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "start:backend": "npm --prefix backend start",
+    "start:frontend": "npm --prefix frontend start",
+    "swagger": "npm --prefix backend run swagger",
+    "create:module": "npm --prefix backend run create:module --",
+    "generate:module": "npm --prefix backend run generate:module --",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "@angular/cli": "^21.2.2",
-    "bcryptjs": "^3.0.3",
-    "dotenv": "^17.3.1",
-    "jsonwebtoken": "^9.0.3",
-    "passport-google-oauth20": "^2.0.0",
-    "passport-local": "^1.0.0"
   }
 }

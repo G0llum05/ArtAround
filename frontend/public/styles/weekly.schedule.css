@@ -1,0 +1,49 @@
+.schedule-container {
+    /* 1 colonna per le ore (60px) e 7 per i giorni (frazioni uguali) */
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+    background-color: #f8f9fa; /* Grigio chiarissimo di base per i bordi */
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    border-radius: 8px;
+    user-select: none; /* Evita che l'utente evidenzi testo trascinando */
+}
+
+.grid-header-corner {
+    /* Cella vuota in alto a sinistra */
+    background-color: #f8f9fa;
+}
+
+.grid-header {
+    padding: 10px 0;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.grid-label {
+    /* Allineamento dell'ora a sinistra */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 5dvh;
+    padding-right: 8px;
+    font-size: 0.75rem;
+    transform: translateY(-50%); /* Centra l'etichetta sulla riga */
+}
+
+.time-slot {
+    height: 5dvh; /* Deve combaciare con grid-label */
+    width: 10dvh;
+    cursor: pointer;
+    transition: background-color 0.1s ease, transform 0.1s;
+}
+
+.time-slot:hover {
+    transform: scale(1.05); /* Piccolo feedback visivo al passaggio */
+    opacity: 0.8;
+}
+
+/* Opzionale: scurisce leggermente i bordi delle celle verdi per staccarle */
+.time-slot.bg-success {
+    border-color: #198754; /* Verde Bootstrap */
+}

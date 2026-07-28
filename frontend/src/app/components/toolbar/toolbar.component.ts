@@ -4,7 +4,7 @@ import { RouterModule, RouterLinkActive, RouterLink, Router, NavigationEnd } fro
 import { filter } from 'rxjs/operators';
 
 @Component({
-  selector: 'toolbar',
+  selector: 'app-toolbar',
   standalone: true,
   imports: [
     CommonModule,
@@ -12,8 +12,8 @@ import { filter } from 'rxjs/operators';
     RouterLinkActive,
     RouterLink,
   ],
-  templateUrl: './toolbar.html',
-  styleUrl: './toolbar.css'
+  templateUrl: './toolbar.component.html',
+  styleUrl: './toolbar.component.css'
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   private _sub: any;

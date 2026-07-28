@@ -1,10 +1,10 @@
 import { bootstrapApplication, createApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
-import { App } from './app/app';
+import { App } from './app/app.component';
 
 import { createCustomElement } from '@angular/elements';
 import { Injector } from '@angular/core';
-import { ToolbarComponent } from './app/components/toolbar/toolbar';
+import { ToolbarComponent } from './app/components/toolbar/toolbar.component';
 
 const registerCustomElements = (injector: Injector) => {
   // Componente Angular convertito in Web Component

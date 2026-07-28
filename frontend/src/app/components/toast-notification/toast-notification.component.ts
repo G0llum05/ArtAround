@@ -7,8 +7,8 @@ import { Subscription } from 'rxjs';
   selector: 'app-toast-notification',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './toast-notification.html',
-  styleUrl: './toast-notification.css',
+  templateUrl: './toast-notification.component.html',
+  styleUrl: './toast-notification.component.css',
 })
 export class ToastNotification implements OnDestroy {
   toasts: ToastMessage[] = [];

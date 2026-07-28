@@ -9,8 +9,8 @@ import { RouterLink } from '@angular/router';
     RouterLink,
     CommonModule,
   ], // Serve per far funzionare il routerLink nel template
-  templateUrl: 'primary-button.html',
-  styleUrl: 'primary-button.css'
+  templateUrl: './primary-button.component.html',
+  styleUrl: './primary-button.component.css'
 })
 export class PrimaryButtonComponent {
   // Se il padre passa un path, il bottone diventerà un link per cambiare pagina

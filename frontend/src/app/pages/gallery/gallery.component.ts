@@ -1,6 +1,6 @@
 import {Component, HostListener} from '@angular/core';
-import { Picture, PictureComponent } from '../../components/picture/picture';
-import { GalleryWallComponent } from '../../components/gallery-wall/gallery';
+import { Picture, PictureComponent } from '../../components/picture/picture.component';
+import { GalleryWallComponent } from '../../components/gallery-wall/gallery-wall.component';
 
 @Component({
   selector: 'gallery-wall-page',
@@ -9,8 +9,8 @@ import { GalleryWallComponent } from '../../components/gallery-wall/gallery';
     PictureComponent,
     GalleryWallComponent,
   ],
-  templateUrl: './gallery.html',
-  styleUrl: './gallery.css',
+  templateUrl: './gallery.component.html',
+  styleUrl: './gallery.component.css',
 })
 export class GalleryPage {
   pictures: Picture[] = [

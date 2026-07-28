@@ -1,8 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RouterOutlet, RouterLink, RouterLinkActive, ActivatedRoute, Router } from '@angular/router';
-import { ToolbarComponent } from './components/toolbar/toolbar';
-import { ToastNotification } from './components/toast-notification/toast-notification';
+import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { ToastNotification } from './components/toast-notification/toast-notification.component';
 import { AuthService } from './services/auth.service';
 
 export interface Art {
@@ -19,8 +19,8 @@ export interface Art {
     ToolbarComponent,
     ToastNotification
   ],  // Importiamo RouterOutlet che serve a mostrare i componenti in base alla rotta, e RouterLink per i link di navigazione
-  templateUrl: './app.html',
-  styleUrl: './app.css',
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css',
 })
 
 export class App implements OnInit {

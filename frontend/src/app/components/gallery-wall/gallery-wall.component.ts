@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {Picture, PictureComponent} from '../picture/picture';
+import { CommonModule } from '@angular/common';
+import {Picture, PictureComponent} from '../picture/picture.component';
 
 interface Art {
   title: string;
@@ -11,10 +12,11 @@ interface Art {
   selector: 'gallery-wall',
   standalone: true,
   imports: [
+    CommonModule,
     PictureComponent
   ],
-  templateUrl: './gallery.html',
-  styleUrl: './gallery.css',
+  templateUrl: './gallery-wall.component.html',
+  styleUrl: './gallery-wall.component.css',
 })
 export class GalleryWallComponent implements OnInit {
 

@@ -28,5 +28,9 @@ export class TestComponent {
   onTestVisitSubmit(): void {
     this.router.navigate(['/visitTest'])
   }
+
+  onUploadTestSubmit(): void {
+    this.router.navigate(['/uploadDemo']);
+  }
 }
 

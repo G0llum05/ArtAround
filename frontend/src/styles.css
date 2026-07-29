@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap');
 
+/* Uppy styles */
+@import '@uppy/core/dist/style.min.css';
+@import '@uppy/dashboard/dist/style.min.css';
 :root {
   --gold-primary: #c5a059;
   --gold-hover: #a68444;

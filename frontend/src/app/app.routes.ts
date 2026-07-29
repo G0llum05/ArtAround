@@ -7,11 +7,13 @@ import {TestLoginComponent} from './pages/test-login.component/test-login.compon
 import {TestUserComponent} from './pages/test-user.component/test-user.component';
 import {TestMuseumComponent} from './pages/test-museum.component/test-museum.component';
 import {TestVisitComponent} from './pages/test-visit.component/test-visit.component';
+import {UploadDemoComponent} from './pages/upload-demo/upload-demo.component';
 
 export const routes: Routes = [
   {path: '', component: GalleryPage},
   {path: 'login', component: LoginComponent},
   {path: 'loginTest', redirectTo: 'login', pathMatch: 'full'},
+  {path: 'uploadDemo', component: UploadDemoComponent},
   {path: 'test', component: TestComponent},
   {path: 'userTest', component: TestUserComponent},
   {path: 'museumTest', component: TestMuseumComponent},

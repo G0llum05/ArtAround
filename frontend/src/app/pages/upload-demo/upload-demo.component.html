@@ -1,0 +1,63 @@
+<div class="upload-demo-container">
+  <h2>Gestione Caricamento Immagini e File (Uppy.js + Sharp WebP)</h2>
+  <p class="subtitle">
+    Struttura directory di salvataggio:
+    <code>assets/museums/&#123;&#123;museumId&#125;&#125;/&#123;&#123; visitId ? 'visit/' + visitId + '/' + (artworkId ? artworkId : (isMeta ? 'meta' : '')) : (artworkId ? artworkId : 'meta') &#125;&#125;</code>
+  </p>
+
+  <div class="controls-card">
+    <div class="form-group">
+      <label for="museumId">ID Museo (Obbligatorio):</label>
+      <input id="museumId" type="text" [(ngModel)]="museumId" placeholder="es. m123" />
+    </div>
+
+    <div class="form-group">
+      <label for="visitId">ID Visita (Opzionale):</label>
+      <input id="visitId" type="text" [(ngModel)]="visitId" placeholder="es. v456" />
+    </div>
+
+    <div class="form-group">
+      <label for="artworkId">ID Opera (Opzionale):</label>
+      <input id="artworkId" type="text" [(ngModel)]="artworkId" placeholder="es. art789" />
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label>
+        <input type="checkbox" [(ngModel)]="isMeta" /> Cartella <strong>meta</strong> (metadati)
+      </label>
+    </div>
+  </div>
+
+  <div class="uploader-section">
+    <h3>Caricamento Uppy</h3>
+    <app-file-uploader
+      [museumId]="museumId"
+      [visitId]="visitId"
+      [artworkId]="artworkId"
+      [isMeta]="isMeta"
+      (uploadSuccess)="onUploadSuccess($event)"
+      (uploadError)="onUploadError($event)"
+    ></app-file-uploader>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-banner">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="uploadedResults.length > 0" class="results-section">
+    <h3>Immagini Caricate e Convertite in WebP ({{ uploadedResults.length }})</h3>
+    <div class="results-grid">
+      <div *ngFor="let file of uploadedResults" class="result-card">
+        <div class="preview-box">
+          <img [src]="file.url" [alt]="file.filename" />
+        </div>
+        <div class="file-info">
+          <span class="file-name">{{ file.filename }}</span>
+          <span class="file-meta">Formato: {{ file.mimeType }}</span>
+          <span class="file-meta">Dimensione: {{ (file.size / 1024).toFixed(1) }} KB</span>
+          <a [href]="file.url" target="_blank" class="file-link">Apri file</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

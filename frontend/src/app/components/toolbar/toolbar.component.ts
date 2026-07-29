@@ -54,11 +54,13 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   isActive(path: string): boolean {
     const currentPath = window.location.pathname;
     if (path === '/') return currentPath === '/';
-    return currentPath.startsWith(path);
+    if (path === '/marketplace') return currentPath === '/marketplace' || currentPath === '/marketplace/';
+    return currentPath === path || currentPath.startsWith(path + '/');
   }
 
   navItems = [
     { label: 'Home',        path: '/'            },
+    { label: 'Musei',       path: '/marketplace/museums' },
     { label: 'Visite',      path: '/visite'      },
     { label: 'Contatti',    path: '/contatti'    },
     { label: 'Login',       path: '/login'       },

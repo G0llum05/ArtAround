@@ -5,6 +5,8 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  OnChanges,
+  SimpleChanges,
   Output,
   ViewChild,
   AfterViewInit
@@ -31,7 +33,7 @@ export interface UploadedFileResult {
   templateUrl: './file-uploader.component.html',
   styleUrl: './file-uploader.component.css'
 })
-export class FileUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FileUploaderComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('dashboardContainer', { static: false }) dashboardContainer!: ElementRef<HTMLDivElement>;
 
   @Input() museumId!: string;
@@ -54,6 +56,17 @@ export class FileUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.initUppy();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.uppy && (changes['museumId'] || changes['visitId'] || changes['artworkId'] || changes['isMeta'])) {
+      const plugin = this.uppy.getPlugin('XHRUpload');
+      if (plugin) {
+        plugin.setOptions({
+          endpoint: this.resolveEndpoint()
+        });
+      }
+    }
   }
 
   private resolveEndpoint(): string {
@@ -124,6 +137,7 @@ export class FileUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.uppy.use(XHRUpload, {
+      id: 'XHRUpload',
       endpoint: endpoint,
       fieldName: 'files',
       formData: true,

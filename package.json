@@ -20,6 +20,7 @@
     "swagger": "npm --prefix backend run swagger",
     "create:module": "npm --prefix backend run create:module --",
     "generate:module": "npm --prefix backend run generate:module --",
+    "seed": "npm --prefix backend run seed",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

@@ -1,102 +1,215 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../data/model/User');
+const TokenService = require('./TokenService');
+const RoleManagementService = require('./RoleManagementService');
+const UserMapper = require('../data/mapper/UserMapper');
 
 class AuthService {
-
-  async getUserByGoogleId(id) {
-      return await User.findOne({ googleId: id }).lean();
+  /**
+   * Cerca un utente per email restituendo il Mongoose Document (senza .lean()).
+   */
+  async getUserByEmailModel(email) {
+    if (!email) return null;
+    return await User.findOne({ email: email.toLowerCase().trim() });
   }
 
-  async getUserByEmail(email) {
-      return await User.findOne( {email} ).lean();
+  /**
+   * Cerca un utente per Google ID.
+   */
+  async getUserByGoogleId(googleId) {
+    return await User.findOne({ googleId });
   }
 
+  /**
+   * Registrazione Utente Locale.
+   */
+  async registerLocalUser(registerData, ipAddress = '') {
+    const cleanEmail = registerData.email.toLowerCase().trim();
 
-  async findOrCreateGoogleUser(profile) {
-      try {
-        let user = await this.getUserByGoogleId(profile.id);
-        
-        // An user with this Google ID already exists
-        if (user) {
-          return user;
-        }
-  
-        // If an user is found with the same email (i.e. with the internal registration), link the Google ID to that user and merge the accounts log in
-        user = await this.getUserByEmail(profile.emails[0].value);
-        if (user) {
-          user.googleId = profile.id;
-          await user.save();
-          return user;
-        }
-  
-      let assignedRole = 'guest';
-      const email = profile.emails[0].value;
+    const existingUser = await this.getUserByEmailModel(cleanEmail);
+    if (existingUser) {
+      throw new Error('Un utente con questa email risulta già registrato.');
+    }
 
-      // if (email.endsWith('@unibo.it')) {
-      //   assignedRole = 'prof'; // Esempio: se è una email istituzionale
-      // }
-      // Puoi aggiungere una lista di email per gli admin
-      // if (email === 'tuamail@gmail.com') {
-      //   assignedRole = 'admin';
-      // }
+    // Hash della Password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(registerData.password, salt);
 
-      const newUser = new User({
-        googleId: profile.id,
-        email: email,
-        name: profile.name.givenName || profile.displayName,
-        surname: profile.name.familyName || ' ', // some Google profiles might not have a surname
-        role: assignedRole
-      });
-  
-        await newUser.save();
-        return newUser;
-  
-      } catch (error) {
-        throw error;
+    // Calcolo del Ruolo iniziale in base alle regole aziendali
+    const roleConfig = await RoleManagementService.determineUserRoleOnSignup(
+      cleanEmail,
+      registerData.role
+    );
+
+    const newUser = new User({
+      name: registerData.name,
+      surname: registerData.surname,
+      email: cleanEmail,
+      password: hashedPassword,
+      role: roleConfig.role,
+      roleStatus: roleConfig.roleStatus,
+      requestedRole: roleConfig.requestedRole
+    });
+
+    await newUser.save();
+
+    // Generazione Access Token e Refresh Token
+    const accessToken = TokenService.generateAccessToken(newUser);
+    const refreshToken = await TokenService.generateRefreshToken(newUser, ipAddress);
+
+    return {
+      user: UserMapper.toUserResponseDTO(newUser),
+      accessToken,
+      refreshToken
+    };
+  }
+
+  /**
+   * Login Utente Locale.
+   */
+  async loginLocalUser(email, password, ipAddress = '') {
+    const cleanEmail = email.toLowerCase().trim();
+    const user = await this.getUserByEmailModel(cleanEmail);
+
+    if (!user) {
+      throw new Error('Credenziali non valide.');
+    }
+
+    if (!user.password) {
+      throw new Error('Questo account è stato registrato tramite Google. Effettua il login con Google.');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error('Credenziali non valide.');
+    }
+
+    // Se l'utente era un guest ma nel frattempo ha ricevuto una student assignment, aggiorniamo il ruolo
+    if (user.role === 'guest') {
+      const roleConfig = await RoleManagementService.determineUserRoleOnSignup(cleanEmail, null);
+      if (roleConfig.role === 'student') {
+        user.role = 'student';
+        user.roleStatus = 'approved';
+        await user.save();
       }
     }
 
+    const accessToken = TokenService.generateAccessToken(user);
+    const refreshToken = await TokenService.generateRefreshToken(user, ipAddress);
 
-    async registerLocalUser(loginData) {
-      const existingUser = await this.getUserByEmail(loginData.email);
-      if (existingUser) throw new Error('Email già in uso');
+    return {
+      user: UserMapper.toUserResponseDTO(user),
+      accessToken,
+      refreshToken
+    };
+  }
 
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(loginData.password, salt);
-
-      const newUser = new User({
-        name: loginData.name,
-        surname: loginData.surname,
-        email: loginData.email,
-        password: hashedPassword,
-        role: loginData.role
-      });
-
-      await newUser.save();
-      return newUser;
-    }
-
-    async verifyLocalUser(email, password) {
-      const user = await this.getUserByEmail(email);
-      // user doesn't exist
-      if (!user) throw new Error('Invalid credentials');
-
-      // user registered only with Google, he doesn't have a password
-      if (!user.password) throw new Error('Invalid credentials');
-
-      const isMatch = await bcrypt.compare(password, user.password);
-
-      // password doesn't match
-      if (!isMatch) throw new Error('Invalid credentials');
-
+  /**
+   * Integrazione Google OAuth2: Cerca utente per Google ID o unifica per Email.
+   */
+  async findOrCreateGoogleUser(profile) {
+    let user = await this.getUserByGoogleId(profile.id);
+    if (user) {
       return user;
     }
-  
-    generateToken(user) {
-      const payload = { id: user._id, email: user.email, role: user.role };
-      return jwt.sign(payload, process.env.JWT_SECRET || 'SEGRETO', { expiresIn: '8h' });
+
+    const email = profile.emails && profile.emails[0] ? profile.emails[0].value.toLowerCase().trim() : null;
+    if (!email) {
+      throw new Error('Nessun indirizzo email restituito dal profilo Google.');
     }
+
+    user = await this.getUserByEmailModel(email);
+    if (user) {
+      user.googleId = profile.id;
+      await user.save();
+      return user;
+    }
+
+    const roleConfig = await RoleManagementService.determineUserRoleOnSignup(email, null);
+
+    const newUser = new User({
+      googleId: profile.id,
+      email: email,
+      name: profile.name && profile.name.givenName ? profile.name.givenName : (profile.displayName || 'Utente'),
+      surname: profile.name && profile.name.familyName ? profile.name.familyName : 'Google',
+      role: roleConfig.role,
+      roleStatus: roleConfig.roleStatus,
+      requestedRole: roleConfig.requestedRole
+    });
+
+    await newUser.save();
+    return newUser;
+  }
+
+  /**
+   * Rotazione e Rinnovo del Refresh Token.
+   */
+  async refreshSession(refreshTokenString, ipAddress = '') {
+    const storedToken = await TokenService.verifyAndGetRefreshToken(refreshTokenString);
+    if (!storedToken) {
+      throw new Error('Refresh Token non valido o scaduto.');
+    }
+
+    const user = storedToken.user;
+    if (!user) {
+      throw new Error('Utente associato al token non trovato.');
+    }
+
+    // Rotazione: revoca il vecchio token ed emette una nuova coppia
+    const newRefreshToken = await TokenService.generateRefreshToken(user, ipAddress);
+    await TokenService.revokeRefreshToken(refreshTokenString, ipAddress, newRefreshToken);
+
+    const newAccessToken = TokenService.generateAccessToken(user);
+
+    return {
+      user: UserMapper.toUserResponseDTO(user),
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken
+    };
+  }
+
+  /**
+   * Logout: Revoca il Refresh Token attivo.
+   */
+  async logout(refreshTokenString) {
+    if (refreshTokenString) {
+      await TokenService.revokeRefreshToken(refreshTokenString);
+    }
+  }
+
+  /**
+   * Restituisce il profilo dell'Utente autenticato via ID.
+   */
+  async getMe(userId) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('Utente non trovato.');
+    }
+    return UserMapper.toUserResponseDTO(user);
+  }
+
+  /**
+   * Aggiorna le preferenze dell'Utente (lingua, notifiche, accessibilità) e restituisce il UserResponseDTO.
+   */
+  async updateUserPreferences(userId, preferences) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('Utente non trovato.');
+    }
+
+    if (!user.preferences) {
+      user.preferences = new Map();
+    }
+
+    if (typeof preferences === 'object' && preferences !== null) {
+      Object.entries(preferences).forEach(([key, value]) => {
+        user.preferences.set(key, String(value));
+      });
+    }
+
+    await user.save();
+    return UserMapper.toUserResponseDTO(user);
+  }
 }
 
 module.exports = new AuthService();

@@ -1,15 +1,21 @@
+// RESPONSES
 class ItemResponseDTO {
-    constructor(id, title, description) {
+    constructor(id, description, tone, length, createdAt, updatedAt) {
         this.id = id;
-        this.title = title;
         this.description = description;
+        this.tone = tone;
+        this.length = length;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }
 
+// REQUESTS
 class ItemRequestDTO {
-    constructor(title, description) {
-        this.title = title;
+    constructor(description, tone, length) {
         this.description = description;
+        this.tone = tone;
+        this.length = length;
     }
 }
 

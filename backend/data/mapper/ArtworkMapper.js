@@ -16,7 +16,12 @@ class ArtworkMapper {
       artworkModel.artisticCurrents,
       artworkModel.details,
       artworkModel.copyOf,
-      artworkModel.falsificationOf
+      artworkModel.falsificationOf,
+      artworkModel.isActive,
+      artworkModel.isPrivate,
+      artworkModel.qrCode,
+      artworkModel.images,
+      artworkModel.items
     );
   }
 
@@ -32,14 +37,19 @@ class ArtworkMapper {
       startYear: dto.startYear,
       endYear: dto.endYear,
       // Puliamo gli ID nell'array artists
-      artists: Array.isArray(dto.artists) ? dto.artists.filter(id => id && id.trim() !== "") : [],
+      artists: Array.isArray(dto.artists) ? dto.artists.filter(id => id && typeof id === 'string' && id.trim() !== "") : dto.artists,
       museum: cleanId(dto.museum),
       location: dto.location,
       dimensions: dto.dimensions,
       artisticCurrents: dto.artisticCurrents,
       details: dto.details,
       copyOf: cleanId(dto.copyOf),
-      falsificationOf: cleanId(dto.falsificationOf)
+      falsificationOf: cleanId(dto.falsificationOf),
+      isActive: dto.isActive,
+      isPrivate: dto.isPrivate,
+      qrCode: dto.qrCode,
+      images: dto.images,
+      items: Array.isArray(dto.items) ? dto.items.filter(id => id && typeof id === 'string' && id.trim() !== "") : dto.items
     };
   }
 }

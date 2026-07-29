@@ -25,9 +25,19 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['guest', 'student', 'teacher', 'museumstaff', 'admin'],  // Abbiamo definito anche il ruolo 'admin' per eventuali funzionalità future
+        enum: ['guest', 'student', 'teacher', 'museumstaff', 'admin'],
         default: 'guest',
         required: true
+    },
+    roleStatus: {
+        type: String,
+        enum: ['approved', 'pending'],
+        default: 'approved'
+    },
+    requestedRole: {
+        type: String,
+        enum: ['teacher', 'museumstaff', null],
+        default: null
     },
     // CHECK TODO: Se la visita vale come biglietto d'entrata allora l'acquisto delle visite deve avere un limite di data
 // altrimenti non c'è bisogno

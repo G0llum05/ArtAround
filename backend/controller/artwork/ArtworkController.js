@@ -33,12 +33,18 @@ class ArtworkController {
         req.body.startYear,
         req.body.endYear,
         req.body.artists,
+        req.body.museum,
         req.body.location,
         req.body.dimensions,
         req.body.artisticCurrents,
         req.body.details,
         req.body.copyOf,
-        req.body.falsificationOf
+        req.body.falsificationOf,
+        req.body.isActive,
+        req.body.isPrivate,
+        req.body.qrCode,
+        req.body.images,
+        req.body.items
       );
 
       const artworkData = ArtworkMapper.toArtworkModel(artworkRequestDTO);

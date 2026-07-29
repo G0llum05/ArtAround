@@ -27,7 +27,7 @@ class ItemController {
 
     static async create(req, res) {
         try {
-            const dto = new ItemRequestDTO(req.body.title, req.body.description);
+            const dto = new ItemRequestDTO(req.body.description, req.body.tone, req.body.length);
             const newItem = await ItemService.create(ItemMapper.toItemModel(dto));
             res.status(201).json(ItemMapper.toItemResponseDTO(newItem));
         } catch (error) {

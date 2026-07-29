@@ -1,6 +1,6 @@
 // RESPONSES
 class ArtworkResponseDTO {
-    constructor(id, title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf) {
+    constructor(id, title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf, isActive, isPrivate, qrCode, images, items) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -14,12 +14,17 @@ class ArtworkResponseDTO {
         this.details = details;
         this.copyOf = copyOf;
         this.falsificationOf = falsificationOf;
+        this.isActive = isActive;
+        this.isPrivate = isPrivate;
+        this.qrCode = qrCode;
+        this.images = images;
+        this.items = items;
     }
 }
 
 // REQUESTS
 class ArtworkRequestDTO {
-    constructor(title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf) {
+    constructor(title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf, isActive, isPrivate, qrCode, images, items) {
         this.title = title;
         this.description = description;
         this.startYear = startYear;
@@ -32,6 +37,11 @@ class ArtworkRequestDTO {
         this.details = details; // Object { subjects, colors, ... }
         this.copyOf = copyOf; // ID
         this.falsificationOf = falsificationOf; // ID
+        this.isActive = isActive;
+        this.isPrivate = isPrivate;
+        this.qrCode = qrCode;
+        this.images = images;
+        this.items = items; // Array of Item IDs
     }
 }
 

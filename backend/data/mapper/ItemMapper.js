@@ -5,15 +5,20 @@ class ItemMapper {
         if (!model) return null;
         return new ItemResponseDTO(
             model._id,
-            model.title,
-            model.description
+            model.description,
+            model.tone,
+            model.length,
+            model.createdAt,
+            model.updatedAt
         );
     }
 
     static toItemModel(dto) {
+        if (!dto) return null;
         return {
-            title: dto.title,
-            description: dto.description
+            description: dto.description,
+            tone: dto.tone,
+            length: dto.length
         };
     }
 }

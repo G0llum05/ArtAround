@@ -26,7 +26,7 @@ passport.use(new LocalStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,         // Preso dal file .env
     clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Preso dal file .env
-    callbackURL: "http://localhost:8000/api/auth/google/callback" // URL completo per sicurezza!
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:8000/api/auth/google/callback" // URL completo per sicurezza!
   },
   async (accessToken, refreshToken, profile, done) => {
     try {

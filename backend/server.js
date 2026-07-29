@@ -16,24 +16,31 @@ const MONGO_URI = process.env.DB_URI || 'mongodb://mongo_site252623:27017/site25
 const nodeEnv = process.env.NODE_ENV || 'production';
 
 // --- Database Connection ---
-mongoose.connect(MONGO_URI, {
-  user: process.env.MONGO_USER,
-  pass: process.env.MONGO_PASSWORD,
-})
-  .then(() => console.log('[MongoDB] Successfully connected.'))
-  .catch(err => {
-    console.error('[MongoDB] Connection error:', err);
-    process.exit(1);
-  });
+const connectWithRetry = () => {
+  const options = {};
+  if (process.env.MONGO_USER) options.user = process.env.MONGO_USER;
+  if (process.env.MONGO_PASSWORD) options.pass = process.env.MONGO_PASSWORD;
+
+  mongoose.connect(MONGO_URI, options)
+    .then(() => console.log('[MongoDB] Successfully connected.'))
+    .catch(err => {
+      console.error('[MongoDB] Connection error:', err.message, '- Retrying in 5s...');
+      setTimeout(connectWithRetry, 5000);
+    });
+};
+connectWithRetry();
+
+const cookieParser = require('cookie-parser');
 
 // --- Middlewares ---
 app.use(express.json());
+app.use(cookieParser());
 app.use(passport.initialize());
 
 if (nodeEnv !== 'production') {
-  app.use(cors({ origin: 'http://localhost:4200' }));
+  app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
 } else {
-  app.use(cors());
+  app.use(cors({ credentials: true }));
 }
 
 // --- Swagger Documentation ---

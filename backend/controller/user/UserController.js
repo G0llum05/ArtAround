@@ -33,7 +33,8 @@ class UserController {
                 req.body.surname,
                 req.body.email,
                 req.body.password,
-                req.body.role
+                req.body.role,
+                req.body.preferences
             );
             const newUser = await UserService.createUser(userRequestDTO);
             const userResponseDTO = UserMapper.toUserResponseDTO(newUser);

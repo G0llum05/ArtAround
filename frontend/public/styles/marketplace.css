@@ -1,30 +1,438 @@
-.mkt-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* ==========================================================================
+   MARKETPLACE DARK THEME (Netflix / Prime Video Style)
+   ========================================================================== */
+
+:root {
+  --mkt-bg: #0d1117;
+  --mkt-card-bg: #161b22;
+  --mkt-card-border: rgba(255, 255, 255, 0.08);
+  --mkt-accent-blue: #2f81f7;
+  --mkt-accent-pink: #f778ba;
+  --mkt-accent-green: #2ea043;
+  --mkt-accent-gold: #e3b341;
+  --mkt-text-primary: #f0f6fc;
+  --mkt-text-secondary: #8b949e;
+  --mkt-heart-red: #ff3b30;
 }
 
-.mkt-title {
-    padding-top: 0.5rem;
+.mkt-wrapper {
+  background-color: var(--mkt-bg);
+  color: var(--mkt-text-primary);
+  min-height: 100vh;
+  padding: 1.5rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  box-sizing: border-box;
 }
 
-.mkt-link {
-    color:blue;
-    &:hover {
-        text-decoration: underline;
-        cursor: pointer;
-    }
+/* Header Bar */
+.mkt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--mkt-card-border);
 }
 
-.mkt-back:hover {
-    text-decoration: underline;
-    cursor: pointer;
-} 
-
-.mkt-field {
-    padding-top: .35rem;
+.mkt-main-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff 0%, #a5d6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
 }
 
+.mkt-header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
 
+.mkt-search-input {
+  background: #1c2128;
+  border: 1px solid var(--mkt-card-border);
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 220px;
+}
 
+.mkt-search-input:focus {
+  border-color: var(--mkt-accent-blue);
+  box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.2);
+  width: 280px;
+}
+
+/* ==========================================================================
+   HERO CAROUSEL ("Scelta Visite" / Large Featured Slider)
+   ========================================================================== */
+
+.mkt-hero-section {
+  position: relative;
+  margin-bottom: 3rem;
+}
+
+.mkt-hero-card {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid var(--mkt-accent-blue);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(47, 129, 247, 0.15);
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.5s ease-in-out;
+}
+
+.mkt-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13, 17, 23, 0.2) 0%, rgba(13, 17, 23, 0.85) 65%, rgba(13, 17, 23, 0.98) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.mkt-hero-top {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mkt-hero-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.mkt-hero-info {
+  max-width: 65%;
+}
+
+.mkt-hero-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.mkt-creator-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: var(--mkt-text-secondary);
+  margin-bottom: 0.8rem;
+}
+
+.mkt-verified-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: var(--mkt-accent-green);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.mkt-hero-desc {
+  font-size: 0.95rem;
+  color: #c9d1d9;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Badges & Tags */
+.mkt-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.mkt-price-badge {
+  background: rgba(46, 160, 67, 0.25);
+  border: 1px solid var(--mkt-accent-green);
+  color: #56d364;
+  font-weight: 700;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.mkt-price-free {
+  background: rgba(227, 179, 65, 0.2);
+  border: 1px solid var(--mkt-accent-gold);
+  color: #e3b341;
+}
+
+.mkt-license-badge {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f0f6fc;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+/* Heart Like Button */
+.mkt-like-btn {
+  background: rgba(22, 27, 34, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mkt-like-btn:hover {
+  transform: scale(1.15);
+  border-color: var(--mkt-heart-red);
+}
+
+.mkt-heart-icon {
+  font-size: 1.5rem;
+  color: #8b949e;
+  transition: color 0.2s ease;
+}
+
+.mkt-like-btn.liked .mkt-heart-icon {
+  color: var(--mkt-heart-red);
+}
+
+/* Indicators (Dots in bottom center) */
+.mkt-hero-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.mkt-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mkt-dot.active {
+  width: 28px;
+  border-radius: 6px;
+  background: var(--mkt-accent-blue);
+  box-shadow: 0 0 10px rgba(47, 129, 247, 0.6);
+}
+
+.mkt-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--mkt-card-border);
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.mkt-carousel-arrow:hover {
+  background: var(--mkt-accent-blue);
+  border-color: var(--mkt-accent-blue);
+}
+
+.mkt-arrow-prev { left: 1rem; }
+.mkt-arrow-next { right: 1rem; }
+
+/* ==========================================================================
+   CATEGORY ROWS (Horizontal Netflix/Prime Style)
+   ========================================================================== */
+
+.mkt-category-section {
+  margin-bottom: 3rem;
+}
+
+.mkt-section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #f0f6fc;
+}
+
+.mkt-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 20px;
+  background-color: var(--mkt-accent-blue);
+  border-radius: 2px;
+}
+
+.mkt-cards-row {
+  display: flex;
+  gap: 1.2rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.mkt-cards-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.mkt-cards-row::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+/* Item Card */
+.mkt-visit-card {
+  flex: 0 0 260px;
+  background-color: var(--mkt-card-bg);
+  border: 1px solid var(--mkt-card-border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  cursor: pointer;
+}
+
+.mkt-visit-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(47, 129, 247, 0.5);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(47, 129, 247, 0.2);
+}
+
+.mkt-card-thumb {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+}
+
+.mkt-card-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(22, 27, 34, 0.95) 100%);
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.6rem;
+  box-sizing: border-box;
+}
+
+.mkt-card-like-btn {
+  background: rgba(13, 17, 23, 0.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #8b949e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mkt-card-like-btn:hover {
+  transform: scale(1.15);
+  color: var(--mkt-heart-red);
+}
+
+.mkt-card-like-btn.liked {
+  color: var(--mkt-heart-red);
+}
+
+.mkt-card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.mkt-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.3;
+  color: #f0f6fc;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mkt-card-creator {
+  font-size: 0.8rem;
+  color: var(--mkt-text-secondary);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.mkt-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mkt-card-price {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #56d364;
+}
+
+.mkt-card-price.free {
+  color: #e3b341;
+}
+
+.mkt-card-license {
+  font-size: 0.75rem;
+  color: #8b949e;
+  background: #21262d;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}

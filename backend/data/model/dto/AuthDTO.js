@@ -3,12 +3,11 @@
  */
 
 class RegisterRequestDTO {
-  constructor(name, surname, email, password, role) {
+  constructor(name, surname, email, password) {
     this.name = name;
     this.surname = surname;
     this.email = email;
     this.password = password;
-    this.role = role; // Può richiedere 'teacher' o 'museumstaff' (che andranno in pending) o lasciare default
   }
 }
 

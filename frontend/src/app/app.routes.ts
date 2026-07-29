@@ -1,6 +1,7 @@
 import {Routes} from '@angular/router';
 import {GalleryPage} from './pages/gallery/gallery.component';
 import {PageNotFoundPage} from './pages/page-not-found/page-not-found.component';
+import {LoginComponent} from './pages/login/login.component';
 import {TestComponent} from './pages/test.component/test.component';
 import {TestLoginComponent} from './pages/test-login.component/test-login.component';
 import {TestUserComponent} from './pages/test-user.component/test-user.component';
@@ -9,11 +10,12 @@ import {TestVisitComponent} from './pages/test-visit.component/test-visit.compon
 
 export const routes: Routes = [
   {path: '', component: GalleryPage},
+  {path: 'login', component: LoginComponent},
+  {path: 'loginTest', redirectTo: 'login', pathMatch: 'full'},
   {path: 'test', component: TestComponent},
-  {path: 'loginTest', component: TestLoginComponent},
   {path: 'userTest', component: TestUserComponent},
   {path: 'museumTest', component: TestMuseumComponent},
   {path: 'visitTest', component: TestVisitComponent},
-  {path: '**', component: PageNotFoundPage} // Questa è una rotta di fallback, che reindirizza a '' (Gallery) se l'utente inserisce una rotta non valida
+  {path: '**', component: PageNotFoundPage} // Rotta di fallback
 ]
 

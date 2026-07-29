@@ -35,10 +35,10 @@ class AuthService {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(registerData.password, salt);
 
-    // Calcolo del Ruolo iniziale in base alle regole aziendali
+    // Calcolo del Ruolo iniziale in base alle regole aziendali (Admin, Student pre-assegnato o Guest di default)
     const roleConfig = await RoleManagementService.determineUserRoleOnSignup(
       cleanEmail,
-      registerData.role
+      null
     );
 
     const newUser = new User({

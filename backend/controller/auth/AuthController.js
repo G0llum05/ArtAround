@@ -11,12 +11,17 @@ class AuthController {
    */
   async register(req, res) {
     try {
-      const { name, surname, email, password, role } = req.body;
+      const { name, surname, email, password } = req.body;
       if (!name || !surname || !email || !password) {
         return res.status(400).json({ message: 'Tutti i campi obbligatori (name, surname, email, password) devono essere compilati.' });
       }
 
-      const registerDTO = new RegisterRequestDTO(name, surname, email, password, role);
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email.toLowerCase().trim())) {
+        return res.status(400).json({ message: 'Il formato dell\'indirizzo email inserito non è valido.' });
+      }
+
+      const registerDTO = new RegisterRequestDTO(name, surname, email, password);
       const clientIp = req.ip || req.connection.remoteAddress;
 
       const result = await authService.registerLocalUser(registerDTO, clientIp);
@@ -151,17 +156,17 @@ class AuthController {
   async googleCallback(req, res) {
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:4200';
     try {
-      if (!req.user) return res.redirect(`${clientUrl}/loginTest?error=auth_failed`);
+      if (!req.user) return res.redirect(`${clientUrl}/login?error=auth_failed`);
       const clientIp = req.ip || req.connection.remoteAddress;
 
       const refreshToken = await TokenService.generateRefreshToken(req.user, clientIp);
       setRefreshTokenCookie(res, refreshToken);
 
       // Reindirizzamento pulito al frontend Angular
-      res.redirect(`${clientUrl}/loginTest?status=success`);
+      res.redirect(`${clientUrl}/login?status=success`);
     } catch (error) {
       console.error('Errore Google OAuth Callback:', error);
-      res.redirect(`${clientUrl}/loginTest?error=oauth_error`);
+      res.redirect(`${clientUrl}/login?error=oauth_error`);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AlertService, ToastMessage } from '../../services/alert.service';
 import { Subscription } from 'rxjs';
@@ -14,20 +14,15 @@ export class ToastNotification implements OnDestroy {
   toasts: ToastMessage[] = [];
   private subscription: Subscription;
 
-  constructor(
-    private alertService: AlertService,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor(private alertService: AlertService) {
     this.subscription = this.alertService.toast$.subscribe(toast => {
       this.toasts.push(toast);
-      this.cdr.detectChanges();
       setTimeout(() => this.removeToast(toast), 6000);
     });
   }
 
   removeToast(toastToRemove: ToastMessage) {
     this.toasts = this.toasts.filter(toast => toast !== toastToRemove);
-    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
@@ -43,7 +38,7 @@ export class ToastNotification implements OnDestroy {
       case 'successful':
         return 'images/x-success.svg';
       default:
-        return 'images/x-success.svg'; // Default icon
+        return 'images/x-success.svg';
     }
   }
 

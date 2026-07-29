@@ -32,6 +32,6 @@ const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:4200';
 
 // Rotte Google OAuth2
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: `${CLIENT_URL}/loginTest?error=google` }), (req, res) => authController.googleCallback(req, res));
+router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: `${CLIENT_URL}/login?error=google` }), (req, res) => authController.googleCallback(req, res));
 
 module.exports = router;

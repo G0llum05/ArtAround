@@ -61,6 +61,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     { label: 'Home',        path: '/'            },
     { label: 'Visite',      path: '/visite'      },
     { label: 'Contatti',    path: '/contatti'    },
-    { label: 'Test', path: '/test'}
+    { label: 'Login',       path: '/login'       },
+    { label: 'Test',        path: '/test'        }
   ] as const;
 }

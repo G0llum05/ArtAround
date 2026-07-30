@@ -24,30 +24,50 @@ export const HomeController = {
     app.container.innerHTML = HomeViews.home(this.visits, this.heroIndex);
   },
 
-  setHeroIndex(app, newIndex) {
+  setHeroIndex(app, targetIndex, deltaDirection = null) {
     const N = Math.min(this.visits.length, 6);
     if (N === 0) return;
-
-    this.heroIndex = (newIndex + N) % N;
 
     const track = app.container.querySelector('#mkt-hero-track');
     const controls = app.container.querySelector('#mkt-hero-controls');
 
-    if (track) {
-      const activePosition = this.heroIndex + 1;
-      track.style.transform = `translateX(calc(13% - ${activePosition} * (74% + 1.5rem)))`;
+    if (!track) return;
 
-      const slides = track.querySelectorAll('.mkt-hero-card-slide');
-      slides.forEach((slide) => {
-        const slideIndex = parseInt(slide.dataset.realIndex, 10);
-        if (slideIndex === this.heroIndex && slide.dataset.trackPos == activePosition) {
-          slide.classList.add('active');
-        } else {
-          slide.classList.remove('active');
-        }
-      });
+    let targetTrackPos;
+    let newHeroIndex;
+
+    if (deltaDirection === 1) {
+      // Forward direction (+1 step)
+      targetTrackPos = (this.heroIndex + 1) + 1;
+      newHeroIndex = (this.heroIndex + 1) % N;
+    } else if (deltaDirection === -1) {
+      // Backward direction (-1 step)
+      targetTrackPos = (this.heroIndex + 1) - 1;
+      newHeroIndex = (this.heroIndex - 1 + N) % N;
+    } else {
+      // Direct jump to a specific dot index
+      newHeroIndex = (targetIndex + N) % N;
+      targetTrackPos = newHeroIndex + 1;
     }
 
+    this.heroIndex = newHeroIndex;
+
+    // 1. Enable CSS transition and animate transform forward or backward
+    track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    track.style.transform = `translateX(calc(13% - ${targetTrackPos} * (74% + 1.5rem)))`;
+
+    // 2. Set active visual class on ALL slides matching real index (both clone & real element remain pre-brightened for seamless zero-reload jump)
+    const slides = track.querySelectorAll('.mkt-hero-card-slide');
+    slides.forEach((slide) => {
+      const realIdx = parseInt(slide.dataset.realIndex, 10);
+      if (realIdx === this.heroIndex) {
+        slide.classList.add('active');
+      } else {
+        slide.classList.remove('active');
+      }
+    });
+
+    // 3. Update active dot indicator
     if (controls) {
       const dots = controls.querySelectorAll('.mkt-dot');
       dots.forEach((dot) => {
@@ -60,19 +80,36 @@ export const HomeController = {
       });
     }
 
-    // Reset auto-loop timer when index is set
+    // 4. Instant silent reset when overshooting to clone endpoints (after 600ms animation)
+    if (targetTrackPos === N + 1) {
+      // Reached forward clone (V0 clone at end) -> reset silently to real V0 at pos 1
+      setTimeout(() => {
+        track.style.transition = 'none';
+        const realPos = 1;
+        track.style.transform = `translateX(calc(13% - ${realPos} * (74% + 1.5rem)))`;
+        void track.offsetHeight; // Force reflow
+      }, 600);
+    } else if (targetTrackPos === 0) {
+      // Reached backward clone (V_last clone at start) -> reset silently to real V_last at pos N
+      setTimeout(() => {
+        track.style.transition = 'none';
+        const realPos = N;
+        track.style.transform = `translateX(calc(13% - ${realPos} * (74% + 1.5rem)))`;
+        void track.offsetHeight; // Force reflow
+      }, 600);
+    }
+
+    // Reset auto-loop timer on interaction
     this.startAutoLoop(app);
   },
 
   startAutoLoop(app) {
     if (this.autoTimer) clearInterval(this.autoTimer);
 
-    // Auto-advance hero carousel every 5 seconds
+    // Auto-advance hero carousel forward every 5 seconds
     this.autoTimer = setInterval(() => {
       if (this.visits && this.visits.length > 0) {
-        const N = Math.min(this.visits.length, 6);
-        const nextIdx = (this.heroIndex + 1) % N;
-        this.setHeroIndex(app, nextIdx);
+        this.setHeroIndex(app, null, 1);
       }
     }, 5000);
 
@@ -85,26 +122,24 @@ export const HomeController = {
   bindEvents(app) {
     // Delegated click handler on container
     app._addContainerListener('click', (e) => {
-      // 1. Previous Arrow
+      // 1. Previous Arrow -> Move backward (-1)
       if (e.target.closest('[data-carousel-prev]')) {
-        const N = Math.min(this.visits.length, 6);
-        this.setHeroIndex(app, this.heroIndex - 1);
+        this.setHeroIndex(app, null, -1);
         return;
       }
 
-      // 2. Next Arrow
+      // 2. Next Arrow -> Move forward (+1)
       if (e.target.closest('[data-carousel-next]')) {
-        const N = Math.min(this.visits.length, 6);
-        this.setHeroIndex(app, this.heroIndex + 1);
+        this.setHeroIndex(app, null, 1);
         return;
       }
 
-      // 3. Dot Indicator or Slide Click
+      // 3. Dot Indicator or Slide Click -> Jump to target index
       const slideOrDot = e.target.closest('[data-dot-index]');
       if (slideOrDot && !e.target.closest('[data-like-id]')) {
         const targetIndex = parseInt(slideOrDot.dataset.dotIndex, 10);
         if (!isNaN(targetIndex)) {
-          this.setHeroIndex(app, targetIndex);
+          this.setHeroIndex(app, targetIndex, null);
         }
         return;
       }

@@ -57,8 +57,8 @@ class VisitController {
 
   static async createVisit(req, res) {
     try {
-      const { title, description, price, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories } = req.body;
-      const visitRequestDTO = new VisitRequestDTO(title, description, price, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories);
+      const { title, description, price, license, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories } = req.body;
+      const visitRequestDTO = new VisitRequestDTO(title, description, price, license, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories);
 
       const visitData = VisitMapper.toVisit(visitRequestDTO);
       

@@ -56,16 +56,16 @@ class VisitService {
     const freeVisits = visits.filter(v => v.price === 0);
 
     if (mostLiked.length > 0) {
-      feed.push({ category: '🔥 Più Popolari', visits: mostLiked });
+      feed.push({ category: 'Più Popolari', visits: mostLiked });
     }
     if (mostViewedWeekly.length > 0) {
-      feed.push({ category: '👁️ Più Viste della Settimana', visits: mostViewedWeekly });
+      feed.push({ category: 'Più Viste della Settimana', visits: mostViewedWeekly });
     }
     if (mostViewedTotal.length > 0) {
-      feed.push({ category: '📈 Più Viste di Sempre', visits: mostViewedTotal });
+      feed.push({ category: 'Più Viste di Sempre', visits: mostViewedTotal });
     }
     if (freeVisits.length > 0) {
-      feed.push({ category: '🎟️ Visite Gratuite', visits: freeVisits });
+      feed.push({ category: 'Visite Gratuite', visits: freeVisits });
     }
 
     // 2. Thematic Categories

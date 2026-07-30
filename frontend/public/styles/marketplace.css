@@ -74,20 +74,54 @@
 
 .mkt-hero-section {
   position: relative;
-  margin-bottom: 3rem;
+  margin-bottom: 3.5rem;
+  overflow: hidden;
+  padding: 0.5rem 0;
 }
 
-.mkt-hero-card {
-  position: relative;
+.mkt-hero-viewport {
   width: 100%;
-  height: 380px;
-  border-radius: 16px;
   overflow: hidden;
+  position: relative;
+}
+
+.mkt-hero-track {
+  display: flex;
+  gap: 1.5rem;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.mkt-hero-card-slide {
+  flex: 0 0 74%;
+  height: 520px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--mkt-card-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  opacity: 0.5;
+  transform: scale(0.92);
+  filter: brightness(0.65);
+  transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+}
+
+.mkt-hero-card-slide.active {
+  opacity: 1;
+  transform: scale(1);
+  filter: brightness(1);
   border: 2px solid var(--mkt-accent-blue);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(47, 129, 247, 0.15);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 25px rgba(47, 129, 247, 0.25);
+  cursor: default;
+}
+
+.mkt-hero-card-bg {
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
-  transition: background-image 0.5s ease-in-out;
+  position: relative;
 }
 
 .mkt-hero-overlay {
@@ -246,21 +280,21 @@
 
 .mkt-carousel-arrow {
   position: absolute;
-  top: 50%;
+  top: 45%;
   transform: translateY(-50%);
-  background: rgba(13, 17, 23, 0.75);
+  background: rgba(13, 17, 23, 0.85);
   backdrop-filter: blur(8px);
   border: 1px solid var(--mkt-card-border);
   color: #fff;
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: pointer;
-  z-index: 10;
+  z-index: 25;
   transition: all 0.2s ease;
 }
 
@@ -375,28 +409,25 @@
   background: rgba(13, 17, 23, 0.75);
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0.2rem 0.6rem;
-  border-radius: 14px;
-  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 1rem;
   color: #8b949e;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .mkt-card-like-btn:hover {
-  transform: scale(1.08);
+  transform: scale(1.15);
   color: var(--mkt-heart-red);
-  border-color: rgba(248, 81, 73, 0.4);
 }
 
 .mkt-card-like-btn.liked {
   color: var(--mkt-heart-red);
-  border-color: rgba(248, 81, 73, 0.4);
 }
 
 .mkt-views-badge {

@@ -194,6 +194,7 @@ async function seed() {
         title: visitData.title,
         description: visitData.description,
         price: visitData.price,
+        license: visitData.license || 'Licenza Standard',
         creator: creatorId,
         artworks: artworkIds,
         minDuration: visitData.minDuration,

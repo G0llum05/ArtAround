@@ -17,6 +17,11 @@ const visitSchema = new mongoose.Schema({
     type: Number,
   },
 
+  license: {
+    type: String,
+    default: 'Standard'
+  },
+
   creator: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

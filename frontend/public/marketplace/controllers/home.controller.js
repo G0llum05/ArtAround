@@ -33,30 +33,31 @@ export const HomeController = {
 
     if (!track) return;
 
+    const currentTrackPos = this.heroIndex + 2;
     let targetTrackPos;
     let newHeroIndex;
 
     if (deltaDirection === 1) {
-      // Forward direction (+1 step)
-      targetTrackPos = (this.heroIndex + 1) + 1;
+      // Forward step (+1)
+      targetTrackPos = currentTrackPos + 1;
       newHeroIndex = (this.heroIndex + 1) % N;
     } else if (deltaDirection === -1) {
-      // Backward direction (-1 step)
-      targetTrackPos = (this.heroIndex + 1) - 1;
+      // Backward step (-1)
+      targetTrackPos = currentTrackPos - 1;
       newHeroIndex = (this.heroIndex - 1 + N) % N;
     } else {
       // Direct jump to a specific dot index
       newHeroIndex = (targetIndex + N) % N;
-      targetTrackPos = newHeroIndex + 1;
+      targetTrackPos = newHeroIndex + 2;
     }
 
     this.heroIndex = newHeroIndex;
 
-    // 1. Enable CSS transition and animate transform forward or backward
+    // 1. Enable CSS transition and animate transform
     track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
     track.style.transform = `translateX(calc(13% - ${targetTrackPos} * (74% + 1.5rem)))`;
 
-    // 2. Set active visual class on ALL slides matching real index (both clone & real element remain pre-brightened for seamless zero-reload jump)
+    // 2. Set active visual class on ALL slides matching real index
     const slides = track.querySelectorAll('.mkt-hero-card-slide');
     slides.forEach((slide) => {
       const realIdx = parseInt(slide.dataset.realIndex, 10);
@@ -81,19 +82,19 @@ export const HomeController = {
     }
 
     // 4. Instant silent reset when overshooting to clone endpoints (after 600ms animation)
-    if (targetTrackPos === N + 1) {
-      // Reached forward clone (V0 clone at end) -> reset silently to real V0 at pos 1
+    if (targetTrackPos === N + 2) {
+      // Reached forward clone (V0 clone at pos N+2) -> reset silently to real V0 at pos 2
       setTimeout(() => {
         track.style.transition = 'none';
-        const realPos = 1;
+        const realPos = 2;
         track.style.transform = `translateX(calc(13% - ${realPos} * (74% + 1.5rem)))`;
         void track.offsetHeight; // Force reflow
       }, 600);
-    } else if (targetTrackPos === 0) {
-      // Reached backward clone (V_last clone at start) -> reset silently to real V_last at pos N
+    } else if (targetTrackPos === 1) {
+      // Reached backward clone (V_last clone at pos 1) -> reset silently to real V_last at pos N+1
       setTimeout(() => {
         track.style.transition = 'none';
-        const realPos = N;
+        const realPos = N + 1;
         track.style.transform = `translateX(calc(13% - ${realPos} * (74% + 1.5rem)))`;
         void track.offsetHeight; // Force reflow
       }, 600);

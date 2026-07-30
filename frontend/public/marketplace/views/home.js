@@ -15,15 +15,18 @@ export const HomeViews = {
     const N = heroList.length;
     const safeHeroIndex = heroIndex % N;
 
-    // Infinite track: [Last item, Item 0, Item 1, ..., Item N-1, First item]
+    // Infinite track with 2 clones at each end for seamless side previews:
+    // [V_N-2, V_N-1, V0, V1, V2, ..., V_N-1, V0, V1]
     const trackItems = [
+      heroList[(N - 2 + N) % N],
       heroList[N - 1],
       ...heroList,
-      heroList[0]
+      heroList[0],
+      heroList[1 % N]
     ];
-    const activeTrackPosition = safeHeroIndex + 1;
+    const activeTrackPosition = safeHeroIndex + 2;
 
-    // --- 1. THEMATIC VISIT CATEGORIES (Restored to original top position!) ---
+    // --- 1. THEMATIC VISIT CATEGORIES ---
     const THEMATIC_CATEGORIES = [
       'Motori', 'Scienza', 'Archeologia', 'Didattica', 'Musica', 
       'Rinascimento', 'Arte Moderna', 'Antica Grecia', 'Antica Roma', 
@@ -58,19 +61,16 @@ export const HomeViews = {
     });
 
     // --- 2. POPULARITY / ENGAGEMENT SECTIONS ---
-    // "Più Popolari": sorted EXCLUSIVELY by likesCount / likes
     const mostLiked = [...visits]
       .filter(v => (v.likes || 0) > 0)
       .sort((a, b) => (b.likes || 0) - (a.likes || 0))
       .slice(0, 8);
 
-    // "Più Viste della Settimana": sorted EXCLUSIVELY by weekly views
     const mostViewedWeekly = [...visits]
       .filter(v => v.views && (v.views.weekly || 0) > 0)
       .sort((a, b) => (b.views?.weekly || 0) - (a.views?.weekly || 0))
       .slice(0, 8);
 
-    // "Più Viste di Sempre": sorted EXCLUSIVELY by total views
     const mostViewedTotal = [...visits]
       .filter(v => v.views && (v.views.total || 0) > 0)
       .sort((a, b) => (b.views?.total || 0) - (a.views?.total || 0))
@@ -131,7 +131,7 @@ export const HomeViews = {
           </div>
         </header>
 
-        <!-- HERO SLIDER CAROUSEL (Rullino infinito a traslazione continua) -->
+        <!-- HERO SLIDER CAROUSEL (Infinite circular roll with double clone padding for seamless side previews) -->
         <section class="mkt-hero-section">
           <button class="mkt-carousel-arrow mkt-arrow-prev" data-carousel-prev>‹</button>
           <button class="mkt-carousel-arrow mkt-arrow-next" data-carousel-next>›</button>
@@ -139,8 +139,8 @@ export const HomeViews = {
           <div class="mkt-hero-viewport">
             <div class="mkt-hero-track" id="mkt-hero-track" style="transform: translateX(calc(13% - ${activeTrackPosition} * (74% + 1.5rem)));">
               ${trackItems.map((item, trackIdx) => {
-                const realIndex = (trackIdx - 1 + N) % N;
-                const isActive = trackIdx === activeTrackPosition;
+                const realIndex = (trackIdx - 2 + N * 10) % N;
+                const isActive = realIndex === safeHeroIndex;
                 return `
                   <div class="mkt-hero-card-slide ${isActive ? 'active' : ''}" data-dot-index="${realIndex}" data-real-index="${realIndex}" data-track-pos="${trackIdx}">
                     <div class="mkt-hero-card-bg" style="background-image: url('${item.image}')">

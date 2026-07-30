@@ -225,27 +225,35 @@
 
 /* Heart Like Button */
 .mkt-like-btn {
-  background: rgba(22, 27, 34, 0.75);
+  background: rgba(22, 27, 34, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  display: flex;
+  padding: 0.45rem 1rem;
+  border-radius: 24px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f0f6fc;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .mkt-like-btn:hover {
-  transform: scale(1.15);
+  transform: scale(1.06);
   border-color: var(--mkt-heart-red);
 }
 
 .mkt-heart-icon {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #8b949e;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: color 0.2s ease;
 }
 

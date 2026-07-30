@@ -147,7 +147,7 @@ export const HomeViews = {
                       <div class="mkt-hero-overlay">
                         <div class="mkt-hero-top">
                           <button class="mkt-like-btn ${item.isLiked ? 'liked' : ''}" data-like-id="${item.id}">
-                            <span class="mkt-heart-icon">♥</span> <span>${item.likes || 0} Likes</span>
+                            <span class="mkt-heart-icon">♥</span> <span class="mkt-like-count">${item.likes || 0}</span>
                           </button>
                         </div>
                         <div class="mkt-hero-bottom">

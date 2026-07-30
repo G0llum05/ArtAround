@@ -136,8 +136,6 @@ export const HomeController = {
             const countSpan = btn.querySelector('.mkt-like-count');
             if (countSpan) {
               countSpan.textContent = item.likes;
-            } else if (btn.querySelector('span:last-child')) {
-              btn.querySelector('span:last-child').textContent = `${item.likes} Likes`;
             }
           });
 

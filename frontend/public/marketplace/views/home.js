@@ -15,23 +15,83 @@ export const HomeViews = {
     const safeHeroIndex = heroIndex % heroList.length;
     const heroVisit = heroList[safeHeroIndex];
 
-    const colonnaVisits = visits.filter(v => v.theme === "Palazzo Colonna" || (v.title && (v.title.toLowerCase().includes("colonna") || v.title.toLowerCase().includes("carracci") || v.title.toLowerCase().includes("mangiafagioli"))));
-    const vaticaniVisits = visits.filter(v => v.theme === "Musei Vaticani" || (v.title && (v.title.toLowerCase().includes("sistina") || v.title.toLowerCase().includes("vatican") || v.title.toLowerCase().includes("laocoonte") || v.title.toLowerCase().includes("stanze di raffaello"))));
-    const borgheseVisits = visits.filter(v => v.theme === "Galleria Borghese" || (v.title && (v.title.toLowerCase().includes("borghese") || v.title.toLowerCase().includes("bernini") || v.title.toLowerCase().includes("caravaggio") || v.title.toLowerCase().includes("paolina"))));
-    const museumVisits = visits.filter(v => v.theme === "Museo del Patrimonio Industriale" || (v.title && (v.title.toLowerCase().includes("patrimonio") || v.title.toLowerCase().includes("seta") || v.title.toLowerCase().includes("navile"))));
-    const ducatiVisits = visits.filter(v => v.theme === "Museo Ducati" || (v.title && (v.title.toLowerCase().includes("ducati") || v.title.toLowerCase().includes("desmo") || v.title.toLowerCase().includes("cucciolo") || v.title.toLowerCase().includes("superbike"))));
-    const archeoVisits = visits.filter(v => v.theme === "Museo Civico Archeologico" || (v.title && (v.title.toLowerCase().includes("archeo") || v.title.toLowerCase().includes("etrusca") || v.title.toLowerCase().includes("egitto") || v.title.toLowerCase().includes("fidia"))));
-    const poggiVisits = visits.filter(v => v.theme === "Palazzo Poggi" || (v.title && (v.title.toLowerCase().includes("poggi") || v.title.toLowerCase().includes("anatomia") || v.title.toLowerCase().includes("marsili"))));
-    const carducciVisits = visits.filter(v => v.theme === "Casa Carducci" || (v.title && v.title.toLowerCase().includes("carducci")));
-    const theme800Visits = visits.filter(v => v.theme === "800" || (v.title && (v.title.toLowerCase().includes("protoindustria") || v.title.toLowerCase().includes("radio"))));
-    const neoclassicoVisits = visits.filter(v => v.theme === "Neoclassicismo" || (v.title && (v.title.toLowerCase().includes("neoclassicismo") || v.title.toLowerCase().includes("marmo"))));
+    // --- 1. POPULARITY / ENGAGEMENT SECTIONS (Likes & Views) ---
+    const mostLiked = [...visits]
+      .filter(v => (v.likes || 0) > 0)
+      .sort((a, b) => (b.likes || 0) - (a.likes || 0))
+      .slice(0, 8);
+
+    const mostViewedWeekly = [...visits]
+      .filter(v => v.views && (v.views.weekly || 0) > 0)
+      .sort((a, b) => (b.views?.weekly || 0) - (a.views?.weekly || 0))
+      .slice(0, 8);
+
+    const mostViewedTotal = [...visits]
+      .filter(v => v.views && (v.views.total || 0) > 0)
+      .sort((a, b) => (b.views?.total || 0) - (a.views?.total || 0))
+      .slice(0, 8);
+
+    const freeVisits = visits.filter(v => v.price === 0);
+
+    const engagementSections = [];
+    if (mostLiked.length > 0) {
+      engagementSections.push({ title: '🔥 Più Popolari (Like)', items: mostLiked });
+    }
+    if (mostViewedWeekly.length > 0) {
+      engagementSections.push({ title: '👁️ Più Viste della Settimana', items: mostViewedWeekly });
+    }
+    if (mostViewedTotal.length > 0) {
+      engagementSections.push({ title: '📈 Più Viste di Sempre', items: mostViewedTotal });
+    }
+    if (freeVisits.length > 0) {
+      engagementSections.push({ title: '🎟️ Visite Gratuite', items: freeVisits });
+    }
+
+    // --- 2. THEMATIC VISIT CATEGORIES ---
+    const THEMATIC_CATEGORIES = [
+      'Motori', 'Scienza', 'Archeologia', 'Didattica', 'Musica', 
+      'Rinascimento', 'Arte Moderna', 'Antica Grecia', 'Antica Roma', 
+      'Oriente', 'Antico Egitto', 'Medioevo', 'Neoclassicismo', 
+      'Impressionismo', 'Realismo', 'Puntinismo', 'Avanguardie'
+    ];
+
+    const categoryMap = {};
+    for (const v of visits) {
+      const cats = (v.categories && v.categories.length > 0) 
+        ? v.categories 
+        : [v.theme || "Generale"];
+
+      for (const cat of cats) {
+        if (!categoryMap[cat]) categoryMap[cat] = [];
+        categoryMap[cat].push(v);
+      }
+    }
+
+    const thematicSections = THEMATIC_CATEGORIES
+      .filter(catName => categoryMap[catName] && categoryMap[catName].length > 0)
+      .map(catName => ({
+        title: `Categoria: ${catName}`,
+        items: categoryMap[catName]
+      }));
+
+    // Fallback for any non-standard theme
+    Object.keys(categoryMap).forEach(catName => {
+      if (!THEMATIC_CATEGORIES.includes(catName) && categoryMap[catName].length > 0) {
+        thematicSections.push({ title: `Categoria: ${catName}`, items: categoryMap[catName] });
+      }
+    });
+
+    const allSections = [...engagementSections, ...thematicSections];
 
     const renderCard = (v) => `
       <div class="mkt-visit-card" data-visit-id="${v.id}">
         <div class="mkt-card-thumb" style="background-image: url('${v.image}')">
           <div class="mkt-card-thumb-overlay">
+            <span class="mkt-card-views-badge" title="${v.views?.weekly || 0} visite questa settimana / ${v.views?.total || 0} totali">
+              👁️ ${v.views?.weekly ?? v.views?.total ?? 0}
+            </span>
             <button class="mkt-card-like-btn ${v.isLiked ? 'liked' : ''}" data-like-id="${v.id}" title="Metti Like">
-              ♥
+              ♥ <span class="mkt-like-count">${v.likes || 0}</span>
             </button>
           </div>
         </div>
@@ -56,7 +116,7 @@ export const HomeViews = {
         <header class="mkt-header">
           <h1 class="mkt-main-title">Marketplace Visite</h1>
           <div class="mkt-header-actions">
-            <input type="text" class="mkt-search-input" placeholder="Cerca visite o temi..." />
+            <input type="text" class="mkt-search-input" placeholder="Cerca visite o categorie..." />
           </div>
         </header>
 
@@ -69,7 +129,7 @@ export const HomeViews = {
             <div class="mkt-hero-overlay">
               <div class="mkt-hero-top">
                 <button class="mkt-like-btn ${heroVisit.isLiked ? 'liked' : ''}" data-like-id="${heroVisit.id}">
-                  <span class="mkt-heart-icon">♥</span>
+                  <span class="mkt-heart-icon">♥</span> <span>${heroVisit.likes || 0} Likes</span>
                 </button>
               </div>
               <div class="mkt-hero-bottom">
@@ -83,6 +143,9 @@ export const HomeViews = {
                   <p class="mkt-hero-desc">${heroVisit.description}</p>
                 </div>
                 <div class="mkt-badge-group">
+                  <span class="mkt-views-badge" title="Visualizzazioni della visita">
+                    👁️ ${heroVisit.views?.weekly || 0} viste sett. (${heroVisit.views?.total || 0} tot.)
+                  </span>
                   <span class="mkt-price-badge ${heroVisit.price === 0 ? 'mkt-price-free' : ''}">
                     ${heroVisit.price === 0 ? 'Gratuito' : `€ ${heroVisit.price.toFixed(2)}`}
                   </span>
@@ -100,86 +163,15 @@ export const HomeViews = {
           </div>
         </section>
 
-        <!-- CATEGORY ROWS -->
-        <!-- Row -0.5: Palazzo Colonna -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Visite di Palazzo Colonna e Galleria Colonna di Roma</h3>
-          <div class="mkt-cards-row">
-            ${(colonnaVisits.length > 0 ? colonnaVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 0: Musei Vaticani -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Visite dei Musei Vaticani e Cappella Sistina</h3>
-          <div class="mkt-cards-row">
-            ${(vaticaniVisits.length > 0 ? vaticaniVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 0.2: Galleria Borghese -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Visite della Galleria Borghese di Roma</h3>
-          <div class="mkt-cards-row">
-            ${(borgheseVisits.length > 0 ? borgheseVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 0.5: Museo Ducati -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Visite del Museo Ducati</h3>
-          <div class="mkt-cards-row">
-            ${(ducatiVisits.length > 0 ? ducatiVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 1: Museo del Patrimonio Industriale -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Visite del Museo del Patrimonio Industriale</h3>
-          <div class="mkt-cards-row">
-            ${(museumVisits.length > 0 ? museumVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 1.5: Museo Civico Archeologico -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Visite del Museo Civico Archeologico</h3>
-          <div class="mkt-cards-row">
-            ${(archeoVisits.length > 0 ? archeoVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 2: Museo di Palazzo Poggi -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Visite di Palazzo Poggi</h3>
-          <div class="mkt-cards-row">
-            ${(poggiVisits.length > 0 ? poggiVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 3: Museo di Casa Carducci -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Visite di Casa Carducci</h3>
-          <div class="mkt-cards-row">
-            ${(carducciVisits.length > 0 ? carducciVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 2: Tema 800 / Meccanica e Motori -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">800 - Protoindustria e Meccanica</h3>
-          <div class="mkt-cards-row">
-            ${(theme800Visits.length > 0 ? theme800Visits : visits).map(renderCard).join('')}
-          </div>
-        </section>
-
-        <!-- Row 3: Tema Neoclassicismo -->
-        <section class="mkt-category-section">
-          <h3 class="mkt-section-title">Neoclassicismo e Scultura</h3>
-          <div class="mkt-cards-row">
-            ${(neoclassicoVisits.length > 0 ? neoclassicoVisits : visits).map(renderCard).join('')}
-          </div>
-        </section>
+        <!-- SECTIONS (Engagement: Popular/Views/Free + Thematic Categories) -->
+        ${allSections.map(sec => `
+          <section class="mkt-category-section">
+            <h3 class="mkt-section-title">${sec.title}</h3>
+            <div class="mkt-cards-row">
+              ${sec.items.map(renderCard).join('')}
+            </div>
+          </section>
+        `).join('')}
       </div>
     `;
   },

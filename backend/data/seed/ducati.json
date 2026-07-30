@@ -374,7 +374,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Percorso totalmente accessibile all'interno del Museo Ducati."
+      "requirements": "Percorso totalmente accessibile all'interno del Museo Ducati.",
+      "categories": ["Motori", "Scienza"]
     },
     {
       "key": "visit_ducati_mito_desmo",
@@ -407,7 +408,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Consigliata per appassionati di meccanica, motorismo storico e ingegneria."
+      "requirements": "Consigliata per appassionati di meccanica, motorismo storico e ingegneria.",
+      "categories": ["Motori", "Scienza"]
     },
     {
       "key": "visit_ducati_superbike_legend",
@@ -440,7 +442,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Visita guidata ad alto impatto emozionale per amanti delle moto sportive."
+      "requirements": "Visita guidata ad alto impatto emozionale per amanti delle moto sportive.",
+      "categories": ["Motori"]
     },
     {
       "key": "visit_ducati_motogp_hightech",
@@ -473,7 +476,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Adatto ad appassionati di corse, studenti universitari e tecnici."
+      "requirements": "Adatto ad appassionati di corse, studenti universitari e tecnici.",
+      "categories": ["Motori", "Scienza"]
     }
   ]
 }

@@ -67,6 +67,37 @@ const visitSchema = new mongoose.Schema({
   quiz: { // Se il creatore della visita vuole mettere delle domande fatte da lui può farlo, altrimenti vengono generate
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Quiz'
+  },
+
+  // Categorie tematiche (multiplo)
+  categories: [{
+    type: String,
+    enum: [
+      'Rinascimento', 'Arte Moderna', 'Motori', 'Scienza', 'Archeologia', 
+      'Musica', 'Didattica', 'Antica Grecia', 'Antica Roma', 'Oriente', 
+      'Antico Egitto', 'Medioevo', 'Neoclassicismo', 'Impressionismo', 
+      'Realismo', 'Puntinismo', 'Avanguardie'
+    ]
+  }],
+
+  // Interazioni & Popolarità
+  likesCount: {
+    type: Number,
+    default: 0,
+    index: true
+  },
+
+  views: {
+    total: {
+      type: Number,
+      default: 0,
+      index: true
+    },
+    weekly: {
+      type: Number,
+      default: 0,
+      index: true
+    }
   }
 
 });

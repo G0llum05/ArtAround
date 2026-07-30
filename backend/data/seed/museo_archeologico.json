@@ -368,7 +368,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Percorso ampiamente accessibile nel piano nobile e nelle sale espositive."
+      "requirements": "Percorso ampiamente accessibile nel piano nobile e nelle sale espositive.",
+      "categories": ["Archeologia"]
     },
     {
       "key": "visit_archeo_egitto_faraoni",
@@ -402,7 +403,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Consigliata la prenotazione per i gruppi per la gestione dei flussi nelle sale ipogee."
+      "requirements": "Consigliata la prenotazione per i gruppi per la gestione dei flussi nelle sale ipogee.",
+      "categories": ["Antico Egitto", "Archeologia"]
     },
     {
       "key": "visit_archeo_fidia_bellezza",
@@ -435,7 +437,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Visita guidata adatta ad appassionati di arte e scultura classica."
+      "requirements": "Visita guidata adatta ad appassionati di arte e scultura classica.",
+      "categories": ["Antica Grecia", "Antica Roma", "Archeologia"]
     },
     {
       "key": "visit_archeo_guerrieri_villanoviani",
@@ -469,7 +472,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Adatto ad adulti e scolaresche."
+      "requirements": "Particolarmente indicato per scolaresche e percorsi didattici.",
+      "categories": ["Archeologia", "Didattica"]
     }
   ]
 }

@@ -374,7 +374,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Apertura speciale del venerdì e sabato mattina."
+      "requirements": "Apertura speciale del venerdì e sabato mattina.",
+      "categories": ["Rinascimento"]
     },
     {
       "key": "visit_colonna_mangiafagioli_carracci",
@@ -407,7 +408,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Visita guidata adatta ad appassionati di pittura del Seicento."
+      "requirements": "Visita guidata adatta ad appassionati di pittura del Seicento.",
+      "categories": ["Realismo", "Rinascimento"]
     },
     {
       "key": "visit_colonna_ritratti_seicento",
@@ -441,7 +443,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Percorso totalmente accessibile al piano nobile."
+      "requirements": "Percorso totalmente accessibile al piano nobile.",
+      "categories": ["Rinascimento"]
     },
     {
       "key": "visit_colonna_appartamento_isabelle",
@@ -474,7 +477,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Gruppi a numero chiuso. Consigliata la prenotazione anticipata."
+      "requirements": "Gruppi a numero chiuso. Consigliata la prenotazione anticipata.",
+      "categories": ["Rinascimento", "Medioevo"]
     }
   ]
 }

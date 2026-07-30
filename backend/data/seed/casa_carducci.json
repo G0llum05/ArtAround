@@ -355,7 +355,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Gruppi di massimo 15 persone per la tutela degli spazi storici conservati."
+      "requirements": "Gruppi di massimo 15 persone per la tutela degli spazi storici conservati.",
+      "categories": ["Didattica", "Neoclassicismo"]
     },
     {
       "key": "visit_carducci_poesia",
@@ -389,7 +390,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Consigliata per studenti universitari, appassionati di letteratura e poesia."
+      "requirements": "Consigliata per studenti universitari, appassionati di letteratura e poesia.",
+      "categories": ["Neoclassicismo", "Didattica"]
     },
     {
       "key": "visit_carducci_giardino",
@@ -422,7 +424,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Percorso accessibile anche all'aperto nei giardini del complesso."
+      "requirements": "Percorso accessibile anche all'aperto nei giardini del complesso.",
+      "categories": ["Neoclassicismo", "Realismo"]
     }
   ]
 }

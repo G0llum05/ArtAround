@@ -374,7 +374,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Turno di visita a tempo (max 2 ore). Prenotazione obbligatoria per tutti i partecipanti."
+      "requirements": "Turno di visita a tempo (max 2 ore). Prenotazione obbligatoria per tutti i partecipanti.",
+      "categories": ["Neoclassicismo", "Rinascimento"]
     },
     {
       "key": "visit_borghese_luce_caravaggio",
@@ -407,7 +408,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Consigliato ad appassionati di pittura barocca e chiaroscuro."
+      "requirements": "Consigliato ad appassionati di pittura barocca e chiaroscuro.",
+      "categories": ["Realismo", "Rinascimento"]
     },
     {
       "key": "visit_borghese_raffaello_canova",
@@ -441,7 +443,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Visita guidata artistica al piano superiore della Pinacoteca e alle sale scultoree del piano terra."
+      "requirements": "Visita guidata artistica al piano superiore della Pinacoteca e alle sale scultoree del piano terra.",
+      "categories": ["Rinascimento", "Neoclassicismo"]
     },
     {
       "key": "visit_borghese_scipione_pinacoteca",
@@ -475,7 +478,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Struttura museale statale totalmente accessibile."
+      "requirements": "Struttura museale statale totalmente accessibile.",
+      "categories": ["Rinascimento"]
     }
   ]
 }

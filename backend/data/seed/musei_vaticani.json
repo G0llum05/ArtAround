@@ -373,7 +373,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Abbigliamento consono (spalle e ginocchia coperte). Rispetto del silenzio assoluto nella Cappella Sistina."
+      "requirements": "Abbigliamento consono (spalle e ginocchia coperte). Rispetto del silenzio assoluto nella Cappella Sistina.",
+      "categories": ["Rinascimento"]
     },
     {
       "key": "visit_vaticani_stanze_raffaello",
@@ -406,7 +407,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Consigliato ad appassionati di pittura rinascimentale ed umanesimo."
+      "requirements": "Consigliato ad appassionati di pittura rinascimentale ed umanesimo.",
+      "categories": ["Rinascimento", "Didattica"]
     },
     {
       "key": "visit_vaticani_cortile_ottagono",
@@ -439,7 +441,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Accessibile mediante elevatori ed ascensori dedicati del complesso museale."
+      "requirements": "Accessibile mediante elevatori ed ascensori dedicati del complesso museale.",
+      "categories": ["Antica Grecia", "Antica Roma", "Archeologia"]
     },
     {
       "key": "visit_vaticani_pinacoteca_tesori",
@@ -472,7 +475,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Percorso ampiamente fruibile all'interno delle gallerie di pittura."
+      "requirements": "Percorso ampiamente fruibile all'interno delle gallerie di pittura.",
+      "categories": ["Rinascimento", "Realismo"]
     }
   ]
 }

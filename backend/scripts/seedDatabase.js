@@ -43,39 +43,29 @@ function loadAllSeedData() {
     visits: []
   };
 
-  if (fs.existsSync(seedDir)) {
-    const files = fs.readdirSync(seedDir).filter(f => f.endsWith('.json'));
-    console.log(`[Seed] Loading ${files.length} seed file(s) from directory: backend/data/seed/`);
+  if (!fs.existsSync(seedDir)) {
+    console.error(`[Seed] Error: Seed directory not found at ${seedDir}`);
+    return aggregated;
+  }
 
-    for (const file of files) {
-      const filePath = path.join(seedDir, file);
-      const rawData = fs.readFileSync(filePath, 'utf-8');
-      const data = JSON.parse(rawData);
+  const files = fs.readdirSync(seedDir).filter(f => f.endsWith('.json'));
+  console.log(`[Seed] Loading ${files.length} seed file(s) from directory: backend/data/seed/`);
 
-      if (data.users) aggregated.users.push(...data.users);
-      if (data.artists) aggregated.artists.push(...data.artists);
-      if (data.items) aggregated.items.push(...data.items);
-      if (data.artworks) aggregated.artworks.push(...data.artworks);
-      if (data.visits) aggregated.visits.push(...data.visits);
+  for (const file of files) {
+    const filePath = path.join(seedDir, file);
+    const rawData = fs.readFileSync(filePath, 'utf-8');
+    const data = JSON.parse(rawData);
 
-      if (Array.isArray(data.museums)) {
-        aggregated.museums.push(...data.museums);
-      } else if (data.museum) {
-        aggregated.museums.push(data.museum);
-      }
-    }
-  } else {
-    // Fallback to legacy single file if directory does not exist
-    const legacyFile = path.join(__dirname, '../data/seedData.json');
-    if (fs.existsSync(legacyFile)) {
-      console.log('[Seed] Loading legacy seedData.json file...');
-      const data = JSON.parse(fs.readFileSync(legacyFile, 'utf-8'));
-      aggregated.users = data.users || [];
-      aggregated.artists = data.artists || [];
-      aggregated.items = data.items || [];
-      aggregated.artworks = data.artworks || [];
-      aggregated.visits = data.visits || [];
-      aggregated.museums = Array.isArray(data.museums) ? data.museums : (data.museum ? [data.museum] : []);
+    if (data.users) aggregated.users.push(...data.users);
+    if (data.artists) aggregated.artists.push(...data.artists);
+    if (data.items) aggregated.items.push(...data.items);
+    if (data.artworks) aggregated.artworks.push(...data.artworks);
+    if (data.visits) aggregated.visits.push(...data.visits);
+
+    if (Array.isArray(data.museums)) {
+      aggregated.museums.push(...data.museums);
+    } else if (data.museum) {
+      aggregated.museums.push(data.museum);
     }
   }
 
@@ -212,7 +202,10 @@ async function seed() {
         availability: visitData.availability,
         weeklySchedule: visitData.weeklySchedule,
         disableFriendly: visitData.disableFriendly ?? true,
-        requirements: visitData.requirements
+        requirements: visitData.requirements,
+        categories: visitData.categories || [],
+        likesCount: visitData.likesCount ?? Math.floor(Math.random() * 150) + 20,
+        views: visitData.views || { total: Math.floor(Math.random() * 500) + 100, weekly: Math.floor(Math.random() * 100) + 10 }
       });
 
       const savedVisit = await visit.save();

@@ -5,7 +5,8 @@ const { VisitRequestDTO } = require('../../data/model/dto/VisitDTO');
 class VisitController {
   static async getAllVisits(req, res) {
     try {
-      const visits = await VisitService.getAllVisits();
+      const { category } = req.query;
+      const visits = await VisitService.getAllVisits(category);
       const visitDTOs = visits.map(visit => VisitMapper.toVisitResponseDTO(visit));
       res.status(200).json(visitDTOs);
     } catch (error) {
@@ -13,10 +14,51 @@ class VisitController {
     }
   }
 
+  static async getMarketplaceFeed(req, res) {
+    try {
+      const feed = await VisitService.getMarketplaceFeed();
+      // Map visits inside each category row to DTOs
+      const formattedFeed = feed.map(row => ({
+        category: row.category,
+        visits: row.visits.map(v => VisitMapper.toVisitResponseDTO(v))
+      }));
+      res.status(200).json(formattedFeed);
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving marketplace feed', error: error.message });
+    }
+  }
+
+  static async likeVisit(req, res) {
+    try {
+      const { id } = req.params;
+      const { delta } = req.body; // +1 or -1
+      const updatedVisit = await VisitService.incrementLikes(id, delta || 1);
+      if (!updatedVisit) {
+        return res.status(404).json({ message: 'Visit not found' });
+      }
+      res.status(200).json(VisitMapper.toVisitResponseDTO(updatedVisit));
+    } catch (error) {
+      res.status(500).json({ message: 'Error liking visit', error: error.message });
+    }
+  }
+
+  static async viewVisit(req, res) {
+    try {
+      const { id } = req.params;
+      const updatedVisit = await VisitService.incrementViews(id);
+      if (!updatedVisit) {
+        return res.status(404).json({ message: 'Visit not found' });
+      }
+      res.status(200).json(VisitMapper.toVisitResponseDTO(updatedVisit));
+    } catch (error) {
+      res.status(500).json({ message: 'Error recording view for visit', error: error.message });
+    }
+  }
+
   static async createVisit(req, res) {
     try {
-      const { title, description, price, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz } = req.body;
-      const visitRequestDTO = new VisitRequestDTO(title, description, price, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz);
+      const { title, description, price, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories } = req.body;
+      const visitRequestDTO = new VisitRequestDTO(title, description, price, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories);
 
       const visitData = VisitMapper.toVisit(visitRequestDTO);
       

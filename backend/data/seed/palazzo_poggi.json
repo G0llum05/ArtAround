@@ -374,7 +374,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Consigliato per studenti universitari, appassionati di storia della medicina e dell'anatomia."
+      "requirements": "Consigliato per studenti universitari, appassionati di storia della medicina e dell'anatomia.",
+      "categories": ["Scienza", "Didattica"]
     },
     {
       "key": "visit_poggi_ulisse",
@@ -407,7 +408,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Visita guidata artistica incentrata sull'iconografia ed il Manierismo emiliano."
+      "requirements": "Visita guidata artistica incentrata sull'iconografia ed il Manierismo emiliano.",
+      "categories": ["Rinascimento", "Antica Grecia"]
     },
     {
       "key": "visit_poggi_marsili_navi",
@@ -440,7 +442,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Adatto ad adulti, scolaresche e appassionati di modellismo navale e storia della scienza."
+      "requirements": "Adatto ad adulti, scolaresche e appassionati di modellismo navale e storia della scienza.",
+      "categories": ["Scienza", "Didattica"]
     },
     {
       "key": "visit_poggi_camere_scienze",
@@ -474,7 +477,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Struttura museale universitaria completamente fruibile."
+      "requirements": "Struttura museale universitaria completamente fruibile.",
+      "categories": ["Scienza", "Didattica"]
     }
   ]
 }

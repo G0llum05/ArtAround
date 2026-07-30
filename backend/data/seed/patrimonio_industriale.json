@@ -378,7 +378,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Scarpe comode per la deambulazione nelle gallerie della fornace. Adatto a scolaresche e visitatori individuali."
+      "requirements": "Scarpe comode per la deambulazione nelle gallerie della fornace. Adatto a scolaresche e visitatori individuali.",
+      "categories": ["Scienza", "Didattica"]
     },
     {
       "key": "visit_meccanica_packaging",
@@ -413,7 +414,8 @@
         }
       ],
       "disableFriendly": true,
-      "requirements": "Visita guidata con dimostrazioni di modelli meccanici in funzione. Consigliato per studenti di istituti tecnici e appassionati di motori e tecnologia."
+      "requirements": "Visita guidata con dimostrazioni di modelli meccanici in funzione. Consigliato per studenti di istituti tecnici e appassionati di motori e tecnologia.",
+      "categories": ["Motori", "Scienza"]
     }
   ]
 }

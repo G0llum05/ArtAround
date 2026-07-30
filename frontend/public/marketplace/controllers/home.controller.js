@@ -76,12 +76,14 @@ export const HomeController = {
         const item = this.visits.find(v => v.id === visitId);
         if (item) {
           item.isLiked = !item.isLiked;
+          const delta = item.isLiked ? 1 : -1;
           if (item.isLiked) {
             item.likes = (item.likes || 0) + 1;
           } else {
             item.likes = Math.max(0, (item.likes || 1) - 1);
           }
           this.renderView(app);
+          VisitService.toggleLike(visitId, delta);
         }
         return;
       }

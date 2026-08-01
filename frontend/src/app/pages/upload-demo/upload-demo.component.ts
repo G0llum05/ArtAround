@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FileUploaderComponent, UploadedFileResult } from '../../components/file-uploader/file-uploader.component';
 
@@ -11,7 +11,7 @@ import { FileUploaderComponent, UploadedFileResult } from '../../components/file
   styleUrl: './upload-demo.component.css'
 })
 export class UploadDemoComponent {
-  museumId: string = 'm123';
+  museumId: string = '';
   visitId: string = '';
   artworkId: string = '';
   isMeta: boolean = true;

@@ -21,10 +21,6 @@ export class TestComponent {
     this.router.navigate(['/museumTest'])
   }
 
-  onTestLoginSubmit(): void {
-    this.router.navigate(['/loginTest'])
-  }
-  
   onTestVisitSubmit(): void {
     this.router.navigate(['/visitTest'])
   }

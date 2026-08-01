@@ -13,6 +13,9 @@ yarn-debug.log*
 /.cache
 .npm
 
+# --- Immagini Museum
+backend/assets
+
 # --- DOCKER ---
 # Ignora i dati persistenti dei volumi (se mappati in locale)
 /data/

@@ -2,6 +2,7 @@ import { MuseumService } from '../services/museum.service.js';
 import { MuseumViews } from '../views/museum.js';
 import { AddressResolutionService } from '../services/addressResolution/address.resolution.service.js';
 import { WeeklyScheduleService } from '../services/weeklySchedule/weekly.schedule.service.js';
+import { UppyService } from '../services/uppy/uppy.service.js';
 
 const MUSEUM_FORM_STATE = 'museumFormState';
 
@@ -27,6 +28,11 @@ export const MuseumController = {
                 return;
             }
 
+            // Cleanup any existing Uppy instance when switching steps
+            if (step !== 4) {
+                UppyService.destroy();
+            }
+
             switch (step) {
                 case 1:
                     wizardStepsContainer.innerHTML = MuseumViews._addStep1(museumData);
@@ -44,12 +50,38 @@ export const MuseumController = {
                     wizardStepsContainer.innerHTML = MuseumViews._addStep3(reviewData);
                     break;
                 }
+                case 4: {
+                    wizardStepsContainer.innerHTML = MuseumViews._addStep4(museumData);
+                    const uppyContainer = wizardStepsContainer.querySelector('#uppy-museum-meta-container');
+                    const museumId = museumData._id || 'temp';
+
+                    UppyService.init(uppyContainer, museumId, (files) => {
+                        museumData.images = museumData.images || [];
+                        const newUrls = files.map(f => f.url);
+                        museumData.images = [...new Set([...museumData.images, ...newUrls])];
+                        sessionStorage.setItem(MUSEUM_FORM_STATE, JSON.stringify(museumData));
+
+                        const galleryBox = wizardStepsContainer.querySelector('#uploaded-meta-gallery');
+                        const galleryGrid = wizardStepsContainer.querySelector('#uploaded-gallery-grid');
+                        if (galleryBox && galleryGrid) {
+                            galleryBox.style.display = 'block';
+                            galleryGrid.innerHTML = files.map(f => `
+                                <div class="mkt-gallery-card">
+                                    <img src="${f.url}" alt="${f.filename}">
+                                    <p>${f.filename}</p>
+                                </div>
+                            `).join('');
+                        }
+                    });
+                    break;
+                }
             }
             attachStepListeners(step);
         };
 
         const collectStepData = (step) => {
             const form = app.container.querySelector('#add-museum-form');
+            if (!form) return;
             const formData = new FormData(form);
 
             if (step === 1) {
@@ -58,11 +90,11 @@ export const MuseumController = {
                     name: formData.get('name'),
                     description: formData.get('description'),
                     address: {
-                        street: form.querySelector('#street').value,
-                        civ: form.querySelector('#civ').value,
-                        city: form.querySelector('#city').value,
-                        zipCode: form.querySelector('#zipCode').value,
-                        country: form.querySelector('#country').value
+                        street: form.querySelector('#street')?.value || '',
+                        civ: form.querySelector('#civ')?.value || '',
+                        city: form.querySelector('#city')?.value || '',
+                        zipCode: form.querySelector('#zipCode')?.value || '',
+                        country: form.querySelector('#country')?.value || ''
                     },
                     contact: {
                         phone: formData.get('contact.phone'),
@@ -71,8 +103,8 @@ export const MuseumController = {
                     },
                     maxCapacity: formData.get('maxCapacity'),
                     requirements: formData.get('requirements'),
-                    isActive: form.querySelector('#isActive').checked,
-                    disableFriendly: form.querySelector('#disableFriendly').checked,
+                    isActive: form.querySelector('#isActive')?.checked || false,
+                    disableFriendly: form.querySelector('#disableFriendly')?.checked || false,
                 };
             } else if (step === 2) {
                 const wizardStepsContainer = app.container.querySelector('#wizard-steps');
@@ -84,10 +116,44 @@ export const MuseumController = {
         const attachStepListeners = (step) => {
             const nextButton = app.container.querySelector('#next-step');
             const prevButton = app.container.querySelector('#prev-step');
+            const finishButton = app.container.querySelector('#finish-wizard');
 
             if (nextButton) {
-                nextButton.addEventListener('click', () => {
+                nextButton.addEventListener('click', async () => {
                     collectStepData(step);
+                    if (step === 3) {
+                        // Create museum in DB if not yet created to obtain museum _id for step 4 upload path
+                        if (!museumData._id) {
+                            const addressForPayload = { ...museumData.address };
+                            const fullStreet = [addressForPayload.street, addressForPayload.civ].filter(Boolean).join(' ');
+
+                            const payload = {
+                                ...museumData,
+                                address: {
+                                    street: fullStreet,
+                                    city: addressForPayload.city,
+                                    zipCode: addressForPayload.zipCode,
+                                    country: addressForPayload.country,
+                                },
+                                maxCapacity: Number(museumData.maxCapacity),
+                            };
+                            delete payload.address.civ;
+
+                            try {
+                                const response = await MuseumService.create(payload, app._fetch.bind(app));
+                                if (!response.ok) {
+                                    const errorData = await response.json();
+                                    throw new Error(errorData.message || 'Errore nella creazione del museo');
+                                }
+                                const createdData = await response.json();
+                                museumData._id = createdData._id || createdData.id;
+                                sessionStorage.setItem(MUSEUM_FORM_STATE, JSON.stringify(museumData));
+                            } catch (err) {
+                                alert(`Errore: ${err.message}`);
+                                return;
+                            }
+                        }
+                    }
                     currentStep++;
                     renderStep(currentStep);
                 });
@@ -100,6 +166,15 @@ export const MuseumController = {
                     renderStep(currentStep);
                 });
             }
+
+            if (finishButton) {
+                finishButton.addEventListener('click', async () => {
+                    UppyService.destroy();
+                    sessionStorage.removeItem(MUSEUM_FORM_STATE);
+                    const { ShellRouter } = await import('../../shell/shell-router.js');
+                    ShellRouter.navigate('/marketplace/museums');
+                });
+            }
         };
 
         try {
@@ -107,37 +182,8 @@ export const MuseumController = {
             renderStep(currentStep);
 
             const form = app.container.querySelector('#add-museum-form');
-            form.addEventListener('submit', async (evnt) => {
+            form.addEventListener('submit', (evnt) => {
                 evnt.preventDefault();
-                collectStepData(currentStep);
-
-                const addressForPayload = { ...museumData.address };
-                const fullStreet = [addressForPayload.street, addressForPayload.civ].filter(Boolean).join(' ');
-
-                const payload = {
-                    ...museumData,
-                    address: {
-                        street: fullStreet,
-                        city: addressForPayload.city,
-                        zipCode: addressForPayload.zipCode,
-                        country: addressForPayload.country,
-                    },
-                    maxCapacity: Number(museumData.maxCapacity),
-                };
-                delete payload.address.civ;
-
-                try {
-                    const response = await MuseumService.create(payload, app._fetch.bind(app));
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || 'Errore nella creazione del museo');
-                    }
-                    sessionStorage.removeItem(MUSEUM_FORM_STATE);
-                    const { ShellRouter } = await import('../../shell/shell-router.js');
-                    ShellRouter.navigate('/marketplace/museums');
-                } catch (err) {
-                    alert(`Errore: ${err.message}`);
-                }
             });
         } catch (err) {
             console.error(err);

@@ -23,6 +23,9 @@ mongo_data/
 .docker/
 docker-compose.override.yml.backup
 
+# Immagini assets
+backend/assets/
+
 # --- SICUREZZA & AMBIENTE ---
 # Fondamentale: ignora le credenziali
 .env

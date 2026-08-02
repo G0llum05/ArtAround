@@ -1,5 +1,5 @@
-/* ==========================================================================
-   MARKETPLACE DARK THEME (Netflix / Prime Video Style)
+    /* ==========================================================================
+     MARKETPLACE DARK THEME (Netflix / Prime Video Style)
    ========================================================================== */
 
 :root {
@@ -24,6 +24,7 @@
   box-sizing: border-box;
 }
 
+
 /* Header Bar */
 .mkt-header {
   display: flex;
@@ -32,6 +33,13 @@
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--mkt-card-border);
+
+.mkt-link {
+    color: blue;
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
 }
 
 .mkt-main-title {
@@ -505,4 +513,53 @@
   background: #21262d;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
+
+  /* Uppy Vanilla JS & Marketplace Step 4 Styles */
+.uppy-vanilla-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 1.25rem 0;
+}
+
+.mkt-subtitle {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 1rem;
+}
+
+.mkt-uploaded-gallery {
+    width: 100%;
+    max-width: 700px;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.mkt-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.mkt-gallery-card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    text-align: center;
+}
+
+.mkt-gallery-card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.mkt-gallery-card p {
+    font-size: 0.75rem;
+    padding: 0.35rem;
+    margin: 0;
+    word-break: break-all;
 }

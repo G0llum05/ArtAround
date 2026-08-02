@@ -1,13 +1,12 @@
-import {Routes} from '@angular/router';
-import {GalleryPage} from './pages/gallery/gallery.component';
-import {PageNotFoundPage} from './pages/page-not-found/page-not-found.component';
-import {LoginComponent} from './pages/login/login.component';
-import {TestComponent} from './pages/test.component/test.component';
-import {TestLoginComponent} from './pages/test-login.component/test-login.component';
-import {TestUserComponent} from './pages/test-user.component/test-user.component';
-import {TestMuseumComponent} from './pages/test-museum.component/test-museum.component';
-import {TestVisitComponent} from './pages/test-visit.component/test-visit.component';
-import {UploadDemoComponent} from './pages/upload-demo/upload-demo.component';
+import { Routes } from '@angular/router';
+import { GalleryPage } from './pages/gallery/gallery.component';
+import { LoginComponent } from './pages/login/login.component';
+import { PageNotFoundPage } from './pages/page-not-found/page-not-found.component';
+import { TestMuseumComponent } from './pages/test-museum.component/test-museum.component';
+import { TestUserComponent } from './pages/test-user.component/test-user.component';
+import { TestVisitComponent } from './pages/test-visit.component/test-visit.component';
+import { TestComponent } from './pages/test.component/test.component';
+import { UploadDemoComponent } from './pages/upload-demo/upload-demo.component';
 
 export const routes: Routes = [
   {path: '', component: GalleryPage},

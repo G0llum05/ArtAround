@@ -146,9 +146,22 @@ export class FileUploaderComponent implements OnInit, AfterViewInit, OnChanges, 
 
     this.uppy.on('complete', (result: any) => {
       if (result.successful && result.successful.length > 0) {
-        const fileResults: UploadedFileResult[] = result.successful
-          .map((f: any) => f.response?.body?.files || [])
-          .flat();
+        const fileMap = new Map<string, UploadedFileResult>();
+        result.successful.forEach((f: any) => {
+          const serverFiles = f.response?.body?.files;
+          if (Array.isArray(serverFiles)) {
+            serverFiles.forEach((fileObj: UploadedFileResult) => {
+              if (fileObj && (fileObj.url || fileObj.filename)) {
+                const key = fileObj.url || fileObj.filename;
+                fileMap.set(key, fileObj);
+              }
+            });
+          } else if (f.response?.body?.url) {
+            fileMap.set(f.response.body.url, f.response.body as UploadedFileResult);
+          }
+        });
+
+        const fileResults: UploadedFileResult[] = Array.from(fileMap.values());
         this.uploadSuccess.emit(fileResults);
       }
       if (result.failed && result.failed.length > 0) {

@@ -5,9 +5,9 @@
  */
 
 const ADMIN_EMAILS = new Set([
-  'mattiagraziani05@gmail.com',
-  'davide.gamberini.2005@gmail.com',
-  'samuele.grillini@gmail.com'
+  process.env.ADMIN1,
+  process.env.ADMIN2,
+  process.env.ADMIN3
 ]);
 
 function isAdminEmail(email) {

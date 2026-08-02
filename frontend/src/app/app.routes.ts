@@ -17,6 +17,7 @@ export const routes: Routes = [
   {path: 'userTest', component: TestUserComponent},
   {path: 'museumTest', component: TestMuseumComponent},
   {path: 'visitTest', component: TestVisitComponent},
+  {path: 'visite', component: TestVisitComponent},
   {path: '**', component: PageNotFoundPage} // Rotta di fallback
 ]
 

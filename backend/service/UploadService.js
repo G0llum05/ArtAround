@@ -1,5 +1,4 @@
 const path = require('path');
-const crypto = require('crypto');
 const fs = require('fs-extra');
 const sharp = require('sharp');
 
@@ -40,6 +39,22 @@ class UploadService {
   }
 
   /**
+   * Resolves base prefix for filename:
+   * - artworkId -> artworkId
+   * - visitId -> visitId
+   * - museumId -> museumId
+   */
+  static getFilePrefix({ museumId, visitId, artworkId }) {
+    if (artworkId) {
+      return artworkId;
+    }
+    if (visitId) {
+      return visitId;
+    }
+    return museumId;
+  }
+
+  /**
    * Process and save file buffer.
    * Transpiles image files to WebP format via Sharp.
    */
@@ -49,9 +64,26 @@ class UploadService {
     // 1. Ensure directory exists with fs-extra
     await fs.ensureDir(targetDir);
 
+    const prefix = this.getFilePrefix(options);
+
+    // Find next index for prefix in targetDir
+    const existingFiles = await fs.readdir(targetDir);
+    const escapedPrefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    const prefixPattern = new RegExp(`^${escapedPrefix}_(\\d+)\\.`, 'i');
+
+    let maxIndex = 0;
+    for (const file of existingFiles) {
+      const match = file.match(prefixPattern);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxIndex) {
+          maxIndex = num;
+        }
+      }
+    }
+    const nextIndex = maxIndex + 1;
+
     const isImage = (mimeType && mimeType.startsWith('image/')) || /\.(jpg|jpeg|png|webp|gif|bmp|tiff|svg)$/i.test(originalName);
-    const uniqueHash = crypto.randomBytes(6).toString('hex');
-    const safeBaseName = path.parse(originalName).name.replace(/[^a-zA-Z0-9_-]/g, '_');
 
     let fileName;
     let filePath;
@@ -59,7 +91,7 @@ class UploadService {
 
     if (isImage && (!mimeType || !mimeType.includes('svg'))) {
       // Transpile to WebP via Sharp
-      fileName = `${safeBaseName}_${uniqueHash}.webp`;
+      fileName = `${prefix}_${nextIndex}.webp`;
       filePath = path.join(targetDir, fileName);
       finalMimeType = 'image/webp';
 
@@ -69,7 +101,7 @@ class UploadService {
     } else {
       // Write directly with fs-extra
       const ext = path.extname(originalName) || '';
-      fileName = `${safeBaseName}_${uniqueHash}${ext}`;
+      fileName = `${prefix}_${nextIndex}${ext}`;
       filePath = path.join(targetDir, fileName);
       finalMimeType = mimeType || 'application/octet-stream';
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterLinkActive, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -18,6 +19,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   public authService = inject(AuthService);
+  private alertService = inject(AlertService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private _sub: any;
@@ -34,6 +36,31 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   get isAngular() {
     return !!document.querySelector('app-root');
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isLoggedIn() && this.authService.hasRole('admin');
+  }
+
+  onNavClick(event: Event, path: string): void {
+    if (path.startsWith('/marketplace/museums')) {
+      if (!this.authService.isLoggedIn()) {
+        event.preventDefault();
+        this.alertService.error('Accesso negato: Devi effettuare il login per accedere alla sezione Musei.');
+        if ((window as any).ShellRouter) {
+          (window as any).ShellRouter.navigate('/login?returnUrl=' + encodeURIComponent(path));
+        } else {
+          this.router.navigate(['/login'], { queryParams: { returnUrl: path } });
+        }
+        return;
+      }
+
+      if (!this.authService.hasRole('admin')) {
+        event.preventDefault();
+        this.alertService.error('Accesso negato: La sezione Musei è riservata esclusivamente agli utenti Amministratori (admin).');
+        return;
+      }
+    }
   }
 
   ngOnInit() {

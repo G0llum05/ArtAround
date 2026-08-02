@@ -14,7 +14,45 @@ export const ShellRouter = (function () {
     dispatch(path);
   }
 
+  /**
+   * Registro enterprise di autorizzazione ruoli per le rotte della Shell / Micro-frontends.
+   * Aggiungere o modificare qui le protezioni per nuove sezioni dell'app.
+   */
+  const ROUTE_PERMISSIONS = {
+    '/marketplace/museums': ['admin'],
+    // Esempi di estensioni immediate:
+    // '/visite/gestione': ['teacher', 'admin'],
+    // '/marketplace/crea': ['museumstaff', 'admin'],
+  };
+
+  function checkRoutePermissions(path) {
+    const matchedPrefix = Object.keys(ROUTE_PERMISSIONS).find(prefix => path.startsWith(prefix));
+    if (!matchedPrefix) return true; // Nessuna restrizione
+
+    const allowedRoles = ROUTE_PERMISSIONS[matchedPrefix];
+    const token = ShellStore ? ShellStore.get('token') : null;
+    const user = ShellStore ? ShellStore.get('user') : null;
+
+    if (!token) {
+      alert('Accesso negato: Devi effettuare il login per accedere a questa sezione.');
+      activateAngular('/login?returnUrl=' + encodeURIComponent(path));
+      return false;
+    }
+
+    if (!user || !allowedRoles.includes(user.role)) {
+      alert(`Accesso negato: Questa sezione richiede uno dei seguenti ruoli: [${allowedRoles.join(', ')}].`);
+      activateAngular('/');
+      return false;
+    }
+
+    return true;
+  }
+
   function dispatch(path) {
+    if (!checkRoutePermissions(path)) {
+      return;
+    }
+
     if (path.startsWith('/marketplace')) {
       activateVanilla(path);
     } else {

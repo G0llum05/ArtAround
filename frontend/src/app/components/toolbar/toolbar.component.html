@@ -8,10 +8,25 @@
         @if (isAngular) {
           <a
             [routerLink]="item.path"
+            (click)="onNavClick($event, item.path)"
             [class.active]="isActive(item.path)"
-          >{{ item.label }}</a>
+          >
+            {{ item.label }}
+            @if (item.path === '/marketplace/museums' && !isAdmin()) {
+              <span class="lock-icon" title="Riservato agli Amministratori">🔒</span>
+            }
+          </a>
         } @else {
-          <a [href]="item.path" [class.active]="isActive(item.path)">{{ item.label }}</a>
+          <a
+            [href]="item.path"
+            (click)="onNavClick($event, item.path)"
+            [class.active]="isActive(item.path)"
+          >
+            {{ item.label }}
+            @if (item.path === '/marketplace/museums' && !isAdmin()) {
+              <span class="lock-icon" title="Riservato agli Amministratori">🔒</span>
+            }
+          </a>
         }
       </li>
     }
@@ -22,6 +37,9 @@
           <span class="user-badge" title="Utente collegato">
             <span class="user-icon">👤</span>
             <span class="user-name">{{ authService.userDisplayName() || 'Utente' }}</span>
+            @if (authService.hasRole('admin')) {
+              <span class="admin-badge" title="Amministratore">ADMIN</span>
+            }
           </span>
           <button type="button" class="logout-nav-btn" (click)="onLogout()" title="Disconnettiti">
             Logout

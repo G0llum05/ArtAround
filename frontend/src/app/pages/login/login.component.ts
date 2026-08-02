@@ -1,14 +1,14 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
   private returnUrl: string = '/';
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private alertService: AlertService,
     private router: Router,
     private route: ActivatedRoute,
@@ -38,15 +38,33 @@ export class LoginComponent implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       if (params['status'] === 'success') {
-        this.setSuccessMessage('Login con Google effettuato con successo!');
-        this.cdr.detectChanges();
-        this.router.navigateByUrl(this.returnUrl);
+        this.isLoading = true;
+        this.authService.refreshToken().subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.setSuccessMessage('Login con Google effettuato con successo!');
+            this.cdr.detectChanges();
+            this.router.navigateByUrl(this.returnUrl);
+          },
+          error: () => {
+            this.isLoading = false;
+            this.setSuccessMessage('Login con Google effettuato con successo!');
+            this.cdr.detectChanges();
+            this.router.navigateByUrl(this.returnUrl);
+          }
+        });
       } else if (params['error'] === 'oauth_error' || params['error'] === 'google') {
         this.setErrorMessage('Autenticazione con Google fallita o annullata.');
       } else if (params['error'] === 'auth_failed') {
         this.setErrorMessage('Impossibile autenticare l\'utente.');
       }
     });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+    this.clearMessages();
+    this.cdr.detectChanges();
   }
 
   toggleMode(): void {
@@ -96,6 +114,11 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     this.clearMessages();
+
+    if (this.authService.isLoggedIn()) {
+      this.setErrorMessage('Sei già autenticato! Devi prima effettuare il logout per accedere con un altro account.');
+      return;
+    }
 
     if (this.isLoginMode) {
       // --- LOGICA LOGIN ---
@@ -175,6 +198,10 @@ export class LoginComponent implements OnInit {
   }
 
   onGoogleLogin(): void {
+    if (this.authService.isLoggedIn()) {
+      this.setErrorMessage('Sei già autenticato! Devi prima effettuare il logout per accedere con un altro account.');
+      return;
+    }
     this.authService.loginWithGoogle();
   }
 }

@@ -20,14 +20,30 @@ export class AuthService {
   readonly isLoggedIn = computed(() => !!this.accessToken());
   readonly userRole = computed(() => this.currentUser()?.role || 'guest');
   readonly isPendingApproval = computed(() => this.currentUser()?.roleStatus === 'pending');
+  readonly userDisplayName = computed(() => {
+    const user = this.currentUser();
+    if (!user) return '';
+    if (user.name) {
+      return user.surname ? `${user.name} ${user.surname}` : user.name;
+    }
+    return user.email || 'Utente';
+  });
 
   constructor(
     private http: HttpClient,
     private router: Router
   ) {
-    // Se è presente un access token salvato, tenta di caricare il profilo utente all'avvio dell'app
+    // Tenta di caricare il profilo o ripristinare la sessione tramite cookie all'avvio dell'app
     if (this.accessToken()) {
       this.loadCurrentUser().subscribe({
+        error: () => {
+          this.refreshToken().subscribe({
+            error: () => this.handleSessionExpired()
+          });
+        }
+      });
+    } else {
+      this.refreshToken().subscribe({
         error: () => this.handleSessionExpired()
       });
     }
@@ -133,7 +149,15 @@ export class AuthService {
 
   private handleAuthSuccess(response: AuthResponse): void {
     this.saveAccessToken(response.accessToken);
-    this.currentUser.set(response.user);
+    if (response.user) {
+      this.currentUser.set(response.user);
+    } else {
+      this.loadCurrentUser().subscribe();
+    }
+    if ((window as any).ShellStore) {
+      (window as any).ShellStore.set('token', response.accessToken);
+      (window as any).ShellStore.set('user', response.user || this.currentUser());
+    }
   }
 
   private saveAccessToken(token: string): void {
@@ -145,5 +169,9 @@ export class AuthService {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     this.accessToken.set(null);
     this.currentUser.set(null);
+    if ((window as any).ShellStore) {
+      (window as any).ShellStore.set('token', null);
+      (window as any).ShellStore.set('user', null);
+    }
   }
 }

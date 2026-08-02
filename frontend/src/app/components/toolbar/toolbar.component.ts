@@ -1,7 +1,8 @@
-import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterLinkActive, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -16,9 +17,20 @@ import { filter } from 'rxjs/operators';
   styleUrl: './toolbar.component.css'
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
+  public authService = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   private _sub: any;
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor() {
+    effect(() => {
+      // Monitora i Signal dell'auth per aggiornare la grafica del Web Component
+      this.authService.isLoggedIn();
+      this.authService.currentUser();
+      this.authService.userDisplayName();
+      this.cdr.detectChanges();
+    });
+  }
 
   get isAngular() {
     return !!document.querySelector('app-root');
@@ -35,6 +47,12 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     if ((window as any).ShellStore) {
       (window as any).ShellStore.on('currentPath', () => {
         this.cdr.detectChanges(); // Forza il ricalcolo di isActive() nel template
+      });
+      (window as any).ShellStore.on('user', () => {
+        this.cdr.detectChanges();
+      });
+      (window as any).ShellStore.on('token', () => {
+        this.cdr.detectChanges();
       });
     }
 
@@ -58,12 +76,16 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     return currentPath === path || currentPath.startsWith(path + '/');
   }
 
+  onLogout(): void {
+    this.authService.logout();
+    this.cdr.detectChanges();
+  }
+
   navItems = [
     { label: 'Home',        path: '/'            },
     { label: 'Musei',       path: '/marketplace/museums' },
     { label: 'Visite',      path: '/visite'      },
     { label: 'Contatti',    path: '/contatti'    },
-    { label: 'Login',       path: '/login'       },
     { label: 'Test',        path: '/test'        }
   ] as const;
 }

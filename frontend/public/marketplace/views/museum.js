@@ -35,7 +35,7 @@ export const MuseumViews = {
     _addStep1(data = {}) {
         return `
             <div class="wizard-step" data-step="1">
-                <h2>Dati Generali</h2>
+                <h2>Dati Generali (Step 1/4)</h2>
                 
                 <div class="mkt-field">
                     <label for="name">Nome</label>
@@ -112,7 +112,7 @@ export const MuseumViews = {
     _addStep2(data = {}) {
         return `
             <div class="wizard-step" data-step="2">
-                <h2>Orari Settimanali</h2>
+                <h2>Orari Settimanali (Step 2/4)</h2>
                 <div id="weeklyContainer"></div>
                 <div class="mkt-wizard-controls">
                     <button type="button" class="mkt-button" id="prev-step">Indietro</button>
@@ -127,7 +127,7 @@ export const MuseumViews = {
         const days = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
         return `
             <div class="wizard-step" data-step="3">
-                <h2>Riepilogo</h2>
+                <h2>Riepilogo (Step 3/4)</h2>
                 <div class="recap-section">
                     <h3>Dati Generali</h3>
                     <p><strong>Nome:</strong> ${data.name || ''}</p>
@@ -156,13 +156,40 @@ export const MuseumViews = {
                 </div>
                 <div class="mkt-wizard-controls">
                     <button type="button" class="mkt-button" id="prev-step">Indietro</button>
-                    <button type="submit" class="mkt-button">Crea Museo</button>
+                    <button type="button" class="mkt-button" id="next-step">Crea Museo e Carica Immagini →</button>
+                </div>
+            </div>
+        `;
+    },
+
+    _addStep4(data = {}) {
+        const museumName = data.name || 'Nuovo Museo';
+        const museumId = data._id || data.id || '';
+
+        return `
+            <div class="wizard-step" data-step="4">
+                <h2>Immagini Metadati del Museo (Step 4/4)</h2>
+                <p class="mkt-subtitle">
+                    Carica le immagini metadati per <strong>${museumName}</strong>.<br>
+                    Verranno convertite in WebP e salvate nel server in <code>assets/museums/${museumId || ':museumId'}/meta</code>.
+                </p>
+                
+                <div id="uppy-museum-meta-container" class="uppy-vanilla-container"></div>
+
+                <div id="uploaded-meta-gallery" class="mkt-uploaded-gallery" style="display: none; margin-top: 1.5rem;">
+                    <h3>Immagini Caricate (WebP):</h3>
+                    <div class="mkt-gallery-grid" id="uploaded-gallery-grid"></div>
+                </div>
+
+                <div class="mkt-wizard-controls" style="margin-top: 1.5rem;">
+                    <button type="button" class="mkt-button" id="prev-step">Indietro</button>
+                    <button type="button" class="mkt-button mkt-button-primary" id="finish-wizard">Completa Creazione</button>
                 </div>
             </div>
         `;
     },
 
     error(err) {
-        return `<div class="mkt-error"> \${err.message} </div>`
+        return `<div class="mkt-error"> ${err.message} </div>`
     }
 };

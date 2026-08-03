@@ -7,7 +7,7 @@ const itemSchema = new mongoose.Schema({
   },
   tone: {
     type: String,
-    enum: ['infantile', 'simple', 'technical', 'scientific', 'medium', 'advanced', 'expert'],
+    enum: ['infantile', 'simple', 'medium', 'advanced', 'technical'],
     required: true
   },
   length: {

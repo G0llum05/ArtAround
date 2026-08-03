@@ -9,8 +9,7 @@ const pointOfInterestSchema = new mongoose.Schema({
     enum: [
       'toilette', 'disabled_toilette', 'bar', 'restaurant', 'shop', 
       'entrance', 'exit', 'emergency_exit', 'elevator', 'stairs', 
-      'ticket_office', 'info_point', 'cloakroom', 'first_aid', 'other'
-    ],
+      'ticket_office', 'info_point', 'cloakroom', 'first_aid'],
     required: true
   },
   floor: { type: String, default: 'Piano Terra' },

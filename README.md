@@ -80,3 +80,12 @@ Progetto Tecnologie Web A.A. 2025/26
   3. Guardie di Navigazione (Route Guards):
       • AuthGuard: Protegge le rotte riservate reindirizzando al login gli utenti non autenticati.
       • RoleGuard: Protegge le sezioni riservate ai singoli ruoli (es. dashboard musei per museumstaff).
+
+
+
+
+## TEST CLI-Navigator 
+
+two options:
+`npm run navigator:cli --prefix backend`
+`node backend/scripts/test-navigator-cli.js`

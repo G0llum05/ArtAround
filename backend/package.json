@@ -9,7 +9,8 @@
     "swagger": "node config/swagger.js",
     "generate:module": "node scripts/generate-module.js",
     "create:module": "node scripts/generate-module.js",
-    "seed": "node scripts/seedDatabase.js"
+    "seed": "node scripts/seedDatabase.js",
+    "navigator:cli": "node scripts/test-navigator-cli.js"
   },
   "keywords": [],
   "author": "",

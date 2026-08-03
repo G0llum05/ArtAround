@@ -143,7 +143,12 @@ async function seed() {
       const item = new Item({
         description: itemData.description,
         tone: itemData.tone,
-        length: itemData.length
+        length: itemData.length,
+        author: userMap[itemData.author] || null,
+        authorName: itemData.authorName || 'Curatore',
+        license: itemData.license || 'Standard',
+        language: itemData.language || 'it',
+        isAIGenerated: itemData.isAIGenerated || false
       });
       const savedItem = await item.save();
       itemMap[itemData.key] = savedItem._id;
@@ -233,7 +238,35 @@ async function seed() {
         ticketInfo: museumData.ticketInfo,
         isActive: museumData.isActive ?? true,
         disableFriendly: museumData.disableFriendly ?? true,
-        requirements: museumData.requirements
+        requirements: museumData.requirements,
+        services: museumData.services || {
+          hasToilette: true,
+          hasDisabledToilette: true,
+          hasElevator: true,
+          hasStairs: true,
+          hasBar: true,
+          hasShop: true,
+          hasAudioGuide: true,
+          hasAirConditioning: true,
+          hasWifi: true
+        },
+        accessibility: museumData.accessibility || {
+          disableFriendly: true,
+          wheelchairAccessible: true,
+          childFriendly: true,
+          audioDescriptions: true
+        },
+        pointsOfInterest: museumData.pointsOfInterest || [
+          { name: "Toilette Principale", type: "toilette", floor: "Piano Terra", room: "Atrio Ingresso" },
+          { name: "Uscita di Emergenza Nord", type: "emergency_exit", floor: "Piano Terra", room: "Sala 1" },
+          { name: "Ascensore Principale", type: "elevator", floor: "Piano Terra", room: "Atrio Ingresso" },
+          { name: "Bar / Caffetteria", type: "bar", floor: "Piano Terra", room: "Cortile Interno" },
+          { name: "Bookshop", type: "shop", floor: "Piano Terra", room: "Atrio Ingresso" }
+        ],
+        floors: museumData.floors || [
+          { level: 0, name: "Piano Terra", description: "Atrio e Sale Principali" },
+          { level: 1, name: "Primo Piano", description: "Esposizioni e Pinacoteca" }
+        ]
       });
 
       const savedMuseum = await museum.save();

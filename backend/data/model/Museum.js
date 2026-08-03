@@ -2,6 +2,22 @@ const mongoose = require('mongoose');
 const ScheduleSchema = require('./schemas/VisitingHoursSchema');
 const SocialSchema = require('./schemas/SocialSchema');
 
+const pointOfInterestSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  type: {
+    type: String,
+    enum: [
+      'toilette', 'disabled_toilette', 'bar', 'restaurant', 'shop', 
+      'entrance', 'exit', 'emergency_exit', 'elevator', 'stairs', 
+      'ticket_office', 'info_point', 'cloakroom', 'first_aid', 'other'
+    ],
+    required: true
+  },
+  floor: { type: String, default: 'Piano Terra' },
+  room: String,
+  details: String
+}, { _id: true });
+
 const museumSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -14,23 +30,12 @@ const museumSchema = new mongoose.Schema({
 
   // Indirizzo strutturato
   address: {
-    street: String, // check in base all'api di suggerimento luogo
+    street: String,
     city: { type: String, required: true },
-    zipCode: String, //CAP
+    zipCode: String,
     country: { type: String, required: true }
   },
-  // GeoJSON per mappe e ricerche "vicino a me"
-  // location: {
-  //   type: {
-  //     type: String, 
-  //     enum: ['Point'],
-  //     default: 'Point'
-  //   },
-  //   coordinates: {
-  //     type: [Number], // [longitudine, latitudine]
-  //     required: true
-  //   }
-  // },
+
   // Contatti
   contact: {
     phone: String,
@@ -41,8 +46,6 @@ const museumSchema = new mongoose.Schema({
 
   maxCapacity: Number,
   actualCapacity: Number,
-  // Media
-  // images: [String], // URL delle immagini su S3/Cloudinary
   
   // Relazioni
   visits: [{
@@ -54,7 +57,8 @@ const museumSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Artwork'
   }],
-  // Orari generali del museo (riutilizzando la logica di prima)
+
+  // Orari generali del museo
   openingHours: [ScheduleSchema],
 
   ticketInfo: {
@@ -68,20 +72,65 @@ const museumSchema = new mongoose.Schema({
   
   isActive: Boolean,
 
-  disableFriendly: {
-    type: Boolean
+  // --- SERVIZI & INFRASTRUTTURE DEL MUSEO ---
+  services: {
+    hasToilette: { type: Boolean, default: true },
+    hasDisabledToilette: { type: Boolean, default: true },
+    hasElevator: { type: Boolean, default: false },
+    hasStairs: { type: Boolean, default: true },
+    hasBar: { type: Boolean, default: false },
+    hasRestaurant: { type: Boolean, default: false },
+    hasShop: { type: Boolean, default: false },
+    hasParking: { type: Boolean, default: false },
+    hasAudioGuide: { type: Boolean, default: true },
+    hasAirConditioning: { type: Boolean, default: true },
+    hasHeating: { type: Boolean, default: true },
+    hasWifi: { type: Boolean, default: true },
+    hasGuidedTours: { type: Boolean, default: true },
+    hasCloakroom: { type: Boolean, default: false }
   },
-  
-  // Description of what we need for the visit
+
+  // --- ACCESSIBILITÀ & TARGET ---
+  accessibility: {
+    disableFriendly: { type: Boolean, default: true },
+    wheelchairAccessible: { type: Boolean, default: true },
+    childFriendly: { type: Boolean, default: true },
+    petFriendly: { type: Boolean, default: false },
+    tactilePaths: { type: Boolean, default: false },
+    brailleSignage: { type: Boolean, default: false },
+    audioDescriptions: { type: Boolean, default: true },
+    notes: String
+  },
+
+  // --- MAPPATURA PUNTI DI INTERESSE PER NAVIGATOR ---
+  pointsOfInterest: [pointOfInterestSchema],
+
+  // --- PIANI DELLO SPAZIO ESPOSITIVO ---
+  floors: [{
+    level: Number,       // es. 0 per Piano Terra, 1 per Primo Piano, -1 per Seminterrato
+    name: String,        // es. "Piano Terra", "Piano Nobile"
+    description: String
+  }],
+
+  // --- TRASPORTI E PARCHEGGIO ---
+  transportInfo: {
+    publicTransport: String,
+    parkingDetails: String
+  },
+
+  // --- MOSTRE TEMPORANEE ED EVENTI SPECIALI ---
+  eventsAndExhibitions: {
+    specialEvents: [String],
+    temporaryExhibitions: [String]
+  },
+
+  // Requisiti generali per la visita
   requirements: {
     type: String
   }
-  
-  // CHECK TODO: AGGIUNGERE informazioni su accessibilità, servizi, parcheggio, trasporti pubblici, bar interno, shop, audioguide, scale, ascensori, bagni, piani, ristoranti interni, accessi per disabili, accessi per bambini, accessi per animali, aria condizionata, riscaldamento, wifi, guide turistiche, visite guidate, eventi speciali, mostre temporanee, entrate, uscite
-
-});
+}, { timestamps: true });
 
 // Indice per le ricerche geografiche
-museumSchema.index({ location: "2dsphere" });
+museumSchema.index({ "address.city": 1 });
 
 module.exports = mongoose.model('Museum', museumSchema);

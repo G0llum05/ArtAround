@@ -1,7 +1,7 @@
 <nav aria-label="Menu principale">
   <ul role="list">
     <li>
-      <a href="/marketplace" [class.active]="isActive('/marketplace')"> Marketplace </a>
+      <a href="/marketplace" (click)="onNavClick($event, '/marketplace')" [class.active]="isActive('/marketplace')"> Marketplace </a>
     </li>
     @for (item of navItems; track item.label) {
       <li>

@@ -61,6 +61,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         return;
       }
     }
+
+    if ((window as any).ShellRouter) {
+      event.preventDefault();
+      (window as any).ShellRouter.navigate(path);
+    }
   }
 
   ngOnInit() {

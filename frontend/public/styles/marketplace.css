@@ -33,13 +33,15 @@
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--mkt-card-border);
+}
 
 .mkt-link {
-    color: blue;
-    &:hover {
-        text-decoration: underline;
-        cursor: pointer;
-    }
+  color: #2f81f7;
+  cursor: pointer;
+}
+
+.mkt-link:hover {
+  text-decoration: underline;
 }
 
 .mkt-main-title {
@@ -513,8 +515,9 @@
   background: #21262d;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
+}
 
-  /* Uppy Vanilla JS & Marketplace Step 4 Styles */
+/* Uppy Vanilla JS & Marketplace Step 4 Styles */
 .uppy-vanilla-container {
     width: 100%;
     max-width: 700px;

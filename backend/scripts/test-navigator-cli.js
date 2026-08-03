@@ -125,7 +125,8 @@ async function main() {
         inputText: trimmed,
         visitId: visit._id,
         currentArtworkIndex: result.currentArtworkIndex,
-        currentTone: result.activeTone
+        currentTone: result.activeTone,
+        currentLanguage: result.activeLanguage || 'it'
       });
 
       printState(result, visit.artworks.length);
@@ -140,11 +141,11 @@ async function main() {
 }
 
 function printState(result, totalArtworks) {
-  const { activeArtwork, item, nlpResult, actionMessage, logisticalDirections, currentArtworkIndex, activeTone } = result;
+  const { activeArtwork, item, nlpResult, actionMessage, logisticalDirections, currentArtworkIndex, activeTone, activeProviderName } = result;
 
   console.log(`\n${colors.gold}=========================================================================${colors.reset}`);
   console.log(`${colors.bright}🖼️  OPERA ${currentArtworkIndex + 1}/${totalArtworks}: "${activeArtwork.title}"${colors.reset}`);
-  console.log(`📍 Posizione: Stanza "${activeArtwork.location?.room || 'Galleria Principal'}", Piano: ${activeArtwork.location?.floor || 'Piano Terra'}`);
+  console.log(`📍 Posizione: Stanza "${activeArtwork.location?.room || 'Galleria Principale'}", Piano: ${activeArtwork.location?.floor || 'Piano Terra'}`);
   console.log(`🏷️ QR Code: [${activeArtwork.qrCode || 'ART_QR'}]`);
   
   if (nlpResult && nlpResult.intent !== 'UNKNOWN') {
@@ -157,7 +158,17 @@ function printState(result, totalArtworks) {
 
   console.log(`\n${colors.green}${colors.bright}🔊 CONTENUTO AUDIO/TESTO (Tono: ${activeTone.toUpperCase()}, Lingua: ${item.language || 'IT'}):${colors.reset}`);
   console.log(`${colors.bright}"${item.description}"${colors.reset}`);
-  console.log(`${colors.gray}   (Fonte: ${item.fromCache ? 'Cache MongoDB (0ms)' : 'Generato dall\'AI Engine'} | Generato da AI: ${item.isAIGenerated} | Autore: ${item.authorName || 'Curatore'})${colors.reset}`);
+
+  const providerLabel = activeProviderName || 'Fallback Engine Mock Offline';
+  const sourceLabel = item.fromCache 
+    ? `${colors.green}⚡ Cache MongoDB (Risposta Istantanea 0ms)${colors.reset}` 
+    : `${colors.magenta}✨ Generato al volo da AI API${colors.reset}`;
+
+  console.log(`\n${colors.cyan}🔍 [DEBUG INFO INTERFACCIA & ENGINE]:${colors.reset}`);
+  console.log(`   • 🤖 Provider AI Configurato : ${colors.bright}${providerLabel}${colors.reset}`);
+  console.log(`   • 📦 Provenienza Contenuto  : ${sourceLabel}`);
+  console.log(`   • 📝 Generato da AI        : ${item.isAIGenerated ? 'Sì (AI Engine)' : 'No (Testo Autore Umano)'}`);
+  console.log(`   • 👤 Autore Registrato     : ${item.authorName || 'Curatore'}`);
 
   if (logisticalDirections) {
     console.log(`\n${colors.gold}${colors.bright}🧭 INDICAZIONI LOGISTICHE / NAVIGATORE:${colors.reset}`);

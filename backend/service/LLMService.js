@@ -1,15 +1,35 @@
 const http = require('http');
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
-
-// TODO: TUTTI i promt e i comandi da mandare all'llm vanno resi più modificabili. Quindi prob è comodo avere un file di configurazione JSON o YAML con i prompt e le istruzioni per ogni comando, così da poterli modificare senza toccare il codice.
+let promptsConfig = null;
+function getPrompt(key, replacements = {}) {
+  if (!promptsConfig) {
+    try {
+      const configPath = path.join(__dirname, '../config/llm-prompts.json');
+      if (fs.existsSync(configPath)) {
+        promptsConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      }
+    } catch (e) {
+      console.warn('[LLMService] Impossibile caricare llm-prompts.json, utilizzo prompt di default.');
+    }
+  }
+  let template = (promptsConfig && promptsConfig[key]) ? promptsConfig[key] : '';
+  for (const [k, v] of Object.entries(replacements)) {
+    const val = typeof v === 'object' ? JSON.stringify(v) : String(v || '');
+    template = template.split(`{{${k}}}`).join(val);
+  }
+  return template;
+}
 
 /**
  * LLMService - Service modulare per l'integrazione con Generative AI (LLM).
  * 
  * Supporta:
- * 1. Provider reali (OpenAI / Google Gemini / Ollama) configurabili tramite process.env.
+ * 1. Provider reali (Groq / OpenAI / Google Gemini / Ollama) configurabili tramite process.env.
  * 2. Provider Mock Offline di fallback autonomo: per sviluppare e testare senza chiavi API o connessione.
+ * 3. Prompt configurabili esternamente in backend/config/llm-prompts.json.
  */
 class LLMService {
 
@@ -24,19 +44,8 @@ class LLMService {
       return this._mockParseCommand(textLower, context);
     }
 
-    // Se la API Key è presente nel process.env, esegue la chiamata al modello
     try {
-      const prompt = `Sei l'engine NLP di una guida per musei. Analizza la seguente frase del visitatore e mappa l'intent in un JSON puro.
-Frase utente: "${inputText}"
-Context attuale: ${JSON.stringify(context)}
-
-Rispondi ESCLUSIVAMENTE con un JSON con la seguente struttura:
-{
-  "intent": "SIMPLIFY_TONE" | "ADVANCE_TONE" | "NEXT_ITEM" | "PREVIOUS_ITEM" | "ASK_AUTHOR_INFO" | "NAVIGATE_POI" | "UNKNOWN",
-  "targetPoiType": "toilette" | "bar" | "exit" | "elevator" | "shop" | null,
-  "requestedTone": "infantile" | "simple" | "medium" | "advanced" | null,
-  "confidence": 0.95
-}`;
+      const prompt = getPrompt('parseCommand', { inputText, context });
       const responseText = await this._callLLM(prompt);
       const parsed = this._cleanAndParseJSON(responseText);
       if (parsed) {
@@ -58,12 +67,7 @@ Rispondi ESCLUSIVAMENTE con un JSON con la seguente struttura:
     }
 
     try {
-      const prompt = `Sei la guida vocale di un museo. L'utente si trova in: ${JSON.stringify(currentLocation)}.
-La destinazione è: ${JSON.stringify(targetLocation)}.
-Servizi e Piani del Museo: ${JSON.stringify(museumContext)}.
-
-Fornisci un'indicazione logistica breve (2-3 frasi), chiara e naturale su come raggiungere la destinazione a piedi.`;
-      
+      const prompt = getPrompt('logisticalDirections', { currentLocation, targetLocation, museumContext });
       return await this._callLLM(prompt);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM indicazioni fallita, utilizzo fallback mock:', err.message);
@@ -72,28 +76,56 @@ Fornisci un'indicazione logistica breve (2-3 frasi), chiara e naturale su come r
   }
 
   /**
-   * ADAPTED ITEM: Genera un testo di spiegazione per un'opera con tono, durata o lingua specifica
+   * ADAPTED ITEM: Genera un testo di spiegazione per un'opera rielaborando il contesto dell'opera ed eventuale testo base dell'autore
    */
-  static async generateAdaptedItem(artworkTitle, tone = 'medium', lengthSeconds = 30, language = 'it') {
+  static async generateAdaptedItem(artworkContext, tone = 'medium', lengthSeconds = 30, language = 'it', existingText = '') {
+    const title = typeof artworkContext === 'string' ? artworkContext : (artworkContext.title || 'Opera');
+
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return this._mockAdaptedItem(artworkTitle, tone, lengthSeconds, language);
+      return this.extractToneText(this._mockAdaptedItem(title, tone, lengthSeconds, language, existingText), tone);
     }
 
     try {
-      const prompt = `Sei un curatore di musei ed esperto di comunicazione d'arte.
-Scrivi una spiegazione per l'opera: "${artworkTitle}".
-- Tono richiesto: ${tone} (infantile = per bambini 5-8 anni; simple = linguaggio chiaro e accessibile; medium = divulgativo bilanciato; advanced = accademico e dettagliato).
-- Durata massima di lettura: ${lengthSeconds} secondi.
-- Lingua: ${language}.
+      const prompt = getPrompt('generateAdaptedItem', {
+        artworkContext: typeof artworkContext === 'object' ? artworkContext : { title },
+        existingText: existingText || 'Nessun testo precedente disponibile.',
+        tone,
+        lengthSeconds,
+        language
+      });
 
-REQUISITO TASSATIVO: Restituisci ESCLUSIVAMENTE il singolo paragrafo di testo relativo al tono "${tone}". NON inserire elenchi, intestazioni markdown o opzioni per gli altri toni (es. NON scrivere **Infantile**, **Simple**, **Medium**, **Advanced**). Rispondi unicamente con il testo puro del tono richiesto.`;
-
-      return await this._callLLM(prompt);
+      const responseText = await this._callLLM(prompt);
+      return this.extractToneText(responseText, tone);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM adattamento item fallita, utilizzo fallback mock:', err.message);
-      return this._mockAdaptedItem(artworkTitle, tone, lengthSeconds, language);
+      return this.extractToneText(this._mockAdaptedItem(title, tone, lengthSeconds, language, existingText), tone);
     }
   }
+
+  /**
+   * Helper per isolare esclusivamente il paragrafo del tono richiesto
+   * qualora l'LLM o la cache memorizzino intestazioni multi-tono (es. **Simple**, **Infantile**)
+   */
+  static extractToneText(fullText, requestedTone = 'medium') {
+    if (!fullText || typeof fullText !== 'string') return fullText;
+
+    const toneLower = (requestedTone || 'medium').toLowerCase();
+    
+    // Se il testo contiene marcatori come **Infantile** o **Simple** o ### Medium
+    if (fullText.includes('**') || fullText.includes('###') || fullText.toLowerCase().includes('infantile')) {
+      const sections = fullText.split(/(?=\*\*|\#\#\#)/);
+      for (const sec of sections) {
+        const firstLineLower = sec.split('\n')[0].toLowerCase();
+        if (firstLineLower.includes(toneLower)) {
+          // Rimuove l'intestazione markdown ed i ritorni a capo iniziali
+          return sec.replace(/^(\*\*|###).+?(\*\*|\n)/, '').trim();
+        }
+      }
+    }
+
+    return fullText.trim();
+  }
+
 
   /**
    * SMART VISIT: Compone una visita personalizzata basata sui vincoli dell'utente
@@ -108,14 +140,10 @@ REQUISITO TASSATIVO: Restituisci ESCLUSIVAMENTE il singolo paragrafo di testo re
     }
 
     try {
-      const prompt = `Sei un curatore museale. Seleziona le opere migliori da questo elenco: ${JSON.stringify(titles)} 
-in base a questi vincoli utente: ${JSON.stringify(constraints)}.
-Rispondi con un JSON: { "selectedTitles": [...], "rationale": "spiegazione breve" }`;
-
+      const prompt = getPrompt('smartVisit', { titles, constraints });
       const responseText = await this._callLLM(prompt);
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
+      const parsed = this._cleanAndParseJSON(responseText);
+      if (parsed) {
         const selectedIds = availableArtworks
           .filter(a => (parsed.selectedTitles || []).includes(a.title))
           .map(a => a._id);
@@ -134,15 +162,42 @@ Rispondi con un JSON: { "selectedTitles": [...], "rationale": "spiegazione breve
     };
   }
 
+  static _cleanAndParseJSON(text) {
+    try {
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   // =========================================================================
   // IMPLEMENTAZIONE FALLBACK MOCK OFFLINE
   // =========================================================================
 
   static _mockParseCommand(textLower, context) {
-    if (textLower.includes('bambin') || textLower.includes('semplic') || textLower.includes('non capisc') || textLower.includes('troppo diffic')) {
-      return { intent: 'SIMPLIFY_TONE', requestedTone: 'infantile', confidence: 0.98 };
+    if (textLower.includes('inglese') || textLower.includes('english') || textLower.includes('englesh')) {
+      return { intent: 'CHANGE_LANGUAGE', requestedLanguage: 'en', confidence: 0.98 };
     }
-    if (textLower.includes('dettagli') || textLower.includes('approfond') || textLower.includes('tecnic') || textLower.includes('esperti')) {
+    if (textLower.includes('francese') || textLower.includes('french') || textLower.includes('français')) {
+      return { intent: 'CHANGE_LANGUAGE', requestedLanguage: 'fr', confidence: 0.98 };
+    }
+    if (textLower.includes('spagnolo') || textLower.includes('spanish') || textLower.includes('español')) {
+      return { intent: 'CHANGE_LANGUAGE', requestedLanguage: 'es', confidence: 0.98 };
+    }
+    if (textLower.includes('italiano') || textLower.includes('italian')) {
+      return { intent: 'CHANGE_LANGUAGE', requestedLanguage: 'it', confidence: 0.98 };
+    }
+    if (textLower.includes('accorcia') || textLower.includes('riduci') || textLower.includes('tempi') || textLower.includes('veloce') || textLower.includes('fretta') || textLower.includes('sintetico')) {
+      return { intent: 'SHORTEN_LENGTH', requestedLength: 15, confidence: 0.98 };
+    }
+    if (textLower.includes('allunga') || textLower.includes('più lunga') || textLower.includes('estendi')) {
+      return { intent: 'EXTEND_LENGTH', requestedLength: 60, confidence: 0.98 };
+    }
+    if (textLower.includes('bambin') || textLower.includes('semplic') || textLower.includes('non capisc') || textLower.includes('più facile') || textLower.includes('meno diffic')) {
+      return { intent: 'SIMPLIFY_TONE', requestedTone: 'simple', confidence: 0.98 };
+    }
+    if (textLower.includes('dettagli') || textLower.includes('approfond') || textLower.includes('tecnic') || textLower.includes('esperti') || textLower.includes('scientific') || textLower.includes('studioso') || textLower.includes('diffic')) {
       return { intent: 'ADVANCE_TONE', requestedTone: 'advanced', confidence: 0.95 };
     }
     if (textLower.includes('prossim') || textLower.includes('avanti') || textLower.includes('dopo') || textLower.includes('successiv')) {
@@ -151,17 +206,48 @@ Rispondi con un JSON: { "selectedTitles": [...], "rationale": "spiegazione breve
     if (textLower.includes('indietro') || textLower.includes('prima') || textLower.includes('precedent')) {
       return { intent: 'PREVIOUS_ITEM', confidence: 0.99 };
     }
+    // POI Parsing completo
+    if (textLower.includes('bagno disabil') || textLower.includes('toilette disabil')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'disabled_toilette', confidence: 0.97 };
+    }
     if (textLower.includes('bagno') || textLower.includes('toilette') || textLower.includes('wc')) {
       return { intent: 'NAVIGATE_POI', targetPoiType: 'toilette', confidence: 0.96 };
     }
-    if (textLower.includes('bar') || textLower.includes('caffè') || textLower.includes('mangiare') || textLower.includes('ristorante')) {
+    if (textLower.includes('bar') || textLower.includes('caffè')) {
       return { intent: 'NAVIGATE_POI', targetPoiType: 'bar', confidence: 0.96 };
+    }
+    if (textLower.includes('ristorante') || textLower.includes('pranzo') || textLower.includes('mangiare')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'restaurant', confidence: 0.96 };
+    }
+    if (textLower.includes('shop') || textLower.includes('negozio') || textLower.includes('bookshop') || textLower.includes('souvenir')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'shop', confidence: 0.96 };
+    }
+    if (textLower.includes('uscita di emergenza') || textLower.includes('antincendio')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'emergency_exit', confidence: 0.98 };
     }
     if (textLower.includes('uscita') || textLower.includes('uscire') || textLower.includes('fuori')) {
       return { intent: 'NAVIGATE_POI', targetPoiType: 'exit', confidence: 0.97 };
     }
-    if (textLower.includes('ascensore') || textLower.includes('scale')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'elevator', confidence: 0.95 };
+    if (textLower.includes('ingresso') || textLower.includes('entrata')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'entrance', confidence: 0.97 };
+    }
+    if (textLower.includes('ascensore')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'elevator', confidence: 0.96 };
+    }
+    if (textLower.includes('scale')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'stairs', confidence: 0.96 };
+    }
+    if (textLower.includes('bigliett') || textLower.includes('cassa')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'ticket_office', confidence: 0.96 };
+    }
+    if (textLower.includes('info') || textLower.includes('informazion')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'info_point', confidence: 0.96 };
+    }
+    if (textLower.includes('guardaroba') || textLower.includes('zaini') || textLower.includes('giacche')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'cloakroom', confidence: 0.96 };
+    }
+    if (textLower.includes('pronto soccorso') || textLower.includes('infermeria') || textLower.includes('medico')) {
+      return { intent: 'NAVIGATE_POI', targetPoiType: 'first_aid', confidence: 0.96 };
     }
     if (textLower.includes('autore') || textLower.includes('chi ha dipinto') || textLower.includes('chi l\'ha fatto') || textLower.includes('artista')) {
       return { intent: 'ASK_AUTHOR_INFO', confidence: 0.92 };
@@ -183,14 +269,29 @@ Rispondi con un JSON: { "selectedTitles": [...], "rationale": "spiegazione breve
     return `Dalla stanza "${fromRoom}", prosegui dritto lungo il corridoio della galleria. Troverai "${toRoom}" sul lato destro dopo l'ampia arcata.`;
   }
 
-  static _mockAdaptedItem(artworkTitle, tone, lengthSeconds, language) {
+  static _mockAdaptedItem(artworkTitle, tone, lengthSeconds, language, existingText = '') {
+    const prefix = existingText ? `[AI Adaptation from Original Author Text]` : `[AI Storyteller]`;
     if (tone === 'infantile') {
-      return `[AI Storyteller] Ciao! Guarda che bella quest'opera intitolata "${artworkTitle}"! È stata creata con colori vivaci per raccontarci una storia fantastica su persone e luoghi speciali del passato. Riesci a vedere tutti i dettagli nascosti?`;
+      return `${prefix} Ciao! Guarda che bella quest'opera intitolata "${artworkTitle}"! È stata creata con colori vivaci per raccontarci una storia fantastica su persone e luoghi speciali del passato. Riesci a vedere tutti i dettagli nascosti?`;
     }
-    if (tone === 'advanced') {
-      return `[AI Academic Expert] L'opera "${artworkTitle}" costituisce una testimonianza emblematica dell'evoluzione stilistica del periodo. La composizione formale, l'uso del chiaroscuro e la gestione della prospettiva spaziale rivelano un'intellettualizzazione rigorosa dei codici visivi contemporanei.`;
+    if (tone === 'advanced' || tone === 'technical' || tone === 'scientific' || tone === 'expert') {
+      return `${prefix} L'opera "${artworkTitle}" costituisce una testimonianza emblematica dell'evoluzione stilistica del periodo. La composizione formale, l'uso del chiaroscuro e la gestione della prospettiva spaziale rivelano un'intellettualizzazione rigorosa dei codici visivi contemporanei.`;
     }
-    return `[AI Standard Guide] L'opera "${artworkTitle}" offre uno sguardo affascinante sulla sensibilità artistica dell'epoca. Attraverso una tecnica raffinata e una scelta cromatica ben bilanciata, l'autore guida lo sguardo del visitatore verso gli elementi simbolo della composizione.`;
+    if (tone === 'simple') {
+      return `${prefix} Questa è l'opera "${artworkTitle}". È un dipinto molto interessante creato con uno stile semplice e chiaro per mostrare i momenti importanti della storia dell'artista.`;
+    }
+    return `${prefix} L'opera "${artworkTitle}" offre uno sguardo affascinante sulla sensibilità artistica dell'epoca. Attraverso una tecnica raffinata e una scelta cromatica ben bilanciata, l'autore guida lo sguardo del visitatore verso gli elementi simbolo della composizione.`;
+  }
+
+  /**
+   * Restituisce il nome del provider AI attualmente attivo nel runtime
+   */
+  static getActiveProviderName() {
+    if (process.env.GROQ_API_KEY) return `Groq Cloud AI (${process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'})`;
+    if (process.env.GEMINI_API_KEY) return `Google Gemini AI (${process.env.GEMINI_MODEL || 'gemini-1.5-flash'})`;
+    if (process.env.OPENAI_API_KEY) return `OpenAI (${process.env.OPENAI_MODEL || 'gpt-4o-mini'})`;
+    if (process.env.OLLAMA_HOST) return `Ollama Local (${process.env.OLLAMA_MODEL || 'llama3'})`;
+    return `Fallback Engine Mock Offline`;
   }
 
   /**
@@ -198,18 +299,23 @@ Rispondi con un JSON: { "selectedTitles": [...], "rationale": "spiegazione breve
    */
   static async _callLLM(prompt) {
     if (process.env.GROQ_API_KEY) {
+      console.log(`\x1b[36m[DEBUG AI] 🚀 Invoco API Reale: Groq Cloud (${process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'})...\x1b[0m`);
       return this._callGroqAPI(prompt);
     }
     if (process.env.GEMINI_API_KEY) {
+      console.log(`\x1b[36m[DEBUG AI] 🚀 Invoco API Reale: Google Gemini (${process.env.GEMINI_MODEL || 'gemini-1.5-flash'})...\x1b[0m`);
       return this._callGeminiAPI(prompt);
     }
     if (process.env.OPENAI_API_KEY) {
+      console.log(`\x1b[36m[DEBUG AI] 🚀 Invoco API Reale: OpenAI (${process.env.OPENAI_MODEL || 'gpt-4o-mini'})...\x1b[0m`);
       return this._callOpenAIAPI(prompt);
     }
     if (process.env.OLLAMA_HOST) {
+      console.log(`\x1b[36m[DEBUG AI] 🚀 Invoco LLM Locale: Ollama (${process.env.OLLAMA_MODEL || 'llama3'})...\x1b[0m`);
       return this._callOllamaAPI(prompt);
     }
-    throw new Error('Nessuna chiave API o host LLM configurato in process.env. Fallback su provider mock.');
+    console.log(`\x1b[33m[DEBUG AI] ⚡ Nessuna API Key presente in process.env -> Utilizzo Fallback Engine Mock Offline\x1b[0m`);
+    throw new Error('Nessuna chiave API o host LLM configurato in process.env.');
   }
 
   static _callGroqAPI(prompt) {

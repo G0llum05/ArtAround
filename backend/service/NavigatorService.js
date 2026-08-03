@@ -35,14 +35,17 @@ class NavigatorService {
 
     return { visit, museum };
   }
-
   /**
    * RISOLUZIONE ITEM CON STRATEGIA CACHE-FIRST:
    * 1. Cerca prima nel DB MongoDB se esiste già un Item con tono e lingua desiderati.
    * 2. Se non esiste, chiama LLMService per generarlo, lo salva su MongoDB e lo restituisce.
    */
   static async getOrGenerateItem(artworkId, tone = 'medium', length = 30, language = 'it') {
-    const artwork = await Artwork.findById(artworkId).populate('items').exec();
+    const artwork = await Artwork.findById(artworkId)
+      .populate('items')
+      .populate('artists')
+      .exec();
+
     if (!artwork) {
       throw new Error(`Opera con ID "${artworkId}" non trovata.`);
     }
@@ -57,9 +60,21 @@ class NavigatorService {
     }
 
     // TODO: Se item non trovato perchè non corrispondono lingua e/o tono, Ricicliamo il testo esistente mandando al modello llm e diciamo a lui di adattarlo al tono e/o lingua desiderati. Questo per evitare di generare un testo completamente nuovo se ne esiste già uno simile.
-  
-    // 2. Se non presente nel DB, genera con LLMService
-    const generatedText = await LLMService.generateAdaptedItem(artwork.title, tone, length, language);
+    const existingText = (artwork.items && artwork.items.length > 0) ? artwork.items[0].description : '';
+
+    // Contesto dell'opera completo per dare informazioni di contesto al modello LLM
+    const artworkContext = {
+      title: artwork.title,
+      startYear: artwork.startYear,
+      endYear: artwork.endYear,
+      artists: (artwork.artists || []).map(a => `${a.name} ${a.surname || ''}`).join(', '),
+      artisticCurrents: artwork.artisticCurrents || [],
+      details: artwork.details,
+      location: artwork.location
+    };
+
+    // 2. Se non presente nel DB, genera con LLMService adattando il testo esistente o il contesto dell'opera
+    const generatedText = await LLMService.generateAdaptedItem(artworkContext, tone, length, language, existingText);
 
     const newItem = new Item({
       description: generatedText,
@@ -83,7 +98,7 @@ class NavigatorService {
   /**
    * ESECUZIONE COMANDO VOCALE / TESTUALE IN LINGUAGGIO NATURALE
    */
-  static async handleUserCommand({ inputText, visitId, currentArtworkIndex = 0, currentTone = 'medium' }) {
+  static async handleUserCommand({ inputText, visitId, currentArtworkIndex = 0, currentTone = 'medium', currentLanguage = 'it' }) {
     const { visit, museum } = await this.getVisitWithDetails(visitId);
     const artworks = visit.artworks || [];
     const currentArtwork = artworks[currentArtworkIndex] || artworks[0];
@@ -92,29 +107,66 @@ class NavigatorService {
     const nlpResult = await LLMService.parseNaturalLanguageCommand(inputText, {
       currentArtworkTitle: currentArtwork?.title,
       currentTone,
+      currentLanguage,
       museumName: museum?.name
     });
 
     let newIndex = currentArtworkIndex;
     let newTone = currentTone;
+    let newLanguage = currentLanguage;
     let logisticalDirections = null;
     let actionMessage = '';
 
-
-    const VALID_TONES = ['infantile', 'simple', 'technical', 'scientific', 'medium', 'advanced', 'expert'];
+    const VALID_TONES = ['infantile', 'simple', 'medium', 'advanced', 'technical'];
     const sanitizeTone = (tone, fallback) => (tone && typeof tone === 'string' && tone !== 'null' && VALID_TONES.includes(tone.toLowerCase())) ? tone.toLowerCase() : fallback;
 
     // TODO: Gestione dei tono troppo semplice, non c'è tutta la gamma dei toni possibili che sono nella truttura tono dell'item => enum: ['infantile', 'simple', 'medium', 'advanced', 'technical']
     switch (nlpResult.intent) {
-      case 'SIMPLIFY_TONE':
-        newTone = sanitizeTone(nlpResult.requestedTone, currentTone === 'advanced' ? 'medium' : currentTone === 'medium' ? 'simple' : 'infantile');
+      case 'SIMPLIFY_TONE': {
+        const curIdx = VALID_TONES.indexOf(currentTone);
+        const targetTone = nlpResult.requestedTone;
+        if (targetTone && VALID_TONES.includes(targetTone.toLowerCase())) {
+          newTone = targetTone.toLowerCase();
+        } else if (curIdx > 0) {
+          newTone = VALID_TONES[curIdx - 1];
+        } else {
+          newTone = 'infantile';
+        }
         actionMessage = `Tono semplificato in "${newTone}".`;
         break;
+      }
 
-      case 'ADVANCE_TONE':
-        newTone = sanitizeTone(nlpResult.requestedTone, currentTone === 'infantile' ? 'simple' : currentTone === 'simple' ? 'medium' : 'advanced');
+      case 'ADVANCE_TONE': {
+        const curIdx = VALID_TONES.indexOf(currentTone);
+        const targetTone = nlpResult.requestedTone;
+        if (targetTone && VALID_TONES.includes(targetTone.toLowerCase())) {
+          newTone = targetTone.toLowerCase();
+        } else if (curIdx >= 0 && curIdx < VALID_TONES.length - 1) {
+          newTone = VALID_TONES[curIdx + 1];
+        } else {
+          newTone = 'technical';
+        }
         actionMessage = `Tono avanzato impostato a "${newTone}".`;
         break;
+      }
+
+      case 'SHORTEN_LENGTH': {
+        const targetLen = nlpResult.requestedLength || 15;
+        actionMessage = `Durata spiegazione ridotta a circa ${targetLen} secondi.`;
+        break;
+      }
+
+      case 'EXTEND_LENGTH': {
+        const targetLen = nlpResult.requestedLength || 60;
+        actionMessage = `Durata spiegazione estesa a circa ${targetLen} secondi.`;
+        break;
+      }
+
+      case 'CHANGE_LANGUAGE': {
+        newLanguage = (nlpResult.requestedLanguage || 'en').toLowerCase();
+        actionMessage = `Lingua della spiegazione impostata a "${newLanguage.toUpperCase()}".`;
+        break;
+      }
 
       case 'NEXT_ITEM':
         if (currentArtworkIndex < artworks.length - 1) {
@@ -143,11 +195,24 @@ class NavigatorService {
       // TODO: anche la gestione dei punti di interesse è molto semplificata e non rispetta le possibilità dei tipi. Infatti la struttura dei punti di interesse è molto più complessa => enum: ['toilette', 'disabled_toilette', 'bar', 'restaurant', 'shop', 'entrance', 'exit', 'emergency_exit', 'elevator', 'stairs', 'ticket_office', 'info_point', 'cloakroom', 'first_aid']. Completare 
       case 'NAVIGATE_POI': {
         const poiType = nlpResult.targetPoiType || 'toilette';
-        const poi = (museum?.pointsOfInterest || []).find(p => p.type === poiType) || {
-          name: poiType.toUpperCase(),
-          floor: 'Piano Terra',
-          room: 'Atrio Ingresso'
-        };
+        const poiList = museum?.pointsOfInterest || [];
+        
+        // Cerca prima il tipo esatto
+        let poi = poiList.find(p => p.type === poiType);
+        
+        // Fallback affini se il tipo esatto non è presente nel museo
+        if (!poi) {
+          if (poiType === 'disabled_toilette') poi = poiList.find(p => p.type === 'toilette');
+          else if (poiType === 'restaurant') poi = poiList.find(p => p.type === 'bar');
+          else if (poiType === 'emergency_exit') poi = poiList.find(p => p.type === 'exit');
+          else if (poiType === 'stairs') poi = poiList.find(p => p.type === 'elevator');
+          else if (poiType === 'cloakroom' || poiType === 'info_point') poi = poiList.find(p => p.type === 'ticket_office');
+        }
+
+        if (!poi) {
+          poi = { name: poiType.replace('_', ' ').toUpperCase(), floor: 'Piano Terra', room: 'Atrio Principale' };
+        }
+
         logisticalDirections = await LLMService.generateLogisticalDirections(
           currentArtwork?.location || { room: 'Sala Corrente' },
           poi,
@@ -172,13 +237,15 @@ class NavigatorService {
 
     const validTone = sanitizeTone(newTone, currentTone || 'medium');
     const activeArtwork = artworks[newIndex] || currentArtwork;
-    const { item, fromCache } = await this.getOrGenerateItem(activeArtwork._id, validTone);
+    const targetLength = nlpResult.requestedLength || 30;
+    const { item, fromCache } = await this.getOrGenerateItem(activeArtwork._id, validTone, targetLength, newLanguage);
 
     return {
       nlpResult,
       actionMessage,
       currentArtworkIndex: newIndex,
       activeTone: newTone,
+      activeLanguage: newLanguage,
       activeArtwork: {
         id: activeArtwork._id,
         title: activeArtwork.title,
@@ -188,7 +255,7 @@ class NavigatorService {
       },
       item: {
         id: item._id,
-        description: item.description,
+        description: LLMService.extractToneText(item.description, validTone),
         tone: item.tone,
         length: item.length,
         language: item.language,
@@ -196,6 +263,7 @@ class NavigatorService {
         authorName: item.authorName,
         fromCache
       },
+      activeProviderName: LLMService.getActiveProviderName(),
       logisticalDirections
     };
   }

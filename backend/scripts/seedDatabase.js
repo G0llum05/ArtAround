@@ -138,11 +138,20 @@ async function seed() {
 
     // 4. Insert Items
     console.log('[Seed] Inserting items...');
+    const VALID_ITEM_TONES = ['infantile', 'simple', 'medium', 'advanced', 'technical'];
+    const sanitizeSeedTone = (tone) => {
+      if (!tone) return 'medium';
+      const t = String(tone).toLowerCase();
+      if (VALID_ITEM_TONES.includes(t)) return t;
+      if (t === 'scientific' || t === 'expert') return 'technical';
+      return 'medium';
+    };
+
     for (const itemData of seedData.items) {
       if (itemMap[itemData.key]) continue;
       const item = new Item({
         description: itemData.description,
-        tone: itemData.tone,
+        tone: sanitizeSeedTone(itemData.tone),
         length: itemData.length,
         author: userMap[itemData.author] || null,
         authorName: itemData.authorName || 'Curatore',

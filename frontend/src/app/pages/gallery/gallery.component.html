@@ -1,6 +1,6 @@
 <div class="home-wrapper">
   <!-- Bar per il controllo / test della modalità dispositivo -->
-  <!-- <div class="mode-toggle-bar">
+  <div class="mode-toggle-bar">
     <span class="mode-label">
       <span class="mode-icon">📱</span> Modalità Rilevata: 
       <strong>{{ isPortrait ? 'Portrait (Mobile)' : 'Desktop / Landscape' }}</strong>
@@ -25,7 +25,7 @@
         Forza Portrait
       </button>
     </div>
-  </div> -->
+  </div>
 
   <!-- (1) MODALITÀ PORTRAIT: Reindirizzamento automatico alla pagina delle Visite -->
   <div *ngIf="isPortrait" class="portrait-container">

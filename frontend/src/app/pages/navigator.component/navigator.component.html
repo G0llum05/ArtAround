@@ -1,0 +1,164 @@
+<div class="navigator-container">
+  <div class="header-card">
+    <div class="header-content">
+      <div class="badge">ArtAround Voice Engine (MEAN Stack + Groq STT)</div>
+      <h1>🎤 Interazione Vocale Bidirezionale (STT -> Express -> TTS)</h1>
+      <p class="subtitle">
+        Architettura ultra-leggera per VM: MediaRecorder API (16kHz Opus RAM) -> Express Gateway -> Groq STT Cloud API (~150-250ms) -> Client SpeechSynthesis TTS.
+      </p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/test" class="btn btn-outline">⬅️ Torna ai Test</a>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- SEZIONE RECORDING & TEST CONTROLS -->
+    <div class="card test-box">
+      <h2>1. Registrazione Microfono (STT Opus 16kHz)</h2>
+      <p class="section-desc">Premi il microfono per parlare. L'audio viene compresso in Opus (~15-25 KB) e inviato in RAM al server Express senza I/O su disco.</p>
+
+      <!-- SEZIONE SELEZIONE LINGUA BADGE BANDIERINE -->
+      <div class="language-section">
+        <label class="lang-label">🌐 Seleziona Lingua (Cookie 'lang' & Groq STT):</label>
+        <div class="flags-container">
+          <button 
+            type="button"
+            *ngFor="let lang of languages" 
+            class="flag-badge"
+            [class.active]="selectedLang === lang.code"
+            (click)="setLanguage(lang.code)">
+            <span class="flag-icon">{{ lang.flag }}</span>
+            <span class="flag-code">{{ lang.code }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mic-stage">
+        <button 
+          type="button"
+          class="mic-button" 
+          [class.recording]="isRecording" 
+          [class.processing]="isProcessing"
+          [disabled]="isProcessing"
+          (click)="toggleRecording()">
+          <span class="mic-icon" *ngIf="!isRecording && !isProcessing">🎙️</span>
+          <span class="mic-icon pulse" *ngIf="isRecording">🔴</span>
+          <span class="mic-icon spin" *ngIf="isProcessing">⚙️</span>
+        </button>
+
+        <div class="recording-timer" *ngIf="isRecording">
+          ⏱️ Registrazione: <strong>{{ recDurationMs }} ms</strong>
+        </div>
+
+        <div class="status-pill" [class.status-rec]="isRecording" [class.status-proc]="isProcessing">
+          {{ statusMessage }}
+        </div>
+      </div>
+
+      <!-- Option Controls -->
+      <div class="options-row">
+        <label class="toggle-control">
+          <input type="checkbox" [(ngModel)]="autoSpeakTTS">
+          <span class="toggle-label">🔊 Riproduzione automatica TTS Client (window.speechSynthesis)</span>
+        </label>
+      </div>
+
+      <!-- Recorded Audio Preview -->
+      <div class="audio-preview" *ngIf="audioUrl">
+        <label>🎧 Audio registrato inviato al backend (RAM Buffer):</label>
+        <audio [src]="audioUrl" controls></audio>
+      </div>
+    </div>
+
+    <!-- SEZIONE RISULTATO & METRICHE LATENZA -->
+    <div class="card result-box">
+      <h2>2. Risposta Backend & Sintesi Vocale (TTS)</h2>
+      
+      <div class="transcript-box" [class.empty]="!latestTranscript">
+        <div class="box-label">💬 Testo Riconosciuto (Groq STT - Lingua: {{ selectedLang }}):</div>
+        <div class="transcript-text" *ngIf="latestTranscript">
+          "{{ latestTranscript }}"
+        </div>
+        <div class="placeholder-text" *ngIf="!latestTranscript">
+          In attesa di trascrizione audio...
+        </div>
+
+        <div class="transcript-actions" *ngIf="latestTranscript">
+          <button class="btn btn-primary" (click)="testTTSManual(latestTranscript)" [disabled]="isSpeaking">
+            🔊 {{ isSpeaking ? 'Riproduzione in corso...' : 'Riesegui TTS (SpeechSynthesis)' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- METRICHE LATENZA IN MS -->
+      <div class="metrics-grid" *ngIf="lastLog">
+        <div class="metric-card highlight">
+          <div class="metric-icon">⚡</div>
+          <div class="metric-val">{{ lastLog.totalRoundtripMs }} ms</div>
+          <div class="metric-lbl">Tempo Totale Processo</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon">🧠</div>
+          <div class="metric-val">{{ lastLog.sttProcessMs }} ms</div>
+          <div class="metric-lbl">Groq STT Cloud API</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon">🌐</div>
+          <div class="metric-val">{{ lastLog.totalBackendMs }} ms</div>
+          <div class="metric-lbl">Express Server RAM</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon">🎙️</div>
+          <div class="metric-val">{{ lastLog.recDurationMs }} ms</div>
+          <div class="metric-lbl">Durata Clip Audio</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEZIONE LOG E CRONOLOGIA TEST -->
+  <div class="card logs-section">
+    <div class="logs-header">
+      <h2>📊 Registro Dettagliato Tempi di Esecuzione (ms)</h2>
+      <button class="btn btn-small btn-danger" (click)="clearLogs()" [disabled]="logs.length === 0">🗑️ Pulisci Log</button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="logs-table">
+        <thead>
+          <tr>
+            <th>Ora</th>
+            <th>Lingua</th>
+            <th>Trascrizione (Groq STT)</th>
+            <th>Dim. Audio</th>
+            <th>Durata Clip</th>
+            <th>Groq STT (ms)</th>
+            <th>Express Backend (ms)</th>
+            <th>Totale Roundtrip (ms)</th>
+            <th>Stato TTS Client</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of logs">
+            <td class="time-col">{{ log.timestamp }}</td>
+            <td><span class="tag-lang">{{ log.lang }}</span></td>
+            <td class="transcript-col"><strong>"{{ log.transcript }}"</strong></td>
+            <td>{{ log.audioSizeKb }}</td>
+            <td>{{ log.recDurationMs }} ms</td>
+            <td class="stat-highlight">{{ log.sttProcessMs }} ms</td>
+            <td>{{ log.totalBackendMs }} ms</td>
+            <td class="total-highlight"><strong>{{ log.totalRoundtripMs }} ms</strong></td>
+            <td><span class="tag-success">{{ log.ttsStatus }}</span></td>
+          </tr>
+          <tr *ngIf="logs.length === 0">
+            <td colspan="9" class="no-logs">Nessuna operazione eseguita finora. Avvia una registrazione per testare le prestazioni sub-secondo!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

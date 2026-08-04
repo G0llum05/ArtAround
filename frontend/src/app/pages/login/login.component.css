@@ -270,3 +270,106 @@
   width: 18px;
   height: 18px;
 }
+
+/* Stili per Utente Già Loggato */
+.logged-in-container {
+  padding: 0.5rem 0;
+  text-align: center;
+}
+
+.user-status-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.user-avatar {
+  font-size: 2.5rem;
+  width: 64px;
+  height: 64px;
+  background-color: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-status-card h2 {
+  font-size: 1.3rem;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 700;
+}
+
+.user-info-text {
+  font-size: 0.95rem;
+  color: #4a5568;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.user-name-highlight {
+  color: #2b6cb0;
+  font-size: 1.1rem;
+}
+
+.user-email {
+  color: #718096;
+  font-size: 0.85rem;
+}
+
+.logout-notice {
+  font-size: 0.85rem;
+  color: #718096;
+  background: #f7fafc;
+  border: 1px dashed #cbd5e0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  margin: 0.4rem 0 0.8rem 0;
+}
+
+.logged-in-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.logout-card-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #e53e3e;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout-card-btn:hover {
+  background-color: #c53030;
+}
+
+.home-card-btn {
+  display: block;
+  width: 100%;
+  padding: 0.7rem;
+  background-color: #edf2f7;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.home-card-btn:hover {
+  background-color: #e2e8f0;
+  color: #2d3748;
+}

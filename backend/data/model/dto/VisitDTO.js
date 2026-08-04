@@ -1,9 +1,10 @@
 class VisitResponseDTO {
-  constructor(id, title, description, price, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz) {
+  constructor(id, title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }) {
     this.id = id;
     this.title = title;
     this.description = description;
     this.price = price;
+    this.license = license;
     this.verified = verified;
     this.minDuration = minDuration;
     this.maxDuration = maxDuration;
@@ -14,14 +15,18 @@ class VisitResponseDTO {
     this.disabledFriendly = disabledFriendly;
     this.requirements = requirements;
     this.quiz = quiz;
+    this.categories = categories;
+    this.likesCount = likesCount;
+    this.views = views;
   }
 }
 
 class VisitRequestDTO {
-  constructor(title, description, price, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz) {
+  constructor(title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories = []) {
     this.title = title;
     this.description = description;
     this.price = price;
+    this.license = license;
     this.verified = verified;
     this.minDuration = minDuration;
     this.maxDuration = maxDuration;
@@ -32,6 +37,7 @@ class VisitRequestDTO {
     this.disabledFriendly = disabledFriendly;
     this.requirements = requirements;
     this.quiz = quiz;
+    this.categories = categories;
   }
 }
 

@@ -1,0 +1,485 @@
+{
+  "users": [
+    {
+      "key": "borghese_staff",
+      "name": "Conservatore",
+      "surname": "Galleria Borghese",
+      "email": "conservatore@galleriaborghese.it",
+      "password": "Password123!",
+      "role": "museumstaff",
+      "roleStatus": "approved"
+    }
+  ],
+  "museum": {
+    "key": "museum_galleria_borghese",
+    "name": "Galleria Borghese di Roma",
+    "description": "Immersa nel meraviglioso parco di Villa Borghese a Roma, la Galleria Borghese custodisce una delle collezioni d'arte più prestigiose ed emblematiche del mondo. Fondata all'inizio del XVII secolo dal Cardinale Scipione Borghese, grande mecenate e collezionista del Barocco, la galleria ospita i capolavori scultorei in marmo a tutto tondo di Gian Lorenzo Bernini (Apollo e Dafne, Ratto di Proserpina, David), le celebri tele drammatiche di Caravaggio (Davide con la testa di Golia, Fanciullo con canestra di frutta), la favolosa statua neoclassica di Paolina Bonaparte di Antonio Canova, e i dipinti del Rinascimento di Raffaello Sanzio e Tiziano Vecellio.",
+    "address": {
+      "street": "Piazzale Scipione Borghese 5",
+      "city": "Roma",
+      "zipCode": "00197",
+      "country": "Italia"
+    },
+    "contact": {
+      "phone": "+39 06 32810",
+      "email": "ga-bor@cultura.gov.it",
+      "website": "https://galleriaborghese.beniculturali.it",
+      "social": {
+        "facebook": "https://www.facebook.com/GalleriaBorgheseRoma",
+        "instagram": "https://www.instagram.com/galleriaborgheseofficial",
+        "youtube": "https://www.youtube.com/@GalleriaBorgheseRoma"
+      }
+    },
+    "maxCapacity": 360,
+    "actualCapacity": 0,
+    "openingHours": [
+      {
+        "weeklyStandard": [
+          { "day": 0, "slots": [{ "startTime": "09:00", "endTime": "19:00" }], "closed": false },
+          { "day": 1, "slots": [], "closed": true },
+          { "day": 2, "slots": [{ "startTime": "09:00", "endTime": "19:00" }], "closed": false },
+          { "day": 3, "slots": [{ "startTime": "09:00", "endTime": "19:00" }], "closed": false },
+          { "day": 4, "slots": [{ "startTime": "09:00", "endTime": "22:00" }], "closed": false },
+          { "day": 5, "slots": [{ "startTime": "09:00", "endTime": "19:00" }], "closed": false },
+          { "day": 6, "slots": [{ "startTime": "09:00", "endTime": "19:00" }], "closed": false }
+        ],
+        "exceptions": []
+      }
+    ],
+    "ticketInfo": {
+      "prices": [
+        { "planName": "Intero Galleria Borghese", "price": 15.0, "target": "Adulti (inclusa prenotazione obbligatoria)" },
+        { "planName": "Ridotto Giovani UE (18-25 anni)", "price": 4.0, "target": "Cittadini UE 18-25 anni" },
+        { "planName": "Gratuito", "price": 2.0, "target": "Under 18, Persone con disabilità, Giornalisti (diritto di prenotazione 2€)" }
+      ],
+      "discountCode": ["BORGHESE2026", "MICCULTURA"]
+    },
+    "isActive": true,
+    "disableFriendly": true,
+    "requirements": "La prenotazione della data e dell'orario di ingresso è rigorosamente obbligatoria per tutti i visitatori. Accesso regolato a turni di 2 ore.",
+    "visits": [
+      "visit_borghese_marmi_bernini",
+      "visit_borghese_luce_caravaggio",
+      "visit_borghese_raffaello_canova",
+      "visit_borghese_scipione_pinacoteca"
+    ],
+    "artworks": [
+      "artwork_borghese_paolina_canova",
+      "artwork_borghese_apollo_dafne",
+      "artwork_borghese_ratto_proserpina",
+      "artwork_borghese_davide_golia",
+      "artwork_borghese_amor_sacro_profano",
+      "artwork_borghese_deposizione_raffaello"
+    ]
+  },
+  "artists": [
+    {
+      "key": "artist_bernini",
+      "name": "Gian Lorenzo",
+      "surname": "Bernini",
+      "artisticCurrents": ["Barocco Romano", "Scultura Monumentale in Marmo", "Architettura del Seicento"]
+    },
+    {
+      "key": "artist_caravaggio",
+      "name": "Michelangelo",
+      "surname": "Merisi da Caravaggio",
+      "artisticCurrents": ["Barocco", "Tenebrismo", "Caravaggismo Europeo", "Pittura a Luce Radente"]
+    },
+    {
+      "key": "artist_raffaello",
+      "name": "Raffaello",
+      "surname": "Sanzio",
+      "artisticCurrents": ["Rinascimento Maturo", "Scuola Romana", "Armonia ed Equilibrio Classico"]
+    },
+    {
+      "key": "artist_tiziano",
+      "name": "Tiziano",
+      "surname": "Vecellio",
+      "artisticCurrents": ["Rinascimento Veneto", "Tonalismo Veneziano", "Pittura d'Atmosfera"]
+    },
+    {
+      "key": "artist_canova",
+      "name": "Antonio",
+      "surname": "Canova",
+      "artisticCurrents": ["Neoclassicismo", "Scultura Statutaria", "Bellezza Ideale"]
+    },
+    {
+      "key": "artist_domenichino",
+      "name": "Domenico",
+      "surname": "Zampieri (Domenichino)",
+      "artisticCurrents": ["Classicismo Bolognese", "Scuola dei Carracci"]
+    }
+  ],
+  "items": [
+    {
+      "key": "item_borghese_paolina_medium",
+      "description": "Scolpita tra il 1805 e il 1808 dal maestro neoclassico Antonio Canova, la statua ritrae Paolina Bonaparte, sorella di Napoleone e sposa del principe Camillo Borghese, seminuda adagiata su un lettuccio (kline). Nelle vesti della Venere Vincitrice con la mela d'oro in mano, l'opera rappresenta il vertice dell'idealizzazione neoclassica e dell'eleganza formale, impreziosita da una finitura a cera dorata che donava al marmo il calore della pelle umana.",
+      "tone": "medium",
+      "length": 310
+    },
+    {
+      "key": "item_borghese_apollo_dafne_advanced",
+      "description": "Capolavoro insuperato del Barocco scolpito da Gian Lorenzo Bernini tra i 24 e i 27 anni di età, il gruppo di Apollo e Dafne blocca nel marmo l'istante vertiginoso della metamorfosi narrata nelle Metamorfosi di Ovidio. Mentre Apollo sfiora la ninfa, la pelle di Dafne si trasforma sotto gli occhi dell'osservatore in ruvida corteccia d'alloro, le dita delle mani in foglie sottilissime traforate nella pietra e i piedi in radici ancorate al suolo.",
+      "tone": "advanced",
+      "length": 330
+    },
+    {
+      "key": "item_borghese_proserpina_technical",
+      "description": "Il Ratto di Proserpina (1621-1622) mostra la straordinaria virtuosità plastica di Bernini nel lavorare il marmo di Carrara come se fosse cera morbida. Il dettaglio leggendario delle dita del dio Plutone che affondano realisticamente nella carne morbida della coscia di Proserpina che si ritrae piangendo rappresenta uno dei momenti più celebri e virtuosistici dell'intera storia della scultura mondiale.",
+      "tone": "technical",
+      "length": 300
+    },
+    {
+      "key": "item_borghese_davide_golia_scientific",
+      "description": "Dipinto da Caravaggio negli ultimi tragici mesi della sua vita nel 1609-1610 mentre era in fuga da Roma, 'Davide con la testa di Golia' è un cupo capolavoro tenebrista. Il giovane Davide guarda con dolorosa compassione la testa mozza del gigante Golia, nei cui tratti sconvolti Caravaggio ha dipinto il suo drammatico e tragico autoritratto in cerca di perdono dal Papa.",
+      "tone": "scientific",
+      "length": 310
+    },
+    {
+      "key": "item_borghese_amor_sacro_advanced",
+      "description": "Dipinto nel 1514 dal giovane Tiziano per le nozze del cancelliere veneziano Niccolò Aurelio con Laura Bagarotto, 'Amor Sacro e Amor Profano' raffigura due splendide donne sedute presso un antico sarcofago trasformato in fontana. Attraverso l'armonia del tonalismo veneto e del paesaggio al tramonto, l'opera simboleggia le due dimensioni complementari della bellezza e dell'amore umano e divino.",
+      "tone": "advanced",
+      "length": 300
+    },
+    {
+      "key": "item_borghese_deposizione_simple",
+      "description": "Questa bellissima e commovente pala d'altare fu dipinta dal grande maestro Raffaello nel 1507. Mostra i discepoli che trasportano il corpo di Gesù con un movimento pieno di forza e di emozione, mentre Maria Maddalena gli stringe la mano in un momento di grande affetto.",
+      "tone": "simple",
+      "length": 210
+    }
+  ],
+  "artworks": [
+    {
+      "key": "artwork_borghese_paolina_canova",
+      "title": "Paolina Bonaparte Borghese come Venere Vincitrice",
+      "startYear": 1805,
+      "endYear": 1808,
+      "artists": ["artist_canova"],
+      "location": {
+        "room": "Sala I - Sala di Paolina",
+        "floor": "Piano Terreno",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 160,
+        "width": 192,
+        "depth": 90,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Neoclassicismo", "Scultura in Marmo"],
+      "details": {
+        "subjects": ["Paolina Bonaparte", "Venere Vincitrice", "Mela d'oro di Paride"],
+        "colors": ["Marmo bianco statutario di Carrara", "Legno dorato"],
+        "places": ["Roma - Villa Borghese"],
+        "objectType": "Scultura monumentale su lettuccio girevole (kline)",
+        "materials": ["Marmo statutario di Carrara", "Legno finemente intagliato e dorato"],
+        "techniques": ["Scultura a tutto tondo con levigatura a cera patinata"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-001",
+      "images": [],
+      "items": ["item_borghese_paolina_medium"]
+    },
+    {
+      "key": "artwork_borghese_apollo_dafne",
+      "title": "Apollo e Dafne",
+      "startYear": 1622,
+      "endYear": 1625,
+      "artists": ["artist_bernini"],
+      "location": {
+        "room": "Sala III - Sala di Apollo e Dafne",
+        "floor": "Piano Terreno",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 243,
+        "width": 115,
+        "depth": 100,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Barocco Romano", "Scultura Barocca Insuperabile"],
+      "details": {
+        "subjects": ["Metamorfosi di Ovidio", "Apollo", "Ninfa Dafne che si trasforma in alloro"],
+        "colors": ["Marmo bianco di Carrara"],
+        "places": ["Roma"],
+        "objectType": "Gruppo scultoreo monumentale ad alto dinamismo espressivo",
+        "materials": ["Marmo statutario di Carrara"],
+        "techniques": ["Traforo e intaglio virtuostico fino alla trasparenza delle foglie"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-002",
+      "images": [],
+      "items": ["item_borghese_apollo_dafne_advanced"]
+    },
+    {
+      "key": "artwork_borghese_ratto_proserpina",
+      "title": "Il Ratto di Proserpina",
+      "startYear": 1621,
+      "endYear": 1622,
+      "artists": ["artist_bernini"],
+      "location": {
+        "room": "Sala IV - Sala degli Imperatori",
+        "floor": "Piano Terreno",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 225,
+        "width": 110,
+        "depth": 95,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Barocco Romano", "Scultura Barocca"],
+      "details": {
+        "subjects": ["Plutone dio degli Inferi", "Proserpina", "Cerbero a tre teste"],
+        "colors": ["Marmo di Carrara"],
+        "places": ["Roma"],
+        "objectType": "Gruppo scultoreo monumentale a tutto tondo",
+        "materials": ["Marmo di Carrara"],
+        "techniques": ["Resa realistica dell'affondamento delle dita nella carne morbida nel marmo"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-003",
+      "images": [],
+      "items": ["item_borghese_proserpina_technical"]
+    },
+    {
+      "key": "artwork_borghese_davide_golia",
+      "title": "Davide con la testa di Golia (Autoritratto di Caravaggio)",
+      "startYear": 1609,
+      "endYear": 1610,
+      "artists": ["artist_caravaggio"],
+      "location": {
+        "room": "Sala VIII - Sala di Caravaggio",
+        "floor": "Piano Terreno",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 125,
+        "width": 101,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Barocco", "Caravaggismo", "Tenebrismo"],
+      "details": {
+        "subjects": ["Davide con spada", "Testa mozza di Golia", "Autoritratto tragico di Caravaggio"],
+        "colors": ["Sfondo tenebroso", "Luce radente dorata"],
+        "places": ["Napoli / Roma"],
+        "objectType": "Dipinto a olio su tela",
+        "materials": ["Colori a olio su tela di lino"],
+        "techniques": ["Pittura a olio a contrasti chiaroscurali netti e carica psicologica drammatica"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-004",
+      "images": [],
+      "items": ["item_borghese_davide_golia_scientific"]
+    },
+    {
+      "key": "artwork_borghese_amor_sacro_profano",
+      "title": "Amor Sacro e Amor Profano",
+      "startYear": 1514,
+      "endYear": 1515,
+      "artists": ["artist_tiziano"],
+      "location": {
+        "room": "Sala XX - Sala del Tiziano",
+        "floor": "Primo Piano (Pinacoteca)",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 118,
+        "width": 279,
+        "depth": 6,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Rinascimento Veneto", "Tonalismo Tizianesco"],
+      "details": {
+        "subjects": ["Allegoria dell'Amore", "Venere Celeste e Terrena", "Cupido presso la fontana"],
+        "colors": ["Rosso tizianesco", "Bianco satinato", "Paesaggio veneto"],
+        "places": ["Venezia / Roma"],
+        "objectType": "Dipinto d'equipe d'altissima bottega su tela",
+        "materials": ["Pittura a olio su tela"],
+        "techniques": ["Tonalismo veneziano con sovrapposizione di velature cromatiche trasparenti"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-005",
+      "images": [],
+      "items": ["item_borghese_amor_sacro_advanced"]
+    },
+    {
+      "key": "artwork_borghese_deposizione_raffaello",
+      "title": "Deposizione Borghese (Trasporto di Cristo Morto)",
+      "startYear": 1507,
+      "endYear": 1507,
+      "artists": ["artist_raffaello"],
+      "location": {
+        "room": "Sala IX - Sala di Raffaello",
+        "floor": "Primo Piano (Pinacoteca)",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 184,
+        "width": 176,
+        "depth": 8,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Rinascimento Maturo", "Scuola Romana di Raffaello"],
+      "details": {
+        "subjects": ["Trasporto di Cristo al sepolcro", "Maria Maddalena", "Svenimento della Vergine"],
+        "colors": ["Verde smeraldo", "Rosso lacca", "Blu lapislazzuli"],
+        "places": ["Perugia / Roma"],
+        "objectType": "Pala d'altare a olio su tavola",
+        "materials": ["Tavola in legno di pioppo", "Pigmenti minerali a olio"],
+        "techniques": ["Composizione dinamica piramidale ad altissima drammaticità espressiva"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-006",
+      "images": [],
+      "items": ["item_borghese_deposizione_simple"]
+    }
+  ],
+  "visits": [
+    {
+      "key": "visit_borghese_marmi_bernini",
+      "title": "I Marmi dell'Anima: Il Genio Barocco di Gian Lorenzo Bernini",
+      "description": "Un viaggio mozzafiato tra i gruppi scultorei in marmo a tutto tondo realizzati da Gian Lorenzo Bernini per il Cardinale Scipione Borghese. La visita si incentra su Apollo e Dafne, il Ratto di Proserpina e il David, mostrando come la pietra bianca sia stata trasformata in carne, movimento ed emozione pura.",
+      "price": 15.0,
+      "creator": "borghese_staff",
+      "artworks": [
+        "artwork_borghese_apollo_dafne",
+        "artwork_borghese_ratto_proserpina"
+      ],
+      "minDuration": 60,
+      "maxDuration": 90,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "09:30", "endTime": "11:00" }, { "startTime": "15:00", "endTime": "16:30" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "09:30", "endTime": "11:00" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "09:30", "endTime": "11:00" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "09:30", "endTime": "11:00" }, { "startTime": "19:30", "endTime": "21:00" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "09:30", "endTime": "11:00" }, { "startTime": "15:00", "endTime": "16:30" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "09:30", "endTime": "11:00" }, { "startTime": "15:00", "endTime": "16:30" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Turno di visita a tempo (max 2 ore). Prenotazione obbligatoria per tutti i partecipanti.",
+      "categories": ["Neoclassicismo", "Rinascimento"]
+    },
+    {
+      "key": "visit_borghese_luce_caravaggio",
+      "title": "Luce e Ombra: Caravaggio e i Maestri del Barocco Romano",
+      "description": "Itinerario guidato tra la più imponente concentrazione di capolavori di Caravaggio conservati in un singolo museo. Analisi dettagliata di Davide con la testa di Golia, la Madonna dei Palafrenieri, il Fanciullo con canestra di frutta e la Caccia di Diana del Domenichino.",
+      "price": 18.0,
+      "creator": "borghese_staff",
+      "artworks": [
+        "artwork_borghese_davide_golia",
+        "artwork_borghese_ratto_proserpina"
+      ],
+      "minDuration": 60,
+      "maxDuration": 90,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "11:30", "endTime": "13:00" }, { "startTime": "17:00", "endTime": "18:30" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "11:30", "endTime": "13:00" }, { "startTime": "17:00", "endTime": "18:30" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "11:30", "endTime": "13:00" }, { "startTime": "17:00", "endTime": "18:30" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Consigliato ad appassionati di pittura barocca e chiaroscuro.",
+      "categories": ["Realismo", "Rinascimento"]
+    },
+    {
+      "key": "visit_borghese_raffaello_canova",
+      "title": "Dalla Bellezza Ideale al Neoclassicismo: Raffaello, Tiziano e Canova",
+      "description": "Un tour incentrato sulla grazia e sull'armonia classica ed estetica. Dalla celebre statua di Paolina Bonaparte scolpita da Antonio Canova come Venere Vincitrice, alla Deposizione di Raffaello Sanzio e alla poesia cromatica di Tiziano con Amor Sacro e Amor Profano.",
+      "price": 20.0,
+      "creator": "borghese_staff",
+      "artworks": [
+        "artwork_borghese_paolina_canova",
+        "artwork_borghese_deposizione_raffaello",
+        "artwork_borghese_amor_sacro_profano"
+      ],
+      "minDuration": 75,
+      "maxDuration": 105,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "13:30", "endTime": "15:00" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "13:30", "endTime": "15:00" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "13:30", "endTime": "15:00" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "13:30", "endTime": "15:00" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "13:30", "endTime": "15:00" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "13:30", "endTime": "15:00" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Visita guidata artistica al piano superiore della Pinacoteca e alle sale scultoree del piano terra.",
+      "categories": ["Rinascimento", "Neoclassicismo"]
+    },
+    {
+      "key": "visit_borghese_scipione_pinacoteca",
+      "title": "I Segreti del Cardinale Scipione Borghese: Meraviglie della Pinacoteca",
+      "description": "Percorso esaustivo tra le sale affrescate di Villa Borghese Pinciana alla scoperta della collezione privata creata da Scipione Borghese. Una panoramica completa sulle opere rinascimentali e barocche conservate al piano nobile della villa.",
+      "price": 15.0,
+      "creator": "borghese_staff",
+      "artworks": [
+        "artwork_borghese_amor_sacro_profano",
+        "artwork_borghese_deposizione_raffaello",
+        "artwork_borghese_paolina_canova"
+      ],
+      "minDuration": 60,
+      "maxDuration": 90,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "15:30", "endTime": "17:00" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "15:30", "endTime": "17:00" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "15:30", "endTime": "17:00" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "15:30", "endTime": "17:00" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "15:30", "endTime": "17:00" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "15:30", "endTime": "17:00" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Struttura museale statale totalmente accessibile.",
+      "categories": ["Rinascimento"]
+    }
+  ]
+}

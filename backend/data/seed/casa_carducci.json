@@ -1,0 +1,431 @@
+{
+  "users": [
+    {
+      "key": "carducci_staff",
+      "name": "Curatore",
+      "surname": "Casa Carducci",
+      "email": "curatore@casacarducci.it",
+      "password": "Password123!",
+      "role": "museumstaff",
+      "roleStatus": "approved"
+    }
+  ],
+  "museum": {
+    "key": "museum_casa_carducci",
+    "name": "Museo di Casa Carducci",
+    "description": "Il Museo di Casa Carducci è la dimora storica in cui il poeta e premio Nobel per la Letteratura Giosuè Carducci visse dal 1890 fino alla sua morte nel 1907. L'appartamento conserva intatti gli arredi originali, lo studio di lavoro, il salotto di ricevimento e la leggendaria biblioteca privata comprendente oltre 40.000 volumi e rari manoscritti. Il complesso include l'attiguo giardino monumentale con la celebre scultura simbolista in marmo di Leonardo Bistolfi e fa parte del circuito dei Musei Civici di Bologna.",
+    "address": {
+      "street": "Piazza Giosuè Carducci 5",
+      "city": "Bologna",
+      "zipCode": "40125",
+      "country": "Italia"
+    },
+    "contact": {
+      "phone": "+39 051 2196520",
+      "email": "casacarducci@comune.bologna.it",
+      "website": "http://www.casacarducci.it",
+      "social": {
+        "facebook": "https://www.facebook.com/casacarduccibologna",
+        "instagram": "https://www.instagram.com/casacarducci"
+      }
+    },
+    "maxCapacity": 120,
+    "actualCapacity": 0,
+    "openingHours": [
+      {
+        "weeklyStandard": [
+          { "day": 0, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false },
+          { "day": 1, "slots": [], "closed": true },
+          { "day": 2, "slots": [{ "startTime": "09:00", "endTime": "13:00" }], "closed": false },
+          { "day": 3, "slots": [{ "startTime": "09:00", "endTime": "13:00" }], "closed": false },
+          { "day": 4, "slots": [{ "startTime": "09:00", "endTime": "13:00" }], "closed": false },
+          { "day": 5, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false },
+          { "day": 6, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false }
+        ],
+        "exceptions": []
+      }
+    ],
+    "ticketInfo": {
+      "prices": [
+        { "planName": "Intero Casa Carducci", "price": 6.0, "target": "Adulti" },
+        { "planName": "Ridotto", "price": 4.0, "target": "Under 26, Over 65, Studenti" },
+        { "planName": "Gratuito", "price": 0.0, "target": "Under 18, Card Cultura" }
+      ],
+      "discountCode": ["CARDUCCI2026", "CULTURABOLO"]
+    },
+    "isActive": true,
+    "disableFriendly": true,
+    "requirements": "Visita guidata a numero chiuso per la tutela degli arredi storici e dei volumi d'epoca. Consigliata la prenotazione anticipata.",
+    "visits": [
+      "visit_carducci_nobel",
+      "visit_carducci_poesia",
+      "visit_carducci_giardino"
+    ],
+    "artworks": [
+      "artwork_carducci_studio",
+      "artwork_carducci_nobel",
+      "artwork_carducci_monumento",
+      "artwork_carducci_biblioteca",
+      "artwork_carducci_manoscritto",
+      "artwork_carducci_ritratto"
+    ]
+  },
+  "artists": [
+    {
+      "key": "artist_carducci",
+      "name": "Giosuè",
+      "surname": "Carducci",
+      "artisticCurrents": ["Neoclassicismo", "Poesia Risorgimentale", "Metricismo Barbaro", "Letteratura Italiana XIX sec."]
+    },
+    {
+      "key": "artist_bistolfi",
+      "name": "Leonardo",
+      "surname": "Bistolfi",
+      "artisticCurrents": ["Simbolismo", "Art Nouveau", "Scultura Monumentale XX sec."]
+    },
+    {
+      "key": "artist_ferrari",
+      "name": "Severino",
+      "surname": "Ferrari",
+      "artisticCurrents": ["Poesia Neoclassica", "Filologia Italiana", "Scuola Bolognese XIX sec."]
+    },
+    {
+      "key": "artist_ricci",
+      "name": "Corrado",
+      "surname": "Ricci",
+      "artisticCurrents": ["Critica d'Arte", "Pittura di Ritratto", "Museologia Italiana"]
+    }
+  ],
+  "items": [
+    {
+      "key": "item_carducci_studio_medium",
+      "description": "Lo studio di Giosuè Carducci è il cuore pulsante di Casa Carducci. Conservato esattamente come il poeta lo lasciò prima della morte nel 1907, comprende la grande scrivania in legno di noce con piano in pelle, gli occhiali da lettura, le calamaie e migliaia di volumi consultati durante la stesura delle sue più grandi composizioni e le lezioni universitarie.",
+      "tone": "medium",
+      "length": 260
+    },
+    {
+      "key": "item_carducci_nobel_advanced",
+      "description": "Nel dicembre 1906 l'Accademia svedese conferì a Giosuè Carducci il Premio Nobel per la Letteratura, primo italiano a ricevere tale riconoscimento. Il diploma in pergamena finemente miniata e la medaglia d'oro originale in 24 carati rappresentano una testimonianza tangibile dell'impatto universale del suo genio poetico ed erudito.",
+      "tone": "advanced",
+      "length": 270
+    },
+    {
+      "key": "item_carducci_monumento_scientific",
+      "description": "Il complesso monumentale scolpito in marmo di Carrara dal maestro simbolista Leonardo Bistolfi tra il 1912 e il 1928 domina il giardino di Casa Carducci. L'opera fonde plasticità liberty e tensione morale simbolista, figurando l'allegoria della Natura, della Poesia e del Vate risorgimentale.",
+      "tone": "scientific",
+      "length": 250
+    },
+    {
+      "key": "item_carducci_biblioteca_medium",
+      "description": "La biblioteca personale di Carducci ospita circa 40.000 volumi, tra cui incunaboli, cinquecentine, rare edizioni dei classici latini e greci ed epistolari dei principali intellettuali europei dell'Ottocento. Un patrimonio inestimabile donato alla città di Bologna dal mecenate Alberto Pasolini.",
+      "tone": "medium",
+      "length": 240
+    },
+    {
+      "key": "item_carducci_manoscritto_advanced",
+      "description": "Questo manoscritto autografo contiene le stesure originali delle 'Odi Barbare' con le famose annotazioni e correzioni a margine di Carducci. Mostra il lavoro filologico sulla metrica quantitativa latina trasposta nella poesia italiana moderna.",
+      "tone": "advanced",
+      "length": 230
+    }
+  ],
+  "artworks": [
+    {
+      "key": "artwork_carducci_studio",
+      "title": "Lo Studio e la Scrivania di Giosuè Carducci",
+      "startYear": 1890,
+      "endYear": 1907,
+      "artists": ["artist_carducci"],
+      "location": {
+        "room": "Lo Studio del Poeta",
+        "floor": "Primo Piano",
+        "building": "Casa Carducci"
+      },
+      "dimensions": {
+        "height": 78,
+        "width": 160,
+        "depth": 90,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Neoclassicismo", "Letteratura Italiana XIX sec."],
+      "details": {
+        "subjects": ["Studio poetico", "Scrivania d'epoca", "Manoscritti originali"],
+        "colors": ["Legno di noce scuro", "Verde cuoio"],
+        "places": ["Bologna - Piazza Carducci"],
+        "objectType": "Arredo e ambiente di lavoro storico conservato",
+        "materials": ["Legno di noce inciso", "Pelle verde", "Ottone"],
+        "techniques": ["Ebanisteria artigianale fine del XIX secolo"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-CARDUCCI-BOLO-001",
+      "images": [],
+      "items": ["item_carducci_studio_medium"]
+    },
+    {
+      "key": "artwork_carducci_nobel",
+      "title": "Diploma e Medaglia d'Oro del Premio Nobel per la Letteratura 1906",
+      "startYear": 1906,
+      "endYear": 1906,
+      "artists": ["artist_carducci"],
+      "location": {
+        "room": "Sala del Premio Nobel e dei Cimeli",
+        "floor": "Primo Piano",
+        "building": "Casa Carducci"
+      },
+      "dimensions": {
+        "height": 45,
+        "width": 35,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Premio Nobel", "Simbolismo Accademico"],
+      "details": {
+        "subjects": ["Premio Nobel per la Letteratura", "Accademia Svedese", "Onorificenza poetica"],
+        "colors": ["Oro 24k", "Pergamena miniata", "Pelle blu reale"],
+        "places": ["Stoccolma / Bologna"],
+        "objectType": "Diploma cartaceo miniato e medaglia d'oro di conio svedese",
+        "materials": ["Pergamena", "Oro puro", "Pelle decorata in oro"],
+        "techniques": ["Calligrafia e miniatura a mano", "Conio medaglistico svedese"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-CARDUCCI-BOLO-002",
+      "images": [],
+      "items": ["item_carducci_nobel_advanced"]
+    },
+    {
+      "key": "artwork_carducci_monumento",
+      "title": "Monumento a Giosuè Carducci di Leonardo Bistolfi",
+      "startYear": 1912,
+      "endYear": 1928,
+      "artists": ["artist_bistolfi"],
+      "location": {
+        "room": "Giardino Monumentale",
+        "floor": "Area Esterna",
+        "building": "Casa Carducci"
+      },
+      "dimensions": {
+        "height": 450,
+        "width": 320,
+        "depth": 280,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Simbolismo", "Art Nouveau / Liberty"],
+      "details": {
+        "subjects": ["Allegoria della Poesia", "Natura e Bellezza", "Giosuè Carducci"],
+        "colors": ["Marmo bianco di Carrara"],
+        "places": ["Bologna - Giardino di Casa Carducci"],
+        "objectType": "Gruppo scultoreo monumentale al chiaro scuro",
+        "materials": ["Marmo statutario di Carrara"],
+        "techniques": ["Scultura a tutto tondo e altorilievo simbolista"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-CARDUCCI-BOLO-003",
+      "images": [],
+      "items": ["item_carducci_monumento_scientific"]
+    },
+    {
+      "key": "artwork_carducci_biblioteca",
+      "title": "La Biblioteca Personale e l'Emeroteca di Giosuè Carducci",
+      "startYear": 1860,
+      "endYear": 1907,
+      "artists": ["artist_carducci"],
+      "location": {
+        "room": "Sale della Biblioteca Privata",
+        "floor": "Piano Nobile",
+        "building": "Casa Carducci"
+      },
+      "dimensions": {
+        "height": 300,
+        "width": 1200,
+        "depth": 40,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Filologia Classica", "Erudizione Letteraria"],
+      "details": {
+        "subjects": ["Incunaboli", "Cinquecentine", "Edizioni rare dei classici"],
+        "colors": ["Cuoio marrone", "Carta antica filigranata"],
+        "places": ["Bologna"],
+        "objectType": "Fondo librario e biblioteca monumentale vincolata",
+        "materials": ["Pergamena", "Cuoio", "Carta a mano"],
+        "techniques": ["Legatoria artigianale in pelle e pergamena"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-CARDUCCI-BOLO-004",
+      "images": [],
+      "items": ["item_carducci_biblioteca_medium"]
+    },
+    {
+      "key": "artwork_carducci_manoscritto",
+      "title": "Manoscritto Autografo delle 'Odi Barbare' e 'Rime Nuove'",
+      "startYear": 1877,
+      "endYear": 1889,
+      "artists": ["artist_carducci", "artist_ferrari"],
+      "location": {
+        "room": "Sala dei Manoscritti",
+        "floor": "Primo Piano",
+        "building": "Casa Carducci"
+      },
+      "dimensions": {
+        "height": 30,
+        "width": 22,
+        "depth": 4,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Metricismo Barbaro", "Poesia Neoclassica"],
+      "details": {
+        "subjects": ["Poesia barbara", "Annotazioni autografe", "Rime Nuove"],
+        "colors": ["Inchiostro nero di china su carta avorio"],
+        "places": ["Bologna"],
+        "objectType": "Quaderno autografo di lavoro con correzioni d'autore",
+        "materials": ["Carta filigranata", "Inchiostro di china"],
+        "techniques": ["Scrittura corsiva poetica ottocentesca"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-CARDUCCI-BOLO-005",
+      "images": [],
+      "items": ["item_carducci_manoscritto_advanced"]
+    },
+    {
+      "key": "artwork_carducci_ritratto",
+      "title": "Ritratto di Giosuè Carducci nel suo Studio (Olio su tela)",
+      "startYear": 1898,
+      "endYear": 1900,
+      "artists": ["artist_ricci"],
+      "location": {
+        "room": "Salotto di Ricevimento",
+        "floor": "Piano Nobile",
+        "building": "Casa Carducci"
+      },
+      "dimensions": {
+        "height": 110,
+        "width": 85,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Ritrattistica Italiana", "Realismo d'Epoca"],
+      "details": {
+        "subjects": ["Ritratto d'intellettuale", "Giosuè Carducci", "Scrivania e libri"],
+        "colors": ["Toni scuri di terra", "Rosso porpora", "Oro cornice"],
+        "places": ["Bologna"],
+        "objectType": "Dipinto a olio su tela con cornice intagliata e dorata",
+        "materials": ["Colori a olio su lino", "Legno dorato in foglia d'oro"],
+        "techniques": ["Pittura a olio a velature successive", "Intaglio artigianale di cornice"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-CARDUCCI-BOLO-006",
+      "images": [],
+      "items": ["item_carducci_studio_medium"]
+    }
+  ],
+  "visits": [
+    {
+      "key": "visit_carducci_nobel",
+      "title": "Giosuè Carducci: La Vita, i Libri e il Premio Nobel (1890-1907)",
+      "description": "Un percorso intimo attraverso le stanze abitate dal poeta nei suoi ultimi diciassette anni di vita. La visita si snoda tra la maestosa biblioteca personale con oltre 40.000 volumi, lo studio privato con la scrivania originale e la sala espositiva che custodisce il diploma e la medaglia d'oro del Premio Nobel per la Letteratura ricevuto nel 1906.",
+      "price": 6.0,
+      "creator": "carducci_staff",
+      "artworks": [
+        "artwork_carducci_studio",
+        "artwork_carducci_nobel",
+        "artwork_carducci_biblioteca"
+      ],
+      "minDuration": 50,
+      "maxDuration": 75,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "10:30", "endTime": "11:45" }, { "startTime": "15:00", "endTime": "16:15" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "10:30", "endTime": "11:45" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "10:30", "endTime": "11:45" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "10:30", "endTime": "11:45" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "10:30", "endTime": "11:45" }, { "startTime": "15:00", "endTime": "16:15" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "10:30", "endTime": "11:45" }, { "startTime": "15:00", "endTime": "16:15" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Gruppi di massimo 15 persone per la tutela degli spazi storici conservati.",
+      "categories": ["Didattica", "Neoclassicismo"]
+    },
+    {
+      "key": "visit_carducci_poesia",
+      "title": "Inverno e Primavera Poetica: Dal Neoclassicismo alle Odi Barbare",
+      "description": "Tour letterario focalizzato sulla genesi delle più celebri opere carducciane e sui manoscritti autografi conservati a Casa Carducci. Analisi della sperimentazione metrica delle Odi Barbare e delle Rime Nuove, arricchita dalla lettura e ascolto di brani scelti.",
+      "price": 8.0,
+      "creator": "carducci_staff",
+      "artworks": [
+        "artwork_carducci_manoscritto",
+        "artwork_carducci_ritratto",
+        "artwork_carducci_studio"
+      ],
+      "minDuration": 60,
+      "maxDuration": 90,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Consigliata per studenti universitari, appassionati di letteratura e poesia.",
+      "categories": ["Neoclassicismo", "Didattica"]
+    },
+    {
+      "key": "visit_carducci_giardino",
+      "title": "Il Giardino del Poeta e il Simbolismo di Bistolfi",
+      "description": "Itinerario all'aperto ed estetico nel giardino monumentale della casa, incentrato sul grande gruppo scultoreo in marmo di Carrara realizzato dallo scultore simbolista Leonardo Bistolfi in memoria di Carducci. Un viaggio tra arte simbolista, natura e poesia risorgimentale.",
+      "price": 5.0,
+      "creator": "carducci_staff",
+      "artworks": [
+        "artwork_carducci_monumento",
+        "artwork_carducci_ritratto"
+      ],
+      "minDuration": 45,
+      "maxDuration": 60,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "16:30", "endTime": "17:30" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "10:00", "endTime": "11:00" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "10:00", "endTime": "11:00" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "10:00", "endTime": "11:00" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "16:30", "endTime": "17:30" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "16:30", "endTime": "17:30" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Percorso accessibile anche all'aperto nei giardini del complesso.",
+      "categories": ["Neoclassicismo", "Realismo"]
+    }
+  ]
+}

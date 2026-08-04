@@ -1,0 +1,479 @@
+{
+  "users": [
+    {
+      "key": "archeo_staff",
+      "name": "Archeologo",
+      "surname": "Museo Archeologico",
+      "email": "archeologo@museoarcheologico.it",
+      "password": "Password123!",
+      "role": "museumstaff",
+      "roleStatus": "approved"
+    }
+  ],
+  "museum": {
+    "key": "museum_civico_archeologico",
+    "name": "Museo Civico Archeologico di Bologna",
+    "description": "Ospitato nel rinascimentale Palazzo Galvani accanto a Piazza Maggiore, il Museo Civico Archeologico di Bologna conserva una delle raccolte archeologiche più prestigiose d'Italia. Il museo si distingue per la straordinaria sezione etrusca che illustra la storia dell'antica Felsina dalle origini villanoviane fino alla conquista gallica, la rinomata collezione greca e romana (con la celeberrima Athena Lemnia) e la Sezione Egizia, considerata per importanza e numero di reperti (oltre 3.500 oggetti tra cui i rilievi della tomba di Horemheb a Saqqara) tra le prime in Europa.",
+    "address": {
+      "street": "Via dell'Archiginnasio 2",
+      "city": "Bologna",
+      "zipCode": "40124",
+      "country": "Italia"
+    },
+    "contact": {
+      "phone": "+39 051 2757211",
+      "email": "mda@comune.bologna.it",
+      "website": "http://www.museibologna.it/archeologico",
+      "social": {
+        "facebook": "https://www.facebook.com/archeologicobologna",
+        "instagram": "https://www.instagram.com/museoarcheologicobologna"
+      }
+    },
+    "maxCapacity": 400,
+    "actualCapacity": 0,
+    "openingHours": [
+      {
+        "weeklyStandard": [
+          { "day": 0, "slots": [{ "startTime": "10:00", "endTime": "19:00" }], "closed": false },
+          { "day": 1, "slots": [], "closed": true },
+          { "day": 2, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false },
+          { "day": 3, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false },
+          { "day": 4, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false },
+          { "day": 5, "slots": [{ "startTime": "10:00", "endTime": "19:00" }], "closed": false },
+          { "day": 6, "slots": [{ "startTime": "10:00", "endTime": "19:00" }], "closed": false }
+        ],
+        "exceptions": []
+      }
+    ],
+    "ticketInfo": {
+      "prices": [
+        { "planName": "Intero Museo Archeologico", "price": 8.0, "target": "Adulti" },
+        { "planName": "Ridotto", "price": 5.0, "target": "Under 26, Over 65, Gruppi" },
+        { "planName": "Gratuito", "price": 0.0, "target": "Under 18, Card Cultura, Persone con disabilità" }
+      ],
+      "discountCode": ["ARCHEOBOLO26", "CULTURAREGIONE"]
+    },
+    "isActive": true,
+    "disableFriendly": true,
+    "requirements": "Percorso totalmente accessibile con ascensori e rampe. Servizio audioguida e visite guidate didattiche disponibili su prenotazione.",
+    "visits": [
+      "visit_archeo_felsina_etrusca",
+      "visit_archeo_egitto_faraoni",
+      "visit_archeo_fidia_bellezza",
+      "visit_archeo_guerrieri_villanoviani"
+    ],
+    "artworks": [
+      "artwork_archeo_athena_lemnia",
+      "artwork_archeo_situla_benvenuti",
+      "artwork_archeo_rilievi_horemheb",
+      "artwork_archeo_stele_certosa",
+      "artwork_archeo_statua_nespamedu",
+      "artwork_archeo_elmo_villanoviano"
+    ]
+  },
+  "artists": [
+    {
+      "key": "artist_palagi",
+      "name": "Pelagio",
+      "surname": "Palagi",
+      "artisticCurrents": ["Neoclassicismo", "Collezionismo Archeologico XIX sec.", "Pittura Storica"]
+    },
+    {
+      "key": "artist_fidia",
+      "name": "Fidia",
+      "surname": "di Atene (Pheidias)",
+      "artisticCurrents": ["Scultura Classica Greca V sec. a.C.", "Partenone", "Canone Fidiaco"]
+    },
+    {
+      "key": "artist_maestro_situla",
+      "name": "Maestro della",
+      "surname": "Situla Benvenuti",
+      "artisticCurrents": ["Arte Etrusco-Veneta", "Toreutica in Bronzo VI sec. a.C."]
+    },
+    {
+      "key": "artist_gozzadini",
+      "name": "Giovanni",
+      "surname": "Gozzadini",
+      "artisticCurrents": ["Archeologia Preistorica", "Scoperte Villanoviane XIX sec."]
+    },
+    {
+      "key": "artist_policleto",
+      "name": "Policleto",
+      "surname": "di Argo",
+      "artisticCurrents": ["Scultura Greca Classica", "Canone Policleteo"]
+    }
+  ],
+  "items": [
+    {
+      "key": "item_archeo_athena_advanced",
+      "description": "La testa di Athena Lemnia conservata al Museo Civico Archeologico di Bologna è considerata uno dei massimi capolavori della ritrattistica classica greca. Tratta dalla celebre statua bronzea scolpita da Fidia nel V sec. a.C. per l'Acropoli di Atene, la scultura esprime l'armonia ideale del volto divino senza elmo, con la fascia tra i capelli e uno sguardo di maestosa serenità.",
+      "tone": "advanced",
+      "length": 310
+    },
+    {
+      "key": "item_archeo_situla_medium",
+      "description": "La Situla Benvenuti (VI sec. a.C.) è il reperto più celebre della civiltà etrusca di Felsina. Questo recipiente rituale in lamina di bronzo sbalzata è decorato su tre registri sovrapposti con scene di animali fantastici, sfilate di guerrieri con scudi rotondi e cerimonie di banchetto nobilitante.",
+      "tone": "medium",
+      "length": 260
+    },
+    {
+      "key": "item_archeo_horemheb_scientific",
+      "description": "I grandi bassorilievi in pietra calcarea provenienti dalla tomba di Horemheb a Saqqara (prima del suo insediamento come Faraone) raffigurano prigionieri asiatici e libici scortati da soldati egizi. Le incisioni testimoniano lo stile raffinato dell'arte menfita post-amarniana del Nuovo Regno.",
+      "tone": "scientific",
+      "length": 290
+    },
+    {
+      "key": "item_archeo_stele_medium",
+      "description": "Le stele funerarie etrusche di Felsina in pietra d'arenaria ('Pietra d'Aria') raffigurano il viaggio figurato del defunto verso l'Oltretomba su una biga condotta da un demone psicopompo, circondata da mostri marini e serpentiformi della tradizione etrusca.",
+      "tone": "medium",
+      "length": 240
+    },
+    {
+      "key": "item_archeo_nespamedu_technical",
+      "description": "La statua bronzea del sacerdote Nespamedu risale all'Epoca Saitica dell'Egitto antico (VII-VI sec. a.C.). La figura è impreziosita da una finissima ageminatura in filo d'oro e d'argento che traccia le geroglifici di invocazione alle divinità dell'Oltretomba.",
+      "tone": "technical",
+      "length": 250
+    },
+    {
+      "key": "item_archeo_elmo_simple",
+      "description": "Questo grande elmo di bronzo a cresta apparteneva a un valoroso guerriero villanoviano vissuto a Bologna quasi 2800 anni fa! Le decorazioni a punti sbalzati mostrano l'incredibile abilità dei primi fabbri bolognesi dell'Età del Ferro.",
+      "tone": "simple",
+      "length": 180
+    }
+  ],
+  "artworks": [
+    {
+      "key": "artwork_archeo_athena_lemnia",
+      "title": "Testa di Athena Lemnia (Copia romana dal bronzo di Fidia)",
+      "startYear": -450,
+      "endYear": 100,
+      "artists": ["artist_fidia", "artist_palagi"],
+      "location": {
+        "room": "Sala della Scultura Greca e Romana",
+        "floor": "Piano Terreno",
+        "building": "Palazzo Galvani"
+      },
+      "dimensions": {
+        "height": 42,
+        "width": 28,
+        "depth": 26,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Scultura Greca Classica", "Arte Romana"],
+      "details": {
+        "subjects": ["Athena Lemnia", "Dea della Sapienza", "Ritratto classico"],
+        "colors": ["Marmo bianco pario"],
+        "places": ["Atene / Bologna"],
+        "objectType": "Busto/testa scultorea in marmo classico",
+        "materials": ["Marmo pario"],
+        "techniques": ["Scultura a tutto tondo con finitura satinata"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-ARCHEO-BOLO-001",
+      "images": [],
+      "items": ["item_archeo_athena_advanced"]
+    },
+    {
+      "key": "artwork_archeo_situla_benvenuti",
+      "title": "Situla Benvenuti (Vaso cerimoniale etrusco-veneto in bronzo sbalzato)",
+      "startYear": -600,
+      "endYear": -550,
+      "artists": ["artist_maestro_situla"],
+      "location": {
+        "room": "Sala Etrusca - Necropoli di Felsina",
+        "floor": "Primo Piano",
+        "building": "Palazzo Galvani"
+      },
+      "dimensions": {
+        "height": 31,
+        "width": 25,
+        "depth": 25,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Arte Etrusca di Felsina", "Civilta Villanoviana"],
+      "details": {
+        "subjects": ["Animali fantastici", "Processione di guerrieri", "Banchetto rituale"],
+        "colors": ["Bronzo con patina scura"],
+        "places": ["Bologna - Felsina"],
+        "objectType": "Vaso rituale in lamina di bronzo sbalzata",
+        "materials": ["Lamina di bronzo", "Rivetti in rame"],
+        "techniques": ["Lavorazione a sbalzo e cesellatura a bulino"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-ARCHEO-BOLO-002",
+      "images": [],
+      "items": ["item_archeo_situla_medium"]
+    },
+    {
+      "key": "artwork_archeo_rilievi_horemheb",
+      "title": "Rilievi della Tomba del Generale Horemheb a Saqqara",
+      "startYear": -1330,
+      "endYear": -1320,
+      "artists": ["artist_palagi"],
+      "location": {
+        "room": "Sezione Egizia - Sala del Nuovo Regno",
+        "floor": "Seminterrato",
+        "building": "Palazzo Galvani"
+      },
+      "dimensions": {
+        "height": 95,
+        "width": 140,
+        "depth": 15,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Arte Egizia del Nuovo Regno", "Periodo Post-Amarniano"],
+      "details": {
+        "subjects": ["Prigionieri asiatici e libici", "Generale Horemheb", "Processione militare"],
+        "colors": ["Pietra calcarea avorio con tracce di policromia"],
+        "places": ["Saqqara - Egitto"],
+        "objectType": "Bassorilievo monumentale in pietra calcarea",
+        "materials": ["Pietra calcarea menfita"],
+        "techniques": ["Bassorilievo finemente inciso e sagomato"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-ARCHEO-BOLO-003",
+      "images": [],
+      "items": ["item_archeo_horemheb_scientific"]
+    },
+    {
+      "key": "artwork_archeo_stele_certosa",
+      "title": "Stele Funeraria Etrusca n. 168 della Certosa di Bologna",
+      "startYear": -400,
+      "endYear": -350,
+      "artists": ["artist_gozzadini"],
+      "location": {
+        "room": "Sala della Necropoli della Certosa",
+        "floor": "Primo Piano",
+        "building": "Palazzo Galvani"
+      },
+      "dimensions": {
+        "height": 185,
+        "width": 80,
+        "depth": 22,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Scultura Etrusca Funeraria"],
+      "details": {
+        "subjects": ["Viaggio nell'Oltretomba", "Defunto su biga", "Demone Charun"],
+        "colors": ["Pietra d'Aria grigia"],
+        "places": ["Bologna - Necropoli della Certosa"],
+        "objectType": "Stele funeraria monolitica ad archetto",
+        "materials": ["Pietra d'Aria (arenaria bolognese)"],
+        "techniques": ["Rilievo scolpito a mazzuolo e scalpello"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-ARCHEO-BOLO-004",
+      "images": [],
+      "items": ["item_archeo_stele_medium"]
+    },
+    {
+      "key": "artwork_archeo_statua_nespamedu",
+      "title": "Statua Bronzea del Sacerdote Nespamedu in Bronzo Ageminato",
+      "startYear": -664,
+      "endYear": -525,
+      "artists": ["artist_palagi"],
+      "location": {
+        "room": "Sezione Egizia - Sala dell'Epoca Tarda",
+        "floor": "Seminterrato",
+        "building": "Palazzo Galvani"
+      },
+      "dimensions": {
+        "height": 48,
+        "width": 18,
+        "depth": 22,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Arte Egizia Tarda (Epoca Saitica)"],
+      "details": {
+        "subjects": ["Sacerdote Nespamedu", "Geroglifici votivi", "Preghiera ad Osiride"],
+        "colors": ["Bronzo scuro", "Intarsi in filograna d'oro e argento"],
+        "places": ["Egitto"],
+        "objectType": "Statua votiva in bronzo con ageminatura in metalli preziosi",
+        "materials": ["Bronzo", "Oro", "Argento"],
+        "techniques": ["Fusione a cera persa e intarsio ad ageminatura"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-ARCHEO-BOLO-005",
+      "images": [],
+      "items": ["item_archeo_nespamedu_technical"]
+    },
+    {
+      "key": "artwork_archeo_elmo_villanoviano",
+      "title": "Elmo Crestato e Armatura Funeraria Villanoviana da San Vitale",
+      "startYear": -800,
+      "endYear": -750,
+      "artists": ["artist_gozzadini"],
+      "location": {
+        "room": "Sala della Protoistoria e Villanova",
+        "floor": "Primo Piano",
+        "building": "Palazzo Galvani"
+      },
+      "dimensions": {
+        "height": 38,
+        "width": 32,
+        "depth": 35,
+        "unit": "cm"
+      },
+      "artisticCurrents": ["Civilta Villanoviana", "Età del Ferro Italiana"],
+      "details": {
+        "subjects": ["Guerriero Villanoviano", "Elmo a cresta", "Decorazione geometrica"],
+        "colors": ["Bronzo antico"],
+        "places": ["Bologna - San Vitale"],
+        "objectType": "Elmo da combattimento e parata in bronzo",
+        "materials": ["Lamina di bronzo battuto", "Chiodetti in rame"],
+        "techniques": ["Martellatura a mano e sbalzo a borchie sferiche"]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-ARCHEO-BOLO-006",
+      "images": [],
+      "items": ["item_archeo_elmo_simple"]
+    }
+  ],
+  "visits": [
+    {
+      "key": "visit_archeo_felsina_etrusca",
+      "title": "Felsina Etrusca: I Segreti delle Necropoli e la Certosa",
+      "description": "Un viaggio indietro nel tempo nella Bologna etrusca (Felsina). Il percorso guida tra i preziosi corredi funerari delle necropoli della Certosa e di San Vitale, le stele decorate con il viaggio nell'Oltretomba e la celebre Situla Benvenuti con i suoi rilievi di animali fantastici e banchetti orientali.",
+      "price": 8.0,
+      "creator": "archeo_staff",
+      "artworks": [
+        "artwork_archeo_situla_benvenuti",
+        "artwork_archeo_stele_certosa",
+        "artwork_archeo_elmo_villanoviano"
+      ],
+      "minDuration": 60,
+      "maxDuration": 90,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:30", "endTime": "17:00" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:30", "endTime": "17:00" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:30", "endTime": "17:00" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Percorso ampiamente accessibile nel piano nobile e nelle sale espositive.",
+      "categories": ["Archeologia"]
+    },
+    {
+      "key": "visit_archeo_egitto_faraoni",
+      "title": "L'Egitto dei Faraoni: La Collezione Egizia di Pelagio Palagi",
+      "description": "Esplorazione guidata di una delle collezioni egizie più importanti d'Europa. Dalle mummie e sarcofagi d'epoca alla splendida statua bronzea di Nespamedu ageminata in oro, fino ai celebri rilievi della tomba di Horemheb provenienti da Saqqara.",
+      "price": 10.0,
+      "creator": "archeo_staff",
+      "artworks": [
+        "artwork_archeo_rilievi_horemheb",
+        "artwork_archeo_statua_nespamedu",
+        "artwork_archeo_athena_lemnia"
+      ],
+      "minDuration": 75,
+      "maxDuration": 105,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "11:00", "endTime": "12:45" }, { "startTime": "16:00", "endTime": "17:45" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "11:00", "endTime": "12:45" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "11:00", "endTime": "12:45" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "11:00", "endTime": "12:45" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "11:00", "endTime": "12:45" }, { "startTime": "16:00", "endTime": "17:45" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "11:00", "endTime": "12:45" }, { "startTime": "16:00", "endTime": "17:45" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Consigliata la prenotazione per i gruppi per la gestione dei flussi nelle sale ipogee.",
+      "categories": ["Antico Egitto", "Archeologia"]
+    },
+    {
+      "key": "visit_archeo_fidia_bellezza",
+      "title": "Fidia e l'Ideale di Bellezza: La Scultura Greca e Romana",
+      "description": "Itinerario dedicato ai capolavori dell'antichità classica conservati a Palazzo Galvani. Il tour si focalizza sulla celeberrima Athena Lemnia (copia romana del V sec. a.C. dall'originale di Fidia) ed analizza l'evoluzione dell'armonia del corpo umano dalla Grecia all'Impero Romano.",
+      "price": 7.0,
+      "creator": "archeo_staff",
+      "artworks": [
+        "artwork_archeo_athena_lemnia",
+        "artwork_archeo_stele_certosa"
+      ],
+      "minDuration": 60,
+      "maxDuration": 75,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "12:00", "endTime": "13:15" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "12:00", "endTime": "13:15" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "12:00", "endTime": "13:15" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "12:00", "endTime": "13:00" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "12:00", "endTime": "13:15" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "12:00", "endTime": "13:15" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Visita guidata adatta ad appassionati di arte e scultura classica.",
+      "categories": ["Antica Grecia", "Antica Roma", "Archeologia"]
+    },
+    {
+      "key": "visit_archeo_guerrieri_villanoviani",
+      "title": "Prima di Bologna: I Principi e i Guerrieri dell'Età del Bronzo e del Ferro",
+      "description": "Tour archeologico sulle origini del territorio bolognese: dai primi insediamenti della Civiltà Villanoviana (VIII sec. a.C.) all'affermarsi dei guerrieri etruschi, analizzando armi in bronzo, elmi crestati, gioielli e vasellame ceramico.",
+      "price": 6.0,
+      "creator": "archeo_staff",
+      "artworks": [
+        "artwork_archeo_elmo_villanoviano",
+        "artwork_archeo_situla_benvenuti",
+        "artwork_archeo_stele_certosa"
+      ],
+      "minDuration": 50,
+      "maxDuration": 70,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            { "day": 0, "slots": [{ "startTime": "15:00", "endTime": "16:10" }], "closed": false },
+            { "day": 1, "slots": [], "closed": true },
+            { "day": 2, "slots": [{ "startTime": "15:00", "endTime": "16:10" }], "closed": false },
+            { "day": 3, "slots": [{ "startTime": "15:00", "endTime": "16:10" }], "closed": false },
+            { "day": 4, "slots": [{ "startTime": "15:00", "endTime": "16:10" }], "closed": false },
+            { "day": 5, "slots": [{ "startTime": "15:00", "endTime": "16:10" }], "closed": false },
+            { "day": 6, "slots": [{ "startTime": "15:00", "endTime": "16:10" }], "closed": false }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Particolarmente indicato per scolaresche e percorsi didattici.",
+      "categories": ["Archeologia", "Didattica"]
+    }
+  ]
+}

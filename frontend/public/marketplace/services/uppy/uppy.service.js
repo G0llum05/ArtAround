@@ -64,9 +64,28 @@ export const UppyService = {
 
             this.instance.on('complete', (result) => {
                 if (result.successful && result.successful.length > 0) {
-                    const uploadedFiles = result.successful
-                        .map(f => f.response?.body?.files || [])
-                        .flat();
+                    const fileMap = new Map();
+                    result.successful.forEach(f => {
+                        const serverFiles = f.response?.body?.files;
+                        if (Array.isArray(serverFiles)) {
+                            serverFiles.forEach(fileObj => {
+                                if (fileObj && (fileObj.url || fileObj.filename)) {
+                                    const key = fileObj.url || fileObj.filename;
+                                    fileMap.set(key, fileObj);
+                                }
+                            });
+                        } else if (f.response?.body?.url) {
+                            fileMap.set(f.response.body.url, f.response.body);
+                        } else {
+                            fileMap.set(f.id, {
+                                filename: f.name,
+                                url: f.preview || '',
+                                size: f.size
+                            });
+                        }
+                    });
+
+                    const uploadedFiles = Array.from(fileMap.values());
 
                     if (onUploadSuccessCallback) {
                         onUploadSuccessCallback(uploadedFiles);

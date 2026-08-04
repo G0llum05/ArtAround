@@ -33,10 +33,16 @@ function getModuleRouters() {
  */
 function loadRoutes(app) {
   const routers = getModuleRouters();
-  routers.forEach(({ routePrefix, filePath }) => {
+  routers.forEach(({ name, routePrefix, filePath }) => {
     const router = require(filePath);
     app.use(routePrefix, router);
     console.log(`[AutoRouter] Registered ${routePrefix} -> ${path.relative(path.join(__dirname, '..'), filePath)}`);
+    // 
+    if (!name.endsWith('s')) {
+      const pluralPrefix = `${routePrefix}s`;
+      app.use(pluralPrefix, router);
+      console.log(`[AutoRouter] Registered plural alias ${pluralPrefix} -> ${path.relative(path.join(__dirname, '..'), filePath)}`);
+    }
   });
 }
 

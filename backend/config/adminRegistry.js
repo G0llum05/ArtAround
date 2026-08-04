@@ -5,10 +5,9 @@
  */
 
 const ADMIN_EMAILS = new Set([
-  'mattiagraziani05@gmail.com',
-  // Aggiungere qui le email degli altri 2 creatori non appena disponibili:
-  // 'davide.gamberini@example.com',
-  // 'samuele.grillini@example.com'
+  process.env.ADMIN1,
+  process.env.ADMIN2,
+  process.env.ADMIN3
 ]);
 
 function isAdminEmail(email) {

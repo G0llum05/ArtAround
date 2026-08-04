@@ -8,6 +8,7 @@ class VisitMapper {
       visit.title,
       visit.description,
       visit.price,
+      visit.license || 'Standard',
       visit.verified,
       visit.minDuration,
       visit.maxDuration,
@@ -17,7 +18,10 @@ class VisitMapper {
       visit.weeklySchedule,
       visit.disabledFriendly,
       visit.requirements,
-      visit.quiz
+      visit.quiz,
+      visit.categories || [],
+      visit.likesCount || 0,
+      visit.views || { total: 0, weekly: 0 }
     );
   }
 
@@ -27,6 +31,7 @@ class VisitMapper {
       title: visitRequestDTO.title,
       description: visitRequestDTO.description,
       price: visitRequestDTO.price,
+      license: visitRequestDTO.license || 'Standard',
       verified: visitRequestDTO.verified,
       minDuration: visitRequestDTO.minDuration,
       maxDuration: visitRequestDTO.maxDuration,
@@ -36,7 +41,8 @@ class VisitMapper {
       weeklySchedule: visitRequestDTO.weeklySchedule,
       disabledFriendly: visitRequestDTO.disabledFriendly,
       requirements: visitRequestDTO.requirements,
-      quiz: visitRequestDTO.quiz
+      quiz: visitRequestDTO.quiz,
+      categories: visitRequestDTO.categories || []
     };
   }
 }

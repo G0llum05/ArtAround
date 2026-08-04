@@ -9,6 +9,16 @@ const router = express.Router();
 // Corrisponde a GET /api/visits/
 router.get('/', VisitController.getAllVisits);
 
+// GET /feed
+// Restituisce le sezioni del marketplace raggruppate per categoria (solo quelle non vuote)
+router.get('/feed', VisitController.getMarketplaceFeed);
+
+// POST /:id/like
+router.post('/:id/like', VisitController.likeVisit);
+
+// POST /:id/view
+router.post('/:id/view', VisitController.viewVisit);
+
 // POST /
 // Corrisponde a POST /api/visits/
 router.post('/', VisitController.createVisit);

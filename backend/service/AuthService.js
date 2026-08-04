@@ -84,8 +84,13 @@ class AuthService {
       throw new Error('Credenziali non valide.');
     }
 
-    // Se l'utente era un guest ma nel frattempo ha ricevuto una student assignment, aggiorniamo il ruolo
-    if (user.role === 'guest') {
+    // Se l'email dell'utente risulta nel registro degli Amministratori, aggiorna automaticamente il ruolo in 'admin'
+    const { isAdminEmail } = require('../config/adminRegistry');
+    if (isAdminEmail(cleanEmail) && user.role !== 'admin') {
+      user.role = 'admin';
+      user.roleStatus = 'approved';
+      await user.save();
+    } else if (user.role === 'guest') {
       const roleConfig = await RoleManagementService.determineUserRoleOnSignup(cleanEmail, null);
       if (roleConfig.role === 'student') {
         user.role = 'student';
@@ -108,8 +113,14 @@ class AuthService {
    * Integrazione Google OAuth2: Cerca utente per Google ID o unifica per Email.
    */
   async findOrCreateGoogleUser(profile) {
+    const { isAdminEmail } = require('../config/adminRegistry');
     let user = await this.getUserByGoogleId(profile.id);
     if (user) {
+      if (isAdminEmail(user.email) && user.role !== 'admin') {
+        user.role = 'admin';
+        user.roleStatus = 'approved';
+        await user.save();
+      }
       return user;
     }
 
@@ -121,6 +132,10 @@ class AuthService {
     user = await this.getUserByEmailModel(email);
     if (user) {
       user.googleId = profile.id;
+      if (isAdminEmail(email) && user.role !== 'admin') {
+        user.role = 'admin';
+        user.roleStatus = 'approved';
+      }
       await user.save();
       return user;
     }
@@ -155,6 +170,13 @@ class AuthService {
       throw new Error('Utente associato al token non trovato.');
     }
 
+    const { isAdminEmail } = require('../config/adminRegistry');
+    if (isAdminEmail(user.email) && user.role !== 'admin') {
+      user.role = 'admin';
+      user.roleStatus = 'approved';
+      await user.save();
+    }
+
     // Rotazione: revoca il vecchio token ed emette una nuova coppia
     const newRefreshToken = await TokenService.generateRefreshToken(user, ipAddress);
     await TokenService.revokeRefreshToken(refreshTokenString, ipAddress, newRefreshToken);
@@ -185,6 +207,14 @@ class AuthService {
     if (!user) {
       throw new Error('Utente non trovato.');
     }
+
+    const { isAdminEmail } = require('../config/adminRegistry');
+    if (isAdminEmail(user.email) && user.role !== 'admin') {
+      user.role = 'admin';
+      user.roleStatus = 'approved';
+      await user.save();
+    }
+
     return UserMapper.toUserResponseDTO(user);
   }
 

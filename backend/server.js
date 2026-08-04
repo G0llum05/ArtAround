@@ -54,11 +54,19 @@ if (fs.existsSync(swaggerJsonPath)) {
 // --- API Routes (Auto-loaded from controller/ directory) ---
 loadRoutes(app);
 
+// Direct top-level /api/transcribe endpoint alias
+const multer = require('multer');
+const ramUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
+const NavigatorController = require('./controller/navigator/NavigatorController');
+app.post('/api/transcribe', ramUpload.single('audio'), NavigatorController.transcribeAudio);
+
 // --- Static Asset & Angular SPA Handlers ---
 const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
 const fallbackDistPath = path.join(__dirname, '../frontend/dist/index.html');
 const frontendPublicPath = path.join(__dirname, '../frontend/public');
+const backendAssetsPath = path.join(__dirname, 'assets');
 
+app.use('/assets', express.static(backendAssetsPath));
 app.use(express.static(angularDistPath));
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 app.use(express.static(frontendPublicPath));

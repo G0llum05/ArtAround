@@ -1,19 +1,57 @@
 <nav aria-label="Menu principale">
   <ul role="list">
     <li>
-      <a href="/marketplace" [class.active]="isActive('/marketplace')"> Marketplace </a>
+      <a href="/marketplace" (click)="onNavClick($event, '/marketplace')" [class.active]="isActive('/marketplace')"> Marketplace </a>
     </li>
     @for (item of navItems; track item.label) {
       <li>
         @if (isAngular) {
           <a
             [routerLink]="item.path"
+            (click)="onNavClick($event, item.path)"
             [class.active]="isActive(item.path)"
-          >{{ item.label }}</a>
+          >
+            {{ item.label }}
+            @if (item.path === '/marketplace/museums' && !isAdmin()) {
+              <span class="lock-icon" title="Riservato agli Amministratori">🔒</span>
+            }
+          </a>
         } @else {
-          <a [href]="item.path" [class.active]="isActive(item.path)">{{ item.label }}</a>
+          <a
+            [href]="item.path"
+            (click)="onNavClick($event, item.path)"
+            [class.active]="isActive(item.path)"
+          >
+            {{ item.label }}
+            @if (item.path === '/marketplace/museums' && !isAdmin()) {
+              <span class="lock-icon" title="Riservato agli Amministratori">🔒</span>
+            }
+          </a>
         }
       </li>
     }
+
+    <li class="auth-nav-item">
+      @if (authService.isLoggedIn()) {
+        <div class="user-badge-container">
+          <span class="user-badge" title="Utente collegato">
+            <span class="user-icon">👤</span>
+            <span class="user-name">{{ authService.userDisplayName() || 'Utente' }}</span>
+            @if (authService.hasRole('admin')) {
+              <span class="admin-badge" title="Amministratore">ADMIN</span>
+            }
+          </span>
+          <button type="button" class="logout-nav-btn" (click)="onLogout()" title="Disconnettiti">
+            Logout
+          </button>
+        </div>
+      } @else {
+        @if (isAngular) {
+          <a [routerLink]="'/login'" [class.active]="isActive('/login')">Login</a>
+        } @else {
+          <a href="/login" [class.active]="isActive('/login')">Login</a>
+        }
+      }
+    </li>
   </ul>
 </nav>

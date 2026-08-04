@@ -8,6 +8,8 @@ import { TestVisitComponent } from './pages/test-visit.component/test-visit.comp
 import { TestComponent } from './pages/test.component/test.component';
 import { UploadDemoComponent } from './pages/upload-demo/upload-demo.component';
 
+import { NavigatorComponent } from './pages/navigator.component/navigator.component';
+
 export const routes: Routes = [
   {path: '', component: GalleryPage},
   {path: 'login', component: LoginComponent},
@@ -17,6 +19,9 @@ export const routes: Routes = [
   {path: 'userTest', component: TestUserComponent},
   {path: 'museumTest', component: TestMuseumComponent},
   {path: 'visitTest', component: TestVisitComponent},
+  {path: 'navigator', component: NavigatorComponent},
+  {path: 'navigatorTest', component: NavigatorComponent},
+  {path: 'visite', component: TestVisitComponent},
   {path: '**', component: PageNotFoundPage} // Rotta di fallback
 ]
 

@@ -57,10 +57,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "bacheca-ui:build:production"
+              "buildTarget": "artaround:build:production"
             },
             "development": {
-              "buildTarget": "bacheca-ui:build:development"
+              "buildTarget": "artaround:build:development"
             }
           },
           "defaultConfiguration": "development",

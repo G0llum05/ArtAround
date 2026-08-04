@@ -154,7 +154,7 @@ class AuthController {
    * Callback di Google OAuth2: imposta il Cookie HttpOnly in modo sicuro e reindirizza senza token nella query string.
    */
   async googleCallback(req, res) {
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:4200';
+    const clientUrl = (process.env.CLIENT_URL || 'http://localhost:4200').trim();
     try {
       if (!req.user) return res.redirect(`${clientUrl}/login?error=auth_failed`);
       const clientIp = req.ip || req.connection.remoteAddress;

@@ -4,60 +4,286 @@
 /* Uppy styles */
 @import '@uppy/core/dist/style.min.css';
 @import '@uppy/dashboard/dist/style.min.css';
+
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:wght@600;700&family=Alegreya+Sans:wght@400;500&display=swap');
+
 :root {
-  --gold-primary: #c5a059;
-  --gold-hover: #a68444;
-  --marble-bg: #fffef8;
-  --pure-white: #ffffff;
-  --text-dark: #1a1a1a;
-  --black: #000000;
-  --text-muted: #666666;
-  --border-subtle: #e6e4df;
-  --font-display: 'Cormorant Garamond', serif;
-  --font-body: 'Lato', sans-serif;
+  /* Colori - Tema Chiaro */
 
-  /* Spacing */
-  --spacing-xs: 0.25rem;  /* 4px */
-  --spacing-sm: 0.5rem;   /* 8px */
-  --spacing-md: 1rem;     /* 16px */
-  --spacing-lg: 1.5rem;   /* 24px */
-  --spacing-xl: 2rem;     /* 32px */
-  --spacing-xxl: 3rem;    /* 48px */
+  --background: #f1ecdc;
+  --surface: #f3f1e6;;
+  --surface-container-high: #fdfdfd;; /* when over */
 
-  /* Border Radius */
-  --radius-sm: 0.25rem;   /* 4px */
-  --radius-md: 0.5rem;    /* 8px */
-  --radius-lg: 1rem;      /* 16px */
-  --radius-xl: 1.25rem;   /* 20px */
-  --radius-full: 9999px;  /* Keeping px for full roundness as it's standard */
+  /* Colori del Testo */
+  --on-surface: #1b1c19;
+  --on-background: #1b1c19;
+
+  /* Colori Brand (Terracotta, Sage Green, Ochre) */
+  --primary: #9f3d25;
+  --on-primary: #ffffff;
+  --primary-container: #7f2610;
+  --on-primary-container: #ffcabd;
+
+  --secondary: #649074;
+  --on-secondary: #ffffff;
+  --secondary-container: #beeecd;
+  --on-secondary-container: #426d53;
+
+  --tertiary: #cb9845;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #7e5500;
+  --on-tertiary-container: #ffcf87;
+
+  /* Stati di Errore */
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+
+  /* Bordi e Outline */
+  --outline: #8a726c;
+  --outline-variant: #ddc0b9;
+
+  /* Tipografia */
+  --font-heading: 'Alegreya', serif;
+  --font-body: 'Alegreya Sans', sans-serif;
+
+  /* Dimensioni Tipografiche (Base Mobile, in rem) */
+  --text-headline-lg: 1.75rem;
+  --line-height-hl-lg: 2.25rem;
+
+  --text-headline-md: 1.375rem;
+  --line-height-hl-md: 1.75rem;
+
+  --text-body-lg: 1rem;
+  --line-height-body-lg: 1.5rem;
+
+  --text-body-md: 0.875rem;
+  --line-height-body-md: 1.25rem;
+
+  --text-label-md: 0.75rem;
+  --line-height-label-md: 1rem;
+
+  /* Forme, Bordi e Spaziature */
+  --radius-default: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 99rem;
+
+  /* Spaziature (Base 0.5rem = 8px) */
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+
+  /* border */
+  --border-sm: 0.1rem;
+  --border-md: 0.2rem;
+  --border-lg: 0.4rem;
+
+  /* Layout Base (Mobile) */
+  --layout-margin: 1rem;
+  --layout-gutter: 1rem;  /* space between column */
+  --grid-columns: 4;  /* mobile first */
+  --container-max-width: 100%;
 }
 
-html{
-  overflow-x: hidden;
-  overflow-y: auto;
-  scroll-behavior: smooth;
+/* DARK MODE */
+[data-theme="dark"] {
+  /* Sfondi e Superfici (Tonalità scure e calde) */
+  --background: #1b1c19;
+  --surface: #252623;
+
+  /* Colori del Testo (Bianco osso / avorio) */
+  --on-surface: #fbf9f4;
+  --on-background: #fbf9f4;
+
+  /* Colori Brand (Schiarenti e desaturati per contrasto) */
+  --primary: #ffb4a2;
+  --on-primary: #561d0f;
+  --primary-container: #7f2610;
+  --on-primary-container: #ffdad2;
+
+  --secondary: #a3d1b2;
+  --on-secondary: #1c3625;
+  --secondary-container: #244f37;
+  --on-secondary-container: #beeecd;
+
+  --tertiary: #f5bd66;
+  --on-tertiary: #412d00;
+  --tertiary-container: #5f3f00;
+  --on-tertiary-container: #ffcf87;
+
+  /* Stati di Errore */
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --on-error-container: #ffdad6;
+
+  /* Bordi e Outline (Invertiti per visibilità su scuro) */
+  --outline: #a08c87;
+  --outline-variant: #57423d;
 }
 
-html, body {
+/* Media Queries (Scalabilità) */
+
+/* Tablet (min-width: 48rem -> 768px) */
+@media (min-width: 48rem) {
+  :root {
+    --grid-columns: 8;
+    --layout-margin: 2rem;
+
+    --text-headline-lg: 2rem;
+    --line-height-hl-lg: 2.5rem;
+
+    --text-headline-md: 1.5rem;
+    --line-height-hl-md: 2rem;
+  }
+}
+
+/* Desktop (min-width: 75rem -> 1200px) */
+@media (min-width: 75rem) {
+  :root {
+    --grid-columns: 12;
+    --layout-margin: 4rem;
+    --layout-gutter: 1.5rem;
+    --container-max-width: 80rem;
+  }
+}
+
+/* Reset e Stili Globali */
+
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
-  background-color: var(--marble-bg);
-  font-family: var(--font-body), sans-serif;
-  box-sizing: border-box;
 }
 
-app-root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  width: 100%;
+body {
+  font-family: var(--font-body);
+  background-color: var(--background);
+  color: var(--on-background);
+  line-height: var(--line-height-body-lg);
+  font-size: var(--text-body-lg);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
 }
 
-.page-content {
-  min-height: 100vh;
-  display: block;
-  padding-top: 8vh; /* Margine per la toolbar fissa */
-  box-sizing: border-box;
+/* Tipografia HTML */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--on-surface);
+  margin-bottom: var(--space-md);
+}
+
+h1 {
+  font-size: var(--text-headline-lg);
+  line-height: var(--line-height-hl-lg);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: var(--text-headline-md);
+  line-height: var(--line-height-hl-md);
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: var(--space-md);
+}
+
+small, .label {
+  font-size: var(--text-label-md);
+  line-height: var(--line-height-label-md);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Classi di Layout Strutturale */
+
+/* Griglia fluida: adatta automaticamente colonne e spaziature in base al dispositivo */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), 1fr);
+  gap: var(--layout-gutter);
+}
+
+
+
+
+
+
+
+
+
+/* Classi Base Componenti  TODO() da trasferire nei componenti appositi*/
+
+/* Card: contenitore per raggruppare contenuti con sfondo neutro, bordi smussati e ombre leggere */
+.card {
+  background-color: var(--surface);
+  border: 0.0625rem solid var(--outline-variant);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: 0 0.25rem 0.75rem rgba(27, 28, 25, 0.03);
+}
+
+/* Input Fields: campi di testo standard che cambiano colore del bordo al focus */
+.input-field {
+  background-color: var(--surface);
+  border: 0.0625rem solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-body-md);
+  color: var(--on-surface);
+  transition: border-color 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Bottoni base: definisce struttura, padding e animazioni condivise da tutti i bottoni */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-default);
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  border: none;
+}
+
+/* Bottone primario: usato per la Call to Action principale (colore Terracotta) */
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-container);
+}
+
+/* Bottone secondario: usato per azioni alternative, sfondo trasparente con bordo (colore Sage Green) */
+.btn-secondary {
+  background-color: transparent;
+  color: var(--secondary);
+  border: 0.0625rem solid var(--secondary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+
+/* Badge / Label: pillola arrotondata per categorie o indicatori di stato visivi (colore Ochre) */
+.badge {
+  background-color: var(--tertiary);
+  color: var(--on-tertiary);
+  border-radius: 999rem;
+  padding: var(--space-sm) var(--space-sm);
+  font-size: var(--text-label-md);
 }

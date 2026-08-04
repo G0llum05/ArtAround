@@ -28,7 +28,7 @@ router.put('/preferences', authenticateJWT, (req, res) => authController.updateP
 // Richiesta di cambio ruolo (teacher / museumstaff) in attesa di approvazione admin
 router.post('/request-role', authenticateJWT, (req, res) => authController.requestRoleUpgrade(req, res));
 
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:4200';
+const CLIENT_URL = (process.env.CLIENT_URL || 'http://localhost:4200').trim();
 
 // Rotte Google OAuth2
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));

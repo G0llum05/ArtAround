@@ -23,10 +23,14 @@ passport.use(new LocalStrategy({
   }
 ));
 
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.trim() : null;
+const defaultCallback = clientUrl ? `${clientUrl}/api/auth/google/callback` : "http://localhost:8000/api/auth/google/callback";
+const callbackURL = process.env.GOOGLE_CALLBACK_URL ? process.env.GOOGLE_CALLBACK_URL.trim() : defaultCallback;
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,         // Preso dal file .env
     clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Preso dal file .env
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:8000/api/auth/google/callback" // URL completo per sicurezza!
+    callbackURL: callbackURL                         // URL completo per la callback Google
   },
   async (accessToken, refreshToken, profile, done) => {
     try {

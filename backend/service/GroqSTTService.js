@@ -23,8 +23,8 @@ class GroqSTTService {
     if (clean.includes('fr') || clean.includes('fra')) return 'fr';
     if (clean.includes('sp') || clean.includes('es')) return 'es';
     if (clean.includes('de')) return 'de';
-    if (clean.includes('cn') || clean.includes('zh')) return 'zh';
-    if (clean.includes('ru') || clean.includes('rus')) return 'ru';
+    // if (clean.includes('cn') || clean.includes('zh')) return 'zh';
+    // if (clean.includes('ru') || clean.includes('rus')) return 'ru';
 
     return clean.substring(0, 2);
   }

@@ -95,15 +95,12 @@ class NavigatorService {
     return { item: savedItem, fromCache: false };
   }
 
-  /**
-   * ESECUZIONE COMANDO VOCALE / TESTUALE IN LINGUAGGIO NATURALE
-   */
   static async handleUserCommand({ inputText, visitId, currentArtworkIndex = 0, currentTone = 'medium', currentLanguage = 'it' }) {
     const { visit, museum } = await this.getVisitWithDetails(visitId);
     const artworks = visit.artworks || [];
     const currentArtwork = artworks[currentArtworkIndex] || artworks[0];
 
-    // 1. Riconosce l'intent tramite LLM
+    // MAIN CORE -> restituisce la risposta dell'llm al comando in input
     const nlpResult = await LLMService.parseNaturalLanguageCommand(inputText, {
       currentArtworkTitle: currentArtwork?.title,
       currentTone,

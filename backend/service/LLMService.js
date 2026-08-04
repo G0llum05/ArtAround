@@ -36,8 +36,7 @@ class LLMService {
   /**
    * (1) PARSE COMMAND: Mappa frasi in linguaggio naturale sugli Intent del Vocabolario Controllato
    */
-  static async parseNaturalLanguageCommand(inputText, context = {}) {
-    const textLower = (inputText || '').toLowerCase().trim();
+  static async parseNaturalLanguageCommand(inputText, context = {}) { const textLower = (inputText || '').toLowerCase().trim();
 
     // Provider Mock / Rule Engine intelligente di fallback
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {

@@ -46,3 +46,4 @@ jobs:
             # source: "frontend/dist/, backend/, docker-compose.yml, Dockerfile" 
             # Specifica il percorso esatto sul server del laboratorio dove vuoi i file
             target: "/home/web/site252623/html"
+            overwrite: true

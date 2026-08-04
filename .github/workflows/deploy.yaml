@@ -44,5 +44,6 @@ jobs:
           sudo apt-get install -y sshpass
           tar -zcf deploy.tar.gz frontend/dist/ backend/ docker-compose.yaml .env
           sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" scp -P ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }}:/home/web/site252623/html/
-          sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html && tar -zxvf deploy.tar.gz && rm deploy.tar.gz"
+          sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html && tar -zxvf deploy.tar.gz && rm deploy.tar.gz && cd backend && npm install --omit=dev"
+
 

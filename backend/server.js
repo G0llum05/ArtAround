@@ -11,6 +11,7 @@ const passport = require('./config/passport');
 const { loadRoutes } = require('./config/routerLoader');
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Reverse Proxy Nginx in produzione per cookie sicuri HTTPS)
 const PORT = process.env.PORT || 8000;
 
 function getMongoUri() {

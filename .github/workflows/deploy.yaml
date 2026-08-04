@@ -46,7 +46,7 @@ jobs:
           username: ${{ secrets.LAB_SERVER_USER }}
           password: ${{ secrets.LAB_SERVER_PASSWORD }}
           port: ${{ secrets.LAB_SERVER_PORT }}
-          source: "docker-compose.yaml, .env"
+          source: "backend/, docker-compose.yaml, .env"
           # source: "frontend/dist/, backend/, docker-compose.yaml, .env"
           target: "/home/web/site252623/html"
           overwrite: true

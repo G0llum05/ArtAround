@@ -49,4 +49,5 @@ jobs:
           source: "frontend/dist/, backend/, docker-compose.yaml, .env" 
           target: "/home/web/site252623/html"
           overwrite: true
+          debug: true
 

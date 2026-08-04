@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -16,12 +16,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Setup Backend
         run: |
           cd backend
-          npm ci 
+          npm ci
 
       - name: Rimuovi node_modules del backend prima del deploy
         run: rm -rf backend/node_modules
@@ -45,9 +45,9 @@ jobs:
           host: ${{ secrets.LAB_SERVER_HOST }}
           username: ${{ secrets.LAB_SERVER_USER }}
           password: ${{ secrets.LAB_SERVER_PASSWORD }}
-          port: ${{ secrets.LAB_SERVER_PORT }} 
-          source: "frontend/dist/, backend/, docker-compose.yaml, .env" 
+          port: ${{ secrets.LAB_SERVER_PORT }}
+          source: ".env"
+          # source: "frontend/dist/, backend/, docker-compose.yaml, .env"
           target: "/home/web/site252623/html"
           overwrite: true
           debug: true
-

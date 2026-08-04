@@ -23,12 +23,22 @@ jobs:
           cd backend
           npm ci --omit=dev
 
-      - name: Crea file .env
+      - name: Crea file .env iniettando i Github Secrets
         run: |
           echo "MONGO_USER=${{ secrets.LAB_MONGO_USER }}" >> .env
           echo "MONGO_PASSWORD=${{ secrets.LAB_MONGO_PW }}" >> .env
           echo "MONGO_DATABASE=${{ secrets.LAB_MONGO_DATABASE }}" >> .env
-          echo "NODE_ENV=production" >> .env
+          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "CLIENT_URL= ${{ secrets.CLIENT_URL }}" >> .env
+          echo "ADMIN1" = ${{ secrets.ADMIN1 }}" >> .env
+          echo "ADMIN2" = ${{ secrets.ADMIN2 }}" >> .env
+          echo "ADMIN3" = ${{ secrets.ADMIN3 }}" >> .env
+          echo "GROQ_API_KEY" = ${{ secrets.GROQ_API_KEY }}" >> .env
+          echo "GROQ_MODEL" = ${{ secrets.GROQ_MODEL }}" >> .env
+          echo "GROQ_STT_MODEL" = ${{ secrets.GROQ_STT_MODEL }}" >> .env
 
       - name: Build Frontend
         run: |
@@ -42,6 +52,3 @@ jobs:
           tar -zcf deploy.tar.gz frontend/dist/ backend/ docker-compose.yaml .env
           sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" scp -P ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }}:/home/web/site252623/html/
           sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html && tar -zxvf deploy.tar.gz && rm deploy.tar.gz"
-
-
-

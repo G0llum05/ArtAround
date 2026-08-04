@@ -12,16 +12,29 @@ const { loadRoutes } = require('./config/routerLoader');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-const MONGO_URI = process.env.DB_URI || 'mongodb://mongo_site252623:27017/site252623';
+
+function getMongoUri() {
+  if (process.env.DB_URI) return process.env.DB_URI;
+  if (process.env.MONGO_URI) return process.env.MONGO_URI;
+
+  const host = process.env.MONGO_HOST || '127.0.0.1';
+  const port = process.env.MONGO_PORT || '27017';
+  const db = process.env.MONGO_DATABASE || 'site252623';
+  const user = process.env.MONGO_USER;
+  const pass = process.env.MONGO_PASSWORD;
+
+  if (user && pass) {
+    return `mongodb://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@${host}:${port}/${db}?authSource=admin`;
+  }
+  return `mongodb://${host}:${port}/${db}`;
+}
+
+const MONGO_URI = getMongoUri();
 const nodeEnv = process.env.NODE_ENV || 'production';
 
 // --- Database Connection ---
 const connectWithRetry = () => {
-  const options = {};
-  if (process.env.MONGO_USER) options.user = process.env.MONGO_USER;
-  if (process.env.MONGO_PASSWORD) options.pass = process.env.MONGO_PASSWORD;
-
-  mongoose.connect(MONGO_URI, options)
+  mongoose.connect(MONGO_URI)
     .then(() => console.log('[MongoDB] Successfully connected.'))
     .catch(err => {
       console.error('[MongoDB] Connection error:', err.message, '- Retrying in 5s...');

@@ -224,17 +224,17 @@ export class NavigatorComponent implements OnInit, OnDestroy {
           this.latestTranscript = res.text || '(Nessun testo rilevato)';
           this.statusMessage = `✅ Trascrizione completata (${res.sttProcessMs}ms): "${this.latestTranscript}"`;
 
-          // Sintesi Vocale TTS lato client via Web Speech API (window.speechSynthesis)
+          // Sintesi Vocale TTS lato client via ResponsiveVoice API Client (con fallback Web Speech API)
           let ttsStatus = 'Disattivato';
           if (this.autoSpeakTTS && this.latestTranscript) {
             this.isSpeaking = true;
-            this.statusMessage = `🔊 Riproduzione TTS client (SpeechSynthesis)...`;
+            this.statusMessage = `🔊 Riproduzione TTS (ResponsiveVoice Client)...`;
             this.cdr.detectChanges();
 
             await this.navigatorService.speakText(this.latestTranscript, this.selectedLang);
             this.isSpeaking = false;
             ttsStatus = 'Riprodotto con successo';
-            this.statusMessage = '🏁 Flusso STT -> Server Express -> TTS Client completato con successo!';
+            this.statusMessage = '🏁 Flusso STT -> Server Express -> ResponsiveVoice TTS completato con successo!';
           }
 
           const logItem: ProcessLog = {

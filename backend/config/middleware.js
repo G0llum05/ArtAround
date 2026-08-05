@@ -8,20 +8,18 @@ const passport = require('./passport');
 function setupMiddlewares(app) {
   const nodeEnv = process.env.NODE_ENV || 'production';
 
-  // Trust proxy for Nginx / Reverse Proxy
+  // per Nginx del lab, serve per https
   app.set('trust proxy', 1);
 
-  // Helmet HTTP security headers
+  // header di sicurezza con helmet, escluso CSP per non avere problemi con angular e fonts
   app.use(helmet({ contentSecurityPolicy: false }));
 
-  // Dynamic CORS configuration
-  const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : ['http://localhost:4200'];
+  // CORS
+  const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : ['http://localhost:4200'];
 
   app.use(cors({
     origin: (origin, callback) => {
-      if (!origin || nodeEnv !== 'production' || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error(`CORS Error: Origin ${origin} not allowed`));
@@ -30,17 +28,17 @@ function setupMiddlewares(app) {
     credentials: true
   }));
 
-  // Rate Limiter for API endpoints
+  // rate limiter
   const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: 15 * 60 * 1000,  // 15 minuti in millisecondi
     max: 300,
     standardHeaders: true,
-    legacyHeaders: false,
+    legacyHeaders: false,  // per rimuovere header deprecati
     message: { success: false, error: 'Too many requests, please try again later.' }
   });
   app.use('/api', apiLimiter);
 
-  // Structured HTTP Request Logger
+  // log per richieste backend: stampa anche status code e durata
   app.use((req, res, next) => {
     const start = Date.now();
     res.on('finish', () => {
@@ -50,11 +48,13 @@ function setupMiddlewares(app) {
     next();
   });
 
-  // Body Parsing & Cookies
+  // body parser per ottenere subito oggetti js. Aumentato anche limite da 100k a 10m
   app.use(express.json({ limit: '10mb' }));
+
+  // per coockie
   app.use(cookieParser());
 
-  // Passport Authentication
+  // passport
   app.use(passport.initialize());
 }
 

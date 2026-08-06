@@ -17,5 +17,11 @@
 
   <app-root id="angular-root"></app-root>
   <div id="vanilla-root" class="page-content" style="display:none"></div>
+  <script src="https://cdn.responsivevoice.org/sdk/latest/responsivevoice.js"></script>
+  <script>
+  responsiveVoice.init({
+      "apiKey": `${process.env.RESPONSIVEVOICE_API_KEY}`
+  });
+</script>
 </body>
 </html>

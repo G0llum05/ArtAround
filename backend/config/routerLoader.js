@@ -26,24 +26,14 @@ function getModuleRouters() {
   return routers;
 }
 
-/**
- * Automatically mounts all discovered module routers on express app under /api/<moduleName>
- */
+// Caricare tutte le rotte
 function loadRoutes(app) {
   // tutti i router di tutto il back
   const routers = getModuleRouters();
-  routers.forEach(({ name, routePrefix, filePath }) => {
+  routers.forEach(({ routePrefix, filePath }) => {
     const router = require(filePath);
     app.use(routePrefix, router);
     console.log(`[AutoRouter] Registered ${routePrefix} -> ${path.relative(path.join(__dirname, '..'), filePath)}`);
-    // Condizione per mettere a disposizione anche la rotta in versione plurale, che può essere invocata anche in questo modo.
-    // TODO CHECK: il nome che finische con 's' potrebbe non essere un plurale
-    // TODO CHECK: alcuni plurali non sono semplicemente aggiungendo 's' (es. 'category' -> 'categories'), quindi questa logica va rivista in futuro
-    if (!name.endsWith('s')) {
-      const pluralPrefix = `${routePrefix}s`;
-      app.use(pluralPrefix, router);
-      console.log(`[AutoRouter] Registered plural alias ${pluralPrefix} -> ${path.relative(path.join(__dirname, '..'), filePath)}`);
-    }
   });
 }
 

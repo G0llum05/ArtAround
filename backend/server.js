@@ -12,29 +12,27 @@ const errorHandler = require('./config/errorHandler');
 const { loadRoutes } = require('./config/routerLoader');
 
 const app = express();
+// CHECK PORT VAR
 const PORT = process.env.PORT || 8000;
 const nodeEnv = process.env.NODE_ENV || 'production';
 
-// 1. Core & Security Middlewares (Helmet, CORS, Rate Limiter, JSON, CookieParser, Passport, Logging)
+// L'ordine di ciò che viene registrato in Express è importante, perchè per ogni rotta Express farà proprio in quell'ordine i passaggi
+
 setupMiddlewares(app);
 
-// 2. Swagger Documentation (/api-docs)
 setupSwagger(app);
 
-// 3. API Routes Auto-Loading (/api/*)
 loadRoutes(app);
 
-// 4. Static Assets & Angular SPA Fallback
 setupStaticAssets(app);
 
-// 5. Centralized Error Handler (Must be registered after all routes)
 app.use(errorHandler);
 
-// 6. Server Bootstrap & Lifecycle Management
 let server;
-
 async function startServer() {
+  // aspetta connessione al db
   await connectDB();
+
   server = app.listen(PORT, () => {
     console.log(`[Server] Running on port ${PORT} in ${nodeEnv} mode`);
   });
@@ -42,7 +40,7 @@ async function startServer() {
 
 startServer();
 
-// Graceful Shutdown Handlers
+// per lo spegnimento forte, così vengono chiuse connessioni a db e server http prima di chiudere
 const gracefulShutdown = async (signal) => {
   console.log(`[Server] ${signal} signal received. Starting graceful shutdown...`);
   if (server) {

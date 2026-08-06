@@ -15,6 +15,10 @@ const upload = multer({
 router.post('/stt', upload.single('audio'), NavigatorController.transcribeAudio);
 router.post('/transcribe', upload.single('audio'), NavigatorController.transcribeAudio);
 
+// Endpoint sintesi vocale TTS (Backend MP3 Audio Stream)
+router.get('/tts', NavigatorController.streamTTS);
+router.post('/tts', NavigatorController.streamTTS);
+
 // Endpoint completo per i comandi navigatore
 router.post('/command', upload.single('audio'), NavigatorController.handleCommand);
 

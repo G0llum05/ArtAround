@@ -41,8 +41,9 @@ jobs:
           echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> .env
           echo "GROQ_MODEL=${{ secrets.GROQ_MODEL }}" >> .env
           echo "GROQ_STT_MODEL=${{ secrets.GROQ_STT_MODEL }}" >> .env
-          echo "RESPOSIVEVOICE_API_KEY=${{ secrets.RESPOSIVEVOICE_API_KEY }}" >> .env
 
+          echo "RESPONSIVEVOICE_API_KEY=${{ secrets.RESPONSIVEVOICE_API_KEY }}" >> .env
+          echo "RESPONSIVEVOICE_SECRET=${{ secrets.RESPONSIVEVOICE_PROD_SECRET }}" >> .env
       - name: Build Frontend
         run: |
           cd frontend

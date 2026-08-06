@@ -24,6 +24,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@responsivevoice/api-client": "^2.0.5",
     "cookie-parser": "^1.4.7",
     "multer": "^2.2.0",
     "swagger": "^0.0.1",

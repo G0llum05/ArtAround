@@ -6,6 +6,7 @@ function errorHandler(err, req, res, next) {
   res.status(statusCode).json({
     success: false,
     error: {
+      // Non in produzione verranno aggiunte le righe di errore (stack trace)
       message: err.message || 'Internal Server Error',
       ...(nodeEnv !== 'production' && { stack: err.stack })
     }

@@ -1,26 +1,28 @@
 <div class="navigator-container">
+  <!-- HEADER -->
   <div class="header-card">
     <div class="header-content">
-      <div class="badge">ArtAround Voice Engine (MEAN Stack + Groq STT)</div>
-      <h1>🎤 Interazione Vocale Bidirezionale (STT -> Express -> TTS)</h1>
+      <div class="badge">ArtAround Enterprise AI Engine (STT + Navigator + TTS)</div>
+      <h1>🤖 Chatbot Navigatore Museale Vocale & Testuale</h1>
       <p class="subtitle">
-        Architettura ultra-leggera per VM: MediaRecorder API (16kHz Opus RAM) -> Express Gateway -> Groq STT Cloud API (~150-250ms) -> Client SpeechSynthesis TTS.
+        Parla o scrivi al tuo assistente per esplorare le opere, chiedere indicazioni logistiche e adattare il livello di spiegazione.
       </p>
     </div>
     <div class="header-actions">
+      <button class="btn btn-outline" (click)="clearChat()">🧹 Pulisci Chat</button>
       <a routerLink="/test" class="btn btn-outline">⬅️ Torna ai Test</a>
     </div>
   </div>
 
+  <!-- MAIN GRID: CHATBOT INTERFACE & CONTROLS -->
   <div class="main-grid">
-    <!-- SEZIONE RECORDING & TEST CONTROLS -->
-    <div class="card test-box">
-      <h2>1. Registrazione Microfono (STT Opus 16kHz)</h2>
-      <p class="section-desc">Premi il microfono per parlare. L'audio viene compresso in Opus (~15-25 KB) e inviato in RAM al server Express senza I/O su disco.</p>
-
-      <!-- SEZIONE SELEZIONE LINGUA BADGE BANDIERINE -->
-      <div class="language-section">
-        <label class="lang-label">🌐 Seleziona Lingua (Cookie 'lang' & Groq STT):</label>
+    <!-- CONTROLLI E IMPOSTAZIONI NAVIGATORE -->
+    <div class="card controls-box">
+      <h2>⚙️ Configurazione & Stato Navigazione</h2>
+      
+      <!-- LINGUA -->
+      <div class="control-group">
+        <label class="control-label">🌐 Lingua (STT / Navigator / TTS):</label>
         <div class="flags-container">
           <button 
             type="button"
@@ -34,96 +36,177 @@
         </div>
       </div>
 
-      <div class="mic-stage">
+      <!-- SELEZIONE VISITA (OPZIONALE) -->
+      <div class="control-group" *ngIf="visitsList.length > 0">
+        <label class="control-label">🗺️ Visita Museo Selezionata:</label>
+        <select class="form-select" [(ngModel)]="selectedVisitId">
+          <option value="">(Nessuna visita - Assistente Generale)</option>
+          <option *ngFor="let v of visitsList" [value]="v._id">
+            {{ v.title || v.name || ('Visita #' + v._id) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- SELEZIONE TONO -->
+      <div class="control-group">
+        <label class="control-label">🎭 Tono Spiegazione Attivo:</label>
+        <div class="tone-badges">
+          <button 
+            type="button" 
+            *ngFor="let t of tonesList" 
+            class="tone-badge" 
+            [class.active]="currentTone === t"
+            (click)="currentTone = t">
+            {{ t }}
+          </button>
+        </div>
+      </div>
+
+      <!-- OPZIONI TTS AUTO-PLAY -->
+      <div class="control-group options-row">
+        <label class="toggle-control">
+          <input type="checkbox" [(ngModel)]="autoSpeakTTS">
+          <span class="toggle-label">🔊 Riproduzione Automatica Vocale (TTS Backend / SpeechSynthesis)</span>
+        </label>
+      </div>
+
+      <!-- AUDIOPLAYER ULTIMA REGISTRAZIONE -->
+      <div class="audio-preview" *ngIf="audioUrl">
+        <label>🎧 Buffer RAM Vocale inviato:</label>
+        <audio [src]="audioUrl" controls></audio>
+      </div>
+
+      <!-- METRICHE ULTIMO COMANDO -->
+      <div class="metrics-summary" *ngIf="lastLog">
+        <div class="metric-item">
+          <span class="m-lbl">STT Groq:</span>
+          <span class="m-val">{{ lastLog.sttProcessMs }} ms</span>
+        </div>
+        <div class="metric-item">
+          <span class="m-lbl">Express Backend:</span>
+          <span class="m-val">{{ lastLog.totalBackendMs }} ms</span>
+        </div>
+        <div class="metric-item">
+          <span class="m-lbl">Roundtrip:</span>
+          <span class="m-val highlight">{{ lastLog.totalRoundtripMs }} ms</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AREA CHATBOT COMPLETA -->
+    <div class="card chat-box">
+      <div class="chat-header">
+        <h2>💬 Conversazione col Chatbot</h2>
+        <div class="status-indicator" [class.status-rec]="isRecording" [class.status-proc]="isProcessing">
+          <span *ngIf="isRecording">🔴 Registrazione in corso...</span>
+          <span *ngIf="isProcessing">⚙️ Elaborazione in corso...</span>
+          <span *ngIf="isSpeaking">🔊 Riproduzione voce...</span>
+          <span *ngIf="!isRecording && !isProcessing && !isSpeaking">🟢 {{ statusMessage }}</span>
+        </div>
+      </div>
+
+      <!-- CONTENITORE MESSAGGI -->
+      <div class="chat-messages" #chatScrollContainer>
+        <div 
+          *ngFor="let msg of chatMessages" 
+          class="chat-bubble-wrapper"
+          [class.user-wrapper]="msg.sender === 'user'"
+          [class.bot-wrapper]="msg.sender === 'bot'">
+          
+          <div class="chat-bubble" [class.user-bubble]="msg.sender === 'user'" [class.bot-bubble]="msg.sender === 'bot'">
+            <div class="bubble-header">
+              <span class="sender-name">
+                <ng-container *ngIf="msg.sender === 'user'">
+                  {{ msg.source === 'voice' ? '🎙️ Tu (Voce)' : '✏️ Tu (Testo)' }}
+                </ng-container>
+                <ng-container *ngIf="msg.sender === 'bot'">
+                  🤖 ArtAround Assistant
+                </ng-container>
+              </span>
+              <span class="msg-time">{{ msg.timestamp }}</span>
+            </div>
+
+            <!-- INTENT BADGE BOT -->
+            <div class="intent-badge" *ngIf="msg.intent">
+              Intent: <code>{{ msg.intent }}</code>
+            </div>
+
+            <!-- OPERA ATTIVA COLLEGATA -->
+            <div class="artwork-info-card" *ngIf="msg.activeArtwork">
+              🎨 <strong>{{ msg.activeArtwork.title }}</strong>
+              <span *ngIf="msg.activeArtwork.location?.room">({{ msg.activeArtwork.location.room }})</span>
+            </div>
+
+            <div class="bubble-text">
+              {{ msg.text }}
+            </div>
+
+            <!-- BOT TTS SPEAKER ACTION -->
+            <div class="bubble-actions" *ngIf="msg.sender === 'bot'">
+              <button 
+                class="btn-speak-small" 
+                (click)="speakMessage(msg)" 
+                [disabled]="isSpeaking">
+                {{ msg.isSpeaking ? '🔊 In riproduzione...' : '🔊 Riascolta' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHIPS COMANDI RAPIDI -->
+      <div class="quick-chips">
         <button 
           type="button"
-          class="mic-button" 
+          *ngFor="let action of quickActions" 
+          class="chip-btn"
+          [disabled]="isProcessing"
+          (click)="sendQuickAction(action.command)">
+          {{ action.label }}
+        </button>
+      </div>
+
+      <!-- INPUT BAR: MICROFONO + CHAT INPUT -->
+      <div class="input-bar">
+        <!-- PULSANTE MICROFONO STT -->
+        <button 
+          type="button" 
+          class="mic-btn" 
           [class.recording]="isRecording" 
           [class.processing]="isProcessing"
           [disabled]="isProcessing"
-          (click)="toggleRecording()">
+          (click)="toggleRecording()"
+          title="Tieni premuto o clicca per parlare">
           <span class="mic-icon" *ngIf="!isRecording && !isProcessing">🎙️</span>
           <span class="mic-icon pulse" *ngIf="isRecording">🔴</span>
           <span class="mic-icon spin" *ngIf="isProcessing">⚙️</span>
         </button>
 
-        <div class="recording-timer" *ngIf="isRecording">
-          ⏱️ Registrazione: <strong>{{ recDurationMs }} ms</strong>
-        </div>
+        <!-- INPUT TESTO -->
+        <input 
+          type="text" 
+          class="chat-input" 
+          [(ngModel)]="textInputMessage"
+          (keyup.enter)="sendTextMessage()"
+          [placeholder]="isRecording ? 'Sto ascoltando la tua voce...' : 'Scrivi un messaggio o poni una domanda al navigatore...'"
+          [disabled]="isProcessing || isRecording" />
 
-        <div class="status-pill" [class.status-rec]="isRecording" [class.status-proc]="isProcessing">
-          {{ statusMessage }}
-        </div>
-      </div>
-
-      <!-- Option Controls -->
-      <div class="options-row">
-        <label class="toggle-control">
-          <input type="checkbox" [(ngModel)]="autoSpeakTTS">
-          <span class="toggle-label">🔊 Riproduzione automatica TTS Client (window.speechSynthesis)</span>
-        </label>
-      </div>
-
-      <!-- Recorded Audio Preview -->
-      <div class="audio-preview" *ngIf="audioUrl">
-        <label>🎧 Audio registrato inviato al backend (RAM Buffer):</label>
-        <audio [src]="audioUrl" controls></audio>
-      </div>
-    </div>
-
-    <!-- SEZIONE RISULTATO & METRICHE LATENZA -->
-    <div class="card result-box">
-      <h2>2. Risposta Backend & Sintesi Vocale (TTS)</h2>
-      
-      <div class="transcript-box" [class.empty]="!latestTranscript">
-        <div class="box-label">💬 Testo Riconosciuto (Groq STT - Lingua: {{ selectedLang }}):</div>
-        <div class="transcript-text" *ngIf="latestTranscript">
-          "{{ latestTranscript }}"
-        </div>
-        <div class="placeholder-text" *ngIf="!latestTranscript">
-          In attesa di trascrizione audio...
-        </div>
-
-        <div class="transcript-actions" *ngIf="latestTranscript">
-          <button class="btn btn-primary" (click)="testTTSManual(latestTranscript)" [disabled]="isSpeaking">
-            🔊 {{ isSpeaking ? 'Riproduzione in corso...' : 'Riesegui TTS (SpeechSynthesis)' }}
-          </button>
-        </div>
-      </div>
-
-      <!-- METRICHE LATENZA IN MS -->
-      <div class="metrics-grid" *ngIf="lastLog">
-        <div class="metric-card highlight">
-          <div class="metric-icon">⚡</div>
-          <div class="metric-val">{{ lastLog.totalRoundtripMs }} ms</div>
-          <div class="metric-lbl">Tempo Totale Processo</div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon">🧠</div>
-          <div class="metric-val">{{ lastLog.sttProcessMs }} ms</div>
-          <div class="metric-lbl">Groq STT Cloud API</div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon">🌐</div>
-          <div class="metric-val">{{ lastLog.totalBackendMs }} ms</div>
-          <div class="metric-lbl">Express Server RAM</div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon">🎙️</div>
-          <div class="metric-val">{{ lastLog.recDurationMs }} ms</div>
-          <div class="metric-lbl">Durata Clip Audio</div>
-        </div>
+        <!-- PULSANTE INVIO -->
+        <button 
+          type="button" 
+          class="btn btn-primary send-btn" 
+          [disabled]="!textInputMessage || !textInputMessage.trim() || isProcessing || isRecording"
+          (click)="sendTextMessage()">
+          ✈️ Invio
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- SEZIONE LOG E CRONOLOGIA TEST -->
+  <!-- LOG REGISTRO PRESTAZIONI -->
   <div class="card logs-section">
     <div class="logs-header">
-      <h2>📊 Registro Dettagliato Tempi di Esecuzione (ms)</h2>
+      <h2>📊 Registro Tempi di Esecuzione (STT / Navigator AI / TTS)</h2>
       <button class="btn btn-small btn-danger" (click)="clearLogs()" [disabled]="logs.length === 0">🗑️ Pulisci Log</button>
     </div>
 
@@ -133,13 +216,12 @@
           <tr>
             <th>Ora</th>
             <th>Lingua</th>
-            <th>Trascrizione (Groq STT)</th>
+            <th>Trascrizione / Input</th>
             <th>Dim. Audio</th>
-            <th>Durata Clip</th>
             <th>Groq STT (ms)</th>
             <th>Express Backend (ms)</th>
             <th>Totale Roundtrip (ms)</th>
-            <th>Stato TTS Client</th>
+            <th>Stato TTS</th>
           </tr>
         </thead>
         <tbody>
@@ -148,14 +230,13 @@
             <td><span class="tag-lang">{{ log.lang }}</span></td>
             <td class="transcript-col"><strong>"{{ log.transcript }}"</strong></td>
             <td>{{ log.audioSizeKb }}</td>
-            <td>{{ log.recDurationMs }} ms</td>
             <td class="stat-highlight">{{ log.sttProcessMs }} ms</td>
             <td>{{ log.totalBackendMs }} ms</td>
             <td class="total-highlight"><strong>{{ log.totalRoundtripMs }} ms</strong></td>
             <td><span class="tag-success">{{ log.ttsStatus }}</span></td>
           </tr>
           <tr *ngIf="logs.length === 0">
-            <td colspan="9" class="no-logs">Nessuna operazione eseguita finora. Avvia una registrazione per testare le prestazioni sub-secondo!</td>
+            <td colspan="8" class="no-logs">Nessuna operazione eseguita finora. Avvia una conversazione vocale o testuale!</td>
           </tr>
         </tbody>
       </table>

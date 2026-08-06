@@ -111,23 +111,23 @@ class NavigatorController {
 
       let result = { transcribedText: inputText };
 
-      // Se abbiamo un visitId valido, esegui il NavigatorService
-      if (visitId) {
-        const navResult = await NavigatorService.handleUserCommand({
-          inputText,
-          visitId,
-          currentArtworkIndex,
-          currentTone
-        });
-        result = { ...result, ...navResult };
-      }
+      // Esegue sempre NavigatorService per elaborare l'intent e generare la risposta del Chatbot
+      const navResult = await NavigatorService.handleUserCommand({
+        inputText,
+        visitId,
+        currentArtworkIndex,
+        currentTone,
+        currentLanguage: lang
+      });
+      result = { ...result, ...navResult };
 
       const totalBackendMs = Date.now() - startTime;
+      const reply = result.spokenResponse || result.narrativeText || (result.item ? result.item.description : null) || result.actionMessage || inputText;
 
       return res.json({
         success: true,
         text: inputText,
-        reply: result.spokenResponse || result.narrativeText || inputText,
+        reply,
         sttProcessMs,
         totalBackendMs,
         result

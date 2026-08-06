@@ -96,9 +96,22 @@ class NavigatorService {
   }
 
   static async handleUserCommand({ inputText, visitId, currentArtworkIndex = 0, currentTone = 'medium', currentLanguage = 'it' }) {
-    const { visit, museum } = await this.getVisitWithDetails(visitId);
-    const artworks = visit.artworks || [];
-    const currentArtwork = artworks[currentArtworkIndex] || artworks[0];
+    let visit = null;
+    let museum = null;
+    let artworks = [];
+    let currentArtwork = null;
+
+    if (visitId) {
+      try {
+        const details = await this.getVisitWithDetails(visitId);
+        visit = details.visit;
+        museum = details.museum;
+        artworks = visit?.artworks || [];
+        currentArtwork = artworks[currentArtworkIndex] || artworks[0] || null;
+      } catch (err) {
+        console.warn(`[NavigatorService] Avviso caricamento visita "${visitId}":`, err.message);
+      }
+    }
 
     // MAIN CORE -> restituisce la risposta dell'llm al comando in input
     const nlpResult = await LLMService.parseNaturalLanguageCommand(inputText, {
@@ -166,7 +179,7 @@ class NavigatorService {
       }
 
       case 'NEXT_ITEM':
-        if (currentArtworkIndex < artworks.length - 1) {
+        if (artworks.length > 0 && currentArtworkIndex < artworks.length - 1) {
           newIndex = currentArtworkIndex + 1;
           const nextArtwork = artworks[newIndex];
           logisticalDirections = await LLMService.generateLogisticalDirections(
@@ -175,17 +188,21 @@ class NavigatorService {
             { floors: museum?.floors, services: museum?.services }
           );
           actionMessage = `Avanzamento all'opera successiva (${newIndex + 1}/${artworks.length}).`;
-        } else {
+        } else if (artworks.length > 0) {
           actionMessage = 'Sei già all\'ultima opera della visita.';
+        } else {
+          actionMessage = 'Nessuna visita attiva selezionata per avanzare alle opere.';
         }
         break;
 
       case 'PREVIOUS_ITEM':
-        if (currentArtworkIndex > 0) {
+        if (artworks.length > 0 && currentArtworkIndex > 0) {
           newIndex = currentArtworkIndex - 1;
           actionMessage = `Ritorno all'opera precedente (${newIndex + 1}/${artworks.length}).`;
-        } else {
+        } else if (artworks.length > 0) {
           actionMessage = 'Sei alla prima opera della visita.';
+        } else {
+          actionMessage = 'Nessuna visita attiva selezionata.';
         }
         break;
 
@@ -233,24 +250,13 @@ class NavigatorService {
     }
 
     const validTone = sanitizeTone(newTone, currentTone || 'medium');
-    const activeArtwork = artworks[newIndex] || currentArtwork;
+    const activeArtwork = artworks[newIndex] || currentArtwork || null;
     const targetLength = nlpResult.requestedLength || 30;
-    const { item, fromCache } = await this.getOrGenerateItem(activeArtwork._id, validTone, targetLength, newLanguage);
 
-    return {
-      nlpResult,
-      actionMessage,
-      currentArtworkIndex: newIndex,
-      activeTone: newTone,
-      activeLanguage: newLanguage,
-      activeArtwork: {
-        id: activeArtwork._id,
-        title: activeArtwork.title,
-        location: activeArtwork.location,
-        qrCode: activeArtwork.qrCode,
-        artists: activeArtwork.artists
-      },
-      item: {
+    let itemOutput = null;
+    if (activeArtwork && activeArtwork._id) {
+      const { item, fromCache } = await this.getOrGenerateItem(activeArtwork._id, validTone, targetLength, newLanguage);
+      itemOutput = {
         id: item._id,
         description: LLMService.extractToneText(item.description, validTone),
         tone: item.tone,
@@ -259,7 +265,32 @@ class NavigatorService {
         isAIGenerated: item.isAIGenerated,
         authorName: item.authorName,
         fromCache
-      },
+      };
+    }
+
+    // Risposta parlata completa per la sintesi TTS
+    let spokenResponse = actionMessage;
+    if (logisticalDirections) {
+      spokenResponse = `${actionMessage ? actionMessage + ' ' : ''}${logisticalDirections}`;
+    } else if (itemOutput && itemOutput.description) {
+      spokenResponse = itemOutput.description;
+    }
+
+    return {
+      nlpResult,
+      actionMessage,
+      spokenResponse,
+      currentArtworkIndex: newIndex,
+      activeTone: validTone,
+      activeLanguage: newLanguage,
+      activeArtwork: activeArtwork ? {
+        id: activeArtwork._id,
+        title: activeArtwork.title,
+        location: activeArtwork.location,
+        qrCode: activeArtwork.qrCode,
+        artists: activeArtwork.artists
+      } : null,
+      item: itemOutput,
       activeProviderName: LLMService.getActiveProviderName(),
       logisticalDirections
     };

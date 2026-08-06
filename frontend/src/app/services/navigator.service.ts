@@ -180,4 +180,58 @@ export class NavigatorClientService {
 
     return this.http.post<STTResponse>(targetUrl, formData, { withCredentials: true });
   }
+
+  /**
+   * Invia un comando al Chatbot del Navigatore (può essere audio Blob oppure testo).
+   * L'endpoint /api/navigator/command trascrive l'audio (se presente), elabora l'intent
+   * tramite NavigatorService e restituisce la risposta parlata del Chatbot.
+   */
+  sendNavigatorCommand(payload: {
+    audioBlob?: Blob;
+    inputText?: string;
+    visitId?: string;
+    currentArtworkIndex?: number;
+    currentTone?: string;
+    lang?: string;
+  }): Observable<CommandResponse> {
+    const lang = payload.lang || 'it';
+    if (typeof document !== 'undefined') {
+      document.cookie = `lang=${lang}; path=/; max-age=86400`;
+    }
+
+    const formData = new FormData();
+    if (payload.audioBlob) {
+      const ext = payload.audioBlob.type.includes('ogg') ? 'ogg' : payload.audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
+      formData.append('audio', payload.audioBlob, `recording.${ext}`);
+    }
+    if (payload.inputText) {
+      formData.append('inputText', payload.inputText);
+    }
+    if (payload.visitId) {
+      formData.append('visitId', payload.visitId);
+    }
+    if (payload.currentArtworkIndex !== undefined && payload.currentArtworkIndex !== null) {
+      formData.append('currentArtworkIndex', payload.currentArtworkIndex.toString());
+    }
+    if (payload.currentTone) {
+      formData.append('currentTone', payload.currentTone);
+    }
+    formData.append('language', lang);
+
+    const targetUrl = (typeof window !== 'undefined' && window.location.port === '4200')
+      ? 'http://localhost:8000/api/navigator/command'
+      : `${this.apiBaseUrl}/command`;
+
+    return this.http.post<CommandResponse>(targetUrl, formData, { withCredentials: true });
+  }
+
+  /**
+   * Recupera l'elenco delle visite disponibili per consentire la selezione opzionale di una visita nel chatbot.
+   */
+  getVisits(): Observable<any> {
+    const targetUrl = (typeof window !== 'undefined' && window.location.port === '4200')
+      ? 'http://localhost:8000/api/visits'
+      : '/api/visits';
+    return this.http.get<any>(targetUrl, { withCredentials: true });
+  }
 }

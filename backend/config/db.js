@@ -1,13 +1,22 @@
+/*
+  user: "site252623",
+  pwd: "Ohteew9p",
+  site: "mongo_site252623"
+    MONGO_URI=mongodb://site252623:Ohteew9p@127.0.0.1:27017/mongo_site252623?authSource=mongo_site252623
+
+*/
+
+
 const mongoose = require('mongoose');
 
 function getMongoUri() {
   if (process.env.DB_URI) return process.env.DB_URI;
   if (process.env.MONGO_URI) return process.env.MONGO_URI;
 
-  const host = process.env.MONGO_HOST || '127.0.0.1';
+  const host = process.env.MONGO_HOST || 'mongo_site252623';
   const port = process.env.MONGO_PORT || '27017';
-  const db = process.env.MONGO_DATABASE || 'site252623';
-  const user = process.env.MONGO_USER;
+  const db = process.env.MONGO_DATABASE || 'mongo_site252623';
+  const user = process.env.MONGO_USER || 'site252623';
   const pass = process.env.MONGO_PASSWORD;
 
   if (user && pass) {

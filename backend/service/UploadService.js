@@ -17,11 +17,8 @@ class UploadService {
 
     const baseMuseumDir = path.join(__dirname, '../assets/museums', museumId);
 
+    // TODO: da creare la ricerca delle immagini tramite l'id degli artworks
     if (visitId) {
-      if (artworkId) {
-        // assets/museums/:museumId/visit/:visitId/:artworkId
-        return path.join(baseMuseumDir, 'visit', visitId, artworkId);
-      }
       if (isMeta) {
         // assets/museums/:museumId/visit/:visitId/meta
         return path.join(baseMuseumDir, 'visit', visitId, 'meta');

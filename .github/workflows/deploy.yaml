@@ -25,9 +25,11 @@ jobs:
 
       - name: Crea file .env iniettando i Github Secrets
         run: |
-          echo "MONGO_USER=${{ secrets.LAB_MONGO_USER }}" >> .env
-          echo "MONGO_PASSWORD=${{ secrets.LAB_MONGO_PW }}" >> .env
           echo "MONGO_DATABASE=${{ secrets.LAB_MONGO_DATABASE }}" >> .env
+          echo "MONGO_HOST=${{ secrets.LAB_MONGO_HOST }}" >> .env
+          echo "MONGO_PORT=${{ secrets.LAB_MONGO_PORT }}" >> .env
+          echo "MONGO_USER=${{ secrets.LAB_MONGO_USER }}" >> .env
+          echo "MONGO_PASSWORD=${{ secrets.LAB_MONGO_PASSWORD }}" >> .env
           echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env

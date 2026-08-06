@@ -23,8 +23,10 @@ passport.use(new LocalStrategy({
   }
 ));
 
+const isProd = process.env.NODE_ENV === "production";
+
 const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.trim() : null;
-const defaultCallback = clientUrl ? `${clientUrl}/api/auth/google/callback` : "http://localhost:8000/api/auth/google/callback";
+const defaultCallback = (clientUrl && isProd) ? `${clientUrl}/api/auth/google/callback` : "http://localhost:8000/api/auth/google/callback";
 const callbackURL = process.env.GOOGLE_CALLBACK_URL ? process.env.GOOGLE_CALLBACK_URL.trim() : defaultCallback;
 
 passport.use(new GoogleStrategy({

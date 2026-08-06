@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-/**
- * Scans the controller directory for all modules and returns their router file paths and route prefixes.
- */
+// Prende tutte le rotte dei vari router di ogni componente (La struttura del back deve dunque rimanere fatta in questo modo) e aggangia i sotto-router tra loro (aggiungento il prefisso /api)
 function getModuleRouters() {
   const controllerDir = path.join(__dirname, '../controller');
   if (!fs.existsSync(controllerDir)) return [];
@@ -32,12 +30,15 @@ function getModuleRouters() {
  * Automatically mounts all discovered module routers on express app under /api/<moduleName>
  */
 function loadRoutes(app) {
+  // tutti i router di tutto il back
   const routers = getModuleRouters();
   routers.forEach(({ name, routePrefix, filePath }) => {
     const router = require(filePath);
     app.use(routePrefix, router);
     console.log(`[AutoRouter] Registered ${routePrefix} -> ${path.relative(path.join(__dirname, '..'), filePath)}`);
-    // 
+    // Condizione per mettere a disposizione anche la rotta in versione plurale, che può essere invocata anche in questo modo.
+    // TODO CHECK: il nome che finische con 's' potrebbe non essere un plurale
+    // TODO CHECK: alcuni plurali non sono semplicemente aggiungendo 's' (es. 'category' -> 'categories'), quindi questa logica va rivista in futuro
     if (!name.endsWith('s')) {
       const pluralPrefix = `${routePrefix}s`;
       app.use(pluralPrefix, router);

@@ -15,11 +15,19 @@ function setupMiddlewares(app) {
   app.use(helmet({ contentSecurityPolicy: false }));
 
   // CORS
-  const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : ['http://localhost:4200'];
+  const defaultOrigins = [
+    'http://localhost:4200',
+    'http://localhost:8000',
+    'https://site252623.tw.cs.unibo.it',
+    'http://site252623.tw.cs.unibo.it'
+  ];
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : defaultOrigins;
 
   app.use(cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*') || origin.endsWith('.tw.cs.unibo.it')) {
         callback(null, true);
       } else {
         callback(new Error(`CORS Error: Origin ${origin} not allowed`));

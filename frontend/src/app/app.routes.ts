@@ -10,6 +10,9 @@ import { UploadDemoComponent } from './pages/upload-demo/upload-demo.component';
 
 import { NavigatorComponent } from './pages/navigator.component/navigator.component';
 
+import { TestArtistComponent } from './pages/test-artist.component/test-artist.component';
+import { TestArtworkComponent } from './pages/test-artwork.component/test-artwork.component';
+
 export const routes: Routes = [
   {path: '', component: GalleryPage},
   {path: 'login', component: LoginComponent},
@@ -18,6 +21,8 @@ export const routes: Routes = [
   {path: 'test', component: TestComponent},
   {path: 'userTest', component: TestUserComponent},
   {path: 'museumTest', component: TestMuseumComponent},
+  {path: 'artistTest', component: TestArtistComponent},
+  {path: 'artworkTest', component: TestArtworkComponent},
   {path: 'visitTest', component: TestVisitComponent},
   {path: 'navigator', component: NavigatorComponent},
   {path: 'navigatorTest', component: NavigatorComponent},

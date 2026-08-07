@@ -1,1 +1,85 @@
-<p>test-visit.component works!</p>
+<div class="page-container">
+  <h2>Creazione Nuova Visita Guidata</h2>
+
+  <div *ngIf="feedbackMessage" class="alert alert-success">{{ feedbackMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <section class="card">
+    <div class="form-group">
+      <label for="visitTitle">Titolo Visita *</label>
+      <input id="visitTitle" type="text" [(ngModel)]="visitForm.title" placeholder="es. I Capolavori del Rinascimento" />
+    </div>
+
+    <div class="form-group">
+      <label for="visitDesc">Descrizione</label>
+      <textarea id="visitDesc" [(ngModel)]="visitForm.description" placeholder="Descrizione della visita..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="visitPrice">Prezzo (€)</label>
+      <input id="visitPrice" type="number" [(ngModel)]="visitForm.price" />
+    </div>
+
+    <div class="form-group">
+      <label for="minDuration">Durata Minima (minuti) *</label>
+      <input id="minDuration" type="number" [(ngModel)]="visitForm.minDuration" />
+    </div>
+
+    <div class="form-group">
+      <label for="maxDuration">Durata Massima (minuti) *</label>
+      <input id="maxDuration" type="number" [(ngModel)]="visitForm.maxDuration" />
+    </div>
+
+    <div class="form-group">
+      <label for="categories">Categorie (separate da virgola, es. Rinascimento, Didattica)</label>
+      <input id="categories" type="text" [(ngModel)]="visitForm.categories" placeholder="Rinascimento, Didattica" />
+    </div>
+
+    <div class="form-group" *ngIf="artworks.length > 0">
+      <label>Seleziona Opere (Artworks) da includere nella Visita:</label>
+      <div class="checkbox-list">
+        <div *ngFor="let art of artworks">
+          <label>
+            <input type="checkbox" [value]="art._id" (change)="toggleArtworkSelection(art._id, $event)" />
+            {{ art.title }} (ID: {{ art._id }})
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-inline">
+      <label><input type="checkbox" [(ngModel)]="visitForm.disabledFriendly" /> Accessibile Disabili</label>
+    </div>
+
+    <button class="btn-submit" (click)="createVisit()">Salva Visita</button>
+  </section>
+
+  <!-- Test Risoluzione Immagini Visita Singola -->
+  <section class="card resolution-card">
+    <h3>Risoluzione Immagini Opere per Visita Singola</h3>
+    <div class="form-group">
+      <label for="selectVisit">Seleziona Visita da Esaminare:</label>
+      <div class="inline-row">
+        <select id="selectVisit" [(ngModel)]="selectedVisitForImages">
+          <option value="">-- Seleziona Visita --</option>
+          <option *ngFor="let v of visits" [value]="v._id || v.id">{{ v.title }} (ID: {{ v._id || v.id }})</option>
+        </select>
+        <button class="btn-secondary" (click)="resolveVisitArtworkImages()">Carica Immagini Opere Visita</button>
+      </div>
+    </div>
+
+    <div *ngIf="resolvedVisitData" class="resolved-images-box">
+      <h4>Visita: {{ resolvedVisitData.title }}</h4>
+      <div *ngFor="let art of resolvedVisitData.artworks" class="artwork-resolved-card">
+        <h5>{{ art.title }}</h5>
+        <p *ngIf="!art.images || art.images.length === 0">Nessuna immagine associata su DB o file system.</p>
+        <div class="img-preview-row" *ngIf="art.images && art.images.length > 0">
+          <div *ngFor="let imgUrl of art.images" class="img-thumb">
+            <img [src]="imgUrl" [alt]="art.title" />
+            <small>{{ imgUrl }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

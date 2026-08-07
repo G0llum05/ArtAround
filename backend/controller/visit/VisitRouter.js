@@ -19,6 +19,14 @@ router.post('/:id/like', VisitController.likeVisit);
 // POST /:id/view
 router.post('/:id/view', VisitController.viewVisit);
 
+// GET /:id/artwork-images
+// Risolve ed inserisce tutte le immagini di ciascun artwork appartenente alla visita singola
+router.get('/:id/artwork-images', VisitController.getVisitArtworkImages);
+
+// GET /:id/artist-images
+// Risolve ed inserisce tutte le immagini di ciascun artwork appartenente alla visita singola
+router.get('/:id/artist-images', VisitController.getVisitArtistImages);
+
 // POST /
 // Corrisponde a POST /api/visits/
 router.post('/', VisitController.createVisit);

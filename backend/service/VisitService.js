@@ -1,5 +1,7 @@
 const Visit = require('../data/model/Visit');
 const Mapper = require('../data/mapper/VisitMapper');
+const Museum = require('../data/model/Museum');
+const UploadService = require('./UploadService');
 
 class VisitService {
   static async getAllVisits(category) {
@@ -100,6 +102,119 @@ class VisitService {
     });
 
     return feed;
+  }
+
+  /**
+   * Risolve la query per ottenere tutte le immagini degli artwork presenti all'interno di una visita singola.
+   * Recupera la visita per ID, popola gli artwork collegati e risolve le immagini per ciascun artwork
+   * sia dal DB (artwork.images) che dalla cartella centralizzata dei musei (assets/museums/:museumId/artworks/:artworkId).
+   *
+   * @param {string} visitId - ID della visita singola
+   * @returns {Promise<Object|null>} La visita popolata con gli artwork e le relative immagini senza duplicazioni.
+   */
+  static async getVisitArtworkImages(visitId) {
+
+    const visit = await Visit.findById(visitId)
+      .populate({
+        path: 'artworks',
+        populate: { path: 'artists' }
+      })
+      .populate('creator', 'name surname email')
+      .lean();
+
+    if (!visit) {
+      return null;
+    }
+
+    // Risaliamo al museo che possiede la visita per recuperarne il museumId
+    const museum = await Museum.findOne({ visits: visitId }).select('_id name').lean();
+    const museumId = museum ? museum._id.toString() : null;
+
+    // Per ogni artwork presente nella visita, risolviamo l'elenco delle immagini centralizzate
+    const resolvedArtworks = await Promise.all(
+      (visit.artworks || []).map(async (artwork) => {
+        if (!artwork) return null;
+        const artworkId = artwork._id ? artwork._id.toString() : artwork.toString();
+
+        // 1. Immagini salvate direttamente nel DB
+        const dbImages = Array.isArray(artwork.images) ? artwork.images : [];
+
+        // 2. Immagini salvate sul file system nella cartella centralizzata del museo (artworks/:artworkId)
+        const fsImages = await UploadService.getArtworkImages({
+          museumId,
+          artworkId
+        });
+
+        // Unione priva di duplicati
+        const allImages = Array.from(new Set([...dbImages, ...fsImages]));
+
+        return typeof artwork === 'object'
+          ? { ...artwork, images: allImages }
+          : { _id: artworkId, images: allImages };
+      })
+    );
+
+    return {
+      ...visit,
+      museum: museum || null,
+      artworks: resolvedArtworks.filter(Boolean)
+    };
+  }
+  /**
+   * Risolve la query per ottenere tutte le immagini degli artwork presenti all'interno di una visita singola.
+   * Recupera la visita per ID, popola gli artwork collegati e risolve le immagini per ciascun artwork
+   * sia dal DB (artwork.images) che dalla cartella centralizzata dei musei (assets/museums/:museumId/artworks/:artworkId).
+   *
+   * @param {string} visitId - ID della visita singola
+   * @returns {Promise<Object|null>} La visita popolata con gli artwork e le relative immagini senza duplicazioni.
+   */
+  static async getVisitArtistImages(visitId) {
+
+    const visit = await Visit.findById(visitId)
+      .populate({
+        path: 'artworks',
+        populate: { path: 'artists' }
+      })
+      .populate('creator', 'name surname email')
+      .lean();
+
+    if (!visit) {
+      return null;
+    }
+
+    // Risaliamo al museo che possiede la visita per recuperarne il museumId
+    const museum = await Museum.findOne({ visits: visitId }).select('_id name').lean();
+    const museumId = museum ? museum._id.toString() : null;
+
+    // Per ogni artwork presente nella visita, risolviamo l'elenco delle immagini centralizzate
+    const resolvedArtworks = await Promise.all(
+      (visit.artworks || []).map(async (artwork) => {
+        if (!artwork) return null;
+        const artistId = artwork._id ? artwork._id.toString() : artwork.toString();
+
+        // 1. Immagini salvate direttamente nel DB
+        const dbImages = Array.isArray(artwork.images) ? artwork.images : [];
+
+        // 2. Immagini salvate sul file system nella cartella centralizzata del museo (artworks/:artistId)
+        const fsImages = await UploadService.getArtworkImages({
+          museumId,
+          artistId
+        });
+
+        // Unione priva di duplicati
+        const allImages = Array.from(new Set([...dbImages, ...fsImages]));
+
+        return typeof artwork === 'object'
+          ? { ...artwork, images: allImages }
+          : { _id: artistId, images: allImages };
+      })
+    );
+
+    return {
+      ...visit,
+      museum: museum || null,
+      artworks: resolvedArtworks.filter(Boolean)
+    };
   }
 }
 

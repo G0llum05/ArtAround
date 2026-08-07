@@ -10,29 +10,115 @@ class UploadService {
    * - assets/museums/:museumId/visit/:visitId/:artworkId
    * - assets/museums/:museumId/:artworkId
    */
-  static getTargetDirectory({ museumId, visitId, artworkId, isMeta }) {
+  static getTargetDirectory({ museumId, visitId, artworkId, artistId, isMeta }) {
     if (!museumId) {
       throw new Error('museumId è obbligatorio per definire il percorso di salvataggio.');
     }
 
     const baseMuseumDir = path.join(__dirname, '../assets/museums', museumId);
 
-    // TODO: da creare la ricerca delle immagini tramite l'id degli artworks
+    // Le immagini dell'artwork risiedono in modo centralizzato sotto artworks/:artworkId
+    // per permettere a un artwork di far parte di più visite senza duplicazione file
+    if (artworkId) {
+      return path.join(baseMuseumDir, 'artworks', artworkId);
+    }
+
     if (visitId) {
-      if (isMeta) {
-        // assets/museums/:museumId/visit/:visitId/meta
-        return path.join(baseMuseumDir, 'visit', visitId, 'meta');
-      }
+      // assets/museums/:museumId/visit/:visitId/meta
       return path.join(baseMuseumDir, 'visit', visitId, 'meta');
     }
 
-    if (artworkId) {
-      // assets/museums/:museumId/:artworkId
-      return path.join(baseMuseumDir, artworkId);
+    if (artistId) {
+      // assets/museums/:museumId/visit/:visitId/meta
+      return path.join(baseMuseumDir, 'visit', artistId, 'meta');
     }
 
     // Default: assets/museums/:museumId/meta
     return path.join(baseMuseumDir, 'meta');
+  }
+
+  /**
+   * Cerca e restituisce tutti i percorsi URL delle immagini presenti su file system per un determinato artworkId.
+   * Cerca nella cartella centralizzata:
+   * - assets/museums/:museumId/artworks/:artworkId
+   * - assets/museums/:museumId/:artworkId (fallback)
+   */
+  static async getArtworkImages({ museumId, artworkId }) {
+    if (!artworkId) return [];
+
+    const baseAssetsDir = path.join(__dirname, '../assets/museums');
+    const imageExtensions = /\.(webp|jpg|jpeg|png|gif|bmp|tiff|svg)$/i;
+    const foundUrls = [];
+
+    const scanDirectory = async (dirPath) => {
+      if (!(await fs.pathExists(dirPath))) return;
+      try {
+        const files = await fs.readdir(dirPath);
+        for (const file of files) {
+          if (imageExtensions.test(file)) {
+            const fullPath = path.join(dirPath, file);
+            const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
+            foundUrls.push(`/${relativePath}`);
+          }
+        }
+      } catch (err) {
+        console.error(`[UploadService] Errore durante la scansione della cartella ${dirPath}:`, err);
+      }
+    };
+
+    if (museumId) {
+      // 1. Scansiona cartella centralizzata assets/museums/:museumId/artworks/:artworkId
+      await scanDirectory(path.join(baseAssetsDir, museumId, 'artworks', artworkId));
+    } else {
+      // Se museumId non è fornito, scansiona tutti i musei (caso di visite multi museali)
+      if (await fs.pathExists(baseAssetsDir)) {
+        const museums = await fs.readdir(baseAssetsDir);
+        for (const musId of museums) {
+          await scanDirectory(path.join(baseAssetsDir, musId, 'artworks', artworkId));
+        }
+      }
+    }
+
+    return Array.from(new Set(foundUrls));
+  }
+
+  static async getArtistImages({ museumId, artistId }) {
+    if (!artistId) return [];
+
+    const baseAssetsDir = path.join(__dirname, '../assets/museums');
+    const imageExtensions = /\.(webp|jpg|jpeg|png|gif|bmp|tiff|svg)$/i;
+    const foundUrls = [];
+
+    const scanDirectory = async (dirPath) => {
+      if (!(await fs.pathExists(dirPath))) return;
+      try {
+        const files = await fs.readdir(dirPath);
+        for (const file of files) {
+          if (imageExtensions.test(file)) {
+            const fullPath = path.join(dirPath, file);
+            const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
+            foundUrls.push(`/${relativePath}`);
+          }
+        }
+      } catch (err) {
+        console.error(`[UploadService] Errore durante la scansione della cartella ${dirPath}:`, err);
+      }
+    };
+
+    if (museumId) {
+      // 1. Scansiona cartella centralizzata assets/museums/:museumId/artworks/:artworkId
+      await scanDirectory(path.join(baseAssetsDir, museumId, 'artisits', artistId));
+    } else {
+      // Se museumId non è fornito, scansiona tutti i musei (caso di visite multi museali)
+      if (await fs.pathExists(baseAssetsDir)) {
+        const museums = await fs.readdir(baseAssetsDir);
+        for (const musId of museums) {
+          await scanDirectory(path.join(baseAssetsDir, musId, 'artists', artistId));
+        }
+      }
+    }
+
+    return Array.from(new Set(foundUrls));
   }
 
   /**

@@ -70,6 +70,32 @@ class VisitController {
       res.status(500).json({ message: 'Error creating visit', error: error.message });
     }
   }
+
+  static async getVisitArtworkImages(req, res) {
+    try {
+      const { id } = req.params;
+      const result = await VisitService.getVisitArtworkImages(id);
+      if (!result) {
+        return res.status(404).json({ message: 'Visita non trovata' });
+      }
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: 'Errore durante la risoluzione delle immagini per la visita', error: error.message });
+    }
+  }
+  
+  static async getVisitArtistImages(req, res) {
+    try {
+      const { id } = req.params;
+      const result = await VisitService.getVisitArtistImages(id);
+      if (!result) {
+        return res.status(404).json({ message: 'Visita non trovata' });
+      }
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: 'Errore durante la risoluzione delle immagini per la visita', error: error.message });
+    }
+  }
 }
 
 module.exports = VisitController;

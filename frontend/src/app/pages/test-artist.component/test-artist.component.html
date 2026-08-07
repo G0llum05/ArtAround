@@ -1,0 +1,35 @@
+<div class="page-container">
+  <h2>Creazione Nuovo Artista</h2>
+
+  <div *ngIf="feedbackMessage" class="alert alert-success">{{ feedbackMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <section class="card">
+    <div class="form-group">
+      <label for="artistName">Nome *</label>
+      <input id="artistName" type="text" [(ngModel)]="artistForm.name" placeholder="es. Leonardo" />
+    </div>
+
+    <div class="form-group">
+      <label for="artistSurname">Cognome *</label>
+      <input id="artistSurname" type="text" [(ngModel)]="artistForm.surname" placeholder="es. da Vinci" />
+    </div>
+
+    <div class="form-group">
+      <label for="artistCurrents">Correnti Artistiche (separate da virgola)</label>
+      <input id="artistCurrents" type="text" [(ngModel)]="artistForm.artisticCurrents" placeholder="es. Rinascimento, Pittura" />
+    </div>
+
+    <button class="btn-submit" (click)="createArtist()">Salva Artista</button>
+  </section>
+
+  <section class="card summary-card" *ngIf="artists.length > 0">
+    <h3>Artisti Registrati ({{ artists.length }})</h3>
+    <ul>
+      <li *ngFor="let a of artists">
+        <strong>{{ a.name }} {{ a.surname }}</strong> — <small>ID: {{ a._id }}</small>
+        <span *ngIf="a.artisticCurrents && a.artisticCurrents.length > 0"> ({{ a.artisticCurrents.join(', ') }})</span>
+      </li>
+    </ul>
+  </section>
+</div>

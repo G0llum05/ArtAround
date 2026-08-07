@@ -35,7 +35,6 @@ class NavigatorController {
           description: 'File audio registrato (webm, ogg, mp4, wav)'
        }
     */
-    const startTime = Date.now();
     try {
       if (!req.file && !req.files) {
         return res.status(400).json({ success: false, error: 'Nessun file audio inviato.' });
@@ -55,14 +54,11 @@ class NavigatorController {
         language: lang
       });
 
-      const totalBackendMs = Date.now() - startTime;
 
       return res.json({
         success: true,
         text: sttResult.text,
         reply: sttResult.text,
-        sttProcessMs: sttResult.processTimeMs,
-        totalBackendMs,
         audioSizeBytes: sttResult.audioSizeBytes
       });
     } catch (err) {
@@ -85,7 +81,6 @@ class NavigatorController {
     const startTime = Date.now();
     try {
       let inputText = req.body.inputText || '';
-      let sttProcessMs = 0;
       const lang = NavigatorController._extractLanguage(req);
 
       // Se viene allegato un audio, trascrivi prima via Groq STT
@@ -122,7 +117,6 @@ class NavigatorController {
       });
       result = { ...result, ...navResult };
 
-      const totalBackendMs = Date.now() - startTime;
       const reply = result.spokenResponse || result.narrativeText || (result.item ? result.item.description : null) || result.actionMessage || inputText;
 
       return res.json({

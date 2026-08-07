@@ -136,17 +136,11 @@ class VisitService {
         if (!artwork) return null;
         const artworkId = artwork._id ? artwork._id.toString() : artwork.toString();
 
-        // 1. Immagini salvate direttamente nel DB
-        const dbImages = Array.isArray(artwork.images) ? artwork.images : [];
 
-        // 2. Immagini salvate sul file system nella cartella centralizzata del museo (artworks/:artworkId)
         const fsImages = await UploadService.getArtworkImages({
           museumId,
           artworkId
         });
-
-        // Unione priva di duplicati
-        const allImages = Array.from(new Set([...dbImages, ...fsImages]));
 
         return typeof artwork === 'object'
           ? { ...artwork, images: allImages }
@@ -192,17 +186,11 @@ class VisitService {
         if (!artwork) return null;
         const artistId = artwork._id ? artwork._id.toString() : artwork.toString();
 
-        // 1. Immagini salvate direttamente nel DB
-        const dbImages = Array.isArray(artwork.images) ? artwork.images : [];
-
         // 2. Immagini salvate sul file system nella cartella centralizzata del museo (artworks/:artistId)
         const fsImages = await UploadService.getArtworkImages({
           museumId,
           artistId
         });
-
-        // Unione priva di duplicati
-        const allImages = Array.from(new Set([...dbImages, ...fsImages]));
 
         return typeof artwork === 'object'
           ? { ...artwork, images: allImages }

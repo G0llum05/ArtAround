@@ -18,13 +18,14 @@ class UploadController {
       const museumId = req.params.museumId || req.query.museumId || req.body?.museumId;
       const visitId = req.params.visitId || req.query.visitId || req.body?.visitId;
       const artworkId = req.params.artworkId || req.query.artworkId || req.body?.artworkId;
+      const artistId = req.params.artistId || req.query.artistId || req.body?.artistId;
       const isMeta = req.path.includes('/meta') || req.query.isMeta === 'true' || req.body?.isMeta === 'true';
 
       if (!museumId) {
         return res.status(400).json({ message: 'Parametro museumId mancante nella richiesta.' });
       }
 
-      const uploadOptions = { museumId, visitId, artworkId, isMeta };
+      const uploadOptions = { museumId, visitId, artworkId, artistid, isMeta };
       const savedFiles = [];
 
       for (const file of files) {
@@ -39,7 +40,7 @@ class UploadController {
 
       return res.status(201).json({
         success: true,
-        message: 'File caricati e convertiti in WebP con successo.',
+        message: 'File caricati con successo.',
         count: savedFiles.length,
         files: savedFiles
       });

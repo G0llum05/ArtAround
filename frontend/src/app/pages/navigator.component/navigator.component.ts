@@ -105,7 +105,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   public selectedLang = 'it';
   public languages: LanguageOption[] = [
     { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'en/us', name: 'English', flag: '🇺🇸' },
+    { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'fra', name: 'Français', flag: '🇫🇷' },
     { code: 'sp', name: 'Español', flag: '🇪🇸' },
     { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
@@ -150,7 +150,6 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stopRecordingTimer();
     this.stopMicrophoneStream();
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -259,8 +258,10 @@ export class NavigatorComponent implements OnInit, OnDestroy {
         }
       });
       
-      // Selezione formato con preferenza per audio/webm;codecs=opus (compressione ultra-leggera 15-25KB)
-      let mimeType = 'audio/webm;codecs=opus';
+      // Selezione formato con preferenza per audio/webm;codecs=wav per maggiore qualità
+      // Selezione formato con preferenza per audio/webm;codecs= (compressione ultra-leggera 15-25KB)
+      let mimeType = 'audio/webm;codecs=wav';
+      // let mimeType = 'audio/webm;codecs=opus';
       if (!MediaRecorder.isTypeSupported(mimeType)) {
         if (MediaRecorder.isTypeSupported('audio/webm')) {
           mimeType = 'audio/webm';

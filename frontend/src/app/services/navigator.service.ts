@@ -65,23 +65,31 @@ export class NavigatorClientService {
   }
 
   /**
-   * Riproduce il testo parlato richiedendo l'audio al backend (ResponsiveVoice sicura via server).
-   * Supporta interruzione tramite AbortController e fallback su Web Speech API.
+   * Riproduce il testo parlato richiedendo l'audio al backend (ResponsiveVoice) o tramite Web Speech API nativa.
+   * Pulisce il testo da emoji e markdown prima della lettura per garantire un parlato fluido.
    */
   async speakText(text: string, lang: string = 'it'): Promise<void> {
     this.cancelSpeech();
+
+    // Pulisce il testo rimuovendo emoji, simboli speciali e markdown
+    const cleanText = text
+      .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
+      .replace(/[*_#`~]/g, '')
+      .trim();
+
+    if (!cleanText) return;
 
     this.currentAbortController = new AbortController();
     const signal = this.currentAbortController.signal;
 
     try {
-      const audioBlob = await this.synthesizeAudioFromBackend(text, lang);
+      const audioBlob = await this.synthesizeAudioFromBackend(cleanText, lang);
 
       if (signal.aborted) {
         return;
       }
 
-      if (audioBlob && audioBlob.size > 0) {
+      if (audioBlob && audioBlob.size > 0 && audioBlob.type.includes('audio')) {
         const audioUrl = URL.createObjectURL(audioBlob);
 
         return new Promise<void>((resolve, reject) => {
@@ -94,27 +102,32 @@ export class NavigatorClientService {
             resolve();
           };
 
-          audio.onerror = (e) => {
+          audio.onerror = () => {
             this.currentAudio = null;
             URL.revokeObjectURL(audioUrl);
-            reject(e);
+            // In caso di errore audio stream backend, passa al fallback locale
+            this.speakTextBrowserFallback(cleanText, lang).then(resolve);
           };
 
           if (signal.aborted) {
             URL.revokeObjectURL(audioUrl);
-            reject(new Error('Riproduzione annullata.'));
+            resolve();
             return;
           }
 
-          audio.play().catch(reject);
+          audio.play().catch(() => {
+            // Se bloccato dalle policy di Autoplay del browser, usa Web Speech API
+            this.speakTextBrowserFallback(cleanText, lang).then(resolve);
+          });
         });
+      } else {
+        return this.speakTextBrowserFallback(cleanText, lang);
       }
     } catch (err: any) {
       if (signal.aborted) {
         return;
       }
-      console.warn('Backend TTS fallito o non disponibile, fallback su window.speechSynthesis...', err);
-      return this.speakTextBrowserFallback(text, lang);
+      return this.speakTextBrowserFallback(cleanText, lang);
     }
   }
 
@@ -127,7 +140,9 @@ export class NavigatorClientService {
       this.currentAbortController = null;
     }
     if (this.currentAudio) {
-      this.currentAudio.pause();
+      try {
+        this.currentAudio.pause();
+      } catch (e) {}
       this.currentAudio = null;
     }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -146,17 +161,35 @@ export class NavigatorClientService {
       const utterance = new SpeechSynthesisUtterance(text);
 
       const cleanLang = (lang || 'it').toLowerCase();
-      if (cleanLang.includes('en')) utterance.lang = 'en-US';
-      else if (cleanLang.includes('fr')) utterance.lang = 'fr-FR';
-      else if (cleanLang.includes('es') || cleanLang.includes('sp')) utterance.lang = 'es-ES';
-      else if (cleanLang.includes('de')) utterance.lang = 'de-DE';
-      else if (cleanLang.includes('cn') || cleanLang.includes('zh')) utterance.lang = 'zh-CN';
-      else if (cleanLang.includes('ru')) utterance.lang = 'ru-RU';
-      else utterance.lang = 'it-IT';
+      let targetLang = 'it-IT';
+      if (cleanLang.includes('en')) targetLang = 'en-US';
+      else if (cleanLang.includes('fr')) targetLang = 'fr-FR';
+      else if (cleanLang.includes('es') || cleanLang.includes('sp')) targetLang = 'es-ES';
+      else if (cleanLang.includes('de')) targetLang = 'de-DE';
+      else if (cleanLang.includes('cn') || cleanLang.includes('zh')) targetLang = 'zh-CN';
+      else if (cleanLang.includes('ru')) targetLang = 'ru-RU';
+      else targetLang = 'it-IT';
+
+      utterance.lang = targetLang;
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      // Cerca una voce installata nel browser per quella lingua
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const matchingVoice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith(targetLang.slice(0, 2)));
+        if (matchingVoice) {
+          utterance.voice = matchingVoice;
+        }
+      }
 
       utterance.onend = () => resolve();
       utterance.onerror = () => resolve();
+
       window.speechSynthesis.speak(utterance);
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
     });
   }
 
@@ -230,8 +263,18 @@ export class NavigatorClientService {
    */
   getVisits(): Observable<any> {
     const targetUrl = (typeof window !== 'undefined' && window.location.port === '4200')
-      ? 'http://localhost:8000/api/visits'
-      : '/api/visits';
+      ? 'http://localhost:8000/api/visit'
+      : '/api/visit';
+    return this.http.get<any>(targetUrl, { withCredentials: true });
+  }
+
+  /**
+   * Recupera i dettagli completi di una visita reale con le relative opere d'arte ed il museo associato.
+   */
+  getVisitDetails(visitId: string): Observable<any> {
+    const targetUrl = (typeof window !== 'undefined' && window.location.port === '4200')
+      ? `http://localhost:8000/api/visit/${visitId}/artwork-images`
+      : `/api/visit/${visitId}/artwork-images`;
     return this.http.get<any>(targetUrl, { withCredentials: true });
   }
 }

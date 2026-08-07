@@ -101,6 +101,17 @@ class NavigatorService {
     let artworks = [];
     let currentArtwork = null;
 
+    if (!visitId) {
+      try {
+        const firstVisit = await Visit.findOne({ isActive: { $ne: false } }).exec();
+        if (firstVisit) {
+          visitId = firstVisit._id.toString();
+        }
+      } catch (e) {
+        console.warn('[NavigatorService] Impossibile recuperare visita di fallback:', e.message);
+      }
+    }
+
     if (visitId) {
       try {
         const details = await this.getVisitWithDetails(visitId);

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { NavigatorClientService, CommandResponse, STTResponse } from '../../services/navigator.service';
 
 export interface LanguageOption {
@@ -51,7 +51,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   isProcessing = false;
   isSpeaking = false;
   errorMessage: string | null = null;
-  statusMessage = 'Pronto all\'ascolto. Parla col microfono o scrivi un messaggio.';
+  statusMessage = 'Pronto per l\'ascolto vocale o la selezione dei comandi.';
 
   // Audio & Recording properties
   private mediaRecorder: MediaRecorder | null = null;
@@ -62,23 +62,38 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   private recTimerInterval: any = null;
   public audioUrl: string | null = null;
 
-  // Chatbot State
-  public textInputMessage = '';
+  // State & Real Visit Integration
   public chatMessages: ChatMessage[] = [];
   public selectedVisitId = '';
   public visitsList: any[] = [];
+  public currentVisitDetails: any = null;
+  public visitArtworks: any[] = [];
   public currentArtworkIndex = 0;
   public currentTone = 'medium';
-  public tonesList = ['infantile', 'simple', 'medium', 'advanced', 'technical'];
+  public currentLength = 30;
 
-  // Quick Action Chips
-  public quickActions = [
-    { label: '🚻 Bagno', command: 'Dove si trova il bagno?' },
-    { label: '🖼️ Prossima opera', command: 'Passa alla prossima opera' },
-    { label: '🎨 Chi è l\'autore?', command: 'Chi è l\'autore di quest\'opera?' },
-    { label: '👶 Tono Semplice', command: 'Spiegamelo in modo più semplice' },
-    { label: '🎓 Tono Avanzato', command: 'Dammi maggiori dettagli tecnici' },
-    { label: '🇬🇧 English', command: 'Spiega in inglese' }
+  // Interactive Form Options
+  public toneOptions = [
+    { code: 'infantile', label: '👶 Per bambini' },
+    { code: 'simple', label: '🌱 Semplice' },
+    { code: 'medium', label: '📖 Divulgativo' },
+    { code: 'advanced', label: '🎓 Avanzato' },
+    { code: 'technical', label: '🔬 Tecnico' }
+  ];
+
+  public lengthOptions = [
+    { value: 15, label: '⚡ Breve (~15 sec)' },
+    { value: 30, label: '📖 Standard (~30 sec)' },
+    { value: 60, label: '📜 Dettagliata (~60 sec)' }
+  ];
+
+  public poiCategories = [
+    { label: '🚻 Toilette / Bagno', command: 'Dove si trova il bagno?' },
+    { label: '☕ Bar & Ristoro', command: 'Dove si trova il bar?' },
+    { label: '🚪 Uscita', command: 'Dove si trova l\'uscita?' },
+    { label: '🛗 Ascensore', command: 'Dove si trova l\'ascensore?' },
+    { label: '🎟️ Biglietteria', command: 'Dove si trova la biglietteria?' },
+    { label: 'ℹ️ Info Point', command: 'Dove si trova l\'info point?' }
   ];
 
   // Latency Logs & Metrics
@@ -86,7 +101,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   public lastLog: ProcessLog | null = null;
   public logs: ProcessLog[] = [];
 
-  // Language Badges & Selection
+  // Language Selection
   public selectedLang = 'it';
   public languages: LanguageOption[] = [
     { code: 'it', name: 'Italiano', flag: '🇮🇹' },
@@ -94,8 +109,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
     { code: 'fra', name: 'Français', flag: '🇫🇷' },
     { code: 'sp', name: 'Español', flag: '🇪🇸' },
     { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'cn', name: '中文', flag: '🇨🇳' },
-    { code: 'rus', name: 'Русский', flag: '🇷🇺' }
+    { code: 'cn', name: '中文', flag: '🇨🇳' }
   ];
 
   // Options
@@ -104,20 +118,27 @@ export class NavigatorComponent implements OnInit, OnDestroy {
 
   constructor(
     private navigatorService: NavigatorClientService,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // Imposta il cookie iniziale per la lingua
     this.setLanguage(this.selectedLang);
     this.loadVoices();
     this.loadVisits();
 
-    // Messaggio iniziale di benvenuto del Chatbot Navigatore
+    // Ascolta eventuali parametri URL (es. /navigator?visitId=xxx)
+    this.route.queryParams.subscribe(params => {
+      if (params['visitId']) {
+        this.onVisitChange(params['visitId']);
+      }
+    });
+
+    // Messaggio iniziale di benvenuto
     this.chatMessages.push({
       id: 'welcome',
       sender: 'bot',
-      text: '👋 Ciao! Sono l\'Assistente Navigatore di ArtAround. Puoi parlarmi usando il microfono oppure scrivermi in chat. Chiedimi indicazioni logistiche, dettagli sulle opere o cambia il tono della spiegazione!',
+      text: '👋 Benvenuto nella Guida Museale. Scegli un\'azione dai moduli sottostanti oppure usa il microfono per parlare direttamente con l\'assistente.',
       timestamp: new Date().toLocaleTimeString()
     });
 
@@ -150,16 +171,67 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   loadVisits(): void {
     this.navigatorService.getVisits().subscribe({
       next: (data: any) => {
+        let rawList: any[] = [];
         if (Array.isArray(data)) {
-          this.visitsList = data;
-        } else if (data && data.visits) {
-          this.visitsList = data.visits;
+          rawList = data;
+        } else if (data && Array.isArray(data.visits)) {
+          rawList = data.visits;
+        } else if (data && data.data && Array.isArray(data.data)) {
+          rawList = data.data;
+        }
+
+        this.visitsList = rawList.map(v => ({
+          _id: v.id || v._id,
+          title: v.title || v.name || ('Visita #' + (v.id || v._id))
+        })).filter(v => !!v._id);
+
+        if (!this.selectedVisitId && this.visitsList.length > 0) {
+          const firstVisitId = this.visitsList[0]._id;
+          this.onVisitChange(firstVisitId);
+        } else if (this.selectedVisitId && !this.currentVisitDetails) {
+          this.onVisitChange(this.selectedVisitId);
         }
       },
       error: (err) => {
-        console.warn('Visite non caricate:', err);
+        console.warn('Visite non caricate da /api/visits:', err);
       }
     });
+  }
+
+  onVisitChange(visitId: string): void {
+    this.selectedVisitId = visitId;
+    this.currentArtworkIndex = 0;
+    this.currentVisitDetails = null;
+    this.visitArtworks = [];
+
+    if (!visitId) return;
+
+    this.navigatorService.getVisitDetails(visitId).subscribe({
+      next: (res: any) => {
+        if (res) {
+          this.currentVisitDetails = res;
+          this.visitArtworks = res.artworks || [];
+          const visitTitle = res.title || 'Visita Museale';
+          const artworksCount = this.visitArtworks.length;
+          
+          this.chatMessages.push({
+            id: Math.random().toString(36).substring(2, 9),
+            sender: 'bot',
+            text: `🗺️ Visita "${visitTitle}" caricata! Ci sono ${artworksCount} opere nel percorso. Seleziona un'opera per ascoltare la spiegazione o usa i comandi vocali.`,
+            timestamp: new Date().toLocaleTimeString()
+          });
+          this.scrollToBottom();
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err: any) => {
+        console.warn('Impossibile caricare i dettagli della visita reale:', err);
+      }
+    });
+  }
+
+  onArtworkSelect(): void {
+    this.navigateArtwork('explain');
   }
 
   async toggleRecording(): Promise<void> {
@@ -366,18 +438,18 @@ export class NavigatorComponent implements OnInit, OnDestroy {
     });
   }
 
-  sendTextMessage(): void {
-    if (!this.textInputMessage || !this.textInputMessage.trim() || this.isProcessing) return;
+  sendFormCommand(commandText: string, userDisplayLabel?: string): void {
+    if (!commandText || !commandText.trim() || this.isProcessing) return;
 
-    const userText = this.textInputMessage.trim();
-    this.textInputMessage = '';
+    const textToSend = commandText.trim();
+    const displayText = userDisplayLabel || textToSend;
     this.errorMessage = null;
 
-    // Aggiungi il messaggio dell'utente in chat
+    // Aggiungi l'azione dell'utente in chat
     this.chatMessages.push({
       id: Math.random().toString(36).substring(2, 9),
       sender: 'user',
-      text: userText,
+      text: displayText,
       timestamp: new Date().toLocaleTimeString(),
       source: 'text'
     });
@@ -385,10 +457,10 @@ export class NavigatorComponent implements OnInit, OnDestroy {
 
     const overallStart = performance.now();
     this.isProcessing = true;
-    this.statusMessage = '⏳ Elaborazione comando testuale...';
+    this.statusMessage = '⏳ Elaborazione richiesta in corso...';
 
     this.navigatorService.sendNavigatorCommand({
-      inputText: userText,
+      inputText: textToSend,
       visitId: this.selectedVisitId,
       currentArtworkIndex: this.currentArtworkIndex,
       currentTone: this.currentTone,
@@ -399,7 +471,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
         this.isProcessing = false;
 
         if (res && res.success) {
-          const replyText = res.reply || 'Comando elaborato.';
+          const replyText = res.reply || 'Richiesta completata.';
 
           if (res.result) {
             if (res.result.currentArtworkIndex !== undefined) this.currentArtworkIndex = res.result.currentArtworkIndex;
@@ -419,7 +491,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
           this.chatMessages.push(botMessage);
           this.scrollToBottom();
 
-          this.statusMessage = `✅ Risposta Chatbot ricevuta`;
+          this.statusMessage = `✅ Risposta della Guida ricevuta`;
 
           let ttsStatus = 'Disattivato';
           if (this.autoSpeakTTS && replyText) {
@@ -436,7 +508,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
           const logItem: ProcessLog = {
             id: Math.random().toString(36).substring(2, 9),
             timestamp: new Date().toLocaleTimeString(),
-            transcript: userText,
+            transcript: displayText,
             recDurationMs: 0,
             sttProcessMs: 0,
             totalBackendMs: res.totalBackendMs || 0,
@@ -449,24 +521,67 @@ export class NavigatorComponent implements OnInit, OnDestroy {
           this.lastLog = logItem;
           this.logs.unshift(logItem);
         } else {
-          this.errorMessage = res.error || 'Errore durante l\'elaborazione del comando.';
-          this.statusMessage = 'Errore risposta chatbot.';
+          this.errorMessage = res.error || 'Errore durante l\'elaborazione della richiesta.';
+          this.statusMessage = 'Errore risposta guida.';
         }
         this.cdr.detectChanges();
       },
       error: (err: any) => {
         this.isProcessing = false;
-        console.error('Command Text Error:', err);
+        console.error('Command Form Error:', err);
         this.errorMessage = 'Errore di connessione al backend: ' + (err.message || 'Server error');
-        this.statusMessage = 'Errore durante l\'invio del testo.';
+        this.statusMessage = 'Errore durante la comunicazione.';
         this.cdr.detectChanges();
       }
     });
   }
 
-  sendQuickAction(actionCommand: string): void {
-    this.textInputMessage = actionCommand;
-    this.sendTextMessage();
+  selectTone(toneCode: string, toneLabel: string): void {
+    this.currentTone = toneCode;
+    const commandText = `Spiegamelo con registro ${toneCode}`;
+    const displayLabel = `🎭 Cambio registro: ${toneLabel}`;
+    this.sendFormCommand(commandText, displayLabel);
+  }
+
+  selectLength(lengthValue: number, label: string): void {
+    this.currentLength = lengthValue;
+    let commandText = 'Spiegazione standard di 30 secondi';
+    if (lengthValue === 15) {
+      commandText = 'Accorcia e riduci la spiegazione a 15 secondi';
+    } else if (lengthValue === 60) {
+      commandText = 'Allunga e fornisci una spiegazione estesa di 60 secondi';
+    }
+    const displayLabel = `⏱️ Imposta durata: ${label}`;
+    this.sendFormCommand(commandText, displayLabel);
+  }
+
+  selectPoi(commandText: string, label: string): void {
+    const displayLabel = `🗺️ Indicazioni per: ${label}`;
+    this.sendFormCommand(commandText, displayLabel);
+  }
+
+  navigateArtwork(action: 'explain' | 'author' | 'next' | 'prev'): void {
+    let commandText = '';
+    let displayLabel = '';
+    switch (action) {
+      case 'explain':
+        commandText = 'Spiegami quest\'opera';
+        displayLabel = '🖼️ Spiega Opera Corrente';
+        break;
+      case 'author':
+        commandText = 'Chi è l\'autore di quest\'opera?';
+        displayLabel = '🎨 Info Autore';
+        break;
+      case 'next':
+        commandText = 'Passa alla prossima opera';
+        displayLabel = '⏩ Prossima Opera';
+        break;
+      case 'prev':
+        commandText = 'Torna all\'opera precedente';
+        displayLabel = '⏪ Opera Precedente';
+        break;
+    }
+    this.sendFormCommand(commandText, displayLabel);
   }
 
   speakMessage(message: ChatMessage): void {

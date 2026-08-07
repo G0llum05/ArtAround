@@ -46,6 +46,7 @@ class NavigatorController {
         return res.status(400).json({ success: false, error: 'Il buffer del file audio è vuoto.' });
       }
 
+      // !!! CHECK TODO !!! La lingua viene estratta dai cookie o dagli header e non dal testo trascritto
       const lang = NavigatorController._extractLanguage(req);
 
       const sttResult = await GroqSTTService.transcribe(file.buffer, {

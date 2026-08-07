@@ -1,28 +1,26 @@
 <div class="navigator-container">
-  <!-- HEADER -->
+  <!-- HEADER MINIMALE -->
   <div class="header-card">
     <div class="header-content">
-      <div class="badge">ArtAround Enterprise AI Engine (STT + Navigator + TTS)</div>
-      <h1>🤖 Chatbot Navigatore Museale Vocale & Testuale</h1>
+      <h1>🏛️ Guida Museale Interattiva</h1>
       <p class="subtitle">
-        Parla o scrivi al tuo assistente per esplorare le opere, chiedere indicazioni logistiche e adattare il livello di spiegazione.
+        Audioguida interattiva per esplorare il museo. Usa i moduli guidati o il microfono per ascoltare le spiegazioni e ricevere indicazioni.
       </p>
     </div>
     <div class="header-actions">
-      <button class="btn btn-outline" (click)="clearChat()">🧹 Pulisci Chat</button>
-      <a routerLink="/test" class="btn btn-outline">⬅️ Torna ai Test</a>
+      <button class="btn btn-outline" (click)="clearChat()" title="Svuota la conversazione">🧹 Pulisci</button>
     </div>
   </div>
 
-  <!-- MAIN GRID: CHATBOT INTERFACE & CONTROLS -->
+  <!-- MAIN GRID: CONTROLLI GUIDATI E FEED AUDIOGUIDA -->
   <div class="main-grid">
-    <!-- CONTROLLI E IMPOSTAZIONI NAVIGATORE -->
+    
+    <!-- PANNELLO SINISTRO: MODULI & FORM INTERATTIVI -->
     <div class="card controls-box">
-      <h2>⚙️ Configurazione & Stato Navigazione</h2>
       
       <!-- LINGUA -->
       <div class="control-group">
-        <label class="control-label">🌐 Lingua (STT / Navigator / TTS):</label>
+        <label class="control-label">🌐 Lingua Audioguida</label>
         <div class="flags-container">
           <button 
             type="button"
@@ -36,76 +34,141 @@
         </div>
       </div>
 
-      <!-- SELEZIONE VISITA (OPZIONALE) -->
-      <div class="control-group" *ngIf="visitsList.length > 0">
-        <label class="control-label">🗺️ Visita Museo Selezionata:</label>
-        <select class="form-select" [(ngModel)]="selectedVisitId">
-          <option value="">(Nessuna visita - Assistente Generale)</option>
-          <option *ngFor="let v of visitsList" [value]="v._id">
-            {{ v.title || v.name || ('Visita #' + v._id) }}
+      <!-- SELEZIONE VISITA REALE -->
+      <div class="control-group">
+        <label class="control-label">🗺️ Percorso di Visita Reale</label>
+        <select class="form-select" [(ngModel)]="selectedVisitId" (change)="onVisitChange(selectedVisitId)">
+          <option value="">(Nessuna visita - Guida Generale Museo)</option>
+          <option *ngFor="let v of visitsList" [value]="v._id || v.id">
+            {{ v.title || v.name || ('Visita #' + (v._id || v.id)) }}
           </option>
         </select>
       </div>
 
-      <!-- SELEZIONE TONO -->
+      <!-- SELEZIONE OPERA DALLA VISITA REALE -->
+      <div class="control-group" *ngIf="visitArtworks.length > 0">
+        <label class="control-label">🖼️ Opere del Percorso ({{ visitArtworks.length }})</label>
+        <select class="form-select" [(ngModel)]="currentArtworkIndex" (change)="onArtworkSelect()">
+          <option *ngFor="let art of visitArtworks; let idx = index" [value]="idx">
+            {{ idx + 1 }}. {{ art.title || ('Opera #' + art._id) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- SELEZIONE REGISTRO / TONO -->
       <div class="control-group">
-        <label class="control-label">🎭 Tono Spiegazione Attivo:</label>
-        <div class="tone-badges">
+        <label class="control-label">🎭 Livello di Approfondimento</label>
+        <div class="tone-buttons-grid">
           <button 
             type="button" 
-            *ngFor="let t of tonesList" 
-            class="tone-badge" 
-            [class.active]="currentTone === t"
-            (click)="currentTone = t">
-            {{ t }}
+            *ngFor="let t of toneOptions" 
+            class="tone-btn" 
+            [class.active]="currentTone === t.code"
+            [disabled]="isProcessing"
+            (click)="selectTone(t.code, t.label)">
+            {{ t.label }}
           </button>
         </div>
       </div>
 
-      <!-- OPZIONI TTS AUTO-PLAY -->
+      <!-- SELEZIONE DURATA / LUNGHEZZA -->
+      <div class="control-group">
+        <label class="control-label">⏱️ Durata Spiegazione</label>
+        <div class="tone-buttons-grid">
+          <button 
+            type="button" 
+            *ngFor="let len of lengthOptions" 
+            class="tone-btn" 
+            [class.active]="currentLength === len.value"
+            [disabled]="isProcessing"
+            (click)="selectLength(len.value, len.label)">
+            {{ len.label }}
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTROLLI NAVIGAZIONE OPERE -->
+      <div class="control-group">
+        <label class="control-label">🖼️ Navigazione Opere</label>
+        <div class="action-buttons-grid">
+          <button type="button" class="action-btn primary" [disabled]="isProcessing" (click)="navigateArtwork('explain')">
+            📖 Spiega Opera
+          </button>
+          <button type="button" class="action-btn secondary" [disabled]="isProcessing" (click)="navigateArtwork('author')">
+            🎨 Info Autore
+          </button>
+          <button type="button" class="action-btn nav" [disabled]="isProcessing" (click)="navigateArtwork('prev')">
+            ⏪ Precedente
+          </button>
+          <button type="button" class="action-btn nav" [disabled]="isProcessing" (click)="navigateArtwork('next')">
+            ⏩ Successiva
+          </button>
+        </div>
+      </div>
+
+      <!-- SERVIZI E MAPPA (POI) -->
+      <div class="control-group">
+        <label class="control-label">🧭 Mappa & Servizi Museo</label>
+        <div class="poi-buttons-grid">
+          <button 
+            type="button" 
+            *ngFor="let poi of poiCategories" 
+            class="poi-btn"
+            [disabled]="isProcessing"
+            (click)="selectPoi(poi.command, poi.label)">
+            {{ poi.label }}
+          </button>
+        </div>
+      </div>
+
+      <!-- OPZIONI AUDIO -->
       <div class="control-group options-row">
         <label class="toggle-control">
           <input type="checkbox" [(ngModel)]="autoSpeakTTS">
-          <span class="toggle-label">🔊 Riproduzione Automatica Vocale (TTS Backend / SpeechSynthesis)</span>
+          <span class="toggle-label">🔊 Riproduzione audio automatica</span>
         </label>
       </div>
 
-      <!-- AUDIOPLAYER ULTIMA REGISTRAZIONE -->
+      <!-- ANTEPRIMA AUDIO ULTIMO VOCALE -->
       <div class="audio-preview" *ngIf="audioUrl">
-        <label>🎧 Buffer RAM Vocale inviato:</label>
+        <label>🎧 Registrazione vocale inviata:</label>
         <audio [src]="audioUrl" controls></audio>
       </div>
 
-      <!-- METRICHE ULTIMO COMANDO -->
-      <div class="metrics-summary" *ngIf="lastLog">
-        <div class="metric-item">
-          <span class="m-lbl">STT Groq:</span>
-          <span class="m-val">{{ lastLog.sttProcessMs }} ms</span>
-        </div>
-        <div class="metric-item">
-          <span class="m-lbl">Express Backend:</span>
-          <span class="m-val">{{ lastLog.totalBackendMs }} ms</span>
-        </div>
-        <div class="metric-item">
-          <span class="m-lbl">Roundtrip:</span>
-          <span class="m-val highlight">{{ lastLog.totalRoundtripMs }} ms</span>
-        </div>
-      </div>
     </div>
 
-    <!-- AREA CHATBOT COMPLETA -->
+    <!-- PANNELLO DESTRO: INTERAZIONE VOCALE E RISPOSTE AUDIOGUIDA -->
     <div class="card chat-box">
-      <div class="chat-header">
-        <h2>💬 Conversazione col Chatbot</h2>
-        <div class="status-indicator" [class.status-rec]="isRecording" [class.status-proc]="isProcessing">
-          <span *ngIf="isRecording">🔴 Registrazione in corso...</span>
-          <span *ngIf="isProcessing">⚙️ Elaborazione in corso...</span>
-          <span *ngIf="isSpeaking">🔊 Riproduzione voce...</span>
-          <span *ngIf="!isRecording && !isProcessing && !isSpeaking">🟢 {{ statusMessage }}</span>
+      
+      <!-- MODULO COMUNICAZIONE VOCALE (MICROFONO MINIMALE) -->
+      <div class="voice-input-card">
+        <div class="voice-status">
+          <span *ngIf="!isRecording && !isProcessing">Premere il microfono per parlare con la guida</span>
+          <span *ngIf="isRecording" class="recording-text">🔴 Registrazione in corso... Clicca per inviare</span>
+          <span *ngIf="isProcessing" class="processing-text">⚙️ Elaborazione in corso...</span>
+        </div>
+
+        <button 
+          type="button" 
+          class="voice-mic-button" 
+          [class.recording]="isRecording" 
+          [class.processing]="isProcessing"
+          [disabled]="isProcessing"
+          (click)="toggleRecording()">
+          <div class="mic-ring" *ngIf="isRecording"></div>
+          <span class="mic-icon" *ngIf="!isRecording && !isProcessing">🎙️</span>
+          <span class="mic-icon pulse" *ngIf="isRecording">⏹️</span>
+          <span class="mic-icon spin" *ngIf="isProcessing">⚙️</span>
+        </button>
+
+        <div class="voice-instruction">
+          <span *ngIf="!isRecording && !isProcessing">Tocca il microfono e fai la tua domanda a voce</span>
+          <span *ngIf="isRecording">Tocca di nuovo per terminare e inviare</span>
+          <span *ngIf="isProcessing">In ascolto della guida...</span>
         </div>
       </div>
 
-      <!-- CONTENITORE MESSAGGI -->
+      <!-- FEED AUDIOGUIDA -->
       <div class="chat-messages" #chatScrollContainer>
         <div 
           *ngFor="let msg of chatMessages" 
@@ -117,129 +180,38 @@
             <div class="bubble-header">
               <span class="sender-name">
                 <ng-container *ngIf="msg.sender === 'user'">
-                  {{ msg.source === 'voice' ? '🎙️ Tu (Voce)' : '✏️ Tu (Testo)' }}
+                  {{ msg.source === 'voice' ? '🎙️ Richiesta Vocale' : '🖐️ Comando' }}
                 </ng-container>
                 <ng-container *ngIf="msg.sender === 'bot'">
-                  🤖 ArtAround Assistant
+                  🏛️ Guida Museale
                 </ng-container>
               </span>
               <span class="msg-time">{{ msg.timestamp }}</span>
             </div>
 
-            <!-- INTENT BADGE BOT -->
-            <div class="intent-badge" *ngIf="msg.intent">
-              Intent: <code>{{ msg.intent }}</code>
-            </div>
-
-            <!-- OPERA ATTIVA COLLEGATA -->
+            <!-- SCHEDA OPERA ATTIVA COLLEGATA -->
             <div class="artwork-info-card" *ngIf="msg.activeArtwork">
               🎨 <strong>{{ msg.activeArtwork.title }}</strong>
-              <span *ngIf="msg.activeArtwork.location?.room">({{ msg.activeArtwork.location.room }})</span>
+              <span *ngIf="msg.activeArtwork.location?.room"> — {{ msg.activeArtwork.location.room }}</span>
             </div>
 
             <div class="bubble-text">
               {{ msg.text }}
             </div>
 
-            <!-- BOT TTS SPEAKER ACTION -->
+            <!-- BOTTONE AUDIO TTS -->
             <div class="bubble-actions" *ngIf="msg.sender === 'bot'">
               <button 
                 class="btn-speak-small" 
                 (click)="speakMessage(msg)" 
                 [disabled]="isSpeaking">
-                {{ msg.isSpeaking ? '🔊 In riproduzione...' : '🔊 Riascolta' }}
+                {{ msg.isSpeaking ? '🔊 In riproduzione...' : '🔊 Ascolta spiegazione' }}
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- CHIPS COMANDI RAPIDI -->
-      <div class="quick-chips">
-        <button 
-          type="button"
-          *ngFor="let action of quickActions" 
-          class="chip-btn"
-          [disabled]="isProcessing"
-          (click)="sendQuickAction(action.command)">
-          {{ action.label }}
-        </button>
-      </div>
-
-      <!-- INPUT BAR: MICROFONO + CHAT INPUT -->
-      <div class="input-bar">
-        <!-- PULSANTE MICROFONO STT -->
-        <button 
-          type="button" 
-          class="mic-btn" 
-          [class.recording]="isRecording" 
-          [class.processing]="isProcessing"
-          [disabled]="isProcessing"
-          (click)="toggleRecording()"
-          title="Tieni premuto o clicca per parlare">
-          <span class="mic-icon" *ngIf="!isRecording && !isProcessing">🎙️</span>
-          <span class="mic-icon pulse" *ngIf="isRecording">🔴</span>
-          <span class="mic-icon spin" *ngIf="isProcessing">⚙️</span>
-        </button>
-
-        <!-- INPUT TESTO -->
-        <input 
-          type="text" 
-          class="chat-input" 
-          [(ngModel)]="textInputMessage"
-          (keyup.enter)="sendTextMessage()"
-          [placeholder]="isRecording ? 'Sto ascoltando la tua voce...' : 'Scrivi un messaggio o poni una domanda al navigatore...'"
-          [disabled]="isProcessing || isRecording" />
-
-        <!-- PULSANTE INVIO -->
-        <button 
-          type="button" 
-          class="btn btn-primary send-btn" 
-          [disabled]="!textInputMessage || !textInputMessage.trim() || isProcessing || isRecording"
-          (click)="sendTextMessage()">
-          ✈️ Invio
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- LOG REGISTRO PRESTAZIONI -->
-  <div class="card logs-section">
-    <div class="logs-header">
-      <h2>📊 Registro Tempi di Esecuzione (STT / Navigator AI / TTS)</h2>
-      <button class="btn btn-small btn-danger" (click)="clearLogs()" [disabled]="logs.length === 0">🗑️ Pulisci Log</button>
-    </div>
-
-    <div class="table-responsive">
-      <table class="logs-table">
-        <thead>
-          <tr>
-            <th>Ora</th>
-            <th>Lingua</th>
-            <th>Trascrizione / Input</th>
-            <th>Dim. Audio</th>
-            <th>Groq STT (ms)</th>
-            <th>Express Backend (ms)</th>
-            <th>Totale Roundtrip (ms)</th>
-            <th>Stato TTS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let log of logs">
-            <td class="time-col">{{ log.timestamp }}</td>
-            <td><span class="tag-lang">{{ log.lang }}</span></td>
-            <td class="transcript-col"><strong>"{{ log.transcript }}"</strong></td>
-            <td>{{ log.audioSizeKb }}</td>
-            <td class="stat-highlight">{{ log.sttProcessMs }} ms</td>
-            <td>{{ log.totalBackendMs }} ms</td>
-            <td class="total-highlight"><strong>{{ log.totalRoundtripMs }} ms</strong></td>
-            <td><span class="tag-success">{{ log.ttsStatus }}</span></td>
-          </tr>
-          <tr *ngIf="logs.length === 0">
-            <td colspan="8" class="no-logs">Nessuna operazione eseguita finora. Avvia una conversazione vocale o testuale!</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </div>

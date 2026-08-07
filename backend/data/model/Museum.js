@@ -1,21 +1,8 @@
 const mongoose = require('mongoose');
 const ScheduleSchema = require('./schemas/VisitingHoursSchema');
 const SocialSchema = require('./schemas/SocialSchema');
+const pointOfInterestSchema = require('./schemas/pointOfInterestSchema');
 
-const pointOfInterestSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  type: {
-    type: String,
-    enum: [
-      'toilette', 'disabled_toilette', 'bar', 'restaurant', 'shop', 
-      'entrance', 'exit', 'emergency_exit', 'elevator', 'stairs', 
-      'ticket_office', 'info_point', 'cloakroom', 'first_aid'],
-    required: true
-  },
-  floor: { type: String, default: 'Piano Terra' },
-  room: String,
-  details: String
-}, { _id: true });
 
 const museumSchema = new mongoose.Schema({
   name: {
@@ -45,13 +32,13 @@ const museumSchema = new mongoose.Schema({
 
   maxCapacity: Number,
   actualCapacity: Number,
-  
+
   // Relazioni
   visits: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Visit'
   }],
-  
+
   artworks: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Artwork'
@@ -68,7 +55,7 @@ const museumSchema = new mongoose.Schema({
     }],
     discountCode: [String]
   },
-  
+
   isActive: Boolean,
 
   // --- SERVIZI & INFRASTRUTTURE DEL MUSEO ---

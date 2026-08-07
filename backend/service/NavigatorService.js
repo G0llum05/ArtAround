@@ -10,6 +10,159 @@ const LLMService = require('./LLMService');
 
 class NavigatorService {
 
+  static async navigatorHandler(requestDTO) {
+    const {
+      language,
+      length,
+      tone,
+      visitId,
+      currentArtworkIndex,
+      actionType,
+      audioFile,
+      itemAction,
+      targetPoiType,
+      targetArtist
+    } = requestDTO;
+
+    switch (actionType) {
+      case 'AUDIO_ACTION':
+        return await this.audioActionHandler(audioFile, visitId, currentArtworkIndex, tone, length, language);
+      case 'ITEM_ACTION':
+        return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language);
+      case 'NON_ITEM_ACTION':
+        return await this.nonItemActionHandler(targetPoiType, targetArtist, visitId, currentArtworkIndex, tone, length, language);
+      default:
+        throw new Error(`Tipo di azione non valido: ${actionType}`);
+    }
+  }
+
+  static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language) {
+
+  }
+  /**
+   * retituisce item con scelte cache-first:
+   * - Cerca prima nel DB se esiste già l'item giusto
+   * - Se non esiste cerca item simili e genera un nuovo item con dati esistenti
+   * - Se non esiste proprio niente non da linee guida all'llm e lo genera con conoscenze generali
+   */
+  static async getOrGenerateItem(artworkId, tone, length, language) {
+    const artwork = await Artwork.findById(artworkId)
+      .populate('items')
+      .populate('artists')
+      .exec();
+
+    if (!artwork) {
+      throw new Error(`Opera con ID "${artworkId}" non trovata.`);
+    }
+
+    const matchingItem = await this.getItem(artwork, tone, language, length);
+    if (matchingItem) {
+      return { item: matchingItem, fromCache: true };
+    }
+
+    // Se item non trovato ricicliamo il testo esistente item sinonimi
+    const existingSimilarItem = this.getAvailableContentIfExists(artwork, tone, language, length);
+
+    // TODO CHECK CONTINUE fatto fino qua. Il passaggio successivo è generare un nuovo item tramite LLMService, ma probabilmente il prompt cambia
+
+
+    // Contesto dell'opera completo per dare informazioni di contesto al modello LLM
+    const artworkContext = {
+      title: artwork.title,
+      startYear: artwork.startYear,
+      endYear: artwork.endYear,
+      artists: (artwork.artists || []).map(a => `${a.name} ${a.surname || ''}`).join(', '),
+      artisticCurrents: artwork.artisticCurrents || [],
+      details: artwork.details,
+      location: artwork.location
+    };
+
+    const generatedText = await LLMService.generateAdaptedItem(artworkContext, tone, length, language, existingSimilarItem?.description || null);
+
+    const newItem = new Item({
+      description: generatedText,
+      tone: tone,
+      length: length,
+      language: language,
+      isAIGenerated: true,
+      authorName: 'AI Engine',
+      artwork: artwork._id
+    });
+
+    const savedItem = await newItem.save();
+
+    // Collega il nuovo Item all'opera
+    artwork.items.push(savedItem._id);
+    await artwork.save();
+
+    return { item: savedItem, fromCache: false };
+  }
+
+  static async getMatchItem(artwork, tone, language, length) {
+
+    const items = artwork.items || [];
+    const targetLanguage = (language || 'it').toLowerCase();
+    const targetLength = parseInt(length, 10);
+
+    return items.find(item =>
+      item.tone === tone && item.language === targetLanguage && item.length === targetLength
+    );
+  }
+
+  // !!! PRESTARE ATTENZIONE !!! La scelta dei valori è ben precisa, 13, 10, 5, 1. Se tot - 10 c'è lunghezza. Se tot (o rimanente) - 5 c'è lingua. Se tot (o rimanente) - 3 c'è lunghezza giusta. Se tot (o rimanente) - 1 c'è tono giusto. In questo modo si può dire nel prompt che cosa è stato trovato e cosa no e allo stesso tempo lunghezza maggiore + lingua vince su lunghezza giusta (e anche + lingua giusta)
+  static getAvailableContentIfExists(artwork, tone, language, length) {
+    const items = artwork?.items || [];
+    if (items.length === 0) return null;
+
+    const targetLanguage = (language || 'it').toLowerCase();
+    const targetLength = parseInt(length, 10) || 30;
+    const targetTone = tone || 'medium';
+
+    // Riciclo contenuto basato su punteggio di priorità Lunghezza > Lingua > Tono
+    const scoredItems = items.map(item => {
+      let score = 0;
+
+      // lunghezza
+      const itemLen = parseInt(item.length, 10) || 30;
+      if (itemLen === targetLength) {
+        score += 13; // Stessa lunghezza
+      } else if (itemLen > targetLength) {
+        score += 10; // Più lunga del richiesto
+      }
+
+      // lingua
+      const itemLang = (item.language || 'it').toLowerCase();
+      if (itemLang === targetLanguage) {
+        score += 5;
+      }
+
+      // tono
+      if (item.tone === targetTone) {
+        score += 1;
+      }
+
+      return { item, score };
+    });
+
+    // Ordine decrescente di punteggio
+    scoredItems.sort((a, b) => b.score - a.score);
+
+    return scoredItems[0]?.item || null;
+  }
+
+
+  // CHECK
+
+
+
+
+
+
+
+
+
+
+
   /**
    * Recupera i dettagli completi di una visita con opere, item ed il relativo museo
    */
@@ -35,65 +188,8 @@ class NavigatorService {
 
     return { visit, museum };
   }
-  /**
-   * RISOLUZIONE ITEM CON STRATEGIA CACHE-FIRST:
-   * 1. Cerca prima nel DB MongoDB se esiste già un Item con tono e lingua desiderati.
-   * 2. Se non esiste, chiama LLMService per generarlo, lo salva su MongoDB e lo restituisce.
-   */
-  static async getOrGenerateItem(artworkId, tone = 'medium', length = 30, language = 'it') {
-    const artwork = await Artwork.findById(artworkId)
-      .populate('items')
-      .populate('artists')
-      .exec();
 
-    if (!artwork) {
-      throw new Error(`Opera con ID "${artworkId}" non trovata.`);
-    }
 
-    // 1. Cerca item nel DB tra quelli dell'opera
-    let matchingItem = (artwork.items || []).find(item => 
-      item.tone === tone && (item.language || 'it') === language
-    );
-
-    if (matchingItem) {
-      return { item: matchingItem, fromCache: true };
-    }
-
-    // TODO: Se item non trovato perchè non corrispondono lingua e/o tono, Ricicliamo il testo esistente mandando al modello llm e diciamo a lui di adattarlo al tono e/o lingua desiderati. Questo per evitare di generare un testo completamente nuovo se ne esiste già uno simile.
-    const existingText = (artwork.items && artwork.items.length > 0) ? artwork.items[0].description : '';
-
-    // Contesto dell'opera completo per dare informazioni di contesto al modello LLM
-    const artworkContext = {
-      title: artwork.title,
-      startYear: artwork.startYear,
-      endYear: artwork.endYear,
-      artists: (artwork.artists || []).map(a => `${a.name} ${a.surname || ''}`).join(', '),
-      artisticCurrents: artwork.artisticCurrents || [],
-      details: artwork.details,
-      location: artwork.location
-    };
-
-    // 2. Se non presente nel DB, genera con LLMService adattando il testo esistente o il contesto dell'opera
-    const generatedText = await LLMService.generateAdaptedItem(artworkContext, tone, length, language, existingText);
-
-    const newItem = new Item({
-      description: generatedText,
-      tone: tone,
-      length: length,
-      language: language,
-      isAIGenerated: true,
-      authorName: 'AI Engine',
-      artwork: artwork._id
-    });
-
-    const savedItem = await newItem.save();
-
-    // Collega il nuovo Item all'opera
-    artwork.items.push(savedItem._id);
-    await artwork.save();
-
-    return { item: savedItem, fromCache: false };
-  }
 
   static async handleUserCommand({ inputText, visitId, currentArtworkIndex = 0, currentTone = 'medium', currentLanguage = 'it' }) {
     let visit = null;
@@ -221,10 +317,10 @@ class NavigatorService {
       case 'NAVIGATE_POI': {
         const poiType = nlpResult.targetPoiType || 'toilette';
         const poiList = museum?.pointsOfInterest || [];
-        
+
         // Cerca prima il tipo esatto
         let poi = poiList.find(p => p.type === poiType);
-        
+
         // Fallback affini se il tipo esatto non è presente nel museo
         if (!poi) {
           if (poiType === 'disabled_toilette') poi = poiList.find(p => p.type === 'toilette');
@@ -248,8 +344,8 @@ class NavigatorService {
       }
 
       case 'ASK_AUTHOR_INFO': {
-        const artist = (currentArtwork?.artists && currentArtwork.artists.length > 0) 
-          ? currentArtwork.artists[0] 
+        const artist = (currentArtwork?.artists && currentArtwork.artists.length > 0)
+          ? currentArtwork.artists[0]
           : { name: 'Autore non specificato' };
         actionMessage = `Artista dell'opera: ${artist.name} ${artist.surname || ''}. Correnti: ${(artist.artisticCurrents || []).join(', ')}`;
         break;

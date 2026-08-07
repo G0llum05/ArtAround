@@ -1,11 +1,34 @@
 const GroqSTTService = require('../../service/GroqSTTService');
 const NavigatorService = require('../../service/NavigatorService');
 const ResponsiveVoiceService = require('../../service/ResponsiveVoiceService');
+const NavigatorMapper = require('../../data/mapper/NavigatorMapper');
+
+// TODO GLOBALE -> DTO di req e res per TUTTI i metodi
 
 
 class NavigatorController {
+
+  static async navigatorHandler(req, res) {
+    /* #swagger.tags = ['Navigator']
+       #swagger.summary = 'Gestisce le richieste del navigatore (trascrizione, comando, TTS)'
+    */
+
+    try {
+      const requestDTO = NavigatorMapper.toNavigatorRequestDTO(req);
+      const result = await NavigatorService.navigatorHandler(requestDTO);
+      const responseDTO = NavigatorMapper.toNavigatorResponseDTO(result);
+      return res.json(responseDTO);
+    } catch (err) {
+      console.error('[NavigatorController Error]:', err);
+      return res.status(500).json({
+        success: false,
+        error: err.message || 'Errore durante l\'elaborazione della richiesta del navigatore'
+      });
+    }
+  }
+
   /**
-   * Helper per estrarre il codice lingua dai cookie di sessione, dagli header o dal body.
+   * estrae lingua da cookie di sessione/header/body
    */
   static _extractLanguage(req) {
     return (
@@ -35,7 +58,6 @@ class NavigatorController {
           description: 'File audio registrato (webm, ogg, mp4, wav)'
        }
     */
-    const startTime = Date.now();
     try {
       if (!req.file && !req.files) {
         return res.status(400).json({ success: false, error: 'Nessun file audio inviato.' });
@@ -46,7 +68,7 @@ class NavigatorController {
         return res.status(400).json({ success: false, error: 'Il buffer del file audio è vuoto.' });
       }
 
-      // !!! CHECK TODO !!! La lingua viene estratta dai cookie o dagli header e non dal testo trascritto
+      // TODO La lingua viene estratta dai cookie o dagli header e non dal testo trascritto. Per il momento va bene così, in un secondo momento potremmo incrementare questa cosa
       const lang = NavigatorController._extractLanguage(req);
 
       const sttResult = await GroqSTTService.transcribe(file.buffer, {
@@ -55,14 +77,10 @@ class NavigatorController {
         language: lang
       });
 
-      const totalBackendMs = Date.now() - startTime;
-
       return res.json({
         success: true,
         text: sttResult.text,
         reply: sttResult.text,
-        sttProcessMs: sttResult.processTimeMs,
-        totalBackendMs,
         audioSizeBytes: sttResult.audioSizeBytes
       });
     } catch (err) {
@@ -74,18 +92,20 @@ class NavigatorController {
     }
   }
 
+
+
   /**
    * Processa un comando vocale o testuale completo per il navigatore della visita
    * POST /api/navigator/command
    */
+  // TODO -> fare DTO req e res
   static async handleCommand(req, res) {
     /* #swagger.tags = ['Navigator']
        #swagger.summary = 'Elabora comando vocale/testuale del navigatore'
     */
-    const startTime = Date.now();
+    // TODO : HANDLER più strutturato
+
     try {
-      let inputText = req.body.inputText || '';
-      let sttProcessMs = 0;
       const lang = NavigatorController._extractLanguage(req);
 
       // Se viene allegato un audio, trascrivi prima via Groq STT
@@ -95,22 +115,29 @@ class NavigatorController {
           mimeType: req.file.mimetype || 'audio/webm',
           language: lang
         });
-        inputText = sttResult.text;
-        sttProcessMs = sttResult.processTimeMs;
+        transcribedText = sttResult.text;
       }
 
-      if (!inputText) {
+      // TODO : prima di dire che non c'è nessun testo/comando bisogna controllare i comandi manuali 
+      if (!transcribedText) {
         return res.status(400).json({
           success: false,
           error: 'Nessun testo o audio decodificabile fornito.'
+          // TODO: controllare come viene gestito caso di errore
         });
       }
 
-      const visitId = req.body.visitId;
-      const currentArtworkIndex = parseInt(req.body.currentArtworkIndex || 0, 10);
-      const currentTone = req.body.currentTone || 'medium';
+      // TODO: QUA, se c'è testo trascritto, intanto va mandato al front mentre l'elaborazione del comando viene fatta in parallelo
 
-      let result = { transcribedText: inputText };
+      const visitId = req.body.visitId;
+      const currentArtworkIndex = parseInt(req.body.currentArtworkIndex, 10);
+      const currentTone = req.body.currentTone;
+
+      // TODO : attenzione perchè potrebbe non esserci testo trascritto ma potrebbe esserci il comando manuale
+      let result = { transcribedText: transcribedText };
+
+      // ELABORAZIONE COMANDO      
+
 
       // Esegue sempre NavigatorService per elaborare l'intent e generare la risposta del Chatbot
       const navResult = await NavigatorService.handleUserCommand({
@@ -122,15 +149,14 @@ class NavigatorController {
       });
       result = { ...result, ...navResult };
 
-      const totalBackendMs = Date.now() - startTime;
       const reply = result.spokenResponse || result.narrativeText || (result.item ? result.item.description : null) || result.actionMessage || inputText;
 
+
+      // TODO: QUA deve ritornare il testo trascritto come risposta e l'audio
       return res.json({
         success: true,
         text: inputText,
         reply,
-        sttProcessMs,
-        totalBackendMs,
         result
       });
     } catch (err) {
@@ -170,37 +196,37 @@ class NavigatorController {
         console.warn('[NavigatorController] ResponsiveVoiceService TTS warning, fallback a Google TTS:', rvErr.message);
       }
 
-      // 2. Fallback a Google TTS service
-      let cleanLang = (lang || 'it').toLowerCase();
-      if (cleanLang.includes('en') || cleanLang.includes('us')) cleanLang = 'en';
-      else if (cleanLang.includes('fr') || cleanLang.includes('fra')) cleanLang = 'fr';
-      else if (cleanLang.includes('sp') || cleanLang.includes('es')) cleanLang = 'es';
-      else if (cleanLang.includes('de')) cleanLang = 'de';
-      else if (cleanLang.includes('cn') || cleanLang.includes('zh')) cleanLang = 'zh-CN';
-      else if (cleanLang.includes('ru') || cleanLang.includes('rus')) cleanLang = 'ru';
-      else cleanLang = 'it';
+      // // 2. Fallback a Google TTS service
+      // let cleanLang = (lang || 'it').toLowerCase();
+      // if (cleanLang.includes('en') || cleanLang.includes('us')) cleanLang = 'en';
+      // else if (cleanLang.includes('fr') || cleanLang.includes('fra')) cleanLang = 'fr';
+      // else if (cleanLang.includes('sp') || cleanLang.includes('es')) cleanLang = 'es';
+      // else if (cleanLang.includes('de')) cleanLang = 'de';
+      // else if (cleanLang.includes('cn') || cleanLang.includes('zh')) cleanLang = 'zh-CN';
+      // else if (cleanLang.includes('ru') || cleanLang.includes('rus')) cleanLang = 'ru';
+      // else cleanLang = 'it';
+      //
+      // const trimmedText = text.trim().substring(0, 300);
+      //
+      // const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(trimmedText)}&tl=${cleanLang}&client=tw-ob`;
+      //
+      // const response = await fetch(googleTtsUrl, {
+      //   headers: {
+      //     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      //   }
+      // });
 
-      const trimmedText = text.trim().substring(0, 300);
+      // if (!response.ok) {
+      //   throw new Error(`Google TTS Service Error: status ${response.status}`);
+      // }
 
-      const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(trimmedText)}&tl=${cleanLang}&client=tw-ob`;
-
-      const response = await fetch(googleTtsUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Google TTS Service Error: status ${response.status}`);
-      }
-
-      const audioArrayBuffer = await response.arrayBuffer();
-      const audioBuffer = Buffer.from(audioArrayBuffer);
-
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.setHeader('Content-Length', audioBuffer.length);
-      res.setHeader('Cache-Control', 'public, max-age=86400');
-      return res.send(audioBuffer);
+      // const audioArrayBuffer = await response.arrayBuffer();
+      // const audioBuffer = Buffer.from(audioArrayBuffer);
+      //
+      // res.setHeader('Content-Type', 'audio/mpeg');
+      // res.setHeader('Content-Length', audioBuffer.length);
+      // res.setHeader('Cache-Control', 'public, max-age=86400');
+      // return res.send(audioBuffer);
     } catch (err) {
       console.error('[NavigatorController TTS Error]:', err);
       return res.status(500).json({

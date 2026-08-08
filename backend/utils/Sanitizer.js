@@ -4,19 +4,19 @@ class Sanitizer {
   static ALLOWED_LENGTHS = [15, 30, 60];
   static ALLOWED_POIS = ['toilette', 'bar', 'exit', 'elevator', 'ticket_office', 'info_point'];
 
-  static sanitizeLanguage(lang, fallback = 'it') {
+  static sanitizeLanguage(lang) {
     const clean = typeof lang === 'string' ? lang.toLowerCase().trim() : '';
-    return this.ALLOWED_LANGS.includes(clean) ? clean : fallback;
+    return this.ALLOWED_LANGS.includes(clean) ? clean : null;
   }
 
-  static sanitizeTone(tone, fallback = 'medium') {
+  static sanitizeTone(tone) {
     const clean = typeof tone === 'string' ? tone.toLowerCase().trim() : '';
-    return this.ALLOWED_TONES.includes(clean) ? clean : fallback;
+    return this.ALLOWED_TONES.includes(clean) ? clean : null;
   }
 
-  static sanitizeLength(length, fallback = 30) {
+  static sanitizeLength(length) {
     const len = parseInt(length, 10);
-    return this.ALLOWED_LENGTHS.includes(len) ? len : fallback;
+    return this.ALLOWED_LENGTHS.includes(len) ? len : null;
   }
 
   static sanitizePoi(poi) {

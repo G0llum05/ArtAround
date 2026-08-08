@@ -11,6 +11,7 @@ const Artwork = require('../data/model/Artwork');
 const Visit = require('../data/model/Visit');
 const Museum = require('../data/model/Museum');
 const NavigatorService = require('../service/NavigatorService');
+const Sanitizer = require('../utils/Sanitizer');
 
 function getMongoUri() {
   if (process.env.DB_URI) return process.env.DB_URI;
@@ -53,7 +54,7 @@ function askQuestion(query) {
 
 async function main() {
   console.log(`\n${colors.gold}${colors.bright}=====================================================${colors.reset}`);
-  console.log(`${colors.gold}${colors.bright}   🎨 ARTAROUND NAVIGATOR (Progetto 18-33 CLI) 🎨${colors.reset}`);
+  console.log(`${colors.gold}${colors.bright}   🎨 ARTAROUND NAVIGATOR - ITEM ACTION CLI TEST 🎨${colors.reset}`);
   console.log(`${colors.gold}${colors.bright}=====================================================${colors.reset}\n`);
 
   console.log(`${colors.gray}[CLI] Connessione a MongoDB (${MONGO_URI})...${colors.reset}`);
@@ -87,49 +88,131 @@ async function main() {
 
     console.log(`\n${colors.green}✔ Visita Selezionata:${colors.reset} "${colors.bright}${visit.title}${colors.reset}" (${visit.artworks?.length || 0} opere)`);
 
-    // 3. Avvio Simulatore Visita
+    // 3. Stato iniziale del Visitatore
     let currentArtworkIndex = 0;
-    let activeTone = 'medium';
+    let activeTone = Sanitizer.sanitizeTone('medium') || 'medium';
+    let activeLanguage = Sanitizer.sanitizeLanguage('it') || 'it';
+    let activeLength = Sanitizer.sanitizeLength(30) || 30;
 
-    // Mostra opera iniziale
-    let result = await NavigatorService.handleUserCommand({
-      inputText: 'Inizio visita',
+    // Carica opera iniziale
+    const initialItemRes = await NavigatorService.itemActionHandler(
+      'EXPLAIN_ITEM',
+      visit._id,
+      currentArtworkIndex,
+      activeTone,
+      activeLength,
+      activeLanguage
+    );
+
+    await printState({
+      itemRes: initialItemRes,
       visitId: visit._id,
       currentArtworkIndex,
-      currentTone: activeTone
+      totalArtworks: visit.artworks.length,
+      tone: activeTone,
+      language: activeLanguage,
+      length: activeLength
     });
 
-    printState(result, visit.artworks.length);
-
-    // Ciclo interattivo di comandi vocali / testuali
+    // Ciclo interattivo limitato ai 3 comandi item: EXPLAIN_ITEM, NEXT_ITEM, PREVIOUS_ITEM
     while (true) {
-      console.log(`\n${colors.gray}--- COMANDI PROVA DISPONIBILI ---`);
-      console.log(` • "Spiegamelo per bambini" / "Più semplice"`);
-      console.log(` • "Voglio dettagli accademici" / "Più approfondito"`);
-      console.log(` • "Dove sta la toilette?" / "Dove sta il bar?" / "Dov'è l'uscita?"`);
-      console.log(` • "Prossimo" / "Indietro"`);
-      console.log(` • "Chi è l'autore?"`);
-      console.log(` • Digita 'q' per uscire.${colors.reset}`);
+      console.log(`\n${colors.bright}--- AZIONI ITEM DISPONIBILI ---${colors.reset}`);
+      console.log(`  [1] 🖼️  Spiega opera corrente (EXPLAIN_ITEM)`);
+      console.log(`  [2] ⏩ Prossima opera (NEXT_ITEM)`);
+      console.log(`  [3] ⏪ Opera precedente (PREVIOUS_ITEM)`);
 
-      const userInput = await askQuestion(`\n${colors.gold}${colors.bright}Comando visitatore > ${colors.reset}`);
-      const trimmed = userInput.trim();
+      /*
+      // --- COMANDI DISABILITATI/COMMENTATI COME RICHIESTO ---
+      // console.log(` • "Spiegamelo per bambini" / "Più semplice"`);
+      // console.log(` • "Voglio dettagli accademici" / "Più approfondito"`);
+      // console.log(` • "Dove sta la toilette?" / "Dove sta il bar?" / "Dov'è l'uscita?"`);
+      // console.log(` • "Chi è l'autore?"`);
+      */
 
-      if (trimmed.toLowerCase() === 'q' || trimmed.toLowerCase() === 'exit') {
-        console.log(`\n${colors.cyan}Chiusura del Navigator CLI. Buona giornata!${colors.reset}\n`);
+      console.log(`  [q] ❌ Uscire dal test`);
+
+      const choice = await askQuestion(`\n${colors.gold}${colors.bright}Seleziona azione (1, 2, 3 o q) > ${colors.reset}`);
+      const trimmedChoice = choice.trim().toLowerCase();
+
+      if (trimmedChoice === 'q' || trimmedChoice === 'exit') {
+        console.log(`\n${colors.cyan}Chiusura del Navigator CLI Test. Buona giornata!${colors.reset}\n`);
         break;
       }
 
-      if (!trimmed) continue;
+      let itemAction = null;
+      if (trimmedChoice === '1' || trimmedChoice === 'spiega') {
+        itemAction = 'EXPLAIN_ITEM';
+      } else if (trimmedChoice === '2' || trimmedChoice === 'prossimo' || trimmedChoice === 'next') {
+        itemAction = 'NEXT_ITEM';
+      } else if (trimmedChoice === '3' || trimmedChoice === 'precedente' || trimmedChoice === 'prev') {
+        itemAction = 'PREVIOUS_ITEM';
+      } else {
+        console.log(`${colors.red}Scelta non valida. Scegli 1, 2, 3 o q.${colors.reset}`);
+        continue;
+      }
 
-      result = await NavigatorService.handleUserCommand({
-        inputText: trimmed,
-        visitId: visit._id,
-        currentArtworkIndex: result.currentArtworkIndex,
-        currentTone: result.activeTone,
-        currentLanguage: result.activeLanguage || 'it'
-      });
+      // CONFERMA O CAMBIO OBBLIGATORIO DI LINGUA, TONO E LUNGHEZZA
+      console.log(`\n${colors.cyan}--- CONFIGURAZIONE PARAMETRI OBBLIGATORI ---${colors.reset}`);
+      
+      const langInput = await askQuestion(` 🌐 Lingua [it/en/fr/es/de/cn] (corrente: '${activeLanguage}'): ${colors.reset}`);
+      if (langInput.trim()) {
+        const sanitizedLang = Sanitizer.sanitizeLanguage(langInput);
+        if (sanitizedLang) {
+          activeLanguage = sanitizedLang;
+        } else {
+          console.log(`${colors.red} ⚠️ Lingua non valida ('${langInput.trim()}'). Mantenuta lingua corrente: '${activeLanguage}'${colors.reset}`);
+        }
+      }
 
-      printState(result, visit.artworks.length);
+      const toneInput = await askQuestion(` 🎭 Tono [infantile/simple/medium/advanced/technical] (corrente: '${activeTone}'): ${colors.reset}`);
+      if (toneInput.trim()) {
+        const sanitizedTone = Sanitizer.sanitizeTone(toneInput);
+        if (sanitizedTone) {
+          activeTone = sanitizedTone;
+        } else {
+          console.log(`${colors.red} ⚠️ Tono non valido ('${toneInput.trim()}'). Mantenuto tono corrente: '${activeTone}'${colors.reset}`);
+        }
+      }
+
+      const lengthInput = await askQuestion(` ⏱️  Lunghezza in sec [15/30/60] (corrente: ${activeLength}): ${colors.reset}`);
+      if (lengthInput.trim()) {
+        const sanitizedLength = Sanitizer.sanitizeLength(lengthInput);
+        if (sanitizedLength) {
+          activeLength = sanitizedLength;
+        } else {
+          console.log(`${colors.red} ⚠️ Lunghezza non valida ('${lengthInput.trim()}'). Mantenuta lunghezza corrente: ${activeLength}${colors.reset}`);
+        }
+      }
+
+      console.log(`${colors.gray}[CLI] Esecuzione itemActionHandler('${itemAction}', tone='${activeTone}', length=${activeLength}, lang='${activeLanguage}')...${colors.reset}`);
+
+      try {
+        const result = await NavigatorService.itemActionHandler(
+          itemAction,
+          visit._id,
+          currentArtworkIndex,
+          activeTone,
+          activeLength,
+          activeLanguage
+        );
+
+        // Aggiorna l'indice corrente se l'azione di navigazione è andata a buon fine
+        if (itemAction === 'NEXT_ITEM') currentArtworkIndex++;
+        if (itemAction === 'PREVIOUS_ITEM') currentArtworkIndex--;
+
+        await printState({
+          itemRes: result,
+          visitId: visit._id,
+          currentArtworkIndex,
+          totalArtworks: visit.artworks.length,
+          tone: activeTone,
+          language: activeLanguage,
+          length: activeLength
+        });
+
+      } catch (err) {
+        console.log(`\n${colors.red}❌ Errore durante l'azione '${itemAction}': ${err.message}${colors.reset}`);
+      }
     }
 
   } catch (err) {
@@ -140,40 +223,39 @@ async function main() {
   }
 }
 
-function printState(result, totalArtworks) {
-  const { activeArtwork, item, nlpResult, actionMessage, logisticalDirections, currentArtworkIndex, activeTone, activeProviderName } = result;
+async function printState({ itemRes, visitId, currentArtworkIndex, totalArtworks, tone, language, length }) {
+  const item = itemRes?.item || itemRes;
+  const fromCache = itemRes?.fromCache ?? false;
+
+  // Estrae il testo sia se itemRes è una stringa di testo pura, sia se è un oggetto Item
+  const textToDisplay = typeof item === 'string' ? item : (item?.description || JSON.stringify(item));
+
+  // Carica l'opera target per la stampa a terminale
+  const targetArtworkId = (typeof item === 'object' && item?.artwork) 
+    ? item.artwork 
+    : await NavigatorService.getArtworkId(visitId, currentArtworkIndex);
+
+  const artwork = await Artwork.findById(targetArtworkId).populate('artists').exec();
 
   console.log(`\n${colors.gold}=========================================================================${colors.reset}`);
-  console.log(`${colors.bright}🖼️  OPERA ${currentArtworkIndex + 1}/${totalArtworks}: "${activeArtwork.title}"${colors.reset}`);
-  console.log(`📍 Posizione: Stanza "${activeArtwork.location?.room || 'Galleria Principale'}", Piano: ${activeArtwork.location?.floor || 'Piano Terra'}`);
-  console.log(`🏷️ QR Code: [${activeArtwork.qrCode || 'ART_QR'}]`);
+  console.log(`${colors.bright}🖼️  OPERA ${currentArtworkIndex + 1}/${totalArtworks}: "${artwork?.title || 'Opera'}"${colors.reset}`);
+  console.log(`📍 Posizione: Stanza "${artwork?.location?.room || 'Galleria Principale'}", Piano: ${artwork?.location?.floor || 'Piano Terra'}`);
+  console.log(`🏷️ QR Code: [${artwork?.qrCode || 'ART_QR'}]`);
   
-  if (nlpResult && nlpResult.intent !== 'UNKNOWN') {
-    console.log(`${colors.magenta}🤖 NLP Intent Riconosciuto: ${nlpResult.intent} (Confidence: ${nlpResult.confidence || 0.95})${colors.reset}`);
-  }
+  console.log(`\n${colors.green}${colors.bright}🔊 CONTENUTO (Tono: ${tone.toUpperCase()}, Lingua: ${language.toUpperCase()}, Durata: ${length}s):${colors.reset}`);
+  console.log(`${colors.bright}"${textToDisplay}"${colors.reset}`);
 
-  if (actionMessage) {
-    console.log(`${colors.cyan}💬 Stato: ${actionMessage}${colors.reset}`);
-  }
+  const isAI = typeof item === 'object' ? item?.isAIGenerated : true;
+  const author = typeof item === 'object' ? (item?.authorName || 'AI Engine') : 'AI Engine';
 
-  console.log(`\n${colors.green}${colors.bright}🔊 CONTENUTO AUDIO/TESTO (Tono: ${activeTone.toUpperCase()}, Lingua: ${item.language || 'IT'}):${colors.reset}`);
-  console.log(`${colors.bright}"${item.description}"${colors.reset}`);
-
-  const providerLabel = activeProviderName || 'Fallback Engine Mock Offline';
-  const sourceLabel = item.fromCache 
+  const sourceLabel = fromCache 
     ? `${colors.green}⚡ Cache MongoDB (Risposta Istantanea 0ms)${colors.reset}` 
-    : `${colors.magenta}✨ Generato al volo da AI API${colors.reset}`;
+    : `${colors.magenta}✨ Generato al volo da AI API / Adaptor${colors.reset}`;
 
-  console.log(`\n${colors.cyan}🔍 [DEBUG INFO INTERFACCIA & ENGINE]:${colors.reset}`);
-  console.log(`   • 🤖 Provider AI Configurato : ${colors.bright}${providerLabel}${colors.reset}`);
+  console.log(`\n${colors.cyan}🔍 [DEBUG INFO ITEM]:${colors.reset}`);
   console.log(`   • 📦 Provenienza Contenuto  : ${sourceLabel}`);
-  console.log(`   • 📝 Generato da AI        : ${item.isAIGenerated ? 'Sì (AI Engine)' : 'No (Testo Autore Umano)'}`);
-  console.log(`   • 👤 Autore Registrato     : ${item.authorName || 'Curatore'}`);
-
-  if (logisticalDirections) {
-    console.log(`\n${colors.gold}${colors.bright}🧭 INDICAZIONI LOGISTICHE / NAVIGATORE:${colors.reset}`);
-    console.log(`${colors.gold}"${logisticalDirections}"${colors.reset}`);
-  }
+  console.log(`   • 📝 Generato da AI        : ${isAI ? 'Sì (AI Engine)' : 'No (Testo Autore Umano)'}`);
+  console.log(`   • 👤 Autore Registrato     : ${author}`);
   console.log(`${colors.gold}=========================================================================${colors.reset}`);
 }
 

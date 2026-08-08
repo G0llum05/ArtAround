@@ -11,15 +11,21 @@ const upload = multer({
 
 /* #swagger.tags = ['Navigator'] */
 
-// Endpoint trascrizione STT audio (MediaRecorder -> Express -> Groq STT)
-router.post('/stt', upload.single('audio'), NavigatorController.transcribeAudio);
-router.post('/transcribe', upload.single('audio'), NavigatorController.transcribeAudio);
-
-// Endpoint sintesi vocale TTS (Backend MP3 Audio Stream)
-router.get('/tts', NavigatorController.streamTTS);
-router.post('/tts', NavigatorController.streamTTS);
+/**
+* endp necessari:
+* - post, navigator completo <- prende audio, trascrive, invia a GPT, riceve risposta testuale e audio
+* - post, navigator senza audio <- prende testo, invia a GPT, riceve risposta testuale e audio
+*/
 
 // Endpoint completo per i comandi navigatore
-router.post('/command', upload.single('audio'), NavigatorController.handleCommand);
+// router.post('/command', upload.single('audio'), NavigatorController.handleCommand);
+router.post('/navigator', upload.single('audio'), NavigatorController.navigatorHandler);
+
+// trascrizione STT 
+router.post('/stt', upload.single('audio'), NavigatorController.transcribeAudio);
+
+// sintesi TTS
+router.get('/tts', NavigatorController.streamTTS);
+router.post('/tts', NavigatorController.streamTTS);
 
 module.exports = router;

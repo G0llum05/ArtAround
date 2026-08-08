@@ -3,172 +3,206 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-let promptsConfig = null;
-function getPrompt(key, replacements = {}) {
-  if (!promptsConfig) {
-    try {
-      const configPath = path.join(__dirname, '../config/llm-prompts.json');
-      if (fs.existsSync(configPath)) {
-        promptsConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      }
-    } catch (e) {
-      console.warn('[LLMService] Impossibile caricare llm-prompts.json, utilizzo prompt di default.');
-    }
+function replacePlaceholders(template, replacements = {}) {
+  if (!template || typeof template !== 'string') return '';
+
+  let result = template;
+  for (const param in replacements) {
+    const val = replacements[param];
+    // Se il valore è un oggetto complex, mantiene SIA chiavi SIA valori in formato JSON leggibile
+    const valStr = typeof val === 'object' && val !== null
+      ? JSON.stringify(val, null, 2)
+      : String(val ?? '');
+
+    result = result.replaceAll(`{{${param}}}`, valStr);
   }
-  let template = (promptsConfig && promptsConfig[key]) ? promptsConfig[key] : '';
-  for (const [k, v] of Object.entries(replacements)) {
-    const val = typeof v === 'object' ? JSON.stringify(v) : String(v || '');
-    template = template.split(`{{${k}}}`).join(val);
-  }
-  return template;
+
+  return result;
 }
 
-/**
- * LLMService - Service modulare per l'integrazione con Generative AI (LLM).
- * 
- * Supporta:
- * 1. Provider reali (Groq / OpenAI / Google Gemini / Ollama) configurabili tramite process.env.
- * 2. Provider Mock Offline di fallback autonomo: per sviluppare e testare senza chiavi API o connessione.
- * 3. Prompt configurabili esternamente in backend/config/llm-prompts.json.
- */
+function promptHandler(key, replacements = {}) {
+  try {
+    const promptsPath = path.join(__dirname, '../config/llm-prompts.json');
+    if (fs.existsSync(promptsPath)) {
+      promptsConfig = JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
+    }
+  } catch (e) {
+    console.warn('[LLMService] Impossibile caricare llm-prompts.json, utilizzo prompt di default.');
+  }
+
+  let template = '';
+
+  switch (key) {
+    case 'generalContext':
+      template = promptsConfig?.generalContext;
+      break;
+
+    case 'generateItem':
+      template = promptsConfig?.generateItem;
+      break;
+
+    case 'existingSimilarItem':
+      template = promptsConfig?.existingSimilarItem;
+      break;
+
+    default:
+      template = promptsConfig?.[key] || '';
+      break;
+  }
+
+  return replacePlaceholders(template, replacements);
+}
+
+
 class LLMService {
 
-  /**
-   * (1) PARSE COMMAND: Mappa frasi in linguaggio naturale sugli Intent del Vocabolario Controllato
-   */
-  static async parseNaturalLanguageCommand(inputText, context = {}) { const textLower = (inputText || '').toLowerCase().trim();
+  static async generateItem(tone, length, language, existingSimilarItem, artworkContext) {
 
-    // Provider Mock / Rule Engine intelligente di fallback
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return this._mockParseCommand(textLower, context);
+      // TODO
+      return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
     }
 
     try {
-      const prompt = getPrompt('parseCommand', { inputText, context });
-      const responseText = await this._callLLM(prompt);
-      const parsed = this._cleanAndParseJSON(responseText);
-      if (parsed) {
-        return parsed;
+      let prompt = promptHandler('generalContext', { museum: artworkContext.museum, language });
+      if (existingSimilarItem) {
+        prompt += promptHandler('existingSimilarItem', {
+          tone,
+          length,
+          language,
+          existingSimilarItem: existingSimilarItem,
+          artworkContext: artworkContext
+        });
+      } else {
+        prompt += promptHandler('generateItem', {
+          tone,
+          length,
+          language,
+          artworkContext: artworkContext
+        });
       }
+
+      console.log(`\x1b[36m[DEBUG AI] Prompt generazione item:\x1b[0m`, prompt);
+      // TODO CHECK qua si DEVONO mettere dei controlli sui promtp che vengono fatti. Potrebbero esserci lingue sbagliate o lunghezze sbagliate
+      return await this._callLLMHandler(prompt);
     } catch (err) {
-      console.warn('[LLMService] Chiamata LLM fallita, utilizzo fallback mock:', err.message);
+      console.warn('[LLMService] Chiamata LLM generazione item fallita, utilizzo fallback mock:', err.message);
+      return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
     }
 
-    return this._mockParseCommand(textLower, context);
   }
-
-  /**
-   * LOGISTICAL DIRECTIONS: Genera indicazioni di navigazione tra posizioni e luoghi del museo
-   */
-  static async generateLogisticalDirections(currentLocation, targetLocation, museumContext = {}) {
-    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return this._mockLogisticalDirections(currentLocation, targetLocation, museumContext);
-    }
-
-    try {
-      const prompt = getPrompt('logisticalDirections', { currentLocation, targetLocation, museumContext });
-      return await this._callLLM(prompt);
-    } catch (err) {
-      console.warn('[LLMService] Chiamata LLM indicazioni fallita, utilizzo fallback mock:', err.message);
-      return this._mockLogisticalDirections(currentLocation, targetLocation, museumContext);
-    }
-  }
-
-  /**
-   * ADAPTED ITEM: Genera un testo di spiegazione per un'opera rielaborando il contesto dell'opera ed eventuale testo base dell'autore
-   */
-  static async generateAdaptedItem(artworkContext, tone = 'medium', lengthSeconds = 30, language = 'it', existingText = '') {
-    const title = typeof artworkContext === 'string' ? artworkContext : (artworkContext.title || 'Opera');
-
-    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return this.extractToneText(this._mockAdaptedItem(title, tone, lengthSeconds, language, existingText), tone);
-    }
-
-    try {
-      const prompt = getPrompt('generateAdaptedItem', {
-        artworkContext: typeof artworkContext === 'object' ? artworkContext : { title },
-        existingText: existingText || 'Nessun testo precedente disponibile.',
-        tone,
-        lengthSeconds,
-        language
-      });
-
-      const responseText = await this._callLLM(prompt);
-      return this.extractToneText(responseText, tone);
-    } catch (err) {
-      console.warn('[LLMService] Chiamata LLM adattamento item fallita, utilizzo fallback mock:', err.message);
-      return this.extractToneText(this._mockAdaptedItem(title, tone, lengthSeconds, language, existingText), tone);
-    }
-  }
-
-  /**
-   * Helper per isolare esclusivamente il paragrafo del tono richiesto
-   * qualora l'LLM o la cache memorizzino intestazioni multi-tono (es. **Simple**, **Infantile**)
-   */
-  static extractToneText(fullText, requestedTone = 'medium') {
-    if (!fullText || typeof fullText !== 'string') return fullText;
-
-    const toneLower = (requestedTone || 'medium').toLowerCase();
-    
-    // Se il testo contiene marcatori come **Infantile** o **Simple** o ### Medium
-    if (fullText.includes('**') || fullText.includes('###') || fullText.toLowerCase().includes('infantile')) {
-      const sections = fullText.split(/(?=\*\*|\#\#\#)/);
-      for (const sec of sections) {
-        const firstLineLower = sec.split('\n')[0].toLowerCase();
-        if (firstLineLower.includes(toneLower)) {
-          // Rimuove l'intestazione markdown ed i ritorni a capo iniziali
-          return sec.replace(/^(\*\*|###).+?(\*\*|\n)/, '').trim();
-        }
-      }
-    }
-
-    return fullText.trim();
-  }
-
-
-  /**
-   * SMART VISIT: Compone una visita personalizzata basata sui vincoli dell'utente
-   */
-  static async generateSmartVisit(constraints, availableArtworks = []) {
-    const titles = availableArtworks.map(a => a.title);
-    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return {
-        suggestedArtworks: availableArtworks.slice(0, 3).map(a => a._id),
-        rationale: `Visita veloce selezionata in base al tempo disponibile (${constraints.availableTimeMinutes || 30} min).`
-      };
-    }
-
-    try {
-      const prompt = getPrompt('smartVisit', { titles, constraints });
-      const responseText = await this._callLLM(prompt);
-      const parsed = this._cleanAndParseJSON(responseText);
-      if (parsed) {
-        const selectedIds = availableArtworks
-          .filter(a => (parsed.selectedTitles || []).includes(a.title))
-          .map(a => a._id);
-        return {
-          suggestedArtworks: selectedIds.length > 0 ? selectedIds : availableArtworks.slice(0, 3).map(a => a._id),
-          rationale: parsed.rationale || 'Percorso ottimizzato in base ai vincoli stabiliti.'
-        };
-      }
-    } catch (err) {
-      console.warn('[LLMService] Chiamata Smart Visit fallita, utilizzo fallback mock:', err.message);
-    }
-
-    return {
-      suggestedArtworks: availableArtworks.slice(0, 3).map(a => a._id),
-      rationale: 'Visita guidata generata in base alle opere principali ed al tempo stimato.'
-    };
-  }
-
-  static _cleanAndParseJSON(text) {
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-    } catch (e) {
-      return null;
-    }
-  }
+  //
+  // /**
+  //  * (1) PARSE COMMAND: Mappa frasi in linguaggio naturale sugli Intent del Vocabolario Controllato
+  //  */
+  // static async parseNaturalLanguageCommand(inputText, context = {}) {
+  //   const textLower = (inputText || '').toLowerCase().trim();
+  //
+  //   // Provider Mock / Rule Engine intelligente di fallback
+  //   if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+  //     return this._mockParseCommand(textLower, context);
+  //   }
+  //
+  //   try {
+  //     const prompt = getPrompt('parseCommand', { inputText, context });
+  //     const responseText = await this._callLLMHandler(prompt);
+  //     const parsed = this._cleanAndParseJSON(responseText);
+  //     if (parsed) {
+  //       return parsed;
+  //     }
+  //   } catch (err) {
+  //     console.warn('[LLMService] Chiamata LLM fallita, utilizzo fallback mock:', err.message);
+  //   }
+  //
+  //   return this._mockParseCommand(textLower, context);
+  // }
+  //
+  // /**
+  //  * LOGISTICAL DIRECTIONS: Genera indicazioni di navigazione tra posizioni e luoghi del museo
+  //  */
+  // static async generateLogisticalDirections(currentLocation, targetLocation, museumContext = {}) {
+  //   if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+  //     return this._mockLogisticalDirections(currentLocation, targetLocation, museumContext);
+  //   }
+  //
+  //   try {
+  //     const prompt = getPrompt('logisticalDirections', { currentLocation, targetLocation, museumContext });
+  //     return await this._callLLMHandler(prompt);
+  //   } catch (err) {
+  //     console.warn('[LLMService] Chiamata LLM indicazioni fallita, utilizzo fallback mock:', err.message);
+  //     return this._mockLogisticalDirections(currentLocation, targetLocation, museumContext);
+  //   }
+  // }
+  //
+  //
+  // /**
+  //  * Helper per isolare esclusivamente il paragrafo del tono richiesto
+  //  * qualora l'LLM o la cache memorizzino intestazioni multi-tono (es. **Simple**, **Infantile**)
+  //  */
+  // static extractToneText(fullText, requestedTone = 'medium') {
+  //   if (!fullText || typeof fullText !== 'string') return fullText;
+  //
+  //   const toneLower = (requestedTone || 'medium').toLowerCase();
+  //
+  //   // Se il testo contiene marcatori come **Infantile** o **Simple** o ### Medium
+  //   if (fullText.includes('**') || fullText.includes('###') || fullText.toLowerCase().includes('infantile')) {
+  //     const sections = fullText.split(/(?=\*\*|\#\#\#)/);
+  //     for (const sec of sections) {
+  //       const firstLineLower = sec.split('\n')[0].toLowerCase();
+  //       if (firstLineLower.includes(toneLower)) {
+  //         // Rimuove l'intestazione markdown ed i ritorni a capo iniziali
+  //         return sec.replace(/^(\*\*|###).+?(\*\*|\n)/, '').trim();
+  //       }
+  //     }
+  //   }
+  //
+  //   return fullText.trim();
+  // }
+  //
+  //
+  // /**
+  //  * SMART VISIT: Compone una visita personalizzata basata sui vincoli dell'utente
+  //  */
+  // static async generateSmartVisit(constraints, availableArtworks = []) {
+  //   const titles = availableArtworks.map(a => a.title);
+  //   if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+  //     return {
+  //       suggestedArtworks: availableArtworks.slice(0, 3).map(a => a._id),
+  //       rationale: `Visita veloce selezionata in base al tempo disponibile (${constraints.availableTimeMinutes || 30} min).`
+  //     };
+  //   }
+  //
+  //   try {
+  //     const prompt = getPrompt('smartVisit', { titles, constraints });
+  //     const responseText = await this._callLLMHandler(prompt);
+  //     const parsed = this._cleanAndParseJSON(responseText);
+  //     if (parsed) {
+  //       const selectedIds = availableArtworks
+  //         .filter(a => (parsed.selectedTitles || []).includes(a.title))
+  //         .map(a => a._id);
+  //       return {
+  //         suggestedArtworks: selectedIds.length > 0 ? selectedIds : availableArtworks.slice(0, 3).map(a => a._id),
+  //         rationale: parsed.rationale || 'Percorso ottimizzato in base ai vincoli stabiliti.'
+  //       };
+  //     }
+  //   } catch (err) {
+  //     console.warn('[LLMService] Chiamata Smart Visit fallita, utilizzo fallback mock:', err.message);
+  //   }
+  //
+  //   return {
+  //     suggestedArtworks: availableArtworks.slice(0, 3).map(a => a._id),
+  //     rationale: 'Visita guidata generata in base alle opere principali ed al tempo stimato.'
+  //   };
+  // }
+  //
+  // static _cleanAndParseJSON(text) {
+  //   try {
+  //     const jsonMatch = text.match(/\{[\s\S]*\}/);
+  //     return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // }
 
   // =========================================================================
   // IMPLEMENTAZIONE FALLBACK MOCK OFFLINE
@@ -296,31 +330,27 @@ class LLMService {
   /**
    * Helper generico per invocare API esterne (Groq, Gemini, OpenAI, Ollama)
    */
-  static async _callLLM(prompt) {
-    if (process.env.GROQ_API_KEY) {
-      console.log(`\x1b[36m[DEBUG AI] 🚀 Invoco API Reale: Groq Cloud (${process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'})...\x1b[0m`);
+  static async _callLLMHandler(prompt) {
+    if (process.env.GROQ_API_KEY && process.env.GROQ_MODEL) {
+      console.log(`\x1b[36m[DEBUG AI] LLM API Groq Cloud (${process.env.GROQ_MODEL})\x1b[0m`);
       return this._callGroqAPI(prompt);
     }
-    if (process.env.GEMINI_API_KEY) {
-      console.log(`\x1b[36m[DEBUG AI] 🚀 Invoco API Reale: Google Gemini (${process.env.GEMINI_MODEL || 'gemini-1.5-flash'})...\x1b[0m`);
+    if (process.env.GEMINI_API_KEY && process.env.GEMINI_MODEL) {
+      console.log(`\x1b[36m[DEBUG AI] LLM API Google Gemini (${process.env.GEMINI_MODEL})\x1b[0m`);
       return this._callGeminiAPI(prompt);
     }
-    if (process.env.OPENAI_API_KEY) {
-      console.log(`\x1b[36m[DEBUG AI] 🚀 Invoco API Reale: OpenAI (${process.env.OPENAI_MODEL || 'gpt-4o-mini'})...\x1b[0m`);
+    if (process.env.OPENAI_API_KEY && process.env.OPENAI_MODEL) {
+      console.log(`\x1b[36m[DEBUG AI] LLM API OpenAI (${process.env.OPENAI_MODEL})\x1b[0m`);
       return this._callOpenAIAPI(prompt);
     }
-    if (process.env.OLLAMA_HOST) {
-      console.log(`\x1b[36m[DEBUG AI] 🚀 Invoco LLM Locale: Ollama (${process.env.OLLAMA_MODEL || 'llama3'})...\x1b[0m`);
-      return this._callOllamaAPI(prompt);
-    }
-    console.log(`\x1b[33m[DEBUG AI] ⚡ Nessuna API Key presente in process.env -> Utilizzo Fallback Engine Mock Offline\x1b[0m`);
-    throw new Error('Nessuna chiave API o host LLM configurato in process.env.');
+    console.log(`\x1b[33m[DEBUG AI] Nessun LLM API Key e Model presenti nel .env\x1b[0m`);
+    throw new Error('Nessun LLM configurato in .env.');
   }
 
   static _callGroqAPI(prompt) {
     return new Promise((resolve, reject) => {
       const apiKey = process.env.GROQ_API_KEY;
-      const model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+      const model = process.env.GROQ_MODEL;
       const postData = JSON.stringify({
         model: model,
         messages: [{ role: 'user', content: prompt }]
@@ -359,7 +389,7 @@ class LLMService {
   static _callGeminiAPI(prompt) {
     return new Promise((resolve, reject) => {
       const apiKey = process.env.GEMINI_API_KEY;
-      const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+      const model = process.env.GEMINI_MODEL;
       const postData = JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }]
       });
@@ -396,7 +426,7 @@ class LLMService {
   static _callOpenAIAPI(prompt) {
     return new Promise((resolve, reject) => {
       const apiKey = process.env.OPENAI_API_KEY;
-      const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+      const model = process.env.OPENAI_MODEL;
       const postData = JSON.stringify({
         model: model,
         messages: [{ role: 'user', content: prompt }]
@@ -419,46 +449,6 @@ class LLMService {
             const parsed = JSON.parse(body);
             const text = parsed.choices?.[0]?.message?.content;
             if (text) resolve(text);
-            else reject(new Error(body));
-          } catch (e) {
-            reject(e);
-          }
-        });
-      });
-
-      req.on('error', reject);
-      req.write(postData);
-      req.end();
-    });
-  }
-
-  static _callOllamaAPI(prompt) {
-    return new Promise((resolve, reject) => {
-      const host = process.env.OLLAMA_HOST || 'localhost';
-      const port = process.env.OLLAMA_PORT || 11434;
-      const model = process.env.OLLAMA_MODEL || 'llama3';
-      const postData = JSON.stringify({
-        model: model,
-        prompt: prompt,
-        stream: false
-      });
-
-      const req = http.request({
-        hostname: host,
-        port: port,
-        path: '/api/generate',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData)
-        }
-      }, (res) => {
-        let body = '';
-        res.on('data', chunk => body += chunk);
-        res.on('end', () => {
-          try {
-            const parsed = JSON.parse(body);
-            if (parsed.response) resolve(parsed.response);
             else reject(new Error(body));
           } catch (e) {
             reject(e);

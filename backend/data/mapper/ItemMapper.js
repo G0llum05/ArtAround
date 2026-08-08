@@ -1,4 +1,4 @@
-const { ItemResponseDTO } = require('../model/dto/ItemDTO');
+const { ItemResponseDTO, ItemLLMRequestDTO } = require('../model/dto/ItemDTO');
 
 class ItemMapper {
     static toItemResponseDTO(model) {
@@ -10,6 +10,16 @@ class ItemMapper {
             model.length,
             model.createdAt,
             model.updatedAt
+        );
+    }
+
+    static toItemLLMRequestDTO(model) {
+        if (!model) return null;
+        return new ItemLLMRequestDTO(
+            model.description,
+            model.tone,
+            model.length,
+            model.language
         );
     }
 

@@ -1,6 +1,10 @@
 const VisitService = require('../../service/VisitService');
 const VisitMapper = require('../../data/mapper/VisitMapper');
-const { VisitRequestDTO } = require('../../data/model/dto/VisitDTO');
+const {
+  VisitRequestDTO,
+  VisitImageRequestDTO,
+  VisitHomePresentationRequestDTO
+} = require('../../data/model/dto/VisitDTO');
 
 class VisitController {
   static async getAllVisits(req, res) {
@@ -57,14 +61,24 @@ class VisitController {
 
   static async createVisit(req, res) {
     try {
-      const { title, description, price, license, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories } = req.body;
-      const visitRequestDTO = new VisitRequestDTO(title, description, price, license, verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories);
+      const {
+        title, description, price, license, verified,
+        minDuration, maxDuration, startDate, endDate, active,
+        weeklySchedule, disabledFriendly, requirements, quiz, categories, artworks
+      } = req.body;
+
+      // Normalizzazione Input con Request DTO
+      const visitRequestDTO = new VisitRequestDTO(
+        title, description, price, license, verified,
+        minDuration, maxDuration, startDate, endDate, active,
+        weeklySchedule, disabledFriendly, requirements, quiz, categories, artworks
+      );
 
       const visitData = VisitMapper.toVisit(visitRequestDTO);
-      
       const newVisit = await VisitService.createVisit(visitData);
+
+      // Normalizzazione Output con Response DTO
       const newVisitDTO = VisitMapper.toVisitResponseDTO(newVisit);
-      
       res.status(201).json(newVisitDTO);
     } catch (error) {
       res.status(500).json({ message: 'Error creating visit', error: error.message });
@@ -73,8 +87,13 @@ class VisitController {
 
   static async getVisitArtworkImages(req, res) {
     try {
-      const { id } = req.params;
-      const result = await VisitService.getVisitArtworkImages(id);
+      const visitId = req.params.visitId;
+      const museumId = req.params.museumId;
+
+      // Normalizzazione Input DTO
+      const requestDTO = new VisitImageRequestDTO(museumId, visitId);
+
+      const result = await VisitService.getVisitArtworkImages(requestDTO.visitId, requestDTO.museumId);
       if (!result) {
         return res.status(404).json({ message: 'Visita non trovata' });
       }
@@ -83,17 +102,40 @@ class VisitController {
       res.status(500).json({ message: 'Errore durante la risoluzione delle immagini per la visita', error: error.message });
     }
   }
-  
+
   static async getVisitArtistImages(req, res) {
     try {
-      const { id } = req.params;
-      const result = await VisitService.getVisitArtistImages(id);
+      const visitId = req.params.visitId;
+      const museumId = req.params.museumId;
+
+      // Normalizzazione Input DTO
+      const requestDTO = new VisitImageRequestDTO(museumId, visitId);
+
+      const result = await VisitService.getVisitArtistImages(requestDTO.museumId, requestDTO.visitId);
       if (!result) {
         return res.status(404).json({ message: 'Visita non trovata' });
       }
       res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ message: 'Errore durante la risoluzione delle immagini per la visita', error: error.message });
+      res.status(500).json({ message: 'Errore durante la risoluzione delle immagini degli artisti', error: error.message });
+    }
+  }
+
+  static async getVisitHomePresentation(req, res) {
+    try {
+      const visitId = req.params.visitId;
+      const museumId = req.params.museumId;
+
+      // Normalizzazione Input DTO
+      const requestDTO = new VisitHomePresentationRequestDTO(museumId, visitId);
+
+      const result = await VisitService.getVisitHomePresentation(requestDTO.museumId, requestDTO.visitId);
+      if (!result) {
+        return res.status(404).json({ message: 'Visita non trovata' });
+      }
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: 'Errore durante la generazione della presentazione home per la visita', error: error.message });
     }
   }
 }

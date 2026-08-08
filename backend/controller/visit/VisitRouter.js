@@ -27,6 +27,10 @@ router.get('/:id/artwork-images', VisitController.getVisitArtworkImages);
 // Risolve ed inserisce tutte le immagini di ciascun artwork appartenente alla visita singola
 router.get('/:id/artist-images', VisitController.getVisitArtistImages);
 
+// GET /:id/home-presentation
+router.get('/:id/home-presentation', VisitController.getVisitHomePresentation);
+router.get('/museum/:museumId/visit/:visitId/home-presentation', VisitController.getVisitHomePresentation);
+
 // POST /
 // Corrisponde a POST /api/visits/
 router.post('/', VisitController.createVisit);

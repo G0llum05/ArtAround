@@ -63,11 +63,8 @@ class NavigatorRequestDTO {
 }
 
 class NavigatorResponseDTO {
-  constructor(success = true, text = '', reply = '', result = null, error = null) {
-    this.success = success;
-    this.text = text;
-    this.reply = reply;
-    this.result = result;
+  constructor(description = '', error = null) {
+    this.text = description;
     if (error) {
       this.error = error;
     }

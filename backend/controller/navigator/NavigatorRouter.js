@@ -18,7 +18,7 @@ const upload = multer({
 */
 
 // Endpoint completo per i comandi navigatore
-router.post('/command', upload.single('audio'), NavigatorController.handleCommand);
+// router.post('/command', upload.single('audio'), NavigatorController.handleCommand);
 router.post('/navigator', upload.single('audio'), NavigatorController.navigatorHandler);
 
 // trascrizione STT 

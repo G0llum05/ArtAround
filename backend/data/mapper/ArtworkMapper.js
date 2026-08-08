@@ -1,4 +1,4 @@
-const { ArtworkResponseDTO, ArtworkRequestDTO } = require('../model/dto/ArtworkDTO');
+const { ArtworkResponseDTO, ArtworkRequestDTO, ArtworkLLMRequestDTO } = require('../model/dto/ArtworkDTO');
 
 class ArtworkMapper {
   static toArtworkResponseDTO(artworkModel) {
@@ -51,6 +51,37 @@ class ArtworkMapper {
       images: dto.images,
       items: Array.isArray(dto.items) ? dto.items.filter(id => id && typeof id === 'string' && id.trim() !== "") : dto.items
     };
+  }
+  static toArtworkLLMRequestDTO(artworkModel) {
+    if (!artworkModel) return null;
+
+    const cleanArtists = Array.isArray(artworkModel.artists)
+      ? artworkModel.artists.map(a => {
+          if (typeof a === 'object' && a !== null) {
+            return {
+              name: a.name,
+              surname: a.surname,
+              artisticCurrents: a.artisticCurrents
+            };
+          }
+          return a;
+        })
+      : artworkModel.artists;
+
+    return new ArtworkLLMRequestDTO(
+      artworkModel.title,
+      artworkModel.description,
+      artworkModel.startYear,
+      artworkModel.endYear,
+      cleanArtists,
+      typeof artworkModel.museum === 'object' ? (artworkModel.museum.name || '') : artworkModel.museum,
+      artworkModel.location,
+      artworkModel.dimensions,
+      artworkModel.artisticCurrents,
+      artworkModel.details,
+      artworkModel.copyOf,
+      artworkModel.falsificationOf
+    );
   }
 }
 

@@ -12,10 +12,7 @@ class NavigatorMapper {
   static toNavigatorResponseDTO(navigatorModel) {
     if (!navigatorModel) return null;
     return new NavigatorResponseDTO(
-      navigatorModel.text,
-      navigatorModel.reply,
-      navigatorModel.result,
-      navigatorModel.error
+      navigatorModel,
     );
   }
 }

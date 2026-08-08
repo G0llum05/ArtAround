@@ -19,7 +19,17 @@ class ItemRequestDTO {
     }
 }
 
+class ItemLLMRequestDTO {
+    constructor(description, tone, length, language) {
+        this.description = description;
+        this.tone = tone;
+        this.length = length;
+        this.language = language;
+    }
+}
+
 module.exports = {
     ItemResponseDTO,
-    ItemRequestDTO
+    ItemRequestDTO,
+    ItemLLMRequestDTO
 };

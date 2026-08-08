@@ -19,6 +19,9 @@ router.post('/museum/:museumId/artworks/:artworkId', uploadMiddleware.any(), Upl
 // assets/museums/:museumId/artists/:artistId
 router.post('/museum/:museumId/artists/:artistId', uploadMiddleware.any(), UploadController.handleUpload);
 
+// assets/users/:userId/propic/
+router.post('/users/:userId/propic', uploadMiddleware.any(), UploadController.handleUpload)
+
 // Generic upload endpoint
 router.post('/', uploadMiddleware.any(), UploadController.handleUpload);
 

@@ -4,7 +4,7 @@ const sharp = require('sharp');
 const Imager = require('../utils/Imager');
 class UploadService {
 
-  static getTargetDirectory({ museumId, visitId, artworkId, artistId, isMeta }) {
+  static getMuseumRelatedDir({ museumId, visitId, artworkId, artistId, isMeta }) {
     if (!museumId) {
       throw new Error('museumId è obbligatorio per definire il percorso di salvataggio.');
     }
@@ -16,15 +16,15 @@ class UploadService {
     if (artworkId) {
       return path.join(baseMuseumDir, 'artworks', artworkId);
     }
+    
+    if (artistId) {
+      // assets/museums/:museumId/visit/:visitId/meta
+      return path.join(baseMuseumDir, 'visit', artistId, 'meta');
+    }
 
     if (visitId) {
       // assets/museums/:museumId/visit/:visitId/meta
       return path.join(baseMuseumDir, 'visit', visitId, 'meta');
-    }
-
-    if (artistId) {
-      // assets/museums/:museumId/visit/:visitId/meta
-      return path.join(baseMuseumDir, 'visit', artistId, 'meta');
     }
 
     // Default: assets/museums/:museumId/meta
@@ -41,11 +41,9 @@ class UploadService {
     try {
       const files = await fs.readdir(dirPath);
       for (const file of files) {
-        if (Imager.isImage(file)) {
-          const fullPath = path.join(dirPath, file);
-          const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
-          foundUrls.push(`/${relativePath}`);
-        }
+        const fullPath = path.join(dirPath, file);
+        const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
+        foundUrls.push(`/${relativePath}`);
       }
     } catch (err) {
       console.error(`[UploadService] Errore durante la scansione della cartella ${dirPath}:`, err);
@@ -59,7 +57,7 @@ class UploadService {
 
     const targetDir = path.join(__dirname, '../assets/museums', museumId, 'artworks', artworkId);
 
-    await this.scanDir(targetDir, artworkUrls)
+    await this.scanDir(targetDir, artworkUrls);
     return Array.from(new Set(artworkUrls));
   }
 
@@ -74,11 +72,10 @@ class UploadService {
     return Array.from(new Set(artistUrls));
   }
 
-
   /**
    * Resolves base prefix for filename
    */
-  static getFilePrefix({ museumId, visitId, artworkId }) {
+  static getMuseumRelatedFilePrefix({ museumId, visitId, artworkId }) {
     if (artworkId) {
       return artworkId;
     }
@@ -88,17 +85,64 @@ class UploadService {
     return museumId;
   }
 
+
+  static async processAndSaveImage(toSaveFileInfo = {}) {
+    let fileName, filePath, finalMimeType;
+
+    switch (toSaveFileInfo.tag) {
+      case 'MUSEUM':
+        if (Imager.isRaster(toSaveFileInfo.mimeType)) {
+          fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.nextIndex}.webp`;
+          filePath = path.join(toSaveFileInfo.targetDir, fileName);
+          finalMimeType = 'image/webp';      
+          await sharp(toSaveFileInfo.fileBuffer)
+            .webp({ quality: 82, effort: 4 })
+            .toFile(filePath);
+        } else {
+          const ext = Imager.getExt(toSaveFileInfo.originalName);
+          fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.nextIndex}.${ext}`;
+          filePath = path.join(toSaveFileInfo.targetDir, fileName);
+          finalMimeType = toSaveFileInfo.mimeType;
+    
+          await fs.writeFile(filePath, toSaveFileInfo.fileBuffer);
+        }
+        break;
+      case 'PROPIC':
+        if (Imager.isRaster(toSaveFileInfo.mimeType)) {
+          fileName = `${toSaveFileInfo.userId}.webp`;
+          filePath = path.join(toSaveFileInfo.basePropicDir, fileName);
+          finalMimeType = 'image/webp';
+          
+          await sharp(toSaveFileInfo.fileBuffer)
+            .webp({ quality: 82, effort: 4 })
+            .toFile(filePath);
+        } else {
+          const ext = Imager.getExt(toSaveFileInfo.originalName);
+          fileName = `${toSaveFileInfo.userId}.${ext}`;
+          filePath = path.join(toSaveFileInfo.basePropicDir, fileName);
+          finalMimeType = toSaveFileInfo.mimeType;
+
+          await fs.writeFile(filePath, toSaveFileInfo.fileBuffer);
+        }
+        break;
+      default:
+        console.error("Errore: tag errato!");
+        return null;
+    }
+
+    return { fileName, filePath, finalMimeType }
+  }
   /**
    * Process and save file buffer.
    * Transpiles image files to WebP format via Sharp.
    */
-  static async processAndSaveFile(fileBuffer, originalName, mimeType, options = {}) {
-    const targetDir = this.getTargetDirectory(options);
+  static async saveMuseumRelatedImage(fileBuffer, originalName, mimeType, options = {}) {
+
+    const targetDir = this.getMuseumRelatedDir(options);
 
     // 1. Ensure directory exists with fs-extra
     await fs.ensureDir(targetDir);
-
-    const prefix = this.getFilePrefix(options);
+    const prefix = this.getMuseumRelatedFilePrefix(options);
 
     // Find next index for prefix in targetDir
     const existingFiles = await fs.readdir(targetDir);
@@ -117,40 +161,77 @@ class UploadService {
     }
     const nextIndex = maxIndex + 1;
 
-    const isImage = Imager.isImage(originalName);
-
-    let fileName;
-    let filePath;
-    let finalMimeType;
-
-    // if raster -> webp, if svg -> svg 
-    if (Imager.isRaster(isImage, mimeType)) {
-      fileName = `${prefix}_${nextIndex}.webp`;
-      filePath = path.join(targetDir, fileName);
-      finalMimeType = 'image/webp';
-      
-      await sharp(fileBuffer)
-        .webp({ quality: 82, effort: 4 })
-        .toFile(filePath);
-    } else {
-      const ext = Imager.getExt(fileName);
-      fileName = `${prefix}_${nextIndex}${ext}`;
-      filePath = path.join(targetDir, fileName);
-      finalMimeType = mimeType;
-
-      await fs.writeFile(filePath, fileBuffer);
+    const tag = 'MUSEUM';
+    
+    let toSaveFileInfo = {
+      prefix,
+      nextIndex,
+      targetDir,
+      fileBuffer,
+      originalName,
+      tag
     }
+    
+    // if raster -> webp, if svg -> svg 
+    const newFileInfo = await this.processAndSaveImage(toSaveFileInfo);
 
-    const fileStats = await fs.stat(filePath);
-    const relativePathFromBackend = path.relative(path.join(__dirname, '..'), filePath).replace(/\\/g, '/');
+    const fileStats = await fs.stat(newFileInfo.filePath);
+    const relativePathFromBackend = path.relative(path.join(__dirname, '..'), newFileInfo.filePath).replace(/\\/g, '/');
     const publicUrl = `/${relativePathFromBackend}`;
 
     return {
-      filename: fileName,
-      path: filePath,
+      filename: newFileInfo.fileName,
+      path: newFileInfo.filePath,
       url: publicUrl,
       size: fileStats.size,
-      mimeType: finalMimeType
+      mimeType: newFileInfo.finalMimeType
+    };
+  }
+
+  /**
+   * Salvataggio dell'immagine profilo dell'utente (propic).
+   * Esegue i controlli opportuni su buffer, userId, mimeType.
+   * Rimuove eventuali vecchie propic dell'utente per evitare file orfani.
+   * Converte le immagini raster in formato WebP per ottimizzazione delle prestazioni.
+   */
+  static async savePropicImage(fileBuffer, originalName, mimeType, options = {}) {
+    const userId = options.userId;
+
+    const basePropicDir = path.join(__dirname, '../assets/users', userId, 'propic');
+    await fs.ensureDir(basePropicDir);
+
+    // Removes old propics
+    try {
+      const existingFiles = await fs.readdir(basePropicDir);
+      for (const file of existingFiles) {
+        await fs.remove(path.join(basePropicDir, file));
+      }
+    } catch (err) {
+      console.warn(`[UploadService] Avviso durante la pulizia della vecchia propic per l'utente ${userId}:`, err.message);
+    }
+
+    const tag = 'PROPIC';
+    let toSaveFileInfo = {
+      userId,
+      basePropicDir,
+      fileBuffer,
+      originalName,
+      tag
+    }
+
+    const newFileInfo = await this.processAndSaveImage(toSaveFileInfo);
+
+    // 5. Costruzione della risposta con i metadati e la public URL
+    const fileStats = await fs.stat(newFileInfo.filePath);
+    const relativePathFromBackend = path.relative(path.join(__dirname, '..'), newFileInfo.filePath).replace(/\\/g, '/');
+    const publicUrl = `/${relativePathFromBackend}`;
+
+    return {
+      filename: newFileInfo.fileName,
+      path: newFileInfo.filePath,
+      url: publicUrl,
+      size: fileStats.size,
+      mimeType: newFileInfo.finalMimeType
     };
   }
 }

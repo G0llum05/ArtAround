@@ -1,5 +1,5 @@
 const UploadService = require('../../service/UploadService');
-
+const Imager = require('../../utils/Imager');
 class UploadController {
   static async handleUpload(req, res) {
     try {
@@ -20,24 +20,27 @@ class UploadController {
       const artworkId = req.params.artworkId || req.query.artworkId || req.body?.artworkId;
       const artistId = req.params.artistId || req.query.artistId || req.body?.artistId;
       const isMeta = req.path.includes('/meta') || req.query.isMeta === 'true' || req.body?.isMeta === 'true';
+      const userId = req.path.include('/propic'); // check
 
-      if (!museumId) {
-        return res.status(400).json({ message: 'Parametro museumId mancante nella richiesta.' });
-      }
-
-      const uploadOptions = { museumId, visitId, artworkId, artistid, isMeta };
+      const uploadOptions = { museumId, visitId, artworkId, artistid, isMeta, userId };
       const savedFiles = [];
 
       for (const file of files) {
-        const saved = await UploadService.processAndSaveFile(
-          file.buffer,
-          file.originalname,
-          file.mimetype,
-          uploadOptions
-        );
-        savedFiles.push(saved);
+        const saved;
+        if (Imager.isImage(file)) {
+          if (!museumId) {
+            if (userId) {
+              this.handlePropicUpload(uploadOptions, file, savedFiles);
+            } else {
+              console.error("Error: bad request")
+              return res.status(400).json({ message: 'Errore upload consentiti: profile picture and museum related pictures!'})
+            }
+          } else {
+            this.handleMuseumUpload(uploadOptions, file, savedFiles);
+          }
+        }
+          
       }
-
       return res.status(201).json({
         success: true,
         message: 'File caricati con successo.',
@@ -48,6 +51,26 @@ class UploadController {
       console.error('[UploadController Error]:', err);
       return res.status(500).json({ message: err.message || 'Errore durante il caricamento del file.' });
     }
+  }
+
+  static async handleMuseumUpload(uploadOptions, fileToSave, savedFiles) {
+    const savedFile = await UploadService.saveMuseumRelatedImage(
+      fileToSave.buffer,
+      fileToSave.originalname,
+      fileToSave.mimetype,
+      uploadOptions
+    );
+    savedFiles.push(savedFile);
+  }
+
+  static async handlePropicUpload(uploadOptions, fileToSave, savedFiles) {
+    const savedFile = await UploadService.savePropicImage(
+      fileToSave.buffer,
+      fileToSave.originalname,
+      fileToSave.mimetype,
+      uploadOptions
+    );
+    savedFiles.push(savedFile);
   }
 }
 

@@ -17,7 +17,11 @@ class NavigatorRequestDTO {
       throw new Error(`Parametro 'tone' mancante o non valido: ${body.tone}`);
     }
 
-    // visita e opera
+    // museo, visita e opera
+    this.museumId = body.museumId && typeof body.museumId === 'string' ? body.museumId.trim() : null;
+    if (!this.museumId) {
+      throw new Error(`Parametro 'museumId' mancante o non valido: ${body.museumId}`);
+    }
     this.visitId = body.visitId && typeof body.visitId === 'string' ? body.visitId.trim() : null;
     if (!this.visitId) {
       throw new Error(`Parametro 'visitId' mancante o non valido: ${body.visitId}`);

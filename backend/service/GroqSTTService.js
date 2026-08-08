@@ -1,4 +1,5 @@
-const { Groq, toFile } = require('groq-sdk');
+const { Groq, TranscriptionCreateParams, toFile } = require('groq-sdk');
+const { Sanitizer } = require("../utils/Sanitizer")
 
 /**
  * GroqSTTService - Integration with Groq API Speech-To-Text using official `groq-sdk`.
@@ -10,33 +11,14 @@ const { Groq, toFile } = require('groq-sdk');
  * - Multi-language support via session cookies / parameters
  */
 class GroqSTTService {
-  /**
-   * Normalizes various language parameter strings (e.g. 'it', 'en/us', 'cn', 'rus', 'fra', 'sp')
-   * into standard ISO 639-1 2-letter language codes supported by Groq Whisper STT.
-   */
-  static normalizeLanguageCode(rawLang) {
-    if (!rawLang || typeof rawLang !== 'string') return 'it';
-    const clean = rawLang.toLowerCase().trim();
-
-    if (clean.includes('it')) return 'it';
-    if (clean.includes('en') || clean.includes('us')) return 'en';
-    if (clean.includes('fr') || clean.includes('fra')) return 'fr';
-    if (clean.includes('sp') || clean.includes('es')) return 'es';
-    if (clean.includes('de')) return 'de';
-    // if (clean.includes('cn') || clean.includes('zh')) return 'zh';
-    // if (clean.includes('ru') || clean.includes('rus')) return 'ru';
-
-    return clean.substring(0, 2);
-  }
 
   /**
    * Transcribes an in-memory audio buffer sent via Multer RAM storage.
    * @param {Buffer} audioBuffer - Audio file buffer in RAM
    * @param {Object} options - { filename, mimeType, language }
-   * @returns {Promise<{ text: string, processTimeMs: number, audioSizeBytes: number }>}
+   * @returns {Promise<{ text: string, audioSizeBytes: number }>}
    */
   static async transcribe(audioBuffer, options = {}) {
-    const startTime = Date.now();
 
     if (!audioBuffer || audioBuffer.length === 0) {
       throw new Error('Buffer audio vuoto o non valido.');
@@ -51,24 +33,23 @@ class GroqSTTService {
     const model = process.env.GROQ_STT_MODEL
     const filename = options.filename || 'recording.webm';
     const mimeType = options.mimeType || 'audio/webm';
-    const language = this.normalizeLanguageCode(options.language);
+    const language = Sanitizer.sanitizeLanguage(options.language);
 
     // Convert RAM buffer directly into a File object for groq-sdk (Zero disk I/O)
     const file = await toFile(audioBuffer, filename, { type: mimeType });
 
-    const transcription = await groq.audio.transcriptions.create({
+    const reqParams = {
       file,
       model,
       language,
       temperature: 0.0, // Zero temperature to minimize language detection latency and maximize speed
       response_format: 'json'
-    });
+    }
 
-    const processTimeMs = Date.now() - startTime;
+    const transcription = await groq.audio.transcriptions.create(reqParams);
 
     return {
-      text: transcription.text ? transcription.text.trim() : '',
-      processTimeMs,
+      text: transcription.text.trim(),
       audioSizeBytes: audioBuffer.length
     };
   }

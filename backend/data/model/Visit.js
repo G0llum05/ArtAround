@@ -27,6 +27,7 @@ const visitSchema = new mongoose.Schema({
     ref: 'User'
   },
   
+  // Items?
   artworks: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Artwork'

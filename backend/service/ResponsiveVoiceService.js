@@ -1,5 +1,5 @@
 const { ResponsiveVoiceAPIClient } = require('@responsivevoice/api-client');
-
+const { Sanitizer } = require('../utils/Sanitizer');
 class ResponsiveVoiceService {
   constructor() {
     this.client = null;
@@ -8,10 +8,9 @@ class ResponsiveVoiceService {
 
   initClient() {
     const rvApiKey = process.env.RESPONSIVEVOICE_API_KEY;
-    const isProd = process.env.NODE_ENV === 'production';
-    const rvSecret = isProd
-      ? (process.env.RESPONSIVEVOICE_PROD_SECRET || process.env.RESPONSIVEVOICE_API_SECRET)
-      : (process.env.RESPONSIVEVOICE_LOCAL_SECRET || process.env.RESPONSIVEVOICE_API_SECRET);
+    const rvSecret = process.env.NODE_ENV === 'production'
+      ? process.env.RESPONSIVEVOICE_API_SECRET
+      : process.env.RESPONSIVEVOICE_LOCAL_SECRET;
 
     if (rvApiKey && rvSecret) {
       try {
@@ -30,62 +29,63 @@ class ResponsiveVoiceService {
 
   /**
    * Mappa dinamica del codice lingua selezionato alla voce appropriata per ResponsiveVoice.
+   * Gender voice: female
+   * AVAILABLE_VOICES = ['it', 'en', 'fr', 'es', 'de', 'cn', 'ru'] (Sanitizer)
    */
-  getVoiceForLanguage(lang = 'it', gender = 'female') {
-    const cleanLang = (lang || 'it').toLowerCase().replace('_', '-');
-
-    if (cleanLang.startsWith('it')) {
-      return gender === 'male' ? 'Italian Male' : 'Italian Female';
-    } else if (cleanLang.startsWith('en')) {
-      if (cleanLang.includes('us')) {
-        return gender === 'male' ? 'US English Male' : 'US English Female';
-      }
-      return gender === 'male' ? 'UK English Male' : 'UK English Female';
-    } else if (cleanLang.startsWith('es') || cleanLang.startsWith('sp')) {
-      return gender === 'male' ? 'Spanish Male' : 'Spanish Female';
-    } else if (cleanLang.startsWith('fr') || cleanLang.startsWith('fra')) {
-      return gender === 'male' ? 'French Male' : 'French Female';
-    } else if (cleanLang.startsWith('de')) {
-      return gender === 'male' ? 'Deutsch Male' : 'Deutsch Female';
-    } else if (cleanLang.startsWith('zh') || cleanLang.startsWith('cn')) {
-      return gender === 'male' ? 'Chinese Male' : 'Chinese Female';
-    } else if (cleanLang.startsWith('ru') || cleanLang.startsWith('rus')) {
-      return gender === 'male' ? 'Russian Male' : 'Russian Female';
-    } else if (cleanLang.startsWith('ja')) {
-      return gender === 'male' ? 'Japanese Male' : 'Japanese Female';
+  getVoiceForLanguage(lang = 'it') {
+    const sanitizedLang = Sanitizer.sanitizedLang(lang);
+    const voice = 'Italian Female';
+    switch (sanitizedLang) {
+      case 'it':
+        voice = 'Italian Female';
+        break;
+      case 'en':
+        voice = 'US English Female';
+        break;
+      case 'fr':
+        voice = 'French Female';
+        break;
+      case 'es':
+        voice = 'Spanish Female';
+        break;
+      case 'de':
+        voice = 'Deutsch Female';
+        break;
+      case 'cn':
+        voice = 'Chinese Female';
+        break;
+      case 'ru':
+        voice = 'Russian Female';
+        break;
+      return voice;
     }
-
-    return gender === 'male' ? 'Italian Male' : 'Italian Female';
   }
 
   /**
-   * Genera la sintesi vocale audio MP3 in backend tramite ResponsiveVoiceAPIClient.
+   * Genera la sintesi vocale audio wav in backend tramite ResponsiveVoiceAPIClient.
    * Ritorna il Buffer audio per lo streaming HTTP al client.
    */
-  async synthesizeAudioBuffer(text, lang = 'it', gender = 'female') {
+  async synthesizeAudioBuffer(text, lang = 'it') {
     if (!this.client) {
       throw new Error('ResponsiveVoiceAPIClient non inizializzato nel backend (verificare API_KEY e Secret).');
     }
 
-    const voiceName = this.getVoiceForLanguage(lang, gender);
+    const voiceName = this.getVoiceForLanguage(lang);
     const trimmedText = text.trim().substring(0, 500);
 
-    const audioRes = await this.client.synthesize({
+    const synthetizedAudio = await this.client.synthesize({
       text: trimmedText,
       voice: voiceName,
-      format: 'mp3'
+      format: 'wav'
+      // format: 'mp3'
     });
 
-    if (!audioRes) {
+    if (!synthetizedAudio) {
       throw new Error('Nessun dato audio restituito da ResponsiveVoice');
     }
 
-    let buffer = null;
-    if (audioRes.blob && typeof audioRes.blob.arrayBuffer === 'function') {
-      buffer = Buffer.from(await audioRes.blob.arrayBuffer());
-    } else if (audioRes.buffer) {
-      buffer = Buffer.from(audioRes.buffer);
-    }
+    // creo un buffer partendo dalla struttura binaria grezza (blob)
+    let buffer = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
 
     if (!buffer) {
       throw new Error('Impossibile estrarre il buffer audio dalla risposta di ResponsiveVoice');

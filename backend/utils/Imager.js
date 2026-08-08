@@ -8,7 +8,7 @@ class Imager {
     }
 
     static isImage(fileName) {
-        ext = this.getExt(ext)
+        const ext = this.getExt(ext)
         return this.IMAGE_FORMATS.has(ext);
     }
 
@@ -16,8 +16,8 @@ class Imager {
         return mimeType.includes('svg');
     }
 
-    static isRaster(isImage, mimeType) {
-        return isImage && !this.isVect(mimeType);
+    static isRaster(mimeType) {
+        return !this.isVect(mimeType);
     }
 }
 

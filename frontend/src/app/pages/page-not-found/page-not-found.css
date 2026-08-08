@@ -1,0 +1,125 @@
+.not-found-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: var(--margin-mobile);
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: var(--spacing-xl);
+}
+
+.not-found-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-lg-size);
+  font-weight: 700;
+  color: var(--on-surface);
+  margin-bottom: var(--spacing-sm);
+}
+
+.not-found-desc {
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+  color: var(--on-surface-variant);
+  max-width: 450px;
+  margin: 0 auto var(--spacing-lg) auto;
+}
+
+.not-found-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-default);
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  transition: opacity 0.2s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background-color: var(--surface-variant);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-default);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--outline-variant);
+}
+
+.not-found-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.not-found-img {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+}
+
+.desktop-only{
+  display: none;
+}
+
+/* Stili Desktop (Affiancati) */
+@media (min-width: 48rem) {
+  .desktop-only{
+    display: flex;
+  }
+
+  .not-found-wrapper {
+    flex-direction: row;
+    text-align: left;
+    justify-content: center;
+    padding: 0 var(--margin-desktop);
+  }
+
+  .not-found-content {
+    flex: 1;
+  }
+
+  .not-found-desc {
+    margin: 0 0 var(--spacing-lg) 0;
+  }
+
+  .not-found-actions {
+    flex-direction: row;
+    margin: 0;
+    max-width: none;
+  }
+
+  .not-found-image-container {
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .not-found-img {
+    max-width: 35vw;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--outline-variant);
+    background-color: var(--primary);
+    padding: var(--spacing-xs);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+}

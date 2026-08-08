@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "bacheca-ui": {
+    "frontend": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -39,8 +39,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "12kB",
-                  "maximumError": "15kB"
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
                 }
               ],
               "outputHashing": "all"
@@ -55,18 +55,18 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "bacheca-ui:build:production"
-            },
-            "development": {
-              "buildTarget": "bacheca-ui:build:development"
-            }
-          },
-          "defaultConfiguration": "development",
           "options": {
             "proxyConfig": "proxy.conf.json"
-          }
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "frontend:build:production"
+            },
+            "development": {
+              "buildTarget": "frontend:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
         },
         "test": {
           "builder": "@angular/build:unit-test"

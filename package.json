@@ -16,7 +16,7 @@
   "main": "index.js",
   "scripts": {
     "start:backend": "npm --prefix backend start",
-    "start:frontend": "npm --prefix frontend start",
+    "start:frontend": "npm --prefix frontend-old start",
     "swagger": "npm --prefix backend run swagger",
     "create:module": "npm --prefix backend run create:module --",
     "generate:module": "npm --prefix backend run generate:module --",

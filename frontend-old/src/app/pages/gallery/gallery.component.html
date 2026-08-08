@@ -2,25 +2,25 @@
   <!-- Bar per il controllo / test della modalità dispositivo -->
   <!-- <div class="mode-toggle-bar">
     <span class="mode-label">
-      <span class="mode-icon">📱</span> Modalità Rilevata: 
+      <span class="mode-icons">📱</span> Modalità Rilevata:
       <strong>{{ isPortrait ? 'Portrait (Mobile)' : 'Desktop / Landscape' }}</strong>
     </span>
     <div class="mode-buttons">
-      <button 
-        class="mode-btn" 
-        [class.active]="userOverrideMode === 'auto'" 
+      <button
+        class="mode-btn"
+        [class.active]="userOverrideMode === 'auto'"
         (click)="setOverrideMode('auto')">
         Auto
       </button>
-      <button 
-        class="mode-btn" 
-        [class.active]="userOverrideMode === 'desktop'" 
+      <button
+        class="mode-btn"
+        [class.active]="userOverrideMode === 'desktop'"
         (click)="setOverrideMode('desktop')">
         Forza Desktop
       </button>
-      <button 
-        class="mode-btn" 
-        [class.active]="userOverrideMode === 'portrait'" 
+      <button
+        class="mode-btn"
+        [class.active]="userOverrideMode === 'portrait'"
         (click)="setOverrideMode('portrait')">
         Forza Portrait
       </button>
@@ -63,7 +63,7 @@
         <span class="hero-badge">Piattaforma Culturale Enterprise</span>
         <h1 class="hero-title">Cosa Siamo</h1>
         <p class="hero-description">
-          <strong>Art Around</strong> è la piattaforma digitale innovativa nata per connettere musei, visitatori ed educatori in un ecosistema culturale moderno ed interattivo. 
+          <strong>Art Around</strong> è la piattaforma digitale innovativa nata per connettere musei, visitatori ed educatori in un ecosistema culturale moderno ed interattivo.
           Forniamo ai musei uno strumento enterprise per la gestione dei propri spazi ed esposizioni, ai visitatori una guida intelligente sempre disponibile e alle scuole un sistema dinamico di tour e quiz per le gite.
         </p>
         <div class="hero-actions">
@@ -97,8 +97,8 @@
 
         <!-- Carousel Track -->
         <div class="carousel-track">
-          <div 
-            *ngFor="let museum of museums; let i = index" 
+          <div
+            *ngFor="let museum of museums; let i = index"
             class="carousel-slide"
             [class.active]="i === activeMuseumIndex"
             [class.prev]="isPrevSlide(i)"
@@ -108,9 +108,9 @@
           >
             <div class="large-museum-card">
               <div class="large-img-wrapper">
-                <img 
-                  [src]="getMuseumMetaUrl(museum)" 
-                  [alt]="museum.name" 
+                <img
+                  [src]="getMuseumMetaUrl(museum)"
+                  [alt]="museum.name"
                   (error)="onImageError($event)"
                 />
                 <span class="gold-badge" *ngIf="museum.address?.city">{{ museum.address.city }}</span>
@@ -136,9 +136,9 @@
 
       <!-- Indicatori Punti -->
       <div *ngIf="!loadingMuseums && museums.length > 1" class="carousel-dots">
-        <button 
-          *ngFor="let m of museums; let i = index" 
-          class="dot" 
+        <button
+          *ngFor="let m of museums; let i = index"
+          class="dot"
           [class.active]="i === activeMuseumIndex"
           (click)="goToSlide(i)"
           [attr.aria-label]="'Vai al museo ' + (i + 1)"

@@ -1,0 +1,126 @@
+/* Uppy styles */
+/*
+@import '@uppy/core/dist/style.min.css';
+@import '@uppy/dashboard/dist/style.min.css';
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:wght@600;700&family=Alegreya+Sans:wght@400;500&display=swap');
+
+/* GLOBAL VARIABLES */
+:root, [data-theme="light"] {
+  /* Colors: Light Mode */
+  --primary: #9f3d25;
+  --on-primary: #ffffff;
+  --secondary: #2C4251;
+  --on-secondary: #ffffff;
+  --tertiary: #B58B39;
+  --error: #ba1a1a;
+
+  --background: #fbf9f4;
+  --surface: #f7f5f0;
+  --surface-variant: #eae8e3;
+
+  --on-surface: #1b1c19;
+  --on-surface-variant: #57423d;
+  --outline: #8a726c;
+  --outline-variant: #ddc0b9;
+
+  /* Typography: Font Families */
+  --font-serif: 'Alegreya', serif;
+  --font-sans: 'Alegreya Sans', sans-serif;
+
+  /* Typography: Sizes (1rem = 16px) */
+  --headline-lg-size: 2rem;
+  --headline-lg-weight: 700;
+  --headline-lg-line: 2.5rem;
+
+  --headline-md-size: 1.5rem;
+  --headline-md-weight: 600;
+  --headline-md-line: 2rem;
+
+  --body-lg-size: 1rem;
+  --body-lg-weight: 400;
+  --body-lg-line: 1.5rem;
+
+  --body-md-size: 0.875rem;
+  --body-md-weight: 400;
+  --body-md-line: 1.25rem;
+
+  --label-md-size: 0.75rem;
+  --label-md-weight: 500;
+  --label-md-line: 1rem;
+  --label-md-tracking: 0.01em;
+
+  /* Shapes: Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-default: 0.5rem; /* Buttons & Inputs */
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;        /* Cards & Modals */
+  --radius-full: 9999px;    /* Badges */
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --margin-mobile: 1rem;
+  --margin-desktop: 4rem;
+}
+
+/* DARK MODE (APP TOGGLE) */
+[data-theme="dark"] {
+  /* Colors: Dark Mode */
+  --primary: #b85138;
+  --on-primary: #ffffff;
+  --secondary: #6a8b9f;
+  --on-secondary: #0d171e;
+  --tertiary: #d1a751;
+  --error: #ff5449;
+
+  --background: #1a1918;
+  --surface: #242221;
+  --surface-variant: #302d2b;
+
+  --on-surface: #e8e6e1;
+  --on-surface-variant: #baa9a5;
+  --outline: #635653;
+  --outline-variant: #4a3f3d;
+}
+
+/* BASE STYLES & RESET */
+body {
+  margin: 0;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+  line-height: var(--body-lg-line);
+  -webkit-font-smoothing: antialiased;
+
+  /* Transizione per cambio tema fluido */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, .serif {
+  font-family: var(--font-serif);
+  color: var(--on-surface);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+h1 {
+  font-size: var(--headline-lg-size);
+  font-weight: var(--headline-lg-weight);
+  line-height: var(--headline-lg-line);
+}
+
+h2 {
+  font-size: var(--headline-md-size);
+  font-weight: var(--headline-md-weight);
+  line-height: var(--headline-md-line);
+}
+
+p {
+  color: var(--on-surface-variant);
+  margin: 0 0 var(--spacing-md) 0;
+}

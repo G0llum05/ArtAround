@@ -1,0 +1,82 @@
+<div class="page-container">
+
+  <!-- Intestazione -->
+  <header class="header-section">
+    <h1 class="page-title">Personalizza la tua visita</h1>
+    <p class="page-subtitle">
+      Cerca o crea la visita perfetta per te, dicci chi sei e cosa di piace e la visita si adatterà alle tue preferenze per offrirti un percorso museale unico e su misura.
+    </p>
+  </header>
+
+  <form class="form-layout" (submit)="$event.preventDefault(); submitPreferences()">
+
+    <!-- Sezione: Museo -->
+    <section class="form-section">
+      <h2 class="section-title">Il tuo museo</h2>
+      <select class="input-box" [(ngModel)]="selectedMuseum" name="museum" required>
+        <option value="" disabled selected>Seleziona una struttura...</option>
+        <option value="museo-civico">Museo Civico di Arti Antiche</option>
+        <option value="galleria-moderna">Galleria d'Arte Moderna</option>
+      </select>
+    </section>
+
+    <!-- Sezione: Profilo (Griglia 2x2 come in foto) -->
+    <section class="form-section">
+      <h2 class="section-title">Il tuo profilo</h2>
+      <div class="profile-grid">
+        @for (profile of profiles; track profile.name) {
+          <button
+            type="button"
+            class="profile-card"
+            [class.active]="selectedProfile === profile.name"
+            (click)="selectedProfile = profile.name">
+            <svg class="profile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" >
+              <path [attr.d]="profile.svgPath" />
+            </svg>
+            <span class="profile-label">{{ profile.name }}</span>
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- Sezione: Interessi (Tag arrotondati come in foto) -->
+    <section class="form-section">
+      <h2 class="section-title">I tuoi interessi</h2>
+      <p class="section-desc">Seleziona uno o più temi per orientare i nostri suggerimenti.</p>
+
+      <div class="interests-grid">
+        @for (interest of allInterests; track interest) {
+          <button
+            type="button"
+            class="interest-tag"
+            [class.active]="isInterestSelected(interest)"
+            (click)="toggleInterest(interest)">
+            {{ interest }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- Sezione: Durata -->
+    <section class="form-section">
+      <h2 class="section-title">Durata stimata</h2>
+      <input
+        type="time"
+        class="input-box"
+        [(ngModel)]="visitDuration"
+        name="duration"
+        required />
+    </section>
+
+    <!-- Barra Inferiore: Submit -->
+    <div class="bottom-bar">
+      <button type="submit" class="btn-submit">
+        <span>Inizia la scoperta</span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+          <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
+        </svg>
+      </button>
+    </div>
+
+  </form>
+</div>

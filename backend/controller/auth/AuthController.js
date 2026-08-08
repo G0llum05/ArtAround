@@ -162,7 +162,7 @@ class AuthController {
       const refreshToken = await TokenService.generateRefreshToken(req.user, clientIp);
       setRefreshTokenCookie(res, refreshToken);
 
-      // Reindirizzamento pulito al frontend Angular
+      // Reindirizzamento pulito al frontend-old Angular
       res.redirect(`${clientUrl}/login?status=success`);
     } catch (error) {
       console.error('Errore Google OAuth Callback:', error);

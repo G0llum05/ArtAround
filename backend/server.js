@@ -74,14 +74,14 @@ const NavigatorController = require('./controller/navigator/NavigatorController'
 app.post('/api/transcribe', ramUpload.single('audio'), NavigatorController.transcribeAudio);
 
 // --- Static Asset & Angular SPA Handlers ---
-const angularDistPath = path.join(__dirname, '../frontend/dist/bacheca-ui/browser');
-const fallbackDistPath = path.join(__dirname, '../frontend/dist/index.html');
-const frontendPublicPath = path.join(__dirname, '../frontend/public');
+const angularDistPath = path.join(__dirname, '../frontend-old/dist/bacheca-ui/browser');
+const fallbackDistPath = path.join(__dirname, '../frontend-old/dist/index.html');
+const frontendPublicPath = path.join(__dirname, '../frontend-old/public');
 const backendAssetsPath = path.join(__dirname, 'assets');
 
 app.use('/assets', express.static(backendAssetsPath));
 app.use(express.static(angularDistPath));
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+app.use(express.static(path.join(__dirname, '../frontend-old/dist')));
 app.use(express.static(frontendPublicPath));
 
 // Catch-all handler for Angular client-side routing (ignoring API & Swagger requests)

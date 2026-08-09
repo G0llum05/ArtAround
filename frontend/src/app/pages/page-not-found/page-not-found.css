@@ -1,0 +1,181 @@
+/* Stesso identico :host della pagina Home */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+}
+
+/*
+ * WRAPPER PRINCIPALE
+ * Struttura, max-width, padding e box-sizing copiati 1:1 da .home-container
+ * per garantire una larghezza orizzontale perfettamente identica al millimetro.
+ */
+.not-found-wrapper {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: var(--margin-mobile);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+@media (min-width: 48rem) {
+  .not-found-wrapper {
+    padding: var(--spacing-xl) var(--margin-desktop); /* Identico alla Home */
+    flex-direction: row;
+    text-align: left;
+  }
+}
+
+/* --- COLONNE INTERNE --- */
+/* Aggiunto min-width: 0 per forzare il flex a rispettare la griglia */
+
+.not-found-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 48rem) {
+  .not-found-content {
+    align-items: flex-start;
+  }
+}
+
+.not-found-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 48rem) {
+  .not-found-image-container {
+    justify-content: flex-end;
+  }
+}
+
+/* --- TESTI (Uniformati alla Home) --- */
+
+.not-found-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-lg-size);
+  font-weight: var(--headline-lg-weight);
+  line-height: var(--headline-lg-line);
+  color: var(--on-surface);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.not-found-desc {
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+  font-weight: var(--body-lg-weight);
+  line-height: var(--body-lg-line);
+  color: var(--on-surface-variant);
+  max-width: 28rem; /* Circa 450px */
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+/* --- BOTTONI (Uniformati al componente .btn della Home) --- */
+
+.not-found-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+  max-width: 18rem;
+}
+
+@media (min-width: 48rem) {
+  .not-found-actions {
+    flex-direction: row;
+    max-width: none;
+  }
+}
+
+.btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-default);
+  font-weight: var(--label-md-weight);
+  font-size: var(--body-md-size);
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background-color: var(--surface-variant);
+  color: var(--on-surface);
+  border-color: var(--outline-variant);
+}
+
+.btn-secondary:hover {
+  background-color: var(--outline-variant);
+}
+
+/* --- IMMAGINE --- */
+
+.not-found-img {
+  width: 100%;
+  max-width: 18rem; /* Limite sicuro per mobile */
+  height: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--outline-variant);
+  background-color: var(--primary);
+  padding: var(--spacing-xs);
+  box-sizing: border-box;
+
+  /* Stessa ombra ed effetto interattivo delle card in Home */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.not-found-img:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  transform: scale(1.02);
+}
+
+@media (min-width: 48rem) {
+  .not-found-img {
+    max-width: 32rem; /* Limite sicuro per desktop (non sfonderà mai l'80rem diviso 2) */
+  }
+}
+
+/* --- UTILITY --- */
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .desktop-only {
+    display: flex;
+  }
+}

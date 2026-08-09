@@ -1,0 +1,306 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+}
+
+.page-container {
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: var(--spacing-lg) var(--margin-mobile) var(--margin-mobile);
+}
+
+/* --- HEADER PAGINA --- */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-lg-size);
+  font-weight: var(--headline-lg-weight);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.page-subtitle {
+  font-size: var(--body-lg-size);
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
+/* --- GRIGLIA MOBILE-FIRST --- */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+}
+
+/* --- CARDS GENERALI --- */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--outline-variant); /* Bordo delicatissimo come in foto */
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--spacing-md);
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-md-size);
+  font-weight: var(--headline-md-weight);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-md);
+}
+
+.label-muted {
+  font-size: var(--label-md-size);
+  color: var(--on-surface-variant);
+}
+
+/* --- 1. SELECT MUSEO --- */
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.custom-select {
+  width: 100%;
+  appearance: none;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  padding: var(--spacing-sm) var(--spacing-md);
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.custom-select:focus {
+  border-color: var(--primary);
+}
+
+.select-icon {
+  position: absolute;
+  right: var(--spacing-md);
+  width: var(--spacing-lg);
+  height: var(--spacing-lg);
+  pointer-events: none;
+  fill: var(--on-surface-variant);
+}
+
+/* --- 2. CHI SEI? (Bottoni Ruolo) --- */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.role-btn {
+  background-color: var(--background);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  padding: var(--spacing-md) var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.role-icon {
+  width: 2rem;
+  height: 2rem;
+  fill: currentColor;
+}
+
+.role-btn.active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+/* --- 3. I TUOI INTERESSI (Chips e Immagine) --- */
+.chips-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.chip {
+  background-color: var(--background);
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.svg-chip{
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+/* Stile speciale per il badge "Qualsiasi" selezionato */
+.chip.chip-qualsiasi.active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.chips-group.any-active .chip:not(.chip-qualsiasi) {
+  opacity: 0.4;
+}
+
+/* Stile per gli altri interessi selezionati (Usa colorazione secondaria come da tua richiesta base) */
+.chip.active:not(.chip-qualsiasi) {
+  background-color: var(--surface-variant);
+  border-color: var(--secondary);
+  color: var(--secondary);
+  font-weight: var(--label-md-weight);
+}
+
+.chip.money-chip.active:not(.chip-qualsiasi) {
+  background-color: var(--surface-variant);
+  border-color: var(--tertiary);
+  color: var(--tertiary);
+  font-weight: var(--label-md-weight);
+}
+
+.chip.partial {
+  background-color: transparent;
+  border: 1px dashed var(--secondary);
+  color: var(--secondary);
+  opacity: 0.6;
+  font-weight: normal;
+}
+
+.image {
+  display: none;
+  width: 100%;
+  height: 8rem;
+  background-color: var(--surface-variant);
+  border-radius: var(--radius-md);
+  background-position: center;
+  object-fit: cover;
+  opacity: 0.85;
+  margin-top: auto;
+}
+
+@media (min-width: 48rem) {
+  .image {
+    display: block;
+  }
+}
+
+
+
+/* --- 4. DURATA (Slider) --- */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+}
+
+.slider-label {
+  font-size: var(--body-md-size);
+  color: var(--on-surface-variant);
+}
+
+.custom-slider {
+  flex: 1;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.duration-value{
+  color: var(--primary);
+  font-weight: var(--headline-md-weight);
+  margin-left: var(--spacing-xs);
+}
+
+/* --- 5. OPZIONI AGGIUNTIVE (Checkbox) --- */
+.small-svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--secondary);
+  fill: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.chip.money-chip .small-svg{
+  color: var(--tertiary);
+}
+
+/* --- LAYOUT DESKTOP FEDELE ALLA FOTO --- */
+@media (min-width: 48rem) {
+  .page-container {
+    padding: var(--spacing-xl) var(--margin-desktop);
+  }
+
+  .page-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .card {
+    padding: var(--spacing-lg);
+  }
+
+  .form-grid {
+    gap: var(--spacing-md);
+    /* Griglia Asimmetrica! La colonna sinistra è più stretta della destra (come in foto) */
+    grid-template-columns: 1fr 1.4fr;
+    grid-template-areas:
+      "museo museo"
+      "chi-sei interessi"
+      "durata opzioni";
+  }
+
+  .card-museo { grid-area: museo; }
+  .card-chi-sei { grid-area: chi-sei; }
+  .card-interessi { grid-area: interessi; }
+  .card-durata { grid-area: durata; }
+  .card-opzioni { grid-area: opzioni; }
+}

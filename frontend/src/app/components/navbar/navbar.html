@@ -1,0 +1,68 @@
+<nav class="navbar">
+
+  <!-- MOBILE: Tasto Hamburger -->
+  <button class="nav-icon-btn mobile-only" (click)="toggleMenu()" aria-label="Apri menu">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 12h18M3 6h18M3 18h18"/>
+    </svg>
+  </button>
+
+  <!-- BRAND -->
+  <a routerLink="/" class="navbar-brand" (click)="toggleMenu()">ArtAround</a>
+
+  <!-- DESKTOP: Voci di navigazione centrali -->
+  <div class="navbar-links desktop-only">
+    @for (item of navItems; track item.path) {
+      @if (item.path.includes(".html")) {
+        <a
+          [href]=item.path
+          class="nav-link"
+        > {{ item.name }} </a>
+      } @else {
+        <a [routerLink]="item.path"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+           class="nav-link"
+        > {{ item.name }} </a>
+      }
+    }
+  </div>
+
+  <!-- AZIONI DESTRA -->
+  <div class="navbar-actions">
+   <app-theme-toggle-button></app-theme-toggle-button>
+
+    <a routerLink="/login" class="nav-icon-btn" title="Login">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    </a>
+  </div>
+</nav>
+
+<!-- SIDEBAR / DRAWER LATERALE DA SINISTRA -->
+@if (isMenuOpen()) {
+  <div class="drawer-backdrop mobile-only" (click)="toggleMenu()"></div>
+  <div class="side-drawer mobile-only">
+    <div class="drawer-header">
+      <span class="drawer-title">ArtAround</span>
+      <button class="nav-icon-btn" (click)="toggleMenu()" aria-label="Chiudi menu">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="drawer-links">
+      @for (item of navItems; track item.path) {
+        <a [routerLink]="item.path"
+           (click)="toggleMenu()"
+           class="drawer-link"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: item.path === '/' }">
+          {{ item.name }}
+        </a>
+      }
+    </div>
+  </div>
+}

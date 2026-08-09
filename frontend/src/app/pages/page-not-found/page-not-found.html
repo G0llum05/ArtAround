@@ -1,0 +1,19 @@
+<div class="not-found-wrapper">
+  <!-- Contenuto Testuale (Sopra su Mobile, Sinistra su Desktop) -->
+  <div class="not-found-content">
+    <h1 class="not-found-title">C'è stato un problema</h1>
+    <p class="not-found-desc">
+      La pagina che stai cercando non esiste o potrebbe essere stata spostata. Verifica l'indirizzo inserito oppure torna alla home.
+    </p>
+    <div class="not-found-actions">
+      <a routerLink="/" class="btn-primary">Torna alla Home</a>
+      <button (click)="goBack()" class="btn-secondary">Torna indietro</button>
+    </div>
+  </div>
+
+  <div class="not-found-image-container desktop-only">
+    <img src="/assets/images/pageNotFound.png" alt="immagine errore generico" class="not-found-img" />
+  </div>
+
+</div>
+

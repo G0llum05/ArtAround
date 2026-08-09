@@ -114,24 +114,20 @@ async function main() {
       length: activeLength
     });
 
-    // Ciclo interattivo limitato ai 3 comandi item: EXPLAIN_ITEM, NEXT_ITEM, PREVIOUS_ITEM
+    // Ciclo interattivo comandi: Item (EXPLAIN, NEXT, PREV) e Non-Item (POI, ARTIST)
     while (true) {
       console.log(`\n${colors.bright}--- AZIONI ITEM DISPONIBILI ---${colors.reset}`);
       console.log(`  [1] 🖼️  Spiega opera corrente (EXPLAIN_ITEM)`);
       console.log(`  [2] ⏩ Prossima opera (NEXT_ITEM)`);
       console.log(`  [3] ⏪ Opera precedente (PREVIOUS_ITEM)`);
 
-      /*
-      // --- COMANDI DISABILITATI/COMMENTATI COME RICHIESTO ---
-      // console.log(` • "Spiegamelo per bambini" / "Più semplice"`);
-      // console.log(` • "Voglio dettagli accademici" / "Più approfondito"`);
-      // console.log(` • "Dove sta la toilette?" / "Dove sta il bar?" / "Dov'è l'uscita?"`);
-      // console.log(` • "Chi è l'autore?"`);
-      */
+      console.log(`\n${colors.bright}--- AZIONI NON-ITEM DISPONIBILI ---${colors.reset}`);
+      console.log(`  [4] 🚻 Richiedi Punto di Interesse (NAVIGATE_POI: toilette, bar, exit, elevator, ticket_office, info_point)`);
+      console.log(`  [5] 🎨 Richiedi Info Artista dell'opera (ASK_AUTHOR_INFO)`);
 
-      console.log(`  [q] ❌ Uscire dal test`);
+      console.log(`\n  [q] ❌ Uscire dal test`);
 
-      const choice = await askQuestion(`\n${colors.gold}${colors.bright}Seleziona azione (1, 2, 3 o q) > ${colors.reset}`);
+      const choice = await askQuestion(`\n${colors.gold}${colors.bright}Seleziona azione (1, 2, 3, 4, 5 o q) > ${colors.reset}`);
       const trimmedChoice = choice.trim().toLowerCase();
 
       if (trimmedChoice === 'q' || trimmedChoice === 'exit') {
@@ -139,15 +135,44 @@ async function main() {
         break;
       }
 
+      let isNonItemAction = false;
       let itemAction = null;
+      let targetPoiType = null;
+      let targetArtist = null;
+
       if (trimmedChoice === '1' || trimmedChoice === 'spiega') {
         itemAction = 'EXPLAIN_ITEM';
       } else if (trimmedChoice === '2' || trimmedChoice === 'prossimo' || trimmedChoice === 'next') {
         itemAction = 'NEXT_ITEM';
       } else if (trimmedChoice === '3' || trimmedChoice === 'precedente' || trimmedChoice === 'prev') {
         itemAction = 'PREVIOUS_ITEM';
+      } else if (trimmedChoice === '4' || trimmedChoice === 'poi') {
+        isNonItemAction = true;
+        const poiInput = await askQuestion(` 📍 Inserisci POI [toilette/bar/exit/elevator/ticket_office/info_point]: ${colors.reset}`);
+        const sanitizedPoi = Sanitizer.sanitizePoi(poiInput);
+        if (sanitizedPoi) {
+          targetPoiType = sanitizedPoi;
+        } else {
+          console.log(`${colors.red} ⚠️ POI non valido ('${poiInput.trim()}'). Mantenuto default 'toilette'.${colors.reset}`);
+          targetPoiType = 'toilette';
+        }
+      } else if (trimmedChoice === '5' || trimmedChoice === 'artista' || trimmedChoice === 'autore') {
+        isNonItemAction = true;
+        const targetArtworkId = await NavigatorService.getArtworkId(visit._id, currentArtworkIndex);
+        const currentArtwork = await Artwork.findById(targetArtworkId).populate('artists').exec();
+        const availableArtists = currentArtwork?.artists || [];
+
+        if (availableArtists.length > 0) {
+          console.log(` 🎨 Artisti trovati per l'opera corrente: ${availableArtists.map(a => `${a.name} ${a.surname || ''}`).join(', ')}`);
+          const defaultArtistName = availableArtists[0].name;
+          const artistInput = await askQuestion(` Inserisci il nome dell'artista (default '${defaultArtistName}'): ${colors.reset}`);
+          targetArtist = artistInput.trim() || defaultArtistName;
+        } else {
+          const artistInput = await askQuestion(` Inserisci il nome dell'artista: ${colors.reset}`);
+          targetArtist = artistInput.trim() || 'Giosuè';
+        }
       } else {
-        console.log(`${colors.red}Scelta non valida. Scegli 1, 2, 3 o q.${colors.reset}`);
+        console.log(`${colors.red}Scelta non valida. Scegli 1, 2, 3, 4, 5 o q.${colors.reset}`);
         continue;
       }
 
@@ -184,34 +209,64 @@ async function main() {
         }
       }
 
-      console.log(`${colors.gray}[CLI] Esecuzione itemActionHandler('${itemAction}', tone='${activeTone}', length=${activeLength}, lang='${activeLanguage}')...${colors.reset}`);
+      if (isNonItemAction) {
+        console.log(`${colors.gray}[CLI] Esecuzione nonItemActionHandler(poi='${targetPoiType}', artist='${targetArtist}', museum='${selectedMuseum._id}', tone='${activeTone}', length=${activeLength}, lang='${activeLanguage}')...${colors.reset}`);
 
-      try {
-        const result = await NavigatorService.itemActionHandler(
-          itemAction,
-          visit._id,
-          currentArtworkIndex,
-          activeTone,
-          activeLength,
-          activeLanguage
-        );
+        try {
+          const result = await NavigatorService.nonItemActionHandler(
+            targetPoiType,
+            targetArtist,
+            selectedMuseum._id,
+            visit._id,
+            currentArtworkIndex,
+            activeTone,
+            activeLength,
+            activeLanguage
+          );
 
-        // Aggiorna l'indice corrente se l'azione di navigazione è andata a buon fine
-        if (itemAction === 'NEXT_ITEM') currentArtworkIndex++;
-        if (itemAction === 'PREVIOUS_ITEM') currentArtworkIndex--;
+          await printState({
+            itemRes: result,
+            visitId: visit._id,
+            currentArtworkIndex,
+            totalArtworks: visit.artworks.length,
+            tone: activeTone,
+            language: activeLanguage,
+            length: activeLength
+          });
 
-        await printState({
-          itemRes: result,
-          visitId: visit._id,
-          currentArtworkIndex,
-          totalArtworks: visit.artworks.length,
-          tone: activeTone,
-          language: activeLanguage,
-          length: activeLength
-        });
+        } catch (err) {
+          console.log(`\n${colors.red}❌ Errore durante l'azione non-item: ${err.message}${colors.reset}`);
+        }
+      } else {
+        console.log(`${colors.gray}[CLI] Esecuzione itemActionHandler('${itemAction}', tone='${activeTone}', length=${activeLength}, lang='${activeLanguage}')...${colors.reset}`);
 
-      } catch (err) {
-        console.log(`\n${colors.red}❌ Errore durante l'azione '${itemAction}': ${err.message}${colors.reset}`);
+        try {
+          const result = await NavigatorService.itemActionHandler(
+            itemAction,
+            visit._id,
+            currentArtworkIndex,
+            activeTone,
+            activeLength,
+            activeLanguage
+          );
+
+          // Aggiorna l'indice corrente se l'azione di navigazione è andata a buon fine
+          if (itemAction === 'NEXT_ITEM') currentArtworkIndex++;
+          if (itemAction === 'PREVIOUS_ITEM') currentArtworkIndex--;
+
+          await printState({
+            itemRes: result,
+            visitId: visit._id,
+            currentArtworkIndex,
+            totalArtworks: visit.artworks.length,
+            tone: activeTone,
+            language: activeLanguage,
+            length: activeLength
+          });
+
+        } catch (err) {
+          console.log(`\n${colors.red}❌ Errore durante l'azione '${itemAction}': ${err.message}${colors.reset}`);
+        }
       }
     }
 

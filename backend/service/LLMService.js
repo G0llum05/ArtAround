@@ -45,6 +45,14 @@ function promptHandler(key, replacements = {}) {
       template = promptsConfig?.existingSimilarItem;
       break;
 
+    case 'artistInfo':
+      template = promptsConfig?.artistInfo;
+      break;
+
+    case 'POI':
+      template = promptsConfig?.POI;
+      break;
+
     default:
       template = promptsConfig?.[key] || '';
       break;
@@ -89,7 +97,55 @@ class LLMService {
       console.warn('[LLMService] Chiamata LLM generazione item fallita, utilizzo fallback mock:', err.message);
       return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
     }
+  }
 
+
+  static async nonItemPOI(museumName, POI, language, tone) {
+    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+      // TODO
+      return `Il ${POI} nel museo ${museumName} è un punto di interesse importante.`;
+    }
+
+    try {
+      let prompt = promptHandler('generalContext', { museum: museumName, language });
+      prompt += promptHandler('POI', {
+        POI,
+        tone,
+        language
+      });
+      console.log(`\x1b[36m[DEBUG AI] Prompt generazione info POI:\x1b[0m`, prompt);
+      return await this._callLLMHandler(prompt);
+    } catch (err) {
+      console.warn('[LLMService] Chiamata LLM generazione info POI fallita, utilizzo fallback mock:', err.message);
+      return `Il ${POI} nel museo ${museumName} è un punto di interesse importante.`;
+    }
+  }
+
+
+  static async nonItemArtistInfo(artist, artworkContext, tone, length, language) {
+
+    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+      // TODO
+      return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
+    }
+
+    try {
+      let prompt = promptHandler('generalContext', { museum: artworkContext.museum, language });
+      prompt += promptHandler('artistInfo', {
+        artworkContext,
+        artist,
+        tone,
+        length,
+        language
+      });
+
+      console.log(`\x1b[36m[DEBUG AI] Prompt generazione info artista:\x1b[0m`, prompt);
+      // TODO CHECK qua si DEVONO mettere dei controlli sui promtp che vengono fatti. Potrebbero esserci lingue sbagliate o lunghezze sbagliate
+      return await this._callLLMHandler(prompt);
+    } catch (err) {
+      console.warn('[LLMService] Chiamata LLM generazione info artista fallita, utilizzo fallback mock:', err.message);
+      return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
+    }
   }
   //
   // /**

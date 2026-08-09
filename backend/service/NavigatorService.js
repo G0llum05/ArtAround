@@ -16,6 +16,7 @@ class NavigatorService {
       language,
       length,
       tone,
+      museumId,
       visitId,
       currentArtworkIndex,
       actionType,
@@ -31,7 +32,7 @@ class NavigatorService {
       case 'ITEM_ACTION':
         return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language);
       case 'NON_ITEM_ACTION':
-        return await this.nonItemActionHandler(targetPoiType, targetArtist, visitId, currentArtworkIndex, tone, length, language);
+        return await this.nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language);
       default:
         throw new Error(`Tipo di azione non valido: ${actionType}`);
     }
@@ -122,8 +123,40 @@ class NavigatorService {
     return savedItem;
   }
 
-  static async nonItemActionHandler(targetPoiType, targetArtist, visitId, currentArtworkIndex, tone, length, language) { }
+  static async nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language) {
+    if (targetPoiType) {
+      const museum = await Museum.findById(museumId).populate('pointsOfInterest').exec();
+      if (!museum) {
+        throw new Error(`Museo con ID "${museumId}" non trovato.`);
+      }
 
+      const POI = museum.pointsOfInterest.find(p => p.type === targetPoiType);
+      if (!POI) {
+        throw new Error(`Punto di interesse di tipo "${targetPoiType}" non trovato nel museo "${museum.name}".`);
+      }
+
+      return LLMService.nonItemPOI(museum.name, POI, language, tone);
+
+    } else if (targetArtist) {
+      const currentArtworkId = await this.getArtworkId(visitId, currentArtworkIndex);
+      const artwork = await Artwork.findById(currentArtworkId).populate('items').populate('artists').exec();
+      if (!artwork) {
+        throw new Error(`Opera con ID "${currentArtworkId}" non trovata.`);
+      }
+      if (!artwork.artists || artwork.artists.length === 0) {
+        throw new Error(`Nessun artista associato all'opera "${artwork.title}".`);
+      }
+
+      const artist = artwork.artists.find(a => a.name.toLowerCase() === targetArtist.toLowerCase());
+      if (!artist) {
+        throw new Error(`Artista "${targetArtist}" non trovato per l'opera "${artwork.title}".`);
+      }
+
+      return LLMService.nonItemArtistInfo(artist, artwork, tone, length, language);
+    } else {
+      throw new Error('Nessuna azione non-item valida fornita.');
+    }
+  }
 
 
   static async getArtworkId(visitId, currentArtworkIndex) {

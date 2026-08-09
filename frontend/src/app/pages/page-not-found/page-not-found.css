@@ -14,6 +14,7 @@
  * Struttura, max-width, padding e box-sizing copiati 1:1 da .home-container
  * per garantire una larghezza orizzontale perfettamente identica al millimetro.
  */
+
 .not-found-wrapper {
   flex-grow: 1;
   width: 100%;
@@ -108,6 +109,7 @@
 
 .btn {
   padding: var(--spacing-sm) var(--spacing-lg);
+  font-family: var(--font-sans);
   border-radius: var(--radius-default);
   font-weight: var(--label-md-weight);
   font-size: var(--body-md-size);

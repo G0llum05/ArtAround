@@ -17,14 +17,12 @@ const upload = multer({
 */
 
 // Endpoint completo per i comandi navigatore
-// router.post('/command', upload.single('audio'), NavigatorController.handleCommand);
+router.post('/', upload.single('audio'), NavigatorController.navigatorHandler);
 router.post('/navigator', upload.single('audio'), NavigatorController.navigatorHandler);
-
-// trascrizione STT 
-router.post('/stt', upload.single('audio'), NavigatorController.transcribeAudio);
 
 // sintesi TTS
 router.get('/tts', NavigatorController.streamTTS);
 router.post('/tts', NavigatorController.streamTTS);
 
 module.exports = router;
+

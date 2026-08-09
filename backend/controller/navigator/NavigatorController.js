@@ -28,7 +28,10 @@ class NavigatorController {
         }) + '\n');
       };
 
-      const result = await NavigatorService.navigatorHandler(...requestDTO, onTranscription);
+      const result = await NavigatorService.navigatorHandler({
+        ...requestDTO,
+        onTranscription
+      });
 
       const responseDTO = NavigatorMapper.toNavigatorResponseDTO(result);
 

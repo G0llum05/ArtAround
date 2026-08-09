@@ -25,12 +25,13 @@ class NavigatorService {
       audioFile,
       itemAction,
       targetPoiType,
-      targetArtist
+      targetArtist,
+      onTranscription
     } = requestDTO;
 
     switch (actionType) {
       case 'AUDIO_ACTION':
-        return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language);
+        return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, onTranscription);
       case 'ITEM_ACTION':
         return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language);
       case 'NON_ITEM_ACTION':
@@ -40,7 +41,7 @@ class NavigatorService {
     }
   }
 
-  static async audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language) {
+  static async audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, onTranscription) {
     if (!audioFile || !audioFile.buffer) {
       throw new Error('File audio mancante o non valido.');
     }
@@ -73,8 +74,7 @@ class NavigatorService {
 
     // prima parser scritto a mano, se non riesce chiamate all'LLM. L'obiettivo di entrambi è capire l'intento, poi si passa agli handler item o non-item
     const response = await this.parseIntentHandler(transcribedText, museum, artwork, tone, length, language);
-    // direi che valida completamente l'out dell'llm 
-    if (!response || !response.actionType || (response.actionType === 'ITEM_ACTION' && !response.itemAction) || (response.actionType === 'NON_ITEM_ACTION' && (!response.targetPoiType || !response.targetArtist))) {
+    if (!response || !response.actionType) {
       throw new Error('Parsing dell\'intento fallito o intento non riconosciuto.');
     }
 
@@ -97,15 +97,16 @@ class NavigatorService {
       museumId: museumId,
       visitId: visitId,
       currentArtworkIndex: currentArtworkIndex,
-      actionType: intentResult.actionType,
+      actionType: response.actionType,
       audioFile: null, // rimosso l'audio
-      itemAction: intentResult.itemAction || null,
-      targetPoiType: intentResult.targetPoiType || null,
-      targetArtist: intentResult.targetArtist || null
+      itemAction: response.itemAction || null,
+      targetPoiType: response.targetPoiType || null,
+      targetArtist: response.targetArtist || null
     });
 
     return { transcribedText, ...finalResult };
   }
+
 
   /**
   * @returns {Promise<{ actionType: string, itemAction?: string, targetPoiType?: string, targetArtist?: string }>}

@@ -176,6 +176,7 @@ class LLMService {
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM parsing intento fallita:', err.message);
     }
+  }
 
 
   //

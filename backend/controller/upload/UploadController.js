@@ -1,5 +1,6 @@
 const UploadService = require('../../service/UploadService');
 const Imager = require('../../utils/Imager');
+
 class UploadController {
   static async handleUpload(req, res) {
     try {
@@ -14,33 +15,32 @@ class UploadController {
         });
       }
 
-      // Extract parameters from route params, query string, or body
-      const museumId = req.params.museumId || req.query.museumId || req.body?.museumId;
-      const visitId = req.params.visitId || req.query.visitId || req.body?.visitId;
-      const artworkId = req.params.artworkId || req.query.artworkId || req.body?.artworkId;
-      const artistId = req.params.artistId || req.query.artistId || req.body?.artistId;
-      const isMeta = req.path.includes('/meta') || req.query.isMeta === 'true' || req.body?.isMeta === 'true';
-      const userId = req.path.include('/propic'); // check
+      // Estrazione parametri da params, query, headers o body
+      const museumId = req.params?.museumId;
+      const visitId = req.params?.visitId;
+      const artworkId = req.params?.artworkId;
+      const artistId = req.params?.artistId;
+      const userId = req.params?.userId;
+      const isMeta = req.path.includes('/meta');
+      const isPropic = req.path.includes('/propic');
+      const orientation = req.body?.orientation;
 
-      const uploadOptions = { museumId, visitId, artworkId, artistid, isMeta, userId };
+      const uploadOptions = { museumId, visitId, artworkId, artistId, userId, isMeta, isPropic, orientation };
       const savedFiles = [];
 
       for (const file of files) {
-        const saved;
-        if (Imager.isImage(file)) {
-          if (!museumId) {
-            if (userId) {
-              this.handlePropicUpload(uploadOptions, file, savedFiles);
-            } else {
-              console.error("Error: bad request")
-              return res.status(400).json({ message: 'Errore upload consentiti: profile picture and museum related pictures!'})
-            }
-          } else {
-            this.handleMuseumUpload(uploadOptions, file, savedFiles);
-          }
+        if (isPropic || (!museumId && userId)) {
+          await this.handlePropicUpload(uploadOptions, file, savedFiles);
+        } else if (museumId) {
+          await this.handleMuseumUpload(uploadOptions, file, savedFiles);
+        } else {
+          console.error("Error: bad request - missing museumId or userId");
+          return res.status(400).json({
+            message: 'Errore caricamento: specificare un museumId per le risorse del museo o un userId per la propic!'
+          });
         }
-          
       }
+
       return res.status(201).json({
         success: true,
         message: 'File caricati con successo.',

@@ -12,6 +12,7 @@ yarn-debug.log*
 /coverage
 /.cache
 .npm
+frontend/package-lock.json
 
 # --- Immagini Museum
 backend/assets
@@ -21,6 +22,7 @@ backend/assets
 /data/
 /db_data/
 mongo_data/
+package-lock.json
 
 # File di stato e log di Docker
 .docker/

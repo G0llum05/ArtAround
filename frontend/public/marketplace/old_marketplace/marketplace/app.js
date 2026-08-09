@@ -1,6 +1,6 @@
 import { ShellStore } from '../shell/shell-store.js';
 import { ShellRouter } from '../shell/shell-router.js';
-import { Router } from './routers/index.js';
+import { Router } from './routers';
 
 const CSS_ID = 'marketplace-styles';
 const CSS_PATH = 'styles/marketplace.css';

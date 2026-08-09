@@ -1,4 +1,4 @@
-<div class="carousel-container">
+<div class="carousel-container" >
   <div class="carousel-wrapper">
 
     <!-- Freccia Sinistra -->
@@ -11,13 +11,13 @@
     }
 
     <!-- Viewport del carosello -->
-    <div class="carousel-viewport">
-      <div class="carousel-track" [style.transform]="'translateX(-' + (currentIndex() * 100) + '%)'">
-        @for (item of items; track item.id || $index) {
+    <div class="carousel-viewport" (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()">
+      <div class="carousel-track" [style.transform]="'translateX(-' + (currentIndex() * 100) + '%)'" [class.no-transition]="isInstant()">
+        @for (item of extendedItems(); track item.id || $index) {
           <div class="carousel-slide" [style.background-image]="'url(' + item.image + ')'">
             <div class="carousel-overlay">
 
-              <!-- Contenuto in sovraimpressione (Badge, Titolo, Descrizione, Pulsante) -->
+              <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
               <div class="slide-content">
                 @if (item.badge) {
                   <span class="badge" [class.badge-accent]="item.badgeType === 'accent'">
@@ -59,7 +59,7 @@
         <button
           type="button"
           class="dot"
-          [class.active]="currentIndex() === $index"
+          [class.active]="(currentIndex() % items.length) === $index"
           (click)="goTo($index)"
           [attr.aria-label]="'Vai alla diapositiva ' + ($index + 1)">
         </button>

@@ -1,11 +1,11 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../auth.service';
 
 /**
  * Guardia di Navigazione RoleGuard.
  * Consente l'accesso a una rotta solo agli utenti in possesso di uno dei ruoli autorizzati.
- * 
+ *
  * Esempio di utilizzo in app.routes.ts:
  * { path: 'museum-dashboard', component: MuseumDashboardComponent, canActivate: [roleGuard('museumstaff', 'admin')] }
  */

@@ -11,8 +11,8 @@
   /* Colors: Light Mode */
   --primary: #9f3d25;
   --on-primary: #ffffff;
-  --secondary: #2C4251;
-  --on-secondary: #ffffff;
+  --secondary: #345a76;
+  --on-secondary: #f6f5f5;
   --tertiary: #B58B39;
   --error: #ba1a1a;
 
@@ -91,6 +91,7 @@
 /* BASE STYLES & RESET */
 html, body {
   overscroll-behavior-y: none;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
 }
 
 *, *::before, *::after {
@@ -102,7 +103,6 @@ body {
   margin: 0;
   background-color: var(--background);
   color: var(--on-surface);
-  font-family: var(--font-sans);
   font-size: var(--body-lg-size);
   line-height: var(--body-lg-line);
   -webkit-font-smoothing: antialiased;

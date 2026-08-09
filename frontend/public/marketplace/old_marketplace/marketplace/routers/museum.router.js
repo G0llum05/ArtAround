@@ -13,7 +13,7 @@ export const MuseumRouter = {
             if (ShellRouter) {
                 ShellRouter.navigate('/login?returnUrl=/marketplace/museums');
             } else {
-                window.location.href = '/login?returnUrl=/marketplace/museums';
+                window.location.href = '../museums';
             }
             return;
         }

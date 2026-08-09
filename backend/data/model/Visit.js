@@ -70,10 +70,11 @@ const visitSchema = new mongoose.Schema({
     type: String
   },
   
-  quiz: { // Se il creatore della visita vuole mettere delle domande fatte da lui può farlo, altrimenti vengono generate
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Quiz'
-  },
+  // Se il creatore della visita vuole mettere delle domande fatte da lui può farlo, altrimenti vengono generate
+  // quiz: { 
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Quiz'
+  // },
 
   // Categorie tematiche (multiplo)
   categories: [{

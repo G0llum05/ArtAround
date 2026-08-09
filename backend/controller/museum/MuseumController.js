@@ -4,7 +4,7 @@ class MuseumController {
   static async getAll(req, res) {
     try {
       const museums = await MuseumService.getAllMuseum();
-      res.json(museums);
+      res.status(200).json(museums);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -13,7 +13,7 @@ class MuseumController {
   static async searchByName(req, res) {
     try {
       const museums = await MuseumService.searchByName(req.body.str);
-      res.json(museums);
+      res.status(200).json(museums);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -22,7 +22,7 @@ class MuseumController {
   static async getVisitsByMuseumId(req, res) {
     try {
       const visits = await MuseumService.getVisitsByMuseumId(req.params.id || req.body.id);
-      res.json(visits);
+      res.status(200).json(visits);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -62,6 +62,26 @@ class MuseumController {
       res.status(500).json({ message: e.message });
     }
   }
+
+  static async getVisitPlan(req, res) {
+    try {
+      const id = req.params.id;
+      const museumVisitPlanDTO = MuseumService.getMuseumVisitPlanById(id);
+      res.status(200).json(museumVisitPlanDTO);
+    } catch (e) {
+      res.status(500).json({ message: e.message});
+    }
+  }
+
+  static async getHomePresentation(req, res) {
+    try {
+      const id = req.params.id;
+      const museumHomePresentationDTO = MuseumService.getMuseumHomePresentationById(id);
+      res.status(200).json(museumHomePresentationDTO);
+    } catch (e) {
+      res.status(500).json({ message: e.message });
+    }
+  } 
 }
 
 module.exports = MuseumController;

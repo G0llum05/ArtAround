@@ -1,5 +1,6 @@
 const Museum = require('../data/model/Museum');
-
+const ImageUrlService = require('./ImageUrlService');
+const MuseumMapper = require('../data/mapper/MuseumMapper');
 class MuseumService {
   static async getAllMuseum() {
     return await Museum.find().lean();
@@ -27,6 +28,23 @@ class MuseumService {
 
   static async deleteMuseum(id) {
     return await Museum.findByIdAndDelete(id).lean();
+  }
+
+
+  static async getMuseumVisitPlanById(id) {
+    const museum = await Museum.findById(id).lean();
+
+    const imageUrls = await ImageUrlService.getMuseumImageUrl(id);
+    
+    return MuseumMapper.toMuseumVisitPlanResponseDTO(museum, imageUrls);
+  }
+
+  static async getMuseumHomePresentationById(id) {
+    const museum = await Museum.findById(id).lean();
+
+    const imageUrls = await ImageUrlService.getMuseumImageUrl(id);
+    
+    return MuseumMapper.toMuseumHomePresentationResponseDTO(museum, imageUrls);
   }
 }
 

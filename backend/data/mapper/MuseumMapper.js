@@ -1,14 +1,13 @@
-const { MuseumResponseDTO, MuseumRequestDTO } = require('../model/dto/MuseumDTO');
+const { MuseumResponseDTO, MuseumRequestDTO, MuseumVisitPlanResponseDTO ,MuseumHomePresentationResponseDTO } = require('../model/dto/MuseumDTO');
 
 class MuseumMapper {
   static toMuseumResponseDTO(museum) {
     if (!museum) return null;
     return new MuseumResponseDTO(
-      museum._id,
+      museum._id || museum.id,
       museum.name,
       museum.description,
       museum.address,
-      museum.location,
       museum.contact,
       museum.maxCapacity,
       museum.actualCapacity,
@@ -17,9 +16,38 @@ class MuseumMapper {
       museum.openingHours,
       museum.ticketInfo,
       museum.isActive,
-      museum.disableFriendly,
+      museum.services,
+      museum.accessibility,
+      museum.pointsOfInterest,
+      museum.floors,
+      museum.transportInfo,
+      museum.eventsAndExibitions || museum.eventsAndExhibitions,
       museum.requirements
     );
+  }
+
+  static toMuseumVisitPlanResponseDTO(museum, imageUrls = []) {
+    if(!museum) return null;
+    return new MuseumVisitPlanResponseDTO(
+      museum._id || museum.id,
+      museum.name,
+      museum.address ? museum.address.city : null,
+      museum.maxCapacity,
+      museum.actualCapacity,
+      museum.ticketInfo,
+      imageUrls
+    );
+  }
+
+  static toMuseumHomePresentationResponseDTO(museum, imageUrls = []) {
+    if (!museum) return null;
+
+    return new MuseumHomePresentationResponseDTO(
+      museum.name,
+      museum.description,
+      museum.address ? museum.address.city : null,
+      imageUrls
+    )
   }
 
   static toMuseum(museumRequestDTO) {
@@ -28,7 +56,6 @@ class MuseumMapper {
       name: museumRequestDTO.name,
       description: museumRequestDTO.description,
       address: museumRequestDTO.address,
-      location: museumRequestDTO.location,
       contact: museumRequestDTO.contact,
       maxCapacity: museumRequestDTO.maxCapacity,
       actualCapacity: museumRequestDTO.actualCapacity,
@@ -37,10 +64,17 @@ class MuseumMapper {
       openingHours: museumRequestDTO.openingHours,
       ticketInfo: museumRequestDTO.ticketInfo,
       isActive: museumRequestDTO.isActive,
-      disableFriendly: museumRequestDTO.disableFriendly,
+      services: museumRequestDTO.services,
+      accessibility: museumRequestDTO.accessibility,
+      pointsOfInterest: museumRequestDTO.pointsOfInterest,
+      floors: museumRequestDTO.floors,
+      transportInfo: museumRequestDTO.transportInfo,
+      eventsAndExhibitions: museumRequestDTO.eventsAndExibitions || museumRequestDTO.eventsAndExhibitions,
       requirements: museumRequestDTO.requirements
     };
   }
+
+
 }
 
 module.exports = MuseumMapper;

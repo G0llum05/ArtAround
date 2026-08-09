@@ -22,7 +22,7 @@ class VisitResponseDTO {
 }
 
 class VisitRequestDTO {
-  constructor(title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories = []) {
+  constructor(title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories = [], artworks = []) {
     this.title = title;
     this.description = description;
     this.price = price;
@@ -38,10 +38,40 @@ class VisitRequestDTO {
     this.requirements = requirements;
     this.quiz = quiz;
     this.categories = categories;
+    this.artworks = artworks;
+  }
+}
+
+class VisitImageRequestDTO {
+  constructor(museumId, visitId) {
+    this.museumId = museumId;
+    this.visitId = visitId;
+  }
+}
+
+class VisitHomePresentationRequestDTO {
+  constructor(museumId, visitId) {
+    this.museumId = museumId;
+    this.visitId = visitId;
+  }
+}
+
+class VisitHomePresentationResponseDTO {
+  constructor(id, title, description, verified, disabledFriendly, badge = '', imageUrls = []) {
+    this.id = id;
+    this.title = title;
+    this.description = description;
+    this.verified = verified;
+    this.disabledFriendly = disabledFriendly;
+    this.badge = badge;
+    this.imageUrls = imageUrls;
   }
 }
 
 module.exports = {
   VisitResponseDTO,
   VisitRequestDTO,
+  VisitImageRequestDTO,
+  VisitHomePresentationRequestDTO,
+  VisitHomePresentationResponseDTO
 };

@@ -1,10 +1,14 @@
-const { VisitResponseDTO, VisitRequestDTO } = require('../model/dto/VisitDTO');
+const {
+  VisitResponseDTO,
+  VisitRequestDTO,
+  VisitHomePresentationResponseDTO
+} = require('../model/dto/VisitDTO');
 
 class VisitMapper {
   static toVisitResponseDTO(visit) {
     if (!visit) return null;
     return new VisitResponseDTO(
-      visit._id,
+      visit._id ? visit._id.toString() : visit.id,
       visit.title,
       visit.description,
       visit.price,
@@ -42,8 +46,22 @@ class VisitMapper {
       disabledFriendly: visitRequestDTO.disabledFriendly,
       requirements: visitRequestDTO.requirements,
       quiz: visitRequestDTO.quiz,
-      categories: visitRequestDTO.categories || []
+      categories: visitRequestDTO.categories || [],
+      artworks: visitRequestDTO.artworks || []
     };
+  }
+
+  static toVisitHomePresentationRes(visit, imageUrls = [], badge = '') {
+    if (!visit) return null;
+    return new VisitHomePresentationResponseDTO(
+      visit._id ? visit._id.toString() : visit.id,
+      visit.title,
+      visit.description,
+      visit.verified,
+      visit.disabledFriendly,
+      badge,
+      imageUrls
+    );
   }
 }
 

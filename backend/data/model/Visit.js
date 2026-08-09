@@ -104,6 +104,15 @@ const visitSchema = new mongoose.Schema({
       default: 0,
       index: true
     }
+  },
+
+  badge: {
+    type: String
+  },
+
+  isRunning: {
+    type: Boolean,
+    default: false
   }
 
 });

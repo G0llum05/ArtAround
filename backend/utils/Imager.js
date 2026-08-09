@@ -8,7 +8,7 @@ class Imager {
     }
 
     static isImage(fileName) {
-        const ext = this.getExt(ext)
+        const ext = this.getExt(fileName)
         return this.IMAGE_FORMATS.has(ext);
     }
 

@@ -12,7 +12,6 @@ class UploadService {
 
 
     // Le immagini dell'artwork risiedono in modo centralizzato sotto artworks/:artworkId
-    // per permettere a un artwork di far parte di più visite senza duplicazione file
     if (artworkId) {
       return path.join(baseMuseumDir, 'artworks', artworkId);
     }
@@ -86,13 +85,37 @@ class UploadService {
   }
 
 
+  /**
+   * Determina il suffisso per i file meta ('landscape' o 'portrait').
+   * Può essere passato in options.orientation / options.suffix, o dedotto da nome/dimensioni sharp.
+   */
+  static async resolveMetaSuffix(fileBuffer, originalName, options = {}) {
+
+
+    if (options.orientation === 'landscape' || options.orientation === 'portrait') {
+      return options.orientation;
+    }
+    
+    try {
+      const metadata = await sharp(fileBuffer).metadata();
+      if (metadata && metadata.width && metadata.height) {
+        return metadata.width >= metadata.height ? 'landscape' : 'portrait';
+      }
+    } catch (err) {
+      console.warn('[UploadService] Impossibile rilevare le dimensioni Sharp, fallback a landscape:', err.message);
+    }
+
+    return 'landscape';
+  }
+
+
   static async processAndSaveImage(toSaveFileInfo = {}) {
     let fileName, filePath, finalMimeType;
 
     switch (toSaveFileInfo.tag) {
       case 'MUSEUM':
         if (Imager.isRaster(toSaveFileInfo.mimeType)) {
-          fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.nextIndex}.webp`;
+          fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.suffix}.webp`;
           filePath = path.join(toSaveFileInfo.targetDir, fileName);
           finalMimeType = 'image/webp';      
           await sharp(toSaveFileInfo.fileBuffer)
@@ -100,7 +123,7 @@ class UploadService {
             .toFile(filePath);
         } else {
           const ext = Imager.getExt(toSaveFileInfo.originalName);
-          fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.nextIndex}.${ext}`;
+          fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.suffix}.${ext}`;
           filePath = path.join(toSaveFileInfo.targetDir, fileName);
           finalMimeType = toSaveFileInfo.mimeType;
     
@@ -130,49 +153,58 @@ class UploadService {
         return null;
     }
 
-    return { fileName, filePath, finalMimeType }
+    return { fileName, filePath, finalMimeType };
   }
+
   /**
    * Process and save file buffer.
-   * Transpiles image files to WebP format via Sharp.
+   * Per le cartelle 'meta' (isMeta = true) i suffissi sono unicamente 'landscape' o 'portrait' (al massimo 2 file).
+   * Per le altre cartelle si usano indici numerici sequenziali.
    */
   static async saveMuseumRelatedImage(fileBuffer, originalName, mimeType, options = {}) {
-
     const targetDir = this.getMuseumRelatedDir(options);
 
-    // 1. Ensure directory exists with fs-extra
+    // 1. Assicura l'esistenza della directory di destinazione
     await fs.ensureDir(targetDir);
     const prefix = this.getMuseumRelatedFilePrefix(options);
-
-    // Find next index for prefix in targetDir
     const existingFiles = await fs.readdir(targetDir);
     const escapedPrefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    const prefixPattern = new RegExp(`^${escapedPrefix}_(\\d+)\\.`, 'i');
 
-    // Multiple indexes -> multiple images for a single artist, artwork, ecc.
-    let maxIndex = 0;
-    for (const file of existingFiles) {
-      if (file.match(prefixPattern)) {
-        const num = parseInt(match[1], 10);
-        if (num > maxIndex) {
-          maxIndex = num;
+    // definire in maniera migliore
+    const isMeta = options.isMeta || targetDir.endsWith('/meta') || targetDir.endsWith('\\meta');
+    let suffix;
+
+    if (isMeta) {
+      // Per i meta esistono solo 2 possibili suffissi: 'landscape' e 'portrait'
+      suffix = await this.resolveMetaSuffix(fileBuffer, originalName, options);
+    } else {
+      // Per risorse non-meta (es. artworks, artists), si usa l'indice numerico sequenziale
+      const prefixPattern = new RegExp(`^${escapedPrefix}_(\\d+)\\.`, 'i');
+      let maxIndex = 0;
+      for (const file of existingFiles) {
+        const match = file.match(prefixPattern);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxIndex) {
+            maxIndex = num;
+          }
         }
       }
+      suffix = maxIndex + 1;
     }
-    const nextIndex = maxIndex + 1;
 
     const tag = 'MUSEUM';
     
     let toSaveFileInfo = {
       prefix,
-      nextIndex,
+      suffix,
       targetDir,
       fileBuffer,
       originalName,
+      mimeType,
       tag
-    }
+    };
     
-    // if raster -> webp, if svg -> svg 
     const newFileInfo = await this.processAndSaveImage(toSaveFileInfo);
 
     const fileStats = await fs.stat(newFileInfo.filePath);
@@ -211,6 +243,7 @@ class UploadService {
     }
 
     const tag = 'PROPIC';
+
     let toSaveFileInfo = {
       userId,
       basePropicDir,

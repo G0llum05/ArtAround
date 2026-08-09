@@ -1,4 +1,4 @@
-const { Groq, TranscriptionCreateParams, toFile } = require('groq-sdk');
+const { Groq, toFile } = require('groq-sdk');
 const { Sanitizer } = require("../utils/Sanitizer")
 
 /**

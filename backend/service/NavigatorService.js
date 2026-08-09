@@ -38,7 +38,35 @@ class NavigatorService {
     }
   }
 
-  static async audioActionHandler(audioFile, visitId, currentArtworkIndex, tone, length, language) { }
+  static async audioActionHandler(audioFile, visitId, currentArtworkIndex, tone, length, language) {
+    if (!audioFile || !audioFile.buffer) {
+      throw new Error('File audio mancante o non valido.');
+    }
+
+    const transcriptionResult = await LLMService.transcribeAudio(audioFile.buffer, {
+      filename: audioFile.originalname,
+      mimeType: audioFile.mimetype,
+      language: language
+    });
+
+    const transcribedText = transcriptionResult.text;
+    if (!transcribedText) {
+      throw new Error('Trascrizione audio fallita o testo trascritto vuoto.');
+    }
+
+    console.log(`\n\x1b[35m🎤 [DEBUG SERVICE] Testo trascritto dall'audio:\x1b[0m "${transcribedText}"\n`);
+
+    // Quando ha trascritto il testo lo inviamo nello streaming aperto al front
+    if (typeof onTranscription === 'function') {
+      // onTranscription è una funzione che invia il testo trascritto al frontend in tempo reale
+      await onTranscription(transcribedText);
+    }
+
+    // e continua l'elaborazione
+    const finalResult = await this.processCommandWithLLM(transcribedText, visitId, currentArtworkIndex, tone, length, language);
+
+    return { transcribedText, ...finalResult };
+  }
 
   /**
    * retituisce item con scelte cache-first:

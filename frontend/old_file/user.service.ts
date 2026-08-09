@@ -1,7 +1,7 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UserResponse, UserRequest, LoginRequest } from '../models/user.model';
+import { UserResponse, UserRequest, LoginRequest } from '../../../../frontend/old_file/user.model';
 
 @Injectable({
   providedIn: 'root',

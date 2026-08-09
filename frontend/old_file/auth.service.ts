@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { UserResponse, AuthResponse, LoginRequest, UserRequest } from '../models/user.model';
+import { UserResponse, AuthResponse, LoginRequest, UserRequest } from '../../../../frontend/old_file/user.model';
 
 @Injectable({
   providedIn: 'root'

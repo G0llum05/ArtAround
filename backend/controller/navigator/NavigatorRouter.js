@@ -13,8 +13,7 @@ const upload = multer({
 
 /**
 * endp necessari:
-* - post, navigator completo <- prende audio, trascrive, invia a GPT, riceve risposta testuale e audio
-* - post, navigator senza audio <- prende testo, invia a GPT, riceve risposta testuale e audio
+* - post, navigator completo sia con che senza audio
 */
 
 // Endpoint completo per i comandi navigatore

@@ -25,15 +25,18 @@ class GroqSTTService {
     }
 
     const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      throw new Error('Chiave GROQ_API_KEY non configurata in process.env.GROQ_API_KEY.');
+    const model = process.env.GROQ_STT_MODEL
+    if (!apiKey || !model) {
+      throw new Error('GROQ_API_KEY o GROQ_STT_MODEL non configurati. Controlla le variabili d\'ambiente.');
     }
 
     const groq = new Groq({ apiKey });
-    const model = process.env.GROQ_STT_MODEL
     const filename = options.filename || 'recording.webm';
     const mimeType = options.mimeType || 'audio/webm';
     const language = Sanitizer.sanitizeLanguage(options.language);
+    if (!language) {
+      throw new Error(`Parametro 'language' mancante o non valido: ${options.language}`);
+    }
 
     // Convert RAM buffer directly into a File object for groq-sdk (Zero disk I/O)
     const file = await toFile(audioBuffer, filename, { type: mimeType });

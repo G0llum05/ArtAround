@@ -3,6 +3,20 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { delay, of } from 'rxjs';
 
+export interface Tour {
+  id: string;
+  titolo: string;
+  immagine: string;
+  costo: number;
+  postiDisponibili: number;
+  postiTotali: number;
+  durata: number;
+  accessibile: boolean;
+  gratuito: boolean;
+  ufficiale: boolean;
+  interessi: string[];  // es. ['Pittura', 'Rinascimento']
+}
+
 @Component({
   selector: 'app-visit-customization',
   standalone: true,

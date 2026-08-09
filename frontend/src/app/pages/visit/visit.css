@@ -131,6 +131,7 @@
   border-radius: var(--radius-default);
   padding: var(--spacing-md) var(--spacing-sm);
   display: flex;
+  justify-content: center;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-xs);
@@ -274,6 +275,7 @@
   color: var(--tertiary);
 }
 
+
 /* --- LAYOUT DESKTOP FEDELE ALLA FOTO --- */
 @media (min-width: 48rem) {
   .page-container {
@@ -290,17 +292,37 @@
 
   .form-grid {
     gap: var(--spacing-md);
-    /* Griglia Asimmetrica! La colonna sinistra è più stretta della destra (come in foto) */
-    grid-template-columns: 1fr 1.4fr;
+
+    /* Regola la larghezza delle due colonne.  */
+    grid-template-columns: 1.2fr 1fr;
+
+    /* il layout in testo esattamente come nel tuo schizzo */
     grid-template-areas:
-      "museo museo"
-      "chi-sei interessi"
-      "durata opzioni";
+      "museo     chi-sei"
+      "interessi chi-sei"
+      "opzioni   durata";
   }
 
+  /* Assegniamo le card ai nomi della griglia */
   .card-museo { grid-area: museo; }
   .card-chi-sei { grid-area: chi-sei; }
   .card-interessi { grid-area: interessi; }
   .card-durata { grid-area: durata; }
   .card-opzioni { grid-area: opzioni; }
+
+  .card-chi-sei .role-grid {
+    flex-grow: 1;
+    align-content: center; /* Centra i 4 pulsanti verticalmente se c'è troppo spazio */
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .role-icon {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+
+  .role-btn {
+    font-size: var(--body-lg-size);
+    gap: var(--spacing-sm);
+  }
 }

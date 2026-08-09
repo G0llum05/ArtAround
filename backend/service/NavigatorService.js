@@ -5,8 +5,10 @@ const Artwork = require('../data/model/Artwork');
 const Visit = require('../data/model/Visit');
 const Museum = require('../data/model/Museum');
 const LLMService = require('./LLMService');
+const NLParser = require('./NLParser');
 const ItemMapper = require('../data/mapper/ItemMapper');
 const ArtworkMapper = require('../data/mapper/ArtworkMapper');
+const Sanitizer = require('../utils/Sanitizer');
 
 
 class NavigatorService {
@@ -28,7 +30,7 @@ class NavigatorService {
 
     switch (actionType) {
       case 'AUDIO_ACTION':
-        return await this.audioActionHandler(audioFile, visitId, currentArtworkIndex, tone, length, language);
+        return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language);
       case 'ITEM_ACTION':
         return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language);
       case 'NON_ITEM_ACTION':
@@ -38,7 +40,7 @@ class NavigatorService {
     }
   }
 
-  static async audioActionHandler(audioFile, visitId, currentArtworkIndex, tone, length, language) {
+  static async audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language) {
     if (!audioFile || !audioFile.buffer) {
       throw new Error('File audio mancante o non valido.');
     }
@@ -63,9 +65,66 @@ class NavigatorService {
     }
 
     // e continua l'elaborazione
-    const finalResult = await this.processCommandWithLLM(transcribedText, visitId, currentArtworkIndex, tone, length, language);
+    const museum = await Museum.findById(museumId).exec();
+    if (!museum) {
+      throw new Error(`Museo con ID "${museumId}" non trovato.`);
+    }
+    const artwork = await Artwork.findById(await this.getArtworkId(visitId, currentArtworkIndex)).exec();
+
+    // prima parser scritto a mano, se non riesce chiamate all'LLM. L'obiettivo di entrambi è capire l'intento, poi si passa agli handler item o non-item
+    const response = await this.parseIntentHandler(transcribedText, museum, artwork, tone, length, language);
+    // direi che valida completamente l'out dell'llm 
+    if (!response || !response.actionType || (response.actionType === 'ITEM_ACTION' && !response.itemAction) || (response.actionType === 'NON_ITEM_ACTION' && (!response.targetPoiType || !response.targetArtist))) {
+      throw new Error('Parsing dell\'intento fallito o intento non riconosciuto.');
+    }
+
+    if (response.language) {
+      language = Sanitizer.sanitizeLanguage(response.language) || language;
+    }
+
+    if (response.length) {
+      length = Sanitizer.sanitizeLength(response.length) || length;
+    }
+
+    if (response.tone) {
+      tone = Sanitizer.sanitizeTone(response.tone) || tone;
+    }
+
+    const finalResult = await this.navigatorHandler({
+      language,
+      length,
+      tone,
+      museumId: museumId,
+      visitId: visitId,
+      currentArtworkIndex: currentArtworkIndex,
+      actionType: intentResult.actionType,
+      audioFile: null, // rimosso l'audio
+      itemAction: intentResult.itemAction || null,
+      targetPoiType: intentResult.targetPoiType || null,
+      targetArtist: intentResult.targetArtist || null
+    });
 
     return { transcribedText, ...finalResult };
+  }
+
+  /**
+  * @returns {Promise<{ actionType: string, itemAction?: string, targetPoiType?: string, targetArtist?: string }>}
+  */
+  static async parseIntentHandler(transcribedText, language) {
+    try {
+      const nlpResult = await NLParser.parseIntentNL(transcribedText, language);
+      if (nlpResult) {
+        return nlpResult;
+      }
+      const llmResult = await LLMService.parseIntentLLM(transcribedText, language);
+      if (llmResult) {
+        return llmResult;
+      }
+      throw new Error('Intent non riconosciuto né dal parser né dall\'LLM.');
+    } catch (error) {
+      console.error('Errore durante il parsing dell\'intento:', error);
+      throw new Error('Errore durante il parsing dell\'intento.');
+    }
   }
 
   /**
@@ -152,6 +211,7 @@ class NavigatorService {
   }
 
   static async nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language) {
+    // POI
     if (targetPoiType) {
       const museum = await Museum.findById(museumId).populate('pointsOfInterest').exec();
       if (!museum) {
@@ -159,13 +219,15 @@ class NavigatorService {
       }
 
       const POI = museum.pointsOfInterest.find(p => p.type === targetPoiType);
+
       if (!POI) {
         throw new Error(`Punto di interesse di tipo "${targetPoiType}" non trovato nel museo "${museum.name}".`);
       }
 
       return LLMService.nonItemPOI(museum.name, POI, language, tone);
 
-    } else if (targetArtist) {
+    } else if (targetArtist) { // Artist Info
+
       const currentArtworkId = await this.getArtworkId(visitId, currentArtworkIndex);
       const artwork = await Artwork.findById(currentArtworkId).populate('items').populate('artists').exec();
       if (!artwork) {

@@ -53,6 +53,10 @@ function promptHandler(key, replacements = {}) {
       template = promptsConfig?.POI;
       break;
 
+    case 'parseCommand':
+      template = promptsConfig?.parseCommand;
+      break;
+
     default:
       template = promptsConfig?.[key] || '';
       break;
@@ -147,6 +151,33 @@ class LLMService {
       return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
     }
   }
+
+  /**
+  * @returns {Promise<{ actionType: string, itemAction?: string, targetPoiType?: string, targetArtist?: string }>}
+  */
+  static async parseIntentLLM(inputText, museum, artwork, tone, length, language) {
+    const inputTextLower = (inputText || '').toLowerCase().trim();
+    if (!inputTextLower) {
+      return { actionType: 'ERROR', itemAction: null, targetPoiType: null, targetArtist: null };
+    }
+
+    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+      throw new Error('Nessun LLM configurato in .env. Impossibile eseguire il parsing dell\'intento.');
+    }
+
+    try {
+      const prompt = promptHandler('parseCommand', { inputTextLower, museum, artwork, tone, length, language });
+      // response: actionType, itemAction/targetPoiType/targetArtist, lingua se cambia, lunghezza se cambia, tono se cambia
+      const response = await this._callLLMHandler(prompt);
+      const parsed = this._cleanAndParseJSON(response);
+      if (parsed) {
+        return parsed;
+      }
+    } catch (err) {
+      console.warn('[LLMService] Chiamata LLM parsing intento fallita:', err.message);
+    }
+
+
   //
   // /**
   //  * (1) PARSE COMMAND: Mappa frasi in linguaggio naturale sugli Intent del Vocabolario Controllato

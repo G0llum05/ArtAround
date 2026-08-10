@@ -82,6 +82,10 @@
   color: var(--on-surface-variant);
 }
 
+.card-museo {
+  border: 1px solid var(--primary);
+}
+
 /* --- 1. SELECT MUSEO --- */
 .select-wrapper {
   position: relative;

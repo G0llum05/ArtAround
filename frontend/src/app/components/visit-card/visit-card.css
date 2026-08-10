@@ -1,0 +1,167 @@
+/* --- CONTENITORE PRINCIPALE --- */
+:host {
+  display: block;
+  height: 100%;
+}
+
+.visit-card {
+  background-color: var(--surface);
+  border: 0.0625rem solid var(--outline-variant);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.visit-card:hover {
+  /* translateY(-4px) -> -0.25rem */
+  transform: translateY(-0.25rem);
+  /* 0 12px 24px -> 0 0.75rem 1.5rem */
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08);
+}
+
+/* --- IMMAGINE --- */
+.card-image-wrapper {
+  position: relative;
+  height: 8.75rem; /* 140px = 8.75rem */
+  width: 100%;
+  background-color: var(--surface-variant);
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Contenitore in alto a destra: allinea i badge se ce n'è più di uno */
+.card-badges-top {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* La forma base del singolo badge: un cerchio perfetto */
+.floating-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
+  border: 0.0625rem solid transparent; /* Base per il bordo */
+}
+
+/* Gestione dimensioni icone SVG interne */
+.floating-badge svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: currentColor; /* L'icona prende automaticamente il 'color' definito sotto! */
+}
+
+/* --- I TUOI COLORI SPECIFICI --- */
+.disable-friendly {
+  background-color: var(--surface-variant);
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+.free {
+  background-color: var(--surface-variant);
+  border-color: var(--tertiary);
+  color: var(--tertiary);
+}
+
+/* --- CONTENUTO (Testi) --- */
+.card-content {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: var(--body-lg-size);
+  color: var(--on-surface);
+  margin: 0;
+  line-height: 1.25;
+}
+
+@media (min-width: 48rem){
+  .card-title {
+    font-size: var(--headline-md-size);
+  }
+}
+
+.card-price {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--on-surface);
+  white-space: nowrap;
+  margin-top: 0.2rem;
+}
+
+.card-desc {
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  color: var(--on-surface-variant);
+  margin: 0 0 var(--spacing-lg) 0;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+/* --- TAGS (In fondo alla card) --- */
+.card-tags {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.tag {
+  background-color: var(--background);
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-family: var(--font-sans);
+  font-size: var(--label-md-size);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag.accent {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: 1px solid var(--primary);
+}
+
+/* Stili opzionali (aggiunti nel caso tu voglia usare tag colorati/attivi anche dentro le card, come fai per le chip) */
+.disable-friendly {
+  background-color: var(--surface-variant);
+  border-color: var(--secondary);
+  color: var(--secondary);
+  font-weight: var(--label-md-weight);
+}
+
+.free {
+  background-color: var(--surface-variant);
+  border-color: var(--tertiary);
+  color: var(--tertiary);
+  font-weight: var(--label-md-weight);
+}

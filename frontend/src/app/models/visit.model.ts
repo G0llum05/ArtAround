@@ -86,6 +86,9 @@ export interface VisitHomePresentationResponse {
     verified: boolean,
     disabledFriendly: boolean,
     badge: string,
-    imageUrls: string[]
+    imageUrls: string[],
+    duration: number,
+    free: boolean,
+    cost: number,
 }
 

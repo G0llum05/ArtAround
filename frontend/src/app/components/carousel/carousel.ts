@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, input, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {VisitHomePresentationResponse} from '../../models/visit.model';
 
 @Component({
   selector: 'app-carousel',
@@ -9,8 +10,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './carousel.css'
 })
 export class Carousel implements OnInit, OnDestroy {
-  @Input() items: any[] = [];
-  @Input() autoPlayInterval: number = 5000;
+  items = input.required<VisitHomePresentationResponse[]>();
+  autoPlayInterval = input(5000)
 
   currentIndex = signal<number>(0);
   isInstant = signal<boolean>(false);
@@ -20,8 +21,8 @@ export class Carousel implements OnInit, OnDestroy {
 
   // Lista virtuale con il primo elemento duplicato in fondo
   extendedItems = computed(() => {
-    if (!this.items || this.items.length === 0) return [];
-    return [...this.items, this.items[0]];
+    if (!this.items() || this.items().length === 0) return [];
+    return [...this.items(), this.items()[0]];
   });
 
   ngOnInit(): void {
@@ -35,10 +36,10 @@ export class Carousel implements OnInit, OnDestroy {
 
   startAutoPlay(): void {
     this.stopAutoPlay();
-    if (this.items && this.items.length > 1) {
+    if (this.items() && this.items().length > 1) {
       this.timer = setInterval(() => {
         this.next();
-      }, this.autoPlayInterval);
+      }, this.autoPlayInterval());
     }
   }
 
@@ -56,7 +57,7 @@ export class Carousel implements OnInit, OnDestroy {
   }
 
   next(): void {
-    if (!this.items || this.items.length === 0) return;
+    if (!this.items() || this.items().length === 0) return;
 
     // Pulisci eventuali timeout pendenti per evitare conflitti
     this.resetAutoPlayTimer();
@@ -67,11 +68,11 @@ export class Carousel implements OnInit, OnDestroy {
 
     this.isInstant.set(false);
     const current = this.currentIndex();
-    const lastRealIndex = this.items.length - 1;
+    const lastRealIndex = this.items().length - 1;
 
     if (current == lastRealIndex) {
       // Siamo sull'ultima slide originale, andiamo sul clone (indice items.length)
-      this.currentIndex.set(this.items.length);
+      this.currentIndex.set(this.items().length);
 
       // Aspettiamo che finisca l'animazione visiva, poi resettiamo a 0 senza animazione
       this.animationTimer = setTimeout(() => {
@@ -86,17 +87,17 @@ export class Carousel implements OnInit, OnDestroy {
   }
 
   prev(): void {
-    if (!this.items || this.items.length === 0) return;
+    if (!this.items() || this.items().length === 0) return;
 
     clearTimeout(this.animationTimer);
     this.resetAutoPlayTimer();
 
     const current = this.currentIndex();
-    const lastRealIndex = this.items.length - 1;
+    const lastRealIndex = this.items().length - 1;
 
     if (current <= 0) {
       this.isInstant.set(true);
-      this.currentIndex.set(this.items.length); // Posizione del clone
+      this.currentIndex.set(this.items().length); // Posizione del clone
 
       setTimeout(() => {
         this.isInstant.set(false);
@@ -109,7 +110,7 @@ export class Carousel implements OnInit, OnDestroy {
   }
 
   goTo(index: number): void {
-    if (index >= 0 && index < this.items.length) {
+    if (index >= 0 && index < this.items().length) {
       clearTimeout(this.animationTimer);
       this.isInstant.set(false);
       this.currentIndex.set(index);

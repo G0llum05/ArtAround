@@ -1,19 +1,13 @@
-/* Stesso identico :host della pagina Home */
 :host {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  justify-content: center;
+  min-height: 90vh;
   background-color: var(--background);
   color: var(--on-surface);
   font-family: var(--font-sans);
   font-size: var(--body-lg-size);
 }
-
-/*
- * WRAPPER PRINCIPALE
- * Struttura, max-width, padding e box-sizing copiati 1:1 da .home-container
- * per garantire una larghezza orizzontale perfettamente identica al millimetro.
- */
 
 .not-found-wrapper {
   flex-grow: 1;
@@ -22,9 +16,9 @@
   margin: 0 auto;
   padding: var(--margin-mobile);
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
   gap: var(--spacing-xl);
   box-sizing: border-box;
   text-align: center;
@@ -35,6 +29,7 @@
     padding: var(--spacing-xl) var(--margin-desktop); /* Identico alla Home */
     flex-direction: row;
     text-align: left;
+    justify-content: space-between;
   }
 }
 
@@ -44,6 +39,7 @@
 .not-found-content {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   flex: 1;
   min-width: 0;

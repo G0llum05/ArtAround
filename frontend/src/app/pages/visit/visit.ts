@@ -2,25 +2,12 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { delay, of } from 'rxjs';
-
-export interface Tour {
-  id: string;
-  titolo: string;
-  immagine: string;
-  costo: number;
-  postiDisponibili: number;
-  postiTotali: number;
-  durata: number;
-  accessibile: boolean;
-  gratuito: boolean;
-  ufficiale: boolean;
-  interessi: string[];  // es. ['Pittura', 'Rinascimento']
-}
+import {VisitResultsGrid} from '../../components/visit-results-grid/visit-results-grid';
 
 @Component({
   selector: 'app-visit-customization',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, VisitResultsGrid],
   templateUrl: './visit.html',
   styleUrl: './visit.css'
 })

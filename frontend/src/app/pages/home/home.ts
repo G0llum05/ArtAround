@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Carousel } from '../../components/carousel/carousel';
+import {VisitHomePresentationResponse} from '../../models/visit.model';
 
 interface ArtworkPlaceholder {
   id: string;
@@ -20,7 +21,7 @@ interface ArtworkPlaceholder {
   styleUrl: './home.css'
 })
 export class Home {
-  userName= signal<string>('John Doe') ;
+  userName = signal<string>('John Doe');
 
   activeVisit = signal<ArtworkPlaceholder>({
     id: '123',
@@ -32,61 +33,49 @@ export class Home {
 
   /*activeVisit = signal<ArtworkPlaceholder | null>(null)*/
 
-  recommendedExhibitions = [
+  recommendedExhibitions: VisitHomePresentationResponse[] = [
     {
-      id: 'ex-13',
-      title: 'Luminous Geometry',
-      subtitle: 'Contemporary Wing • Ends Oct 15',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATUzfoUX9jXXmlMerx1p9mheAOEJ9JEc0DBEaqGUksGseAU-CTR9K1XHYCysGfifRMPvSL71Necq7rv_TFM-fzXSxNo_L8DZWgNqAc4nBYJguBdPfFizQTwGQ4lemzdhlhhuOUW5UCEwy9JrAqM2kZu0FnqZvavbvyMSVcgz6Ab_-bFIC-3L2PssMMoPwrkMavGpUzWWIKEQuou8faaF0JTAtcULFG4H69WBMdFosNApHZkNqt2VAm',
-      badge: 'In Chiusura',
-      badgeType: 'accent'
+      id: "home-visit-uuid-987",
+      title: "Tour Esclusivo del Louvre al Tramonto",
+      description: "Vivi la magia del museo più famoso al mondo senza la folla, accompagnato da una guida esperta.",
+      verified: true,
+      disabledFriendly: true,
+      badge: "Consigliato",
+      imageUrls: [
+        "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1565098772267-60af42b81ef2?q=80&w=800&auto=format&fit=crop"
+      ],
+      duration: 2.5,
+      free: false,
+      cost: 35.00
     },
     {
-      id: 'ex-16',
-      title: 'Luminous Geometry',
-      subtitle: 'Contemporary Wing • Ends Oct 15',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATUzfoUX9jXXmlMerx1p9mheAOEJ9JEc0DBEaqGUksGseAU-CTR9K1XHYCysGfifRMPvSL71Necq7rv_TFM-fzXSxNo_L8DZWgNqAc4nBYJguBdPfFizQTwGQ4lemzdhlhhuOUW5UCEwy9JrAqM2kZu0FnqZvavbvyMSVcgz6Ab_-bFIC-3L2PssMMoPwrkMavGpUzWWIKEQuou8faaF0JTAtcULFG4H69WBMdFosNApHZkNqt2VAm',
-      badge: 'In Chiusura',
-      badgeType: 'accent'
+      id: "home-visit-uuid-988",
+      title: "Capolavori degli Uffizi con Guida",
+      description: "Un viaggio indimenticabile tra i capolavori del Rinascimento italiano senza fare la fila.",
+      verified: true,
+      disabledFriendly: true,
+      badge: "Popolare",
+      imageUrls: [
+        "https://images.unsplash.com/photo-1518998053401-87891849db96?q=80&w=800&auto=format&fit=crop"
+      ],
+      duration: 2.0,
+      free: false,
+      cost: 29.00
     },
     {
-      id: 'ex-19',
-      title: 'Luminous Geometry',
-      subtitle: 'Contemporary Wing • Ends Oct 15',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATUzfoUX9jXXmlMerx1p9mheAOEJ9JEc0DBEaqGUksGseAU-CTR9K1XHYCysGfifRMPvSL71Necq7rv_TFM-fzXSxNo_L8DZWgNqAc4nBYJguBdPfFizQTwGQ4lemzdhlhhuOUW5UCEwy9JrAqM2kZu0FnqZvavbvyMSVcgz6Ab_-bFIC-3L2PssMMoPwrkMavGpUzWWIKEQuou8faaF0JTAtcULFG4H69WBMdFosNApHZkNqt2VAm',
-      badge: 'In Chiusura',
-      badgeType: 'accent'
-    },
-    {
-      id: 'ex-157',
-      title: 'Luminous Geometry',
-      subtitle: 'Contemporary Wing • Ends Oct 15',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATUzfoUX9jXXmlMerx1p9mheAOEJ9JEc0DBEaqGUksGseAU-CTR9K1XHYCysGfifRMPvSL71Necq7rv_TFM-fzXSxNo_L8DZWgNqAc4nBYJguBdPfFizQTwGQ4lemzdhlhhuOUW5UCEwy9JrAqM2kZu0FnqZvavbvyMSVcgz6Ab_-bFIC-3L2PssMMoPwrkMavGpUzWWIKEQuou8faaF0JTAtcULFG4H69WBMdFosNApHZkNqt2VAm',
-      badge: 'In Chiusura',
-      badgeType: 'accent'
-    },
-    {
-      id: 'ex-1',
-      title: 'Luminous Geometry',
-      subtitle: 'Contemporary Wing • Ends Oct 15',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATUzfoUX9jXXmlMerx1p9mheAOEJ9JEc0DBEaqGUksGseAU-CTR9K1XHYCysGfifRMPvSL71Necq7rv_TFM-fzXSxNo_L8DZWgNqAc4nBYJguBdPfFizQTwGQ4lemzdhlhhuOUW5UCEwy9JrAqM2kZu0FnqZvavbvyMSVcgz6Ab_-bFIC-3L2PssMMoPwrkMavGpUzWWIKEQuou8faaF0JTAtcULFG4H69WBMdFosNApHZkNqt2VAm',
-      badge: 'In Chiusura',
-      badgeType: 'accent'
-    },
-    {
-      id: 'ex-2',
-      title: 'Earth & Fire: Eastern Ceramics',
-      subtitle: 'Asian Art Pavilion • Ongoing',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB92GJz0DCj50R5nSrG5_1QHW-iiakosTHX4HFqR9m2WgtlVn33iGOAa7gJfWMuGHKNhbimCozOA6gkz3oP_N9i5YPfK8B_w1w3V4kFGIaxiaEWKAkKCebU0CeGhbnxhIGQHhX17DuFjuhciUxLNyNpU-NsgqqEhftEKQ02CUKzDePr3A_Youflzd29okIp31JJiGpMBd2vxmpweIYY9_Z2li3o0layVRj5lAP4m-j-0894Js4Pd2Bg',
-      badge: null
-    },
-    {
-      id: 'ex-3',
-      title: 'Urban Constructs',
-      subtitle: 'Photography Gallery • Just Opened',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqCwZhDHtLcDdclzIA9u3gS6g_lfJvbYUadWIPnZkoDJ2wx6ARa_mOyaFOP4ddZOwTK1bESg3CHtJCUQFyN5Sr5mRceH2dbB_x0sk-1O_Mp4unNvMCulLCR8GHfZOmZuuUZbjtpVJURBEnE-UiFckXsrS-YfrJdBdfuqhJApVaHTSTuTVLIrnwN7envMt-8H7Iz1NNFXtrG2CfMNRkF2aQ3zNAruNW__dJWhubbs8QqWEJ3yvmukY4',
-      badge: 'Nuovo Arrivo',
-      badgeType: 'default'
+      id: "home-visit-uuid-989",
+      title: "Passeggiata Storica nei Giardini Vaticani",
+      description: "Esplora i magnifici giardini e le meraviglie nascoste all'aperto in totale autonomia.",
+      verified: false,
+      disabledFriendly: false,
+      badge: "Gratis",
+      imageUrls: [
+        "https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=800&auto=format&fit=crop"
+      ],
+      duration: 1.5,
+      free: true,
+      cost: 0.00
     }
   ];
 }

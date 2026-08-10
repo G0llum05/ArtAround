@@ -10,7 +10,7 @@ export interface ArtistResponse {
     teacherOf: ArtistResponse
 }
 
-export interface ArtworkRequest {
+export interface ArtistRequest {
     name: string,
     surname: string,
     artworks: ArtistResponse[],

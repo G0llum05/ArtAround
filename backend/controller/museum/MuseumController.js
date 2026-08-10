@@ -10,6 +10,16 @@ class MuseumController {
     }
   }
 
+  static async getById(req, res) {
+    try {
+      id = req.params.id;
+      const museums = await MuseumService.getMuseumById(id);
+      res.status(200).json(museums);
+    } catch (e) {
+      res.status(500).json({ message: e.message });
+    }
+  }
+
   static async searchByName(req, res) {
     try {
       const museums = await MuseumService.searchByName(req.body.str);

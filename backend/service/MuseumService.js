@@ -5,6 +5,10 @@ class MuseumService {
   static async getAllMuseum() {
     return await Museum.find().lean();
   }
+
+  static async getMuseumById(id) {
+    return await Museum.findById(id).lean();
+  }
   
   // Ricerca per inizio del nome
   static async searchByName(str) {

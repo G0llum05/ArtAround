@@ -28,11 +28,12 @@ router.get('/:id/artwork-images', VisitController.getVisitArtworkImages);
 router.get('/:id/artist-images', VisitController.getVisitArtistImages);
 
 // GET /:id/home-presentation
-router.get('/:id/home-presentation', VisitController.getVisitHomePresentation);
-router.get('/museum/:museumId/visit/:visitId/home-presentation', VisitController.getVisitHomePresentation);
+router.get('/:museumId/visit/:visitId/home-presentation', VisitController.getVisitHomePresentation);
 
 // POST /
 // Corrisponde a POST /api/visits/
 router.post('/', VisitController.createVisit);
+
+
 
 module.exports = router;

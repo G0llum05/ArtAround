@@ -80,9 +80,39 @@ Progetto Tecnologie Web A.A. 2025/26
   3. Guardie di Navigazione (Route Guards):
       • AuthGuard: Protegge le rotte riservate reindirizzando al login gli utenti non autenticati.
       • RoleGuard: Protegge le sezioni riservate ai singoli ruoli (es. dashboard musei per museumstaff).
+  ──────
+  ## UPLOAD
+  ### Architettura di Upload di Immagini
+  [Client]
+  1. Uppy.js: mostra una maschera di caricamento tramite drag and drop e seleziona file
+  2. Invio dei file caricat tramite form-data
+  [Server]
+  1. Multer: middleware che permette di creare un buffer in ram appositamente per i file caricati, utilizzato per evitare operazione di I/O sul disco della VM, rendendo il processo molto più rapido.
+  2. Controllo del tipo di Upload:
+    - Museum-Related Upload: il file viene salvato all'interno della cartella `assets/museums/` seguendo il percorso corretto per ciascuna sotto categoria quale `artists`, `artwork`, `museum`, `visit`.
+    - Profile picture Upload: il file viene salvato nella cartella `assets/users/:userId` 
+  3. Imager: controlla l'estensione del file in input:
+    - Se Immagine raster: la converto tramite il middleware sharp nel formato webp, compresso e molto più leggero da salvare nel database.
+    - Se Immagine vettoriale: la mantengo nel suo formato originale.
+  4. File System: l'immagine viene restituita come risposta tramite un servizio di URL resolution.
 
-
-
+## NAVIGATOR
+### Archiettura del Navigator
+0. Pianificazione della visita: l'utente ha la possibilità, una volta selezionato il museo di trovare una o più visite, sulla base di diversi parametri.
+    - Chi sei (tono): l'utente può selezionare il tono della visita.
+    - Quanto tempo hai: restituisce tutte le visite che hanno durata massima del tempo selezionato
+    - Interessi: selezione le visita in base alle categorie scelte dall'utente.
+    - Opzioni aggiuntive: accessibilità per disabili, visita gratuita.
+1. Interazione con l'utente
+    - Interazione guidata: utilizzo di bottoni con domande standardizzate per permettere una rapida interazione manuale
+    - Interazione vocale: utilizziamo un'architettura STT -> RequestParser -> [LLMRequest] -> TTS per fornire una risposta quanto più funzionale alle richieste dell'utente
+### Archiettura vocale
+1. Cattura audio: utilizziamo la Web Speech API nativa per catturare il file audio in formato `.wav`.
+2. Multer: crea un buffer in RAM per evitare operazioni I/O su disco.
+3. Speech-To-Text: chiamata API a GroqSTT che restituisce il testo trascritto.
+4. Parsing della risposta: partendo dal testo trascritto [...]
+5. Text-To-Speech: mandiamo una richiesta alla ResponsiveVoiceAPI che restituisce un file audio `.wav`.
+6. Client: la Web Speech API risceve in input il file trascritto e riproduce l'audio in automatico.
 
 ## TEST CLI-Navigator 
 

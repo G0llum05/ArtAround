@@ -28,7 +28,7 @@ router.get('/:id/artwork-images', VisitController.getVisitArtworkImages);
 router.get('/:id/artist-images', VisitController.getVisitArtistImages);
 
 // GET /:id/home-presentation
-router.get('/:museumId/visit/:visitId/home-presentation', VisitController.getVisitHomePresentation);
+router.get('/homePresentation', VisitController.getVisitHomePresentation);
 
 // POST /
 // Corrisponde a POST /api/visits/

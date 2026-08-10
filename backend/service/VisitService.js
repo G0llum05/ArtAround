@@ -105,23 +105,49 @@ class VisitService {
   }
 
   /**
-   * Restituisce il DTO di presentazione della visita per la Home Page.
+   * Restituisce le top 10 visite più popolari per il marketplace, ordinate per numero di like e visualizzazioni.
+    * @returns {Promise<Array>} Array di oggetti contenenti le informazioni delle visite più popolari.
    */
-  static async getVisitHomePresentation(museumId, visitId) {
-    const visit = await Visit.findById(visitId).lean();
-    if (!visit) return null;
+  static async getVisitHomePresentation() {
 
-    const imageUrls = await ImageUrlService.getVisitImageUrl(museumId, visitId);
-
-    // Da definire meglio
-    let badge = '';
-    if (visit.price === 0) {
-      badge = 'Gratuito';
-    } else if (visit.likesCount > 10) {
-      badge = 'Popolare';
+    const visits = await Visit.find({ isActive: { $ne: false } }).lean();
+    if (!visits || visits.length === 0) {
+      return [];
     }
 
-    return Mapper.toVisitHomePresentationRes(visit, imageUrls, badge);
+    // Ordina le visite per numero di like e visualizzazioni (decrescente)
+    visits.sort((a, b) => {
+      const likesDiff = (b.likesCount || 0) - (a.likesCount || 0);
+      if (likesDiff !== 0) return likesDiff;
+      const viewsDiff = (b.views?.total || 0) - (a.views?.total || 0);
+      return viewsDiff;
+    });
+
+    // Prendi le prime 10 visite più popolari
+    const topVisits = visits.slice(0, 10);
+
+    // TODO CHECK fare immagini catching
+    // immagini di default per CIASCUNA delle 10 visite
+    const defaultImages = [
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000",
+      "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000"
+    ];
+
+    // Matrice: per ogni visita associamo l'array di 2 immagini
+    const imageUrlsList = topVisits.map(() => defaultImages);    // const imageUrls = await ImageUrlService.getVisitImageUrl(visit.museumId, visit._id);
+
+
+
+    // // TODO CHECK Da definire meglio
+    const badges = topVisits.map(v => v.price === 0 ? 'Gratuito' : ((v.likesCount || 0) > 10 ? 'Popolare' : ''));
+
+    // if (visit.p;rice === 0) {
+    //   badge = 'Gratuito';
+    // } else if (visit.likesCount > 10) {
+    //   badge = 'Popolare';
+    // }
+
+    return Mapper.toVisitHomePresentationList(topVisits, imageUrlsList, badges);
   }
 }
 

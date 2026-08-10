@@ -59,7 +59,7 @@ class VisitController {
     }
   }
 
-  
+
   static async getVisitArtworkImages(req, res) {
     try {
       const visitId = req.params.visitId;
@@ -77,15 +77,15 @@ class VisitController {
       res.status(500).json({ message: 'Errore durante la risoluzione delle immagini per la visita', error: error.message });
     }
   }
-  
+
   static async getVisitArtistImages(req, res) {
     try {
       const visitId = req.params.visitId;
       const museumId = req.params.museumId;
-      
+
       // Normalizzazione Input DTO
       const requestDTO = new VisitImageRequestDTO(museumId, visitId);
-      
+
       const result = await VisitService.getVisitArtistImages(requestDTO.museumId, requestDTO.visitId);
       if (!result) {
         return res.status(404).json({ message: 'Visita non trovata' });
@@ -98,21 +98,18 @@ class VisitController {
 
   static async getVisitHomePresentation(req, res) {
     try {
-      const visitId = req.params.visitId;
-      const museumId = req.params.museumId;
-
-      // Normalizzazione Input DTO
-      const requestDTO = new VisitHomePresentationRequestDTO(museumId, visitId);
-
-      const result = await VisitService.getVisitHomePresentation(requestDTO.museumId, requestDTO.visitId);
+      const result = await VisitService.getVisitHomePresentation();
       if (!result) {
-        return res.status(404).json({ message: 'Visita non trovata' });
+        return res.status(404).json({ message: 'Visite di presentazione non trovata' });
       }
+
       res.status(200).json(result);
     } catch (error) {
       res.status(500).json({ message: 'Errore durante la generazione della presentazione home per la visita', error: error.message });
     }
   }
+
+
   static async createVisit(req, res) {
     try {
       const {
@@ -120,17 +117,17 @@ class VisitController {
         minDuration, maxDuration, startDate, endDate, active,
         weeklySchedule, disabledFriendly, requirements, quiz, categories, artworks
       } = req.body;
-  
+
       // Normalizzazione Input con Request DTO
       const visitRequestDTO = new VisitRequestDTO(
         title, description, price, license, verified,
         minDuration, maxDuration, startDate, endDate, active,
         weeklySchedule, disabledFriendly, requirements, quiz, categories, artworks
       );
-  
+
       const visitData = VisitMapper.toVisit(visitRequestDTO);
       const newVisit = await VisitService.createVisit(visitData);
-  
+
       // Normalizzazione Output con Response DTO
       const newVisitDTO = VisitMapper.toVisitResponseDTO(newVisit);
       res.status(201).json(newVisitDTO);
@@ -139,7 +136,7 @@ class VisitController {
     }
   }
 
-  
+
 }
 
 module.exports = VisitController;

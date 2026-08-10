@@ -1,6 +1,6 @@
 import { Component, input, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {VisitHomePresentationResponse} from '../../models/visit.model';
+import { VisitHomePresentationResponse } from '../../models/visit.model';
 
 @Component({
   selector: 'app-carousel',
@@ -62,7 +62,7 @@ export class Carousel implements OnInit, OnDestroy {
     // Pulisci eventuali timeout pendenti per evitare conflitti
     this.resetAutoPlayTimer();
     //evito spam click
-    if(this.animationTimer) {
+    if (this.animationTimer) {
       return;
     }
 

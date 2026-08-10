@@ -5,46 +5,46 @@ import { VisitResponse, VisitRequest, VisitHomePresentationResponse } from '../m
 import { MuseumHomePresentationResponse, MuseumResponse } from '../models/museum.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class VisitService {
-    private readonly apiUrl = '/api/visit/';
+  private readonly apiUrl = '/api/visit/';
 
-    constructor(private http: HttpClient) {}
-    
-    getAll(): Observable<VisitResponse[]> {
-        return this.http.get<VisitResponse[]>(`${this.apiUrl}`);
-    }
+  constructor(private http: HttpClient) { }
 
-    getMarketPlaceFeed(): Observable<VisitResponse[]> {
-        return this.http.get<VisitResponse[]>(`${this.apiUrl}feed`);
-    }
+  getAll(): Observable<VisitResponse[]> {
+    return this.http.get<VisitResponse[]>(`${this.apiUrl}`);
+  }
 
-    getLikesById(id: string): Observable<number> {
-        return this.http.get<number>(`${this.apiUrl}${id}/like`);
-    }
+  getMarketPlaceFeed(): Observable<VisitResponse[]> {
+    return this.http.get<VisitResponse[]>(`${this.apiUrl}feed`);
+  }
 
-    getViewsById(id: string): Observable<number> {
-        return this.http.get<number>(`${this.apiUrl}${id}/view`);
-    }
+  getLikesById(id: string): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}${id}/like`);
+  }
 
-    getArtworkImagesById(id: string): Observable<string[]> {
-        return this.http.get<string[]>(`${this.apiUrl}${id}/artwork-images`);
-    }
-    
-    getArtistImagesById(id: string): Observable<string[]> {
-        return this.http.get<string[]>(`${this.apiUrl}${id}/arist-images`);
-    }
+  getViewsById(id: string): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}${id}/view`);
+  }
 
-    getHomePresentation(museumId: string, visitId: string): Observable<VisitHomePresentationResponse> {
-        return this.http.get<VisitHomePresentationResponse>(`${this.apiUrl}${museumId}/visit/${visitId}/home-presentation`);
-    }
+  getArtworkImagesById(id: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}${id}/artwork-images`);
+  }
 
-    create(visit: VisitRequest) {
-        return this.http.post<MuseumResponse>(`${this.apiUrl}`, visit);
-    }
+  getArtistImagesById(id: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}${id}/arist-images`);
+  }
 
-    
-    
-    
+  getHomePresentation(): Observable<VisitHomePresentationResponse[]> {
+    return this.http.get<VisitHomePresentationResponse[]>(`${this.apiUrl}homePresentation`);
+  }
+
+  create(visit: VisitRequest) {
+    return this.http.post<MuseumResponse>(`${this.apiUrl}`, visit);
+  }
+
+
+
+
 }

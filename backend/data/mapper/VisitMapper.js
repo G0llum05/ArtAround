@@ -51,8 +51,12 @@ class VisitMapper {
     };
   }
 
-  static toVisitHomePresentationRes(visit, imageUrls = [], badge = '') {
+  static toSingleVisitHomePresentationRes(visit, imageUrls, badge = '') {
     if (!visit) return null;
+    // TODO CHECK mancano dei campi
+    const free = visit.price === 0 || !visit.price;
+    const cost = visit.price || 0;
+    const duration = visit.minDuration || visit.maxDuration || 0;
     return new VisitHomePresentationResponseDTO(
       visit._id ? visit._id.toString() : visit.id,
       visit.title,
@@ -60,9 +64,22 @@ class VisitMapper {
       visit.verified,
       visit.disabledFriendly,
       badge,
-      imageUrls
+      imageUrls,
+      duration,
+      free,
+      cost
     );
   }
+
+  static toVisitHomePresentationList(visits, imageUrlsList = [], badges = []) {
+    if (!visits || !Array.isArray(visits)) return [];
+    return visits.map((visit, index) => {
+      const urls = imageUrlsList[index] || [];
+      const badge = badges[index] || '';
+      return VisitMapper.toSingleVisitHomePresentationRes(visit, urls, badge);
+    });
+  }
+
 }
 
 module.exports = VisitMapper;

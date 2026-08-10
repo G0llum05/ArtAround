@@ -78,6 +78,12 @@
   color: var(--tertiary);
 }
 
+.verified {
+  background-color: var(--surface-variant);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 /* --- CONTENUTO (Testi) --- */
 .card-content {
   padding: var(--spacing-md);
@@ -140,12 +146,13 @@
   border-radius: var(--radius-full);
   padding: var(--spacing-xs) var(--spacing-md);
   font-family: var(--font-sans);
-  font-size: var(--label-md-size);
+  font-size: var(--body-md-size);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .tag.accent {
+  font-weight: bold;
   background-color: var(--primary);
   color: var(--on-primary);
   border: 1px solid var(--primary);

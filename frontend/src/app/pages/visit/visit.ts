@@ -27,7 +27,8 @@ export class Visit implements OnInit {
       interessi: [[]],
       durata: [2],
       accessibile: [false],
-      gratuito: [false]
+      gratuito: [false],
+      verificata: [false],
     });
 
     // Seleziono il campo museo tramite get(con ?, ovvero Safe Call Operator/Optional Chaining), values changes è un observable a cui ci si iscrive

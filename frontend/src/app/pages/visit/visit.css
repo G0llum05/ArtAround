@@ -212,6 +212,13 @@
   font-weight: var(--label-md-weight);
 }
 
+.chip.verified-chip.active:not(.chip-qualsiasi) {
+  background-color: var(--surface-variant);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: var(--label-md-weight);
+}
+
 .chip.partial {
   background-color: transparent;
   border: 1px dashed var(--secondary);
@@ -277,6 +284,10 @@
 
 .chip.money-chip .small-svg{
   color: var(--tertiary);
+}
+
+.chip.verified-chip .small-svg{
+  color: var(--primary);
 }
 
 

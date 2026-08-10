@@ -6,8 +6,6 @@ const cookieParser = require('cookie-parser');
 const passport = require('./passport');
 
 function setupMiddlewares(app) {
-  const nodeEnv = process.env.NODE_ENV || 'production';
-
   // per Nginx del lab, serve per https
   app.set('trust proxy', 1);
 

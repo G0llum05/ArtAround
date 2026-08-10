@@ -27,3 +27,4 @@ class ArtistMapper {
   }
 }
 
+module.exports = ArtistMapper;

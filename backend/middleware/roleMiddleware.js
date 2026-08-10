@@ -1,9 +1,5 @@
 /**
- * Middleware di Controllo Accessi basato sui Ruoli (RBAC).
- * Permette l'accesso solo agli utenti autenticati il cui ruolo figura in allowedRoles.
- * 
- * Esempio d'uso nelle rotte:
- * router.post('/artworks', authenticateJWT, authorizeRoles('admin', 'museumstaff'), controller.create);
+ * permette l'accesso solo agli utenti con ruolo inlcuso nei ruole concessi (definiti negli specifi endpoints)
  */
 function authorizeRoles(...allowedRoles) {
   return (req, res, next) => {
@@ -15,14 +11,14 @@ function authorizeRoles(...allowedRoles) {
 
     const { role, roleStatus } = req.user;
 
-    // Se l'utente ha una richiesta di ruolo in sospeso e non è un ruolo consentito
+    // utente con ruolo non consentito
     if (!allowedRoles.includes(role)) {
       return res.status(403).json({
-        message: `Accesso negato. Questa operazione richiede uno dei seguenti ruoli: [${allowedRoles.join(', ')}]. Il tuo ruolo attuale è '${role}'.`
+        message: `Accesso negato. Questa operazione richiede più privilegi.`
       });
     }
 
-    // Se il ruolo dell'utente richiede approvazione ed è ancora pending
+    // ruolo sarebbe incluso ma richiede ancora approvazione
     if (roleStatus === 'pending' && role !== 'admin' && role !== 'guest') {
       return res.status(403).json({
         message: 'Il tuo ruolo è in attesa di approvazione da parte di un Amministratore.'

@@ -1,17 +1,19 @@
 const authService = require('../../service/AuthService');
 const TokenService = require('../../service/TokenService');
-const { RegisterRequestDTO, LoginRequestDTO, RoleUpgradeRequestDTO, AuthResponseDTO } = require('../../data/model/dto/AuthDTO');
+const AuthMapper = require('../../mapper/AuthMapper');
 const { setRefreshTokenCookie, clearRefreshTokenCookie, getRefreshTokenFromCookie } = require('../../utils/cookieHelper');
 const RoleManagementService = require('../../service/RoleManagementService');
 
 class AuthController {
+
   /**
-   * POST /api/auth/register
-   * Registrazione Utente Locale.
+   * POST /api/auth/signup
    */
-  async register(req, res) {
+  async signup(req, res) {
     try {
-      const { name, surname, email, password } = req.body;
+      const signupDTO = AuthMapper.toSignupRequestDTO(req.body);
+
+      const { name, surname, email, password } = signupDTO;
       if (!name || !surname || !email || !password) {
         return res.status(400).json({ message: 'Tutti i campi obbligatori (name, surname, email, password) devono essere compilati.' });
       }
@@ -21,50 +23,69 @@ class AuthController {
         return res.status(400).json({ message: 'Il formato dell\'indirizzo email inserito non è valido.' });
       }
 
-      const registerDTO = new RegisterRequestDTO(name, surname, email, password);
-      const clientIp = req.ip || req.connection.remoteAddress;
 
-      const result = await authService.registerLocalUser(registerDTO, clientIp);
+      const message = await authService.signupLocalUser(signupDTO, clientIp);
 
-      // Impostiamo il Refresh Token nel Cookie HttpOnly
-      setRefreshTokenCookie(res, result.refreshToken);
-
-      res.status(201).json(new AuthResponseDTO(result.user, result.accessToken));
+      res.status(201).json({ message: message });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
 
+  async verifyEmail(req, res) {
+    try {
+      const { token } = req.query;
+      if (!token) {
+        return res.status(400).json({ message: 'Token di verifica mancante' });
+      }
+
+      const verifiedUser = await authService.verifyEmail(token);
+      if (!verifiedUser) {
+        return res.status(400).json({ message: 'Token di verifica non valido' });
+      }
+
+      res.redirect(`${process.env.CLIENT_URL}/login?status=verified`); // TODO CHECK Potrebbe essere che mettendo status=verified il frontend possa mostrare un messaggio di conferma all'utente
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+
   /**
    * POST /api/auth/login
-   * Login Utente Locale.
    */
   async login(req, res) {
     try {
-      const { email, password } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ message: 'Email e password sono obbligatorie.' });
+      loginDTO = AuthMapper.toLoginRequestDTO(req.body, req.ip || req.connection.remoteAddress);
+
+      if (!loginDTO.email || !loginDTO.password) {
+        return res.status(400).json({ message: 'Email e password obbligatorie.' });
       }
 
-      const clientIp = req.ip || req.connection.remoteAddress;
-      const result = await authService.loginLocalUser(email, password, clientIp);
+      const result = await authService.loginLocalUser(loginDTO);
 
-      // Impostiamo il Refresh Token nel Cookie HttpOnly
+      // mettiamo il refresh token nel cookie 
       setRefreshTokenCookie(res, result.refreshToken);
 
-      res.status(200).json(new AuthResponseDTO(result.user, result.accessToken));
+      const responseDTO = AuthMapper.toLoginResponseDTO(result.user, result.accessToken, result.refreshToken);
+      if (!responseDTO) {
+        return res.status(500).json({ message: 'Errore nella creazione della risposta di login.' });
+      }
+
+      res.status(200).json(responseDTO);
     } catch (error) {
       res.status(401).json({ message: error.message });
     }
   }
 
+
   /**
-   * POST /api/auth/refresh
-   * Rinnovo dell'Access Token tramite Refresh Token inviato nel Cookie HttpOnly.
-   */
+    * POST /api/auth/refresh
+    * nuovo access token tramite refresh inviato nel Cookie HttpOnly.
+    */
   async refresh(req, res) {
     try {
-      const refreshToken = getRefreshTokenFromCookie(req);
+      const refreshToken = getRefreshTokenFromCookie(req); // prendiamo refresh token dal cookie sicuro
       if (!refreshToken) {
         return res.status(401).json({ message: 'Refresh Token mancante nei cookie HTTP-Only.' });
       }
@@ -72,7 +93,7 @@ class AuthController {
       const clientIp = req.ip || req.connection.remoteAddress;
       const result = await authService.refreshSession(refreshToken, clientIp);
 
-      // Aggiorniamo il Cookie HttpOnly con il nuovo Refresh Token (rotazione)
+      // mettiano nuovo token nel coockie
       setRefreshTokenCookie(res, result.refreshToken);
 
       res.status(200).json(new AuthResponseDTO(result.user, result.accessToken));
@@ -81,6 +102,7 @@ class AuthController {
       res.status(401).json({ message: error.message });
     }
   }
+
 
   /**
    * POST /api/auth/logout
@@ -99,6 +121,8 @@ class AuthController {
     }
   }
 
+
+  // TODO CHECK FINIRE GUARDARE IL RESTO DEL FILE
   /**
    * GET /api/auth/me
    * Restituisce i dettagli dell'utente attualmente autenticato (UserResponseDTO).
@@ -111,6 +135,7 @@ class AuthController {
       res.status(404).json({ message: error.message });
     }
   }
+
 
   /**
    * PUT /api/auth/preferences
@@ -133,6 +158,7 @@ class AuthController {
     }
   }
 
+
   /**
    * POST /api/auth/request-role
    * Richiesta di upgrade a 'teacher' o 'museumstaff' da parte dell'utente.
@@ -150,17 +176,20 @@ class AuthController {
     }
   }
 
+
   /**
-   * Callback di Google OAuth2: imposta il Cookie HttpOnly in modo sicuro e reindirizza senza token nella query string.
-   */
+    * qui il login è già avvenuto con successo
+    * Callback di Google OAuth2: imposta il Cookie HttpOnly in modo sicuro e reindirizza senza token nella query string.
+    * @param {Object} req - Oggetto della richiesta Express.
+    */
   async googleCallback(req, res) {
     const clientUrl = (process.env.CLIENT_URL || 'http://localhost:4200').trim();
     try {
       if (!req.user) return res.redirect(`${clientUrl}/login?error=auth_failed`);
       const clientIp = req.ip || req.connection.remoteAddress;
 
-      const refreshToken = await TokenService.generateRefreshToken(req.user, clientIp);
-      setRefreshTokenCookie(res, refreshToken);
+      const result = await authService.loginWithGoogle(req.user, clientIp);
+      setRefreshTokenCookie(res, result.refreshToken);
 
       // Reindirizzamento pulito al frontend-old Angular
       res.redirect(`${clientUrl}/login?status=success`);

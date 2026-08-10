@@ -47,7 +47,7 @@ Progetto Tecnologie Web A.A. 2025/26
       seconda del ruolo dell'utente.
   3. Hardening della Sicurezza (Prevenzione Attacchi):
       • Rate Limiting (express-rate-limit): Protezione da attacchi Brute Force sugli endpoint /api/auth/login e
-      /api/auth/register.
+      /api/auth/signup.
       • Header HTTP di Sicurezza (helmet): Attivazione di protezioni avanzate per evitare Clickjacking, MIME-sniffing e XSS.
       • Validazione & Sanitizzazione Input (express-validator): Controllo rigoroso delle password (lunghezza, caratteri),
       email e ruoli inviati nel body.

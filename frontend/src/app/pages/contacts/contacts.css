@@ -2,7 +2,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 90vh;
   width: 100%;
   background-color: var(--background);
   color: var(--on-surface);
@@ -19,8 +19,9 @@
   padding: var(--margin-mobile);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-md);
   box-sizing: border-box;
+  padding-top: var(--spacing-xl);
 }
 
 @media (min-width: 48rem) {
@@ -36,7 +37,7 @@
   font-weight: var(--headline-lg-weight);
   line-height: var(--headline-lg-line);
   margin: 0;
-  text-align: center;
+  text-align: left;
 }
 
 /* Immagine Hero */
@@ -44,7 +45,7 @@
   width: 100%;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--outline-variant);
+  border: 1px solid var(--primary);
   background-color: var(--surface-variant);
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
@@ -61,7 +62,7 @@
 /* Card Descrittiva */
 .story-card {
   background-color: var(--surface);
-  border: 1px solid var(--secondary);
+  border: 1px solid var(--primary);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   display: flex;

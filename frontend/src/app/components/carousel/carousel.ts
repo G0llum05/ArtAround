@@ -1,11 +1,12 @@
 import { Component, input, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {VisitHomePresentationResponse} from '../../models/visit.model';
+import {BadgesList} from '../badges-list/badges-list';
 
 @Component({
   selector: 'app-carousel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BadgesList],
   templateUrl: './carousel.html',
   styleUrl: './carousel.css'
 })
@@ -83,7 +84,6 @@ export class Carousel implements OnInit, OnDestroy {
     } else {
       this.currentIndex.set(current + 1);
     }
-    console.log(this.currentIndex());
   }
 
   prev(): void {

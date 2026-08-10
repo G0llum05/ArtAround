@@ -19,11 +19,9 @@
 
 /* --- HEADER PAGINA --- */
 .page-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: var(--spacing-lg);
   max-width: 42rem;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .page-title {

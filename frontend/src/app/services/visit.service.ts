@@ -1,23 +1,24 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { VisitResponse, VisitRequest, VisitHomePresentationResponse } from '../models/visit.model';
 import { MuseumHomePresentationResponse, MuseumResponse } from '../models/museum.model';
 
+import {environment} from '../../environments/environment'
+
 @Injectable({
     providedIn: 'root'
 })
 export class VisitService {
-    private readonly apiUrl = '/api/visit/';
+    private readonly apiUrl: string = '${environment.apiUrl}/visit/';
+    private readonly http = inject(HttpClient);
 
-    constructor(private http: HttpClient) {}
-    
     getAll(): Observable<VisitResponse[]> {
         return this.http.get<VisitResponse[]>(`${this.apiUrl}`);
     }
 
     getMarketPlaceFeed(): Observable<VisitResponse[]> {
-        return this.http.get<VisitResponse[]>(`${this.apiUrl}feed`);
+        return this.http.get<VisitResponse[]>(`${this.apiUrl}/feed`);
     }
 
     getLikesById(id: string): Observable<number> {
@@ -31,20 +32,20 @@ export class VisitService {
     getArtworkImagesById(id: string): Observable<string[]> {
         return this.http.get<string[]>(`${this.apiUrl}${id}/artwork-images`);
     }
-    
+
     getArtistImagesById(id: string): Observable<string[]> {
         return this.http.get<string[]>(`${this.apiUrl}${id}/arist-images`);
     }
 
     getHomePresentation(museumId: string, visitId: string): Observable<VisitHomePresentationResponse> {
-        return this.http.get<VisitHomePresentationResponse>(`${this.apiUrl}${museumId}/visit/${visitId}/home-presentation`);
+        return this.http.get<VisitHomePresentationResponse>(`${this.apiUrl}/${museumId}/visit/${visitId}/home-presentation`);
     }
 
     create(visit: VisitRequest) {
         return this.http.post<MuseumResponse>(`${this.apiUrl}`, visit);
     }
 
-    
-    
-    
+
+
+
 }

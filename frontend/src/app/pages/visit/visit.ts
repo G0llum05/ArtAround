@@ -18,18 +18,40 @@ export class Visit implements OnInit {
   currentDuration = signal<string>('2h');
 
   fb = inject(FormBuilder);
+  private STORAGE_KEY = 'visit_form';
 
   ngOnInit(): void {
+    const savedData = sessionStorage.getItem(this.STORAGE_KEY);
+    const initialValues = savedData ? JSON.parse(savedData) : {
+      museo: '',
+      chiSei: 'Adulto',
+      interessi: [],
+      durata: 2,
+      accessibile: false,
+      gratuito: false,
+      verificata: false,
+    };
+
     // Inizializzazione Form (valori di default)
     this.formVisit = this.fb.group({
-      museo: ['', Validators.required],
-      chiSei: ['Adulto'],
-      interessi: [[]],
-      durata: [2],
-      accessibile: [false],
-      gratuito: [false],
-      verificata: [false],
+      museo: [initialValues.museo, Validators.required],
+      chiSei: [initialValues.chiSei, Validators.required],
+      interessi: [initialValues.interessi],
+      durata: [initialValues.durata],
+      accessibile: [initialValues.accessibile],
+      gratuito: [initialValues.gratuito],
+      verificata: [initialValues.verificata],
     });
+
+    if(initialValues.museo){
+      this.caricaInteressiDaServer(initialValues.museo);
+    }
+
+    this.formVisit.valueChanges.subscribe(
+      formValues => {
+        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(formValues));
+      }
+    )
 
     // Seleziono il campo museo tramite get(con ?, ovvero Safe Call Operator/Optional Chaining), values changes è un observable a cui ci si iscrive
     this.formVisit.get('museo')?.valueChanges.subscribe(museoSelezionato => {

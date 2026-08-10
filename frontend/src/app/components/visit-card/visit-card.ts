@@ -1,15 +1,19 @@
-import { Component, input, signal, Signal, computed } from '@angular/core';
+import { Component, input, signal, Signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common'
+import { Router } from '@angular/router'
 import { VisitHomePresentationResponse } from '../../models/visit.model';
+import { BadgesList } from '../badges-list/badges-list';
 
 @Component({
   selector: 'app-visit-card',
-  imports: [CommonModule],
+  imports: [CommonModule, BadgesList],
   templateUrl: './visit-card.html',
   styleUrl: './visit-card.css',
 })
 export class VisitCard {
   visit = input.required<VisitHomePresentationResponse>();
+
+  router = inject(Router);
 
   formatedDuration: Signal<string> = computed(
     () => {
@@ -24,5 +28,11 @@ export class VisitCard {
       return durationFormated;
     }
   )
+
+  //si leggerà toSignal(this.route.paramMap.map(params => params.get('id')));
+  onCardClick(): void {
+    this.router.navigate(['/visit', this.visit().id]);
+  }
+
 
 }

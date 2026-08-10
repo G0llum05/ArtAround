@@ -16,7 +16,7 @@
         @for (item of extendedItems(); track item.id || $index) {
           <div class="carousel-slide" [style.background-image]="'url(' + item.imageUrls[0] + ')'">
             <div class="carousel-overlay">
-
+              <app-badges-list [visit]="item"> </app-badges-list>
               <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
               <div class="slide-content">
                 @if (item.badge) {

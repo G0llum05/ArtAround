@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const refreshTokenSchema = new mongoose.Schema({
-  user: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -13,7 +13,8 @@ const refreshTokenSchema = new mongoose.Schema({
   },
   expiresAt: {
     type: Date,
-    required: true
+    required: true,
+    expires: 0
   },
   isRevoked: {
     type: Boolean,
@@ -29,14 +30,5 @@ const refreshTokenSchema = new mongoose.Schema({
     type: String
   }
 }, { timestamps: true });
-
-// Metodo virtuale per verificare se il token è scaduto o revocato
-refreshTokenSchema.virtual('isExpired').get(function() {
-  return Date.now() >= this.expiresAt;
-});
-
-refreshTokenSchema.virtual('isActive').get(function() {
-  return !this.isRevoked && !this.isExpired;
-});
 
 module.exports = mongoose.model('RefreshToken', refreshTokenSchema);

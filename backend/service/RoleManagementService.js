@@ -4,6 +4,42 @@ const { isAdminEmail } = require('../config/adminRegistry');
 
 class RoleManagementService {
   /**
+   * Determina il ruolo iniziale di un utente all'atto della registrazione o del login.
+   * Regole:
+   * 1. Se l'email è tra i 3 creatori admin -> ruolo 'admin', status 'approved'
+   * 2. Se l'email è presente tra le StudentAssignment -> ruolo 'student', status 'approved'
+   * 3. Se l'utente richiede 'teacher' o 'museumstaff' -> ruolo 'guest', requestedRole '<richiesto>', status 'pending'
+   * 4. Di default -> ruolo 'guest', status 'approved'
+   */
+  async determineUserRoleOnSignup(email, requestedRoleInput) {
+    const cleanEmail = email.toLowerCase().trim();
+
+    // 1. Check Admin Registry
+    if (isAdminEmail(cleanEmail)) {
+      return { role: 'admin', roleStatus: 'approved', requestedRole: null };
+    }
+
+    // // 2. Check Student Pre-assignment
+    // const studentAssignment = await StudentAssignment.findOne({ email: cleanEmail });
+    // if (studentAssignment) {
+    //   studentAssignment.isClaimed = true;
+    //   await studentAssignment.save();
+    //   return { role: 'student', roleStatus: 'approved', requestedRole: null };
+    // }
+    //
+    // // 3. Check requested upgrade roles ('teacher' or 'museumstaff')
+    // if (requestedRoleInput === 'teacher' || requestedRoleInput === 'museumstaff') {
+    //   return { role: 'guest', roleStatus: 'pending', requestedRole: requestedRoleInput };
+    // }
+
+    // 4. Fallback Default
+    return { role: 'guest', roleStatus: 'approved', requestedRole: null };
+  }
+
+
+  // TODO CHECK TUTTO IL RESTO DEL FILE
+
+  /**
    * Pre-assegna l'email di uno studente. Eseguibile da Teacher, MuseumStaff o Admin.
    */
   async assignStudentByEmail(email, assignedByUserId, organization = '') {
@@ -33,38 +69,6 @@ class RoleManagementService {
     return existingAssignment;
   }
 
-  /**
-   * Determina il ruolo iniziale di un utente all'atto della registrazione o del login.
-   * Regole:
-   * 1. Se l'email è tra i 3 creatori admin -> ruolo 'admin', status 'approved'
-   * 2. Se l'email è presente tra le StudentAssignment -> ruolo 'student', status 'approved'
-   * 3. Se l'utente richiede 'teacher' o 'museumstaff' -> ruolo 'guest', requestedRole '<richiesto>', status 'pending'
-   * 4. Di default -> ruolo 'guest', status 'approved'
-   */
-  async determineUserRoleOnSignup(email, requestedRoleInput) {
-    const cleanEmail = email.toLowerCase().trim();
-
-    // 1. Check Admin Registry
-    if (isAdminEmail(cleanEmail)) {
-      return { role: 'admin', roleStatus: 'approved', requestedRole: null };
-    }
-
-    // 2. Check Student Pre-assignment
-    const studentAssignment = await StudentAssignment.findOne({ email: cleanEmail });
-    if (studentAssignment) {
-      studentAssignment.isClaimed = true;
-      await studentAssignment.save();
-      return { role: 'student', roleStatus: 'approved', requestedRole: null };
-    }
-
-    // 3. Check requested upgrade roles ('teacher' or 'museumstaff')
-    if (requestedRoleInput === 'teacher' || requestedRoleInput === 'museumstaff') {
-      return { role: 'guest', roleStatus: 'pending', requestedRole: requestedRoleInput };
-    }
-
-    // 4. Fallback Default
-    return { role: 'guest', roleStatus: 'approved', requestedRole: null };
-  }
 
   /**
    * Un utente con ruolo 'guest' richiede di diventare 'teacher' o 'museumstaff'.

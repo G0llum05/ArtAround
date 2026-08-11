@@ -5,19 +5,20 @@ const passport = require('../../config/passport');
 
 const router = express.Router();
 
-/* #swagger.tags = ['Authentication'] */
+// api/auth
 
 // Registrazione locale
-router.post('/register', (req, res) => authController.register(req, res));
+router.post('/signup', (req, res) => authController.signup(req, res));
+router.post('/verify-email', (req, res) => authController.verifyEmail(req, res));
 
 // Login locale
 router.post('/login', (req, res) => authController.login(req, res));
 
-// Refresh token (tramite Cookie HttpOnly)
-router.post('/refresh', (req, res) => authController.refresh(req, res));
-
 // Logout (invalida sessione e cancella cookie HttpOnly)
 router.post('/logout', (req, res) => authController.logout(req, res));
+
+// Refresh token (tramite Cookie HttpOnly)
+router.post('/refresh', (req, res) => authController.refresh(req, res));
 
 // Dettagli utente corrente (Richiede autenticazione JWT)
 router.get('/me', authenticateJWT, (req, res) => authController.me(req, res));
@@ -31,7 +32,9 @@ router.post('/request-role', authenticateJWT, (req, res) => authController.reque
 const CLIENT_URL = (process.env.CLIENT_URL || 'http://localhost:4200').trim();
 
 // Rotte Google OAuth2
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: `${CLIENT_URL}/login?error=google` }), (req, res) => authController.googleCallback(req, res));
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] })); // scope: richiede accesso a profilo (nome, cognome, foto) e email. Questa chiamata fa il redirect a Google
+
+router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: `${CLIENT_URL}/login?error=google` }), // lancia la funzione settata in passport.js (loginWithGoogle)
+  (req, res) => authController.googleCallback(req, res)); // se è loggato senza errori avvia il controller per il callback per token, cookie etc
 
 module.exports = router;

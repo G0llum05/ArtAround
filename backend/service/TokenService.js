@@ -1,72 +1,71 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const RefreshToken = require('../data/model/RefreshToken');
+const MapperRefreshToken = require('../mapper/RefreshTokenMapper');
+const RefreshToken = require('../model/RefreshToken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'artaround_super_secret_jwt_key_2026';
-const ACCESS_TOKEN_EXPIRATION = '15m'; // Access Token a breve durata
+const JWT_SECRET = process.env.JWT_SECRET;
+const ACCESS_TOKEN_EXPIRATION = '15m';
 const REFRESH_TOKEN_DAYS = 7;
 
 class TokenService {
   /**
-   * Genera un Access Token JWT firmato a breve durata.
-   */
+    * crea access token
+    */
   generateAccessToken(user) {
     const payload = {
       id: user._id.toString(),
       email: user.email,
-      role: user.role,
-      roleStatus: user.roleStatus
+      role: user.role
     };
 
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION }); // la libreria aggiunge timestamp e exp di scadenza automaticamente
   }
 
+
   /**
-   * Verifica la validità di un Access Token JWT.
-   */
+    * verifica access token e restituisce contenuto
+    */
   verifyAccessToken(token) {
     try {
-      return jwt.verify(token, JWT_SECRET);
+      return jwt.verify(token, JWT_SECRET); // la funzione fa: - divide il token in header, payload e signature - decodifica il payload - controlla scadenza - verifica firma - ritorna il payload decodificato
     } catch (error) {
-      return null;
+      return error
     }
   }
 
+
   /**
-   * Genera ed emette un nuovo Refresh Token persistito a DB.
-   */
-  async generateRefreshToken(user, ipAddress = '') {
+    * crea refresh token
+    */
+  async generateRefreshToken(user, ipAddress) {
     const randomToken = crypto.randomBytes(40).toString('hex');
     const expiresAt = new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000);
 
-    const refreshToken = new RefreshToken({
-      user: user._id,
-      token: randomToken,
-      expiresAt: expiresAt,
-      createdByIp: ipAddress
-    });
+    const refreshToken = MapperRefreshToken.toRefreshTokenModel(randomToken, user._id, ipAddress, expiresAt);
 
     await refreshToken.save();
     return randomToken;
   }
 
-  /**
-   * Verifica l'esistenza e la validità di un Refresh Token nel Database.
-   */
-  async verifyAndGetRefreshToken(tokenString) {
-    if (!tokenString) return null;
 
-    const refreshToken = await RefreshToken.findOne({ token: tokenString }).populate('user');
-    if (!refreshToken || !refreshToken.isActive) {
+  /**
+    * verifica esistenza e validità refresh token da db
+    */
+  async verifyAndGetRefreshToken(token) {
+    if (!token) return null;
+
+    const refreshToken = await RefreshToken.findOne({ token: token }).populate('userId');
+    if (!refreshToken || refreshToken.expiresAt < new Date() || refreshToken.isRevoked) {
       return null;
     }
     return refreshToken;
   }
 
+
   /**
-   * Invalida (revoca) un singolo Refresh Token.
-   */
-  async revokeRefreshToken(tokenString, ipAddress = '', replacedByToken = null) {
+    * invalida (revoca) un singolo refresh token.
+    */
+  async revokeRefreshToken(tokenString, replacedByToken = null) {
     const refreshToken = await RefreshToken.findOne({ token: tokenString });
     if (!refreshToken) return;
 
@@ -78,12 +77,24 @@ class TokenService {
     await refreshToken.save();
   }
 
+
   /**
-   * Revoca tutti i Refresh Token attivi relativi a un determinato Utente.
-   */
+    * revoca tutti i refresh token di un utente.
+    */
   async revokeAllUserTokens(userId) {
     await RefreshToken.updateMany(
       { user: userId, isRevoked: false },
+      { isRevoked: true, revokedAt: new Date() }
+    );
+  }
+
+
+  /**
+    * revoca i refresh token di un indirizzo ip dell'utente
+    */
+  async revokeAllUserTokensFromIp(userId, ipAddress) {
+    await RefreshToken.updateMany(
+      { userId: userId, createdByIp: ipAddress, isRevoked: false },
       { isRevoked: true, revokedAt: new Date() }
     );
   }

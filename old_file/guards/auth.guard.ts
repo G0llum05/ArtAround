@@ -1,3 +1,4 @@
+/*
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService } from '../auth.service';
@@ -5,7 +6,7 @@ import { AuthService } from '../auth.service';
 /**
  * Guardia di Navigazione AuthGuard.
  * Protegge le rotte riservate agli utenti autenticati.
- */
+
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -19,3 +20,4 @@ export const authGuard: CanActivateFn = (route, state) => {
     queryParams: { returnUrl: state.url }
   });
 };
+*/

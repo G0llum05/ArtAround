@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const Resend = require('resend');
+const { Resend } = require('resend');
 const User = require('../data/model/User');
 const TokenService = require('./TokenService');
 const RoleManagementService = require('./RoleManagementService');
@@ -208,10 +208,10 @@ class AuthService {
   async _createNewUser(email, name, surname, hashedPassword, googleId, newLocalUser) {
     const roleConfig = await RoleManagementService.determineUserRoleOnSignup(email, null);
 
-    const verificationToken = null;
-    const expires = null;
+    let token = null;
+    let expires = null;
     if (newLocalUser) {
-      ({ verificationToken, expires } = this._generateVerificationToken());
+      ({ token, expires } = this._generateVerificationToken());
     }
 
     const newUser = new User({
@@ -221,7 +221,7 @@ class AuthService {
       password: hashedPassword,
       googleId: googleId,
       isEmailVerified: false,
-      emailVerificationToken: verificationToken,
+      emailVerificationToken: token,
       emailVerificationExpires: expires,
       nOfEmailVerificationAttempts: 0,
       role: roleConfig.role,
@@ -230,7 +230,9 @@ class AuthService {
     });
 
     await newUser.save();
-    await this._sendVerificationEmail(newUser, token);
+    if (newLocalUser && token) {
+      await this._sendVerificationEmail(newUser, token);
+    }
 
     return {
       message: 'Registrazione completata. Controlla la tua email per confermare l\'account.',

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const MapperRefreshToken = require('../mapper/RefreshTokenMapper');
-const RefreshToken = require('../model/RefreshToken');
+const MapperRefreshToken = require('../data/mapper/RefreshTokenMapper');
+const RefreshToken = require('../data/model/RefreshToken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRATION = '15m';

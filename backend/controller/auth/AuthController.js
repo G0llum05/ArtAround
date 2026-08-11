@@ -1,6 +1,6 @@
 const authService = require('../../service/AuthService');
 const TokenService = require('../../service/TokenService');
-const AuthMapper = require('../../mapper/AuthMapper');
+const AuthMapper = require('../../data/mapper/AuthMapper');
 const { setRefreshTokenCookie, clearRefreshTokenCookie, getRefreshTokenFromCookie } = require('../../utils/cookieHelper');
 const RoleManagementService = require('../../service/RoleManagementService');
 

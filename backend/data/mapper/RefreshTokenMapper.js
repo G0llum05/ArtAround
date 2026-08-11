@@ -1,4 +1,4 @@
-const { NewRefreshTokenDTO } = require('../model/dto/NewRefreshTokenDTO');
+const { NewRefreshTokenDTO } = require('../model/dto/RefreshTokenDTO');
 
 class RefreshTokenMapper {
   static toNewRefreshTokenDTO(refreshTokenModel) {

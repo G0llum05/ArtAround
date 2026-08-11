@@ -1,4 +1,4 @@
-const { SignupRequestDTO, LoginRequestDTO, RoleUpgradeRequestDTO, StudentAssignRequestDTO, GoogleProfileDTO, LoginResponseDTO } = require('./AuthDTO');
+const { SignupRequestDTO, LoginRequestDTO, RoleUpgradeRequestDTO, StudentAssignRequestDTO, GoogleProfileDTO, LoginResponseDTO } = require('../model/dto/AuthDTO');
 
 class AuthMapper {
   static toSignupRequestDTO(body) {

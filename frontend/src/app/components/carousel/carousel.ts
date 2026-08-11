@@ -23,7 +23,11 @@ export class Carousel implements OnInit, OnDestroy {
   // Lista virtuale con il primo elemento duplicato in fondo
   extendedItems = computed(() => {
     if (!this.items() || this.items().length === 0) return [];
-    return [...this.items(), this.items()[0]];
+    let duplicatedItem = {
+      ...this.items()[0],
+      id: "duplicatedItemId",
+    };
+    return [...this.items(), duplicatedItem];
   });
 
   ngOnInit(): void {

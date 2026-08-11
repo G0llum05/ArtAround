@@ -1,3 +1,5 @@
+/*
+
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -48,10 +50,6 @@ export class AuthService {
       });
     }
   }
-
-  /**
-   * Login Locale (Email & Password oppure LoginRequest).
-   */
   login(credentialsOrEmail: LoginRequest | string, password?: string): Observable<AuthResponse> {
     const payload: LoginRequest = typeof credentialsOrEmail === 'string'
       ? { email: credentialsOrEmail, password: password || '' }
@@ -64,7 +62,6 @@ export class AuthService {
 
   /**
    * Registrazione Locale.
-   */
   register(userData: UserRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, userData, { withCredentials: true }).pipe(
       tap(response => this.handleAuthSuccess(response))
@@ -73,7 +70,6 @@ export class AuthService {
 
   /**
    * Rinnovo trasparente del token tramite Cookie HttpOnly.
-   */
   refreshToken(): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe(
       tap(response => this.handleAuthSuccess(response)),
@@ -86,7 +82,6 @@ export class AuthService {
 
   /**
    * Logout dell'utente. Revoca la sessione lato server e cancella lo stato locale.
-   */
   logout(): void {
     this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
       catchError(() => of(null)) // Ignora eventuali errori di logout lato server
@@ -98,7 +93,6 @@ export class AuthService {
 
   /**
    * Carica le informazioni sanificate dell'utente attualmente autenticato.
-   */
   loadCurrentUser(): Observable<UserResponse> {
     return this.http.get<UserResponse>(`${this.apiUrl}/me`).pipe(
       tap(user => this.currentUser.set(user))
@@ -107,7 +101,6 @@ export class AuthService {
 
   /**
    * Aggiorna le preferenze dell'utente (es. lingua, notifiche, accessibilità).
-   */
   updatePreferences(preferences: Record<string, string>): Observable<{ message: string; user: UserResponse }> {
     return this.http.put<{ message: string; user: UserResponse }>(`${this.apiUrl}/preferences`, { preferences }).pipe(
       tap(res => this.currentUser.set(res.user))
@@ -116,7 +109,6 @@ export class AuthService {
 
   /**
    * Invia una richiesta di cambio ruolo (teacher / museumstaff).
-   */
   requestRoleUpgrade(requestedRole: 'teacher' | 'museumstaff'): Observable<any> {
     return this.http.post(`${this.apiUrl}/request-role`, { requestedRole }).pipe(
       tap(() => this.loadCurrentUser().subscribe())
@@ -125,14 +117,12 @@ export class AuthService {
 
   /**
    * Avvia il flusso di login con Google tramite reindirizzamento del browser.
-   */
   loginWithGoogle(): void {
     window.location.href = `${this.apiUrl}/google`;
   }
 
   /**
    * Verifica se l'utente possiede uno dei ruoli specificati.
-   */
   hasRole(...allowedRoles: string[]): boolean {
     const role = this.userRole();
     return allowedRoles.includes(role);
@@ -140,7 +130,6 @@ export class AuthService {
 
   /**
    * Restituisce l'Access Token corrente.
-   */
   getAccessToken(): string | null {
     return this.accessToken();
   }
@@ -175,3 +164,4 @@ export class AuthService {
     }
   }
 }
+*/

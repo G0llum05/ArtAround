@@ -4,7 +4,8 @@ import { PageNotFound } from './pages/page-not-found/page-not-found';
 import { Visit } from './pages/visit/visit';
 import { Contacts } from './pages/contacts/contacts';
 import { Login } from './pages/login/login';
-import {VisitPreview} from './pages/visit-preview/visit-preview';
+import { VisitPreview } from './pages/visit-preview/visit-preview';
+import { Navigator } from './pages/navigator/navigator';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,10 @@ export const routes: Routes = [
   {
     path: 'login',
     component: Login
+  },
+  {
+    path: 'navigator',
+    component: Navigator
   },
   {
     path: '**',

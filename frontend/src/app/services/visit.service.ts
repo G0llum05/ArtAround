@@ -8,7 +8,7 @@ import { MuseumHomePresentationResponse, MuseumResponse } from '../models/museum
     providedIn: 'root'
 })
 export class VisitService {
-    private readonly apiUrl: string = '${environment.apiUrl}/visit/';
+    private readonly apiUrl: string = 'http://localhost:8000/api/visit/';
     private readonly http = inject(HttpClient);
 
     getAll(): Observable<VisitResponse[]> {

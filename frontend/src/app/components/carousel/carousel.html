@@ -21,12 +21,12 @@
               <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
               <div class="slide-content">
                 <div class="badges-wrapper">
-                  @if (true) {
+                  @if (item.isClosingSoon) {
                     <span class="badge badge-alert">
                       Chiude tra poco
                     </span>
                   }
-                  @if (true) {
+                  @if (item.isNew) {
                     <span class="badge badge-nuovo">
                       Nuovo
                     </span>

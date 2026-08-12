@@ -40,7 +40,7 @@ class UploadUserPropicDTO {
   }
 }
 
-exports = {
+module.exports = {
   UploadMuseumImgDTO,
   UploadVisitImgDTO,
   UploadArtworkImgDTO,

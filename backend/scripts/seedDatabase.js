@@ -129,7 +129,13 @@ async function seed() {
         name: artistData.name,
         surname: artistData.surname,
         artisticCurrents: artistData.artisticCurrents || [],
-        artworks: []
+        artworks: [],
+        assets: artistData.assets || {
+          profilePicture: artistData.profilePicture
+            ? (typeof artistData.profilePicture === 'string' ? { url: artistData.profilePicture } : artistData.profilePicture)
+            : null,
+          gallery: (artistData.gallery || []).map(img => typeof img === 'string' ? { url: img } : img)
+        }
       });
       const savedArtist = await artist.save();
       artistMap[artistData.key] = savedArtist._id;
@@ -138,13 +144,31 @@ async function seed() {
 
     // 4. Insert Items
     console.log('[Seed] Inserting items...');
-    const VALID_ITEM_TONES = ['infantile', 'simple', 'medium', 'technical'];
+    const ALLOWED_LANGS = ['it', 'en', 'fr', 'es', 'de', 'cn', 'ru'];
+    const ALLOWED_TONES = ['infantile', 'simple', 'medium', 'technical'];
+    const ALLOWED_LENGTHS = [15, 30, 60];
+
+    const sanitizeSeedLanguage = (lang) => {
+      const clean = typeof lang === 'string' ? lang.toLowerCase().trim() : '';
+      return ALLOWED_LANGS.includes(clean) ? clean : 'it';
+    };
+
     const sanitizeSeedTone = (tone) => {
       if (!tone) return 'medium';
-      const t = String(tone).toLowerCase();
-      if (VALID_ITEM_TONES.includes(t)) return t;
-      if (t === 'scientific' || t === 'expert') return 'technical';
+      const t = String(tone).toLowerCase().trim();
+      if (ALLOWED_TONES.includes(t)) return t;
+      if (t === 'scientific' || t === 'expert' || t === 'advanced' || t === 'technical') return 'technical';
+      if (t === 'fun' || t === 'informal' || t === 'child' || t === 'infantile') return 'infantile';
+      if (t === 'easy' || t === 'simple') return 'simple';
       return 'medium';
+    };
+
+    const sanitizeSeedLength = (length) => {
+      const len = parseInt(length, 10);
+      if (ALLOWED_LENGTHS.includes(len)) return len;
+      if (!len || len > 45) return 60;
+      if (len <= 20) return 15;
+      return 30;
     };
 
     for (const itemData of seedData.items) {
@@ -152,11 +176,11 @@ async function seed() {
       const item = new Item({
         description: itemData.description,
         tone: sanitizeSeedTone(itemData.tone),
-        length: itemData.length,
+        length: sanitizeSeedLength(itemData.length),
         author: userMap[itemData.author] || null,
         authorName: itemData.authorName || 'Curatore',
         license: itemData.license || 'Standard',
-        language: itemData.language || 'it',
+        language: sanitizeSeedLanguage(itemData.language),
         isAIGenerated: itemData.isAIGenerated || false
       });
       const savedItem = await item.save();
@@ -171,6 +195,9 @@ async function seed() {
       const artistIds = (artworkData.artists || []).map(k => artistMap[k]).filter(Boolean);
       const itemIds = (artworkData.items || []).map(k => itemMap[k]).filter(Boolean);
 
+      const rawImages = artworkData.assets?.images || artworkData.images || [];
+      const formattedImages = rawImages.map(img => typeof img === 'string' ? { url: img, orientation: 'landscape' } : img);
+
       const artwork = new Artwork({
         title: artworkData.title,
         startYear: artworkData.startYear,
@@ -183,7 +210,9 @@ async function seed() {
         isActive: artworkData.isActive ?? true,
         isPrivate: artworkData.isPrivate ?? false,
         qrCode: artworkData.qrCode,
-        images: artworkData.images || [],
+        assets: {
+          images: formattedImages
+        },
         items: itemIds
       });
 
@@ -194,6 +223,11 @@ async function seed() {
       for (const artistId of artistIds) {
         await Artist.findByIdAndUpdate(artistId, { $push: { artworks: savedArtwork._id } });
       }
+
+      // Update items' artwork field
+      for (const itemId of itemIds) {
+        await Item.findByIdAndUpdate(itemId, { artwork: savedArtwork._id });
+      }
     }
     console.log(`[Seed] Inserted ${Object.keys(artworkMap).length} artwork(s).`);
 
@@ -203,6 +237,12 @@ async function seed() {
       if (visitMap[visitData.key]) continue;
       const artworkIds = (visitData.artworks || []).map(k => artworkMap[k]).filter(Boolean);
       const creatorId = userMap[visitData.creator];
+
+      const rawVisitImages = visitData.assets?.images || visitData.images || [];
+      const formattedVisitImages = rawVisitImages.map(img => {
+        if (typeof img === 'string') return { url: img, orientation: 'landscape' };
+        return { url: img.url || '', orientation: img.orientation || 'landscape' };
+      });
 
       const visit = new Visit({
         title: visitData.title,
@@ -220,7 +260,11 @@ async function seed() {
         requirements: visitData.requirements,
         categories: visitData.categories || [],
         likesCount: visitData.likesCount ?? Math.floor(Math.random() * 150) + 20,
-        views: visitData.views || { total: Math.floor(Math.random() * 500) + 100, weekly: Math.floor(Math.random() * 100) + 10 }
+        views: visitData.views || { total: Math.floor(Math.random() * 500) + 100, weekly: Math.floor(Math.random() * 100) + 10 },
+        isRunning: visitData.isRunning || false,
+        assets: {
+          images: formattedVisitImages
+        }
       });
 
       const savedVisit = await visit.save();
@@ -246,7 +290,6 @@ async function seed() {
         openingHours: museumData.openingHours,
         ticketInfo: museumData.ticketInfo,
         isActive: museumData.isActive ?? true,
-        disableFriendly: museumData.disableFriendly ?? true,
         requirements: museumData.requirements,
         services: museumData.services || {
           hasToilette: true,
@@ -263,19 +306,32 @@ async function seed() {
           disableFriendly: true,
           wheelchairAccessible: true,
           childFriendly: true,
-          audioDescriptions: true
+          petFriendly: false,
+          tactilePaths: false,
+          brailleSignage: false,
+          audioDescriptions: true,
+          notes: "Percorsi accessibili e ascensori disponibili."
         },
         pointsOfInterest: museumData.pointsOfInterest || [
           { name: "Toilette Principale", type: "toilette", floor: "Piano Terra", room: "Atrio Ingresso" },
-          { name: "Uscita di Emergenza Nord", type: "emergency_exit", floor: "Piano Terra", room: "Sala 1" },
+          { name: "Uscita Principale", type: "exit", floor: "Piano Terra", room: "Atrio Uscita" },
           { name: "Ascensore Principale", type: "elevator", floor: "Piano Terra", room: "Atrio Ingresso" },
           { name: "Bar / Caffetteria", type: "bar", floor: "Piano Terra", room: "Cortile Interno" },
-          { name: "Bookshop", type: "shop", floor: "Piano Terra", room: "Atrio Ingresso" }
+          { name: "Biglietteria", type: "ticket_office", floor: "Piano Terra", room: "Atrio Ingresso" },
+          { name: "Info Point / Navigatore", type: "info_point", floor: "Piano Terra", room: "Atrio Ingresso" }
         ],
         floors: museumData.floors || [
-          { level: 0, name: "Piano Terra", description: "Atrio e Sale Principali" },
+          { level: 0, name: "Piano Terra", description: "Atrio, Biglietteria e Sale Principali" },
           { level: 1, name: "Primo Piano", description: "Esposizioni e Pinacoteca" }
-        ]
+        ],
+        transportInfo: museumData.transportInfo || {
+          publicTransport: "Linee bus urbane con fermata adiacente al museo",
+          parkingDetails: "Parcheggio pubblico a 200m"
+        },
+        eventsAndExhibitions: museumData.eventsAndExhibitions || {
+          specialEvents: ["Visite notturne guidate"],
+          temporaryExhibitions: []
+        }
       });
 
       const savedMuseum = await museum.save();

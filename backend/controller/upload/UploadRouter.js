@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/museum/:museumId/meta', uploadMiddleware.any(), UploadController.handleUpload);
 
 // assets/museums/:museumId/visit/:visitId/meta
-router.post('/museum/:museumId/visit/:visitId/meta', uploadMiddleware.any(), UploadController.handleUpload);
+router.post('/museum/:museumId/visit/:visitId/meta', uploadMiddleware.any(), UploadController.visitImgUpload);
 
 // assets/museums/:museumId/artworks/:artworkId
 router.post('/museum/:museumId/artwork/:artworkId', uploadMiddleware.any(), UploadController.handleUpload);

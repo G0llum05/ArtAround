@@ -35,24 +35,97 @@
     "openingHours": [
       {
         "weeklyStandard": [
-          { "day": 0, "slots": [{ "startTime": "08:00", "endTime": "19:00" }], "closed": false },
-          { "day": 1, "slots": [{ "startTime": "08:00", "endTime": "19:00" }], "closed": false },
-          { "day": 2, "slots": [{ "startTime": "08:00", "endTime": "19:00" }], "closed": false },
-          { "day": 3, "slots": [{ "startTime": "08:00", "endTime": "19:00" }], "closed": false },
-          { "day": 4, "slots": [{ "startTime": "08:00", "endTime": "20:00" }], "closed": false },
-          { "day": 5, "slots": [{ "startTime": "08:00", "endTime": "20:00" }], "closed": false },
-          { "day": 6, "slots": [], "closed": true }
+          {
+            "day": 0,
+            "slots": [
+              {
+                "startTime": "08:00",
+                "endTime": "19:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 1,
+            "slots": [
+              {
+                "startTime": "08:00",
+                "endTime": "19:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 2,
+            "slots": [
+              {
+                "startTime": "08:00",
+                "endTime": "19:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 3,
+            "slots": [
+              {
+                "startTime": "08:00",
+                "endTime": "19:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 4,
+            "slots": [
+              {
+                "startTime": "08:00",
+                "endTime": "20:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 5,
+            "slots": [
+              {
+                "startTime": "08:00",
+                "endTime": "20:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 6,
+            "slots": [],
+            "closed": true
+          }
         ],
         "exceptions": []
       }
     ],
     "ticketInfo": {
       "prices": [
-        { "planName": "Intero Musei Vaticani e Cappella Sistina", "price": 20.0, "target": "Adulti (prenotazione online raccomandata)" },
-        { "planName": "Ridotto Ragazzi e Studenti", "price": 8.0, "target": "Ragazzi 7-18 anni, Studenti universitari fino a 25 anni" },
-        { "planName": "Gratuito", "price": 0.0, "target": "Bambini sotto i 6 anni, Persone con disabilità grave con accompagnatore" }
+        {
+          "planName": "Intero Musei Vaticani e Cappella Sistina",
+          "price": 20,
+          "target": "Adulti (prenotazione online raccomandata)"
+        },
+        {
+          "planName": "Ridotto Ragazzi e Studenti",
+          "price": 8,
+          "target": "Ragazzi 7-18 anni, Studenti universitari fino a 25 anni"
+        },
+        {
+          "planName": "Gratuito",
+          "price": 0,
+          "target": "Bambini sotto i 6 anni, Persone con disabilità grave con accompagnatore"
+        }
       ],
-      "discountCode": ["VATICAN2026", "SISTINA2026"]
+      "discountCode": [
+        "VATICAN2026",
+        "SISTINA2026"
+      ]
     },
     "isActive": true,
     "disableFriendly": true,
@@ -70,6 +143,44 @@
       "artwork_vaticani_apollo_belvedere",
       "artwork_vaticani_trasfigurazione_raffaello",
       "artwork_vaticani_deposizione_caravaggio"
+    ],
+    "pointsOfInterest": [
+      {
+        "name": "Toilette Principale",
+        "type": "toilette",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Uscita Principale",
+        "type": "exit",
+        "floor": "Piano Terra",
+        "room": "Atrio Uscita"
+      },
+      {
+        "name": "Ascensore Principale",
+        "type": "elevator",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Bar / Caffetteria",
+        "type": "bar",
+        "floor": "Piano Terra",
+        "room": "Cortile Interno"
+      },
+      {
+        "name": "Biglietteria",
+        "type": "ticket_office",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Info Point / Navigatore",
+        "type": "info_point",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      }
     ]
   },
   "artists": [
@@ -77,75 +188,126 @@
       "key": "artist_michelangelo",
       "name": "Michelangelo",
       "surname": "Buonarroti",
-      "artisticCurrents": ["Rinascimento Maturo", "Manierismo", "Pittura a Fresco e Scultura Monumentale"]
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Manierismo",
+        "Pittura a Fresco e Scultura Monumentale"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_raffaello_vaticano",
       "name": "Raffaello",
       "surname": "Sanzio",
-      "artisticCurrents": ["Rinascimento Maturo", "Stanze Vaticane", "Armonia ed Equilibrio Classico"]
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Stanze Vaticane",
+        "Armonia ed Equilibrio Classico"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_caravaggio_vaticano",
       "name": "Michelangelo",
       "surname": "Merisi da Caravaggio",
-      "artisticCurrents": ["Barocco", "Tenebrismo", "Pittura Sacra Realista"]
+      "artisticCurrents": [
+        "Barocco",
+        "Tenebrismo",
+        "Pittura Sacra Realista"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_laocoonte_rodi",
       "name": "Agesandro, Atenodoro e Polidoro",
       "surname": "di Rodi",
-      "artisticCurrents": ["Scultura Ellenistica Greca", "Scuola di Rodi I sec. a.C."]
+      "artisticCurrents": [
+        "Scultura Ellenistica Greca",
+        "Scuola di Rodi I sec. a.C."
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_leonardo",
       "name": "Leonardo",
       "surname": "da Vinci",
-      "artisticCurrents": ["Rinascimento Maturo", "Sfumato da Vinci", "Scienza e Arte"]
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Sfumato da Vinci",
+        "Scienza e Arte"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_leocare",
       "name": "Leocare",
       "surname": "di Atene",
-      "artisticCurrents": ["Scultura Greca Classica IV sec. a.C."]
+      "artisticCurrents": [
+        "Scultura Greca Classica IV sec. a.C."
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     }
   ],
   "items": [
     {
       "key": "item_vaticani_sistina_advanced",
       "description": "Gli affreschi della Cappella Sistina rappresentano l'apice insuperato dell'arte occidentale. Commissionati a Michelangelo Buonarroti da Papa Giulio II (per la Volta tra il 1508 e il 1512) e da Papa Clemente VII (per il Giudizio Universale sulla parete d'altare tra il 1536 e il 1541), raffigurano le Storie della Genesi (dalla Creazione di Adamo al Diluvio Universale) e la drammatica visione del Cristo Giudice attorniato da santi, angeli e dannati.",
-      "tone": "advanced",
-      "length": 340
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_vaticani_scuola_atene_medium",
       "description": "Dipinta da Raffaello Sanzio tra il 1509 e il 1511 nella Stanza della Segnatura, la 'Scuola di Atene' è la più celebre celebrazione del pensiero filosofico antico. Al centro dell'imponente architettura classica si ergono Platone (con le sembianze di Leonardo da Vinci) che indica il cielo e Aristotele che rivolge il palmo verso la terra, circondati dai più grandi filosofi e matematici dell'antichità tra cui Socrate, Pitagora ed Eraclito (con i tratti di Michelangelo).",
       "tone": "medium",
-      "length": 320
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_vaticani_laocoonte_scientific",
       "description": "Rinvenuto a Roma sull'Esquilino nel 1506 alla presenza di Michelangelo, il Gruppo del Laocoonte (scolpito in marmo dagli artisti ellenistici Agesandro, Atenodoro e Polidoro di Rodi) raffigura il sacerdote troiano Laocoonte ed i suoi due figli avvinghiati e sbranati da giganteschi serpenti marini inviati da Atena. La tensione muscolare anatomica e l'espressione di tragico dolore resero la scultura il prototipo del dinamismo classico e barocco.",
-      "tone": "scientific",
-      "length": 330
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_vaticani_apollo_technical",
       "description": "L'Apollo del Belvedere è una statua romana in marmo del II sec. d.C. tratta da un originale bronzeo del IV sec. a.C. ascritto a Leocare. Collocata nel Cortile Ottagono del Museo Pio-Clementino, raffigura il dio Apollo che ha appena scagliato una freccia. Per secoli è stata considerata da winckelmann e dai teorici dell'arte il massimo ideale di proporzione, grazia e maestà della scultura antica.",
       "tone": "technical",
-      "length": 300
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_vaticani_trasfigurazione_advanced",
       "description": "La Trasfigurazione (1516-1520) è l'ultimo grande capolavoro dipinto ad olio su tavola da Raffaello Sanzio prima della sua improvvisa morte a soli 37 anni. La composizione fonde due episodi evangelici: in alto Cristo trasfigurato nella luce sul Monte Tabor tra Mosè ed Elia; in basso gli Apostoli che tentano invano di guarire un giovane indemoniato, anticipando il forte contrasto chiaroscurale di Caravaggio.",
-      "tone": "advanced",
-      "length": 320
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_vaticani_deposizione_simple",
       "description": "Questo dipinto monumentale di Caravaggio fu realizzato nel 1604 per la chiesa di Santa Maria in Vallicella. Mostra Nicodemo e San Giovanni che adagiano il corpo di Gesù sulla pietra sepolcrale con grande rispetto e dolore, illuminati da una luce forte che sembra uscire dal buio.",
       "tone": "simple",
-      "length": 220
+      "length": 60,
+      "language": "it"
     }
   ],
   "artworks": [
@@ -154,7 +316,9 @@
       "title": "Gli Affreschi della Cappella Sistina (La Volta ed il Giudizio Universale)",
       "startYear": 1508,
       "endYear": 1541,
-      "artists": ["artist_michelangelo"],
+      "artists": [
+        "artist_michelangelo"
+      ],
       "location": {
         "room": "Cappella Sistina",
         "floor": "Piano Nobile",
@@ -166,27 +330,54 @@
         "depth": 1,
         "unit": "cm"
       },
-      "artisticCurrents": ["Rinascimento Maturo", "Manierismo", "Pittura a Fresco"],
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Manierismo",
+        "Pittura a Fresco"
+      ],
       "details": {
-        "subjects": ["Creazione di Adamo", "Storie della Genesi", "Giudizio Universale", "Cristo Giudice"],
-        "colors": ["Blu lapislazzuli", "Ocra dorata", "Rosso terra", "Verde smeraldo"],
-        "places": ["Città del Vaticano - Roma"],
+        "subjects": [
+          "Creazione di Adamo",
+          "Storie della Genesi",
+          "Giudizio Universale",
+          "Cristo Giudice"
+        ],
+        "colors": [
+          "Blu lapislazzuli",
+          "Ocra dorata",
+          "Rosso terra",
+          "Verde smeraldo"
+        ],
+        "places": [
+          "Città del Vaticano - Roma"
+        ],
         "objectType": "Ciclo di affreschi monumentali su volta e parete d'altare",
-        "materials": ["Intonaco di calce e sabbia", "Pigmenti minerali preziosi a fresco"],
-        "techniques": ["Pittura a fresco ad altissima perizia anatomica e prospettica"]
+        "materials": [
+          "Intonaco di calce e sabbia",
+          "Pigmenti minerali preziosi a fresco"
+        ],
+        "techniques": [
+          "Pittura a fresco ad altissima perizia anatomica e prospettica"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-001",
-      "images": [],
-      "items": ["item_vaticani_sistina_advanced"]
+      "items": [
+        "item_vaticani_sistina_advanced"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_vaticani_scuola_atene",
       "title": "La Scuola di Atene (Stanze di Raffaello)",
       "startYear": 1509,
       "endYear": 1511,
-      "artists": ["artist_raffaello_vaticano"],
+      "artists": [
+        "artist_raffaello_vaticano"
+      ],
       "location": {
         "room": "Stanza della Segnatura",
         "floor": "Piano Nobile (Stanze di Raffaello)",
@@ -198,27 +389,52 @@
         "depth": 1,
         "unit": "cm"
       },
-      "artisticCurrents": ["Rinascimento Maturo", "Scuola Romana"],
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Scuola Romana"
+      ],
       "details": {
-        "subjects": ["Platone e Aristotele", "Socrate", "Pitagora", "Filosofia antica"],
-        "colors": ["Toni caldi di ocra", "Blu cielo", "Rosso porpora"],
-        "places": ["Città del Vaticano"],
+        "subjects": [
+          "Platone e Aristotele",
+          "Socrate",
+          "Pitagora",
+          "Filosofia antica"
+        ],
+        "colors": [
+          "Toni caldi di ocra",
+          "Blu cielo",
+          "Rosso porpora"
+        ],
+        "places": [
+          "Città del Vaticano"
+        ],
         "objectType": "Affresco paretiStanza della Segnatura",
-        "materials": ["Intonaco di calce", "Pigmenti a fresco"],
-        "techniques": ["Prospettiva centrale monumentale ad abside classica"]
+        "materials": [
+          "Intonaco di calce",
+          "Pigmenti a fresco"
+        ],
+        "techniques": [
+          "Prospettiva centrale monumentale ad abside classica"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-002",
-      "images": [],
-      "items": ["item_vaticani_scuola_atene_medium"]
+      "items": [
+        "item_vaticani_scuola_atene_medium"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_vaticani_laocoonte",
       "title": "Gruppo del Laocoonte",
       "startYear": -50,
       "endYear": 50,
-      "artists": ["artist_laocoonte_rodi"],
+      "artists": [
+        "artist_laocoonte_rodi"
+      ],
       "location": {
         "room": "Cortile Ottagono",
         "floor": "Piano Terreno",
@@ -230,27 +446,48 @@
         "depth": 112,
         "unit": "cm"
       },
-      "artisticCurrents": ["Scultura Ellenistica Greca", "Scuola di Rodi"],
+      "artisticCurrents": [
+        "Scultura Ellenistica Greca",
+        "Scuola di Rodi"
+      ],
       "details": {
-        "subjects": ["Sacerdote Laocoonte", "Serpenti marini", "Guerra di Troia"],
-        "colors": ["Marmo greco avorio"],
-        "places": ["Rodi / Roma / Città del Vaticano"],
+        "subjects": [
+          "Sacerdote Laocoonte",
+          "Serpenti marini",
+          "Guerra di Troia"
+        ],
+        "colors": [
+          "Marmo greco avorio"
+        ],
+        "places": [
+          "Rodi / Roma / Città del Vaticano"
+        ],
         "objectType": "Gruppo scultoreo in marmo a tutto tondo",
-        "materials": ["Marmo grechetto di Thasos"],
-        "techniques": ["Scultura a tutto tondo con traforo profondo delle masse muscolari"]
+        "materials": [
+          "Marmo grechetto di Thasos"
+        ],
+        "techniques": [
+          "Scultura a tutto tondo con traforo profondo delle masse muscolari"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-003",
-      "images": [],
-      "items": ["item_vaticani_laocoonte_scientific"]
+      "items": [
+        "item_vaticani_laocoonte_scientific"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_vaticani_apollo_belvedere",
       "title": "Apollo del Belvedere",
       "startYear": 120,
       "endYear": 140,
-      "artists": ["artist_leocare"],
+      "artists": [
+        "artist_leocare"
+      ],
       "location": {
         "room": "Cortile Ottagono",
         "floor": "Piano Terreno",
@@ -262,27 +499,47 @@
         "depth": 85,
         "unit": "cm"
       },
-      "artisticCurrents": ["Arte Romana (da bronzo greco del IV sec. a.C.)"],
+      "artisticCurrents": [
+        "Arte Romana (da bronzo greco del IV sec. a.C.)"
+      ],
       "details": {
-        "subjects": ["Dio Apollo", "Arco e freccia", "Scultura classica"],
-        "colors": ["Marmo bianco pario"],
-        "places": ["Anzio / Roma / Città del Vaticano"],
+        "subjects": [
+          "Dio Apollo",
+          "Arco e freccia",
+          "Scultura classica"
+        ],
+        "colors": [
+          "Marmo bianco pario"
+        ],
+        "places": [
+          "Anzio / Roma / Città del Vaticano"
+        ],
         "objectType": "Statua a tutto tondo in marmo statutario",
-        "materials": ["Marmo pario"],
-        "techniques": ["Scultura a tutto tondo e lucidatura delle superfici mardee"]
+        "materials": [
+          "Marmo pario"
+        ],
+        "techniques": [
+          "Scultura a tutto tondo e lucidatura delle superfici mardee"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-004",
-      "images": [],
-      "items": ["item_vaticani_apollo_technical"]
+      "items": [
+        "item_vaticani_apollo_technical"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_vaticani_trasfigurazione_raffaello",
       "title": "La Trasfigurazione di Cristo",
       "startYear": 1516,
       "endYear": 1520,
-      "artists": ["artist_raffaello_vaticano"],
+      "artists": [
+        "artist_raffaello_vaticano"
+      ],
       "location": {
         "room": "Sala VIII - Sala di Raffaello",
         "floor": "Piano Terreno",
@@ -294,27 +551,51 @@
         "depth": 10,
         "unit": "cm"
       },
-      "artisticCurrents": ["Rinascimento Maturo", "Manierismo Iniziale"],
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Manierismo Iniziale"
+      ],
       "details": {
-        "subjects": ["Trasfigurazione sul Monte Tabor", "Cristo in gloria", "Guarigione dell'ossesso"],
-        "colors": ["Blu zaffiro", "Luce bianca divina", "Rosso terra"],
-        "places": ["Roma / Città del Vaticano"],
+        "subjects": [
+          "Trasfigurazione sul Monte Tabor",
+          "Cristo in gloria",
+          "Guarigione dell'ossesso"
+        ],
+        "colors": [
+          "Blu zaffiro",
+          "Luce bianca divina",
+          "Rosso terra"
+        ],
+        "places": [
+          "Roma / Città del Vaticano"
+        ],
         "objectType": "Pala d'altare a olio su tavola di legno",
-        "materials": ["Tavola in legno di pioppo", "Colori a olio"],
-        "techniques": ["Doppio registro compositivo con fortissimi contrasti luministici"]
+        "materials": [
+          "Tavola in legno di pioppo",
+          "Colori a olio"
+        ],
+        "techniques": [
+          "Doppio registro compositivo con fortissimi contrasti luministici"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-005",
-      "images": [],
-      "items": ["item_vaticani_trasfigurazione_advanced"]
+      "items": [
+        "item_vaticani_trasfigurazione_advanced"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_vaticani_deposizione_caravaggio",
       "title": "La Deposizione di Cristo nel Sepolcro",
       "startYear": 1602,
       "endYear": 1604,
-      "artists": ["artist_caravaggio_vaticano"],
+      "artists": [
+        "artist_caravaggio_vaticano"
+      ],
       "location": {
         "room": "Sala XII - Sala di Caravaggio",
         "floor": "Piano Terreno",
@@ -326,20 +607,40 @@
         "depth": 8,
         "unit": "cm"
       },
-      "artisticCurrents": ["Barocco", "Tenebrismo Caravaggesco"],
+      "artisticCurrents": [
+        "Barocco",
+        "Tenebrismo Caravaggesco"
+      ],
       "details": {
-        "subjects": ["Nicodemo e San Giovanni", "Pietra dell'unzione", "Sante Donne piangenti"],
-        "colors": ["Tenebre profonde", "Luce scultorea avorio"],
-        "places": ["Roma / Città del Vaticano"],
+        "subjects": [
+          "Nicodemo e San Giovanni",
+          "Pietra dell'unzione",
+          "Sante Donne piangenti"
+        ],
+        "colors": [
+          "Tenebre profonde",
+          "Luce scultorea avorio"
+        ],
+        "places": [
+          "Roma / Città del Vaticano"
+        ],
         "objectType": "Pala d'altare monumentale a olio su tela",
-        "materials": ["Colori a olio su tela di lino"],
-        "techniques": ["Pittura a luce scorciata ad altissimo realismo drammatico"]
+        "materials": [
+          "Colori a olio su tela di lino"
+        ],
+        "techniques": [
+          "Pittura a luce scorciata ad altissimo realismo drammatico"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-006",
-      "images": [],
-      "items": ["item_vaticani_deposizione_simple"]
+      "items": [
+        "item_vaticani_deposizione_simple"
+      ],
+      "assets": {
+        "images": []
+      }
     }
   ],
   "visits": [
@@ -347,7 +648,7 @@
       "key": "visit_vaticani_sistina_michelangelo",
       "title": "Il Sacro e l'Eterno: La Cappella Sistina ed il Giudizio Universale di Michelangelo",
       "description": "Un tour guidato indimenticabile incentrato sul capolavoro supremo di Michelangelo Buonarroti. La visita illustra la teologia ed il dinamismo della Volta (dalla Creazione di Adamo al Peccato Originale) e la colossale parete del Giudizio Universale con i suoi oltre trecento personaggi scolpiti nell'affresco.",
-      "price": 25.0,
+      "price": 25,
       "creator": "vaticani_staff",
       "artworks": [
         "artwork_vaticani_cappella_sistina"
@@ -361,26 +662,102 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "09:00", "endTime": "11:00" }, { "startTime": "14:30", "endTime": "16:30" }], "closed": false },
-            { "day": 1, "slots": [{ "startTime": "09:00", "endTime": "11:00" }], "closed": false },
-            { "day": 2, "slots": [{ "startTime": "09:00", "endTime": "11:00" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "09:00", "endTime": "11:00" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "09:00", "endTime": "11:00" }, { "startTime": "17:00", "endTime": "19:00" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "09:00", "endTime": "11:00" }, { "startTime": "17:00", "endTime": "19:00" }], "closed": false },
-            { "day": 6, "slots": [], "closed": true }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "17:00",
+                  "endTime": "19:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "17:00",
+                  "endTime": "19:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [],
+              "closed": true
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Abbigliamento consono (spalle e ginocchia coperte). Rispetto del silenzio assoluto nella Cappella Sistina.",
-      "categories": ["Rinascimento"]
+      "categories": [
+        "Rinascimento"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_vaticani_stanze_raffaello",
       "title": "Le Stanze di Raffaello ed il Rinascimento in Vaticano",
       "description": "Itinerario dedicato agli appartamenti papali affrescati da Raffaello Sanzio e dai suoi allievi. Esplorazione della Stanza della Segnatura con la 'Scuola di Atene' e la 'Disputa del Sacramento', simbolo dell'armonia tra filosofia antica e teologia cristiana.",
-      "price": 20.0,
+      "price": 20,
       "creator": "vaticani_staff",
       "artworks": [
         "artwork_vaticani_scuola_atene",
@@ -395,26 +772,95 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:30", "endTime": "17:00" }], "closed": false },
-            { "day": 1, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 2, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 6, "slots": [], "closed": true }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "15:30",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [],
+              "closed": true
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Consigliato ad appassionati di pittura rinascimentale ed umanesimo.",
-      "categories": ["Rinascimento", "Didattica"]
+      "categories": [
+        "Rinascimento",
+        "Didattica"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_vaticani_cortile_ottagono",
       "title": "I Capolavori del Cortile Ottagono: Dal Laocoonte all'Apollo del Belvedere",
       "description": "Percorso guidato tra le sculture dell'antichità greco-romana conservate nel Museo Pio-Clementino. Il tour rivela le storie ed il mito del Gruppo del Laocoonte e dell'Apollo del Belvedere, che modellarono il gusto artistico di Michelangelo e dei maestri del Rinascimento.",
-      "price": 18.0,
+      "price": 18,
       "creator": "vaticani_staff",
       "artworks": [
         "artwork_vaticani_laocoonte",
@@ -429,26 +875,92 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
-            { "day": 1, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
-            { "day": 2, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "11:30", "endTime": "13:00" }], "closed": false },
-            { "day": 6, "slots": [], "closed": true }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [],
+              "closed": true
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Accessibile mediante elevatori ed ascensori dedicati del complesso museale.",
-      "categories": ["Antica Grecia", "Antica Roma", "Archeologia"]
+      "categories": [
+        "Antica Grecia",
+        "Antica Roma",
+        "Archeologia"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_vaticani_pinacoteca_tesori",
       "title": "Tesori della Pinacoteca Vaticana: Da Leonardo e Raffaello a Caravaggio",
       "description": "Un tour d'eccezione nella Pinacoteca Vaticana che raccoglie le grandi pale d'altare e i quadri da cavalletto dei massimi maestri della pittura italiana: La Trasfigurazione di Raffaello, La Deposizione di Caravaggio ed il San Girolamo di Leonardo da Vinci.",
-      "price": 22.0,
+      "price": 22,
       "creator": "vaticani_staff",
       "artworks": [
         "artwork_vaticani_trasfigurazione_raffaello",
@@ -463,20 +975,85 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "14:00", "endTime": "15:45" }], "closed": false },
-            { "day": 1, "slots": [{ "startTime": "14:00", "endTime": "15:45" }], "closed": false },
-            { "day": 2, "slots": [{ "startTime": "14:00", "endTime": "15:45" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "14:00", "endTime": "15:45" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "14:00", "endTime": "15:45" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "14:00", "endTime": "15:45" }], "closed": false },
-            { "day": 6, "slots": [], "closed": true }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "14:00",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [
+                {
+                  "startTime": "14:00",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "14:00",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "14:00",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "14:00",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "14:00",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [],
+              "closed": true
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Percorso ampiamente fruibile all'interno delle gallerie di pittura.",
-      "categories": ["Rinascimento", "Realismo"]
+      "categories": [
+        "Rinascimento",
+        "Realismo"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     }
   ]
 }

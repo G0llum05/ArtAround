@@ -34,24 +34,97 @@
     "openingHours": [
       {
         "weeklyStandard": [
-          { "day": 0, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false },
-          { "day": 1, "slots": [], "closed": true },
-          { "day": 2, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false },
-          { "day": 3, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false },
-          { "day": 4, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false },
-          { "day": 5, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false },
-          { "day": 6, "slots": [{ "startTime": "10:00", "endTime": "18:00" }], "closed": false }
+          {
+            "day": 0,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 1,
+            "slots": [],
+            "closed": true
+          },
+          {
+            "day": 2,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 3,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 4,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 5,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 6,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          }
         ],
         "exceptions": []
       }
     ],
     "ticketInfo": {
       "prices": [
-        { "planName": "Intero Museo Palazzo Poggi", "price": 7.0, "target": "Adulti" },
-        { "planName": "Ridotto Unibo e Convenzioni", "price": 4.0, "target": "Studenti, Over 65, Personale Unibo" },
-        { "planName": "Gratuito", "price": 0.0, "target": "Studenti Unibo iscritto a corso di laurea, Under 18, Card Cultura" }
+        {
+          "planName": "Intero Museo Palazzo Poggi",
+          "price": 7,
+          "target": "Adulti"
+        },
+        {
+          "planName": "Ridotto Unibo e Convenzioni",
+          "price": 4,
+          "target": "Studenti, Over 65, Personale Unibo"
+        },
+        {
+          "planName": "Gratuito",
+          "price": 0,
+          "target": "Studenti Unibo iscritto a corso di laurea, Under 18, Card Cultura"
+        }
       ],
-      "discountCode": ["UNIBOCULTURA", "POGGI2026"]
+      "discountCode": [
+        "UNIBOCULTURA",
+        "POGGI2026"
+      ]
     },
     "isActive": true,
     "disableFriendly": true,
@@ -69,6 +142,44 @@
       "artwork_poggi_navi_marsili",
       "artwork_poggi_ostetricia",
       "artwork_poggi_aldrovandi_erbario"
+    ],
+    "pointsOfInterest": [
+      {
+        "name": "Toilette Principale",
+        "type": "toilette",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Uscita Principale",
+        "type": "exit",
+        "floor": "Piano Terra",
+        "room": "Atrio Uscita"
+      },
+      {
+        "name": "Ascensore Principale",
+        "type": "elevator",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Bar / Caffetteria",
+        "type": "bar",
+        "floor": "Piano Terra",
+        "room": "Cortile Interno"
+      },
+      {
+        "name": "Biglietteria",
+        "type": "ticket_office",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Info Point / Navigatore",
+        "type": "info_point",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      }
     ]
   },
   "artists": [
@@ -76,75 +187,128 @@
       "key": "artist_marsili",
       "name": "Luigi Ferdinando",
       "surname": "Marsili",
-      "artisticCurrents": ["Geografia Militare", "Oceanografia", "Illuminismo Scientifico XVIII sec."]
+      "artisticCurrents": [
+        "Geografia Militare",
+        "Oceanografia",
+        "Illuminismo Scientifico XVIII sec."
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_lelli",
       "name": "Ercole",
       "surname": "Lelli",
-      "artisticCurrents": ["Ceroplastica Anatomica", "Scultura Lignea", "Illuminismo Medico Bolognese"]
+      "artisticCurrents": [
+        "Ceroplastica Anatomica",
+        "Scultura Lignea",
+        "Illuminismo Medico Bolognese"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_manzolini",
       "name": "Giovanni",
       "surname": "Manzolini",
-      "artisticCurrents": ["Anatomia Plastica", "Ceroplastica Medica XVIII sec."]
+      "artisticCurrents": [
+        "Anatomia Plastica",
+        "Ceroplastica Medica XVIII sec."
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_morandi",
       "name": "Anna",
       "surname": "Morandi Manzolini",
-      "artisticCurrents": ["Ceroplastica Anatomica", "Anatomia dei Sensi", "Scienza Femminile Illuminista"]
+      "artisticCurrents": [
+        "Ceroplastica Anatomica",
+        "Anatomia dei Sensi",
+        "Scienza Femminile Illuminista"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_tibaldi",
       "name": "Pellegrino",
       "surname": "Tibaldi",
-      "artisticCurrents": ["Manierismo Emiliano", "Pittura a Fresco Rinascimentale", "Architettura"]
+      "artisticCurrents": [
+        "Manierismo Emiliano",
+        "Pittura a Fresco Rinascimentale",
+        "Architettura"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_aldrovandi",
       "name": "Ulisse",
       "surname": "Aldrovandi",
-      "artisticCurrents": ["Naturalismo Rinascimentale", "Botanica", "Wunderkammer XVI sec."]
+      "artisticCurrents": [
+        "Naturalismo Rinascimentale",
+        "Botanica",
+        "Wunderkammer XVI sec."
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     }
   ],
   "items": [
     {
       "key": "item_poggi_spogliati_advanced",
       "description": "Le celebri statue anatomiche in legno di tiglio intagliato da Ercole Lelli nel 1742 raffigurano il corpo umano privato della pelle ('gli Spogliati') per rivelare la struttura muscolare profonda. Commissionate dall'Istituto delle Scienze di Bologna per l'insegnamento medico, rappresentano la fusione perfetta tra perizia anatomica e scultura barocca.",
-      "tone": "advanced",
-      "length": 290
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_poggi_ulisse_medium",
       "description": "Il ciclo di affreschi dipinto da Pellegrino Tibaldi nella metà del Cinquecento a Palazzo Poggi raffigura gli episodi salienti dell'Odissea di Omero (Ulisse e Polifemo, la maga Circe, le Sirene). Le figure si distinguono per il titanismo muscolare di derivazione michelangiolesca e la straordinaria vivacità narrativa del Manierismo emiliano.",
       "tone": "medium",
-      "length": 270
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_poggi_morandi_scientific",
       "description": "L'autoritratto in cera di Anna Morandi Manzolini la ritrae intenta a sezionare un cervello umano. Formatasi con il marito Giovanni Manzolini, la scienziata bolognese divenne celebre in tutta Europa per le sue modellazioni ceroplastiche ad altissima precisione dei sistemi sensoriali e cerebrali.",
-      "tone": "scientific",
-      "length": 280
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_poggi_navi_technical",
       "description": "I modelli di vascelli e galeoni in scala realizzati per il Generale Luigi Ferdinando Marsili nel primo Settecento servivano all'insegnamento dell'architettura navale, del sartiame e della balistica marina. Ogni nave è ricostruita con legni pregiati e sartiame in canapa intrecciata a mano.",
       "tone": "technical",
-      "length": 250
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_poggi_ostetricia_medium",
       "description": "I modelli ostetrici in terracotta policroma realizzati per la scuola medica fondata da Giovanni Antonio Galli nel 1750 permisero la prima formazione pratica scientifica per medici e levatrici a Bologna, riducendo drasticamente la mortalità infantile dell'epoca.",
       "tone": "medium",
-      "length": 240
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_poggi_aldrovandi_simple",
       "description": "Ulisse Aldrovandi fu uno dei più grandi scienziati del Rinascimento. Nella sua stanza a Palazzo Poggi si possono ammirare centinaia di matrici di legno incise e disegni di piante, animali e creature bizzarre raccolte nella sua favolosa collezione di meraviglie naturali!",
       "tone": "simple",
-      "length": 210
+      "length": 60,
+      "language": "it"
     }
   ],
   "artworks": [
@@ -153,7 +317,9 @@
       "title": "Statue Anatomiche in Legno del Campione (Gli Spogliati di Ercole Lelli)",
       "startYear": 1742,
       "endYear": 1750,
-      "artists": ["artist_lelli"],
+      "artists": [
+        "artist_lelli"
+      ],
       "location": {
         "room": "Camera dell'Anatomia",
         "floor": "Piano Nobile",
@@ -165,27 +331,52 @@
         "depth": 50,
         "unit": "cm"
       },
-      "artisticCurrents": ["Ceroplastica Anatomica", "Illuminismo Scientifico"],
+      "artisticCurrents": [
+        "Ceroplastica Anatomica",
+        "Illuminismo Scientifico"
+      ],
       "details": {
-        "subjects": ["Anatomia umana", "Muscolatura profonda", "Dimostrazione medica"],
-        "colors": ["Legno naturale scuro", "Cera rosata"],
-        "places": ["Bologna - Palazzo Poggi"],
+        "subjects": [
+          "Anatomia umana",
+          "Muscolatura profonda",
+          "Dimostrazione medica"
+        ],
+        "colors": [
+          "Legno naturale scuro",
+          "Cera rosata"
+        ],
+        "places": [
+          "Bologna - Palazzo Poggi"
+        ],
         "objectType": "Sculture anatomiche a grandezza naturale in legno di tiglio e cera",
-        "materials": ["Legno di tiglio", "Cera d'api", "Pigmenti minerali"],
-        "techniques": ["Intaglio ligneo anatomico ad alta precisione", "Modellazione in cera micro-pigmentata"]
+        "materials": [
+          "Legno di tiglio",
+          "Cera d'api",
+          "Pigmenti minerali"
+        ],
+        "techniques": [
+          "Intaglio ligneo anatomico ad alta precisione",
+          "Modellazione in cera micro-pigmentata"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-001",
-      "images": [],
-      "items": ["item_poggi_spogliati_advanced"]
+      "items": [
+        "item_poggi_spogliati_advanced"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_poggi_ulisse_tibaldi",
       "title": "Ciclo di Affreschi delle Storie di Ulisse di Pellegrino Tibaldi",
       "startYear": 1550,
       "endYear": 1555,
-      "artists": ["artist_tibaldi"],
+      "artists": [
+        "artist_tibaldi"
+      ],
       "location": {
         "room": "Sala di Ulisse",
         "floor": "Piano Nobile",
@@ -197,27 +388,53 @@
         "depth": 1,
         "unit": "cm"
       },
-      "artisticCurrents": ["Manierismo Emiliano", "Rinascimento Tardo"],
+      "artisticCurrents": [
+        "Manierismo Emiliano",
+        "Rinascimento Tardo"
+      ],
       "details": {
-        "subjects": ["Odissea", "Ulisse e Polifemo", "Circe", "Mitologia classica"],
-        "colors": ["Ocra dorata", "Blu oltremare", "Terra di Siena bruciata"],
-        "places": ["Bologna"],
+        "subjects": [
+          "Odissea",
+          "Ulisse e Polifemo",
+          "Circe",
+          "Mitologia classica"
+        ],
+        "colors": [
+          "Ocra dorata",
+          "Blu oltremare",
+          "Terra di Siena bruciata"
+        ],
+        "places": [
+          "Bologna"
+        ],
         "objectType": "Ciclo di affreschi decorativi su volta e pareti",
-        "materials": ["Intonaco di calce e sabbia", "Pigmenti a fresco"],
-        "techniques": ["Pittura a fresco ad alto dinamismo titanico michelangiolesco"]
+        "materials": [
+          "Intonaco di calce e sabbia",
+          "Pigmenti a fresco"
+        ],
+        "techniques": [
+          "Pittura a fresco ad alto dinamismo titanico michelangiolesco"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-002",
-      "images": [],
-      "items": ["item_poggi_ulisse_medium"]
+      "items": [
+        "item_poggi_ulisse_medium"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_poggi_ceroplastica_morandi",
       "title": "Autoritratto Anatomico in Cera di Anna Morandi Manzolini",
       "startYear": 1755,
       "endYear": 1765,
-      "artists": ["artist_morandi", "artist_manzolini"],
+      "artists": [
+        "artist_morandi",
+        "artist_manzolini"
+      ],
       "location": {
         "room": "Camera della Ceroplastica Anatomica",
         "floor": "Piano Nobile",
@@ -229,27 +446,53 @@
         "depth": 45,
         "unit": "cm"
       },
-      "artisticCurrents": ["Ceroplastica Bolognese", "Illuminismo Medico"],
+      "artisticCurrents": [
+        "Ceroplastica Bolognese",
+        "Illuminismo Medico"
+      ],
       "details": {
-        "subjects": ["Autoritratto", "Dissezione del cervello", "Organi dei sensi"],
-        "colors": ["Cera naturale dipinta", "Seta viola", "Pizzo bianco"],
-        "places": ["Bologna"],
+        "subjects": [
+          "Autoritratto",
+          "Dissezione del cervello",
+          "Organi dei sensi"
+        ],
+        "colors": [
+          "Cera naturale dipinta",
+          "Seta viola",
+          "Pizzo bianco"
+        ],
+        "places": [
+          "Bologna"
+        ],
         "objectType": "Busto ceroplastico a grandezza naturale con abiti originali",
-        "materials": ["Cera d'api", "Capelli umani", "Tessuto di seta", "Sferoidi in vetro per gli occhi"],
-        "techniques": ["Modellazione in cera micro-pigmentata e vestizione d'epoca"]
+        "materials": [
+          "Cera d'api",
+          "Capelli umani",
+          "Tessuto di seta",
+          "Sferoidi in vetro per gli occhi"
+        ],
+        "techniques": [
+          "Modellazione in cera micro-pigmentata e vestizione d'epoca"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-003",
-      "images": [],
-      "items": ["item_poggi_morandi_scientific"]
+      "items": [
+        "item_poggi_morandi_scientific"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_poggi_navi_marsili",
       "title": "Modello di Vascello da Guerra del XVIII Secolo (Collezione Marsili)",
       "startYear": 1715,
       "endYear": 1725,
-      "artists": ["artist_marsili"],
+      "artists": [
+        "artist_marsili"
+      ],
       "location": {
         "room": "Camera dell'Architettura Navale e Militare",
         "floor": "Piano Nobile",
@@ -261,27 +504,52 @@
         "depth": 55,
         "unit": "cm"
       },
-      "artisticCurrents": ["Architettura Navale", "Ingegneria Militare XVIII sec."],
+      "artisticCurrents": [
+        "Architettura Navale",
+        "Ingegneria Militare XVIII sec."
+      ],
       "details": {
-        "subjects": ["Vascello da guerra", "Artiglieria di marina", "Sartiame e vele"],
-        "colors": ["Legno di noce", "Lino naturale", "Bronzo"],
-        "places": ["Bologna / Venezia"],
+        "subjects": [
+          "Vascello da guerra",
+          "Artiglieria di marina",
+          "Sartiame e vele"
+        ],
+        "colors": [
+          "Legno di noce",
+          "Lino naturale",
+          "Bronzo"
+        ],
+        "places": [
+          "Bologna / Venezia"
+        ],
         "objectType": "Modello in scala navale da studio e didattica arsenale",
-        "materials": ["Legno di noce e abete", "Corde in canapa", "Bronzo"],
-        "techniques": ["Modellismo navale d'arsenale di precisione"]
+        "materials": [
+          "Legno di noce e abete",
+          "Corde in canapa",
+          "Bronzo"
+        ],
+        "techniques": [
+          "Modellismo navale d'arsenale di precisione"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-004",
-      "images": [],
-      "items": ["item_poggi_navi_technical"]
+      "items": [
+        "item_poggi_navi_technical"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_poggi_ostetricia",
       "title": "Modello Ostetrico in Terracotta della Scuola di Giovanni Antonio Galli",
       "startYear": 1750,
       "endYear": 1758,
-      "artists": ["artist_manzolini"],
+      "artists": [
+        "artist_manzolini"
+      ],
       "location": {
         "room": "Camera dell'Ostetricia",
         "floor": "Piano Nobile",
@@ -293,27 +561,51 @@
         "depth": 35,
         "unit": "cm"
       },
-      "artisticCurrents": ["Didattica Medica XVIII sec.", "Ceroplastica e Plastica in Terracotta"],
+      "artisticCurrents": [
+        "Didattica Medica XVIII sec.",
+        "Ceroplastica e Plastica in Terracotta"
+      ],
       "details": {
-        "subjects": ["Ostetricia", "Sviluppo fetale", "Formazione medica"],
-        "colors": ["Terracotta policroma", "Cera rosata"],
-        "places": ["Bologna"],
+        "subjects": [
+          "Ostetricia",
+          "Sviluppo fetale",
+          "Formazione medica"
+        ],
+        "colors": [
+          "Terracotta policroma",
+          "Cera rosata"
+        ],
+        "places": [
+          "Bologna"
+        ],
         "objectType": "Modello didattico ostetrico scientifico per dimostrazione",
-        "materials": ["Terracotta modellata", "Cera", "Pigmenti naturali"],
-        "techniques": ["Modellato in terracotta dipinta a freddo e finiture in cera"]
+        "materials": [
+          "Terracotta modellata",
+          "Cera",
+          "Pigmenti naturali"
+        ],
+        "techniques": [
+          "Modellato in terracotta dipinta a freddo e finiture in cera"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-005",
-      "images": [],
-      "items": ["item_poggi_ostetricia_medium"]
+      "items": [
+        "item_poggi_ostetricia_medium"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_poggi_aldrovandi_erbario",
       "title": "Erbario e Matrici Xilografiche della Collezione Ulisse Aldrovandi",
       "startYear": 1568,
       "endYear": 1605,
-      "artists": ["artist_aldrovandi"],
+      "artists": [
+        "artist_aldrovandi"
+      ],
       "location": {
         "room": "Camera della Storia Naturale e Wunderkammer",
         "floor": "Piano Nobile",
@@ -325,20 +617,42 @@
         "depth": 8,
         "unit": "cm"
       },
-      "artisticCurrents": ["Naturalismo Rinascimentale", "Wunderkammer Scientifiche"],
+      "artisticCurrents": [
+        "Naturalismo Rinascimentale",
+        "Wunderkammer Scientifiche"
+      ],
       "details": {
-        "subjects": ["Botanica", "Zoologia", "Meraviglie naturali"],
-        "colors": ["Carta filigranata d'epoca", "Inchiostro di china"],
-        "places": ["Bologna"],
+        "subjects": [
+          "Botanica",
+          "Zoologia",
+          "Meraviglie naturali"
+        ],
+        "colors": [
+          "Carta filigranata d'epoca",
+          "Inchiostro di china"
+        ],
+        "places": [
+          "Bologna"
+        ],
         "objectType": "Matrici xilografiche in legno ed erbario essiccato e rilegato",
-        "materials": ["Legno di pero", "Carta filigranata", "Campioni botanici essiccati"],
-        "techniques": ["Xilografia su legno duro ed essiccazione botanica a pressione"]
+        "materials": [
+          "Legno di pero",
+          "Carta filigranata",
+          "Campioni botanici essiccati"
+        ],
+        "techniques": [
+          "Xilografia su legno duro ed essiccazione botanica a pressione"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-006",
-      "images": [],
-      "items": ["item_poggi_aldrovandi_simple"]
+      "items": [
+        "item_poggi_aldrovandi_simple"
+      ],
+      "assets": {
+        "images": []
+      }
     }
   ],
   "visits": [
@@ -346,7 +660,7 @@
       "key": "visit_poggi_anatomia",
       "title": "Il Teatro della Scienza: Anatomia e Ceroplastica a Palazzo Poggi (XVIII sec.)",
       "description": "Un affascinante viaggio nella stagione dell'Illuminismo bolognese. La visita guida alla scoperta delle celebri Camere dell'Anatomia e della Ceroplastica, ammirando gli 'Spogliati' in legno di Ercole Lelli e i capolavori in cera di Anna Morandi Manzolini e Giovanni Manzolini, che resero Bologna il centro europeo di riferimento per gli studi medici anatomici.",
-      "price": 7.0,
+      "price": 7,
       "creator": "poggi_staff",
       "artworks": [
         "artwork_poggi_spogliati",
@@ -362,26 +676,103 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:30", "endTime": "17:00" }], "closed": false },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:30", "endTime": "17:00" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:30", "endTime": "17:00" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "15:30",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "15:30",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "15:30",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Consigliato per studenti universitari, appassionati di storia della medicina e dell'anatomia.",
-      "categories": ["Scienza", "Didattica"]
+      "categories": [
+        "Scienza",
+        "Didattica"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_poggi_ulisse",
       "title": "Le Storie di Ulisse e il Rinascimento Manierista a Palazzo Poggi",
       "description": "Itinerario storico-artistico incentrato sulla meravigliosa decorazione pittorica del palazzo. Esplorazione della Sala di Ulisse con il grande ciclo di affreschi dipinti da Pellegrino Tibaldi a metà del Cinquecento, capolavoro del Manierismo emiliano celebre per la potenza muscolare dei personaggi e la narrazione mitologica.",
-      "price": 6.0,
+      "price": 6,
       "creator": "poggi_staff",
       "artworks": [
         "artwork_poggi_ulisse_tibaldi",
@@ -396,26 +787,91 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Visita guidata artistica incentrata sull'iconografia ed il Manierismo emiliano.",
-      "categories": ["Rinascimento", "Antica Grecia"]
+      "categories": [
+        "Rinascimento",
+        "Antica Grecia"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_poggi_marsili_navi",
       "title": "Wunderkammer, Navi e la Scienza del Generale Marsili",
       "description": "Tour dedicato alle collezioni scientifiche dell'Istituto delle Scienze fondato da Luigi Ferdinando Marsili nel 1711. Dai modelli in scala di vascelli da guerra e fortificazioni militari alle meraviglie naturali della Wunderkammer di Ulisse Aldrovandi con le sue matrici xilografiche ed erbari del XVI secolo.",
-      "price": 8.0,
+      "price": 8,
       "creator": "poggi_staff",
       "artworks": [
         "artwork_poggi_navi_marsili",
@@ -430,26 +886,91 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "14:30", "endTime": "16:00" }], "closed": false },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [{ "startTime": "14:30", "endTime": "16:00" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "14:30", "endTime": "16:00" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "14:30", "endTime": "16:00" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "14:30", "endTime": "16:00" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "14:30", "endTime": "16:00" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:00"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Adatto ad adulti, scolaresche e appassionati di modellismo navale e storia della scienza.",
-      "categories": ["Scienza", "Didattica"]
+      "categories": [
+        "Scienza",
+        "Didattica"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_poggi_camere_scienze",
       "title": "Le Camere delle Scienze: Ostetricia, Fisica e Geografia dell'Ateneo",
       "description": "Percorso didattico ed enciclopedico attraverso le stanze di studio di Palazzo Poggi: dalla rivoluzionaria scuola di ostetricia di Giovanni Antonio Galli alla fisica sperimentale e geografia cartesiana dell'Università di Bologna.",
-      "price": 5.0,
+      "price": 5,
       "creator": "poggi_staff",
       "artworks": [
         "artwork_poggi_ostetricia",
@@ -465,20 +986,85 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "16:30", "endTime": "17:30" }], "closed": false },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [{ "startTime": "12:00", "endTime": "13:00" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "12:00", "endTime": "13:00" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "12:00", "endTime": "13:00" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "16:30", "endTime": "17:30" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "16:30", "endTime": "17:30" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "16:30",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "16:30",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "16:30",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Struttura museale universitaria completamente fruibile.",
-      "categories": ["Scienza", "Didattica"]
+      "categories": [
+        "Scienza",
+        "Didattica"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     }
   ]
 }

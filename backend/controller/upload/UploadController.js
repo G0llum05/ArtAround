@@ -26,17 +26,36 @@ class UploadController {
     */
   static async visitImgUpload(req, res) {
     try {
+
       const uploadDTO = UploadMapper.toUploadVisitImgDTO(req);
-      if (!uploadDTO) {
-        return res.status(400).json({ message: 'Errore: dati di caricamento non validi.' });
+      if (!uploadDTO || !uploadDTO.museumId || !uploadDTO.visitId || !uploadDTO.file) {
+        return res.status(400).json({
+          message: 'Errore: dati di caricamento non validi.',
+          details: {
+            museumId: uploadDTO?.museumId || null,
+            visitId: uploadDTO?.visitId || null,
+            hasFile: !!uploadDTO?.file,
+            orientation: uploadDTO?.orientation || null
+          }
+        });
       }
 
-      url = await UploadService.visitImgUpload(uploadDTO);
-      return res.status(201).json({ message: 'Immagine della visita caricata con successo.', url });
+      const url = await UploadService.visitImgUpload(
+        uploadDTO.museumId,
+        uploadDTO.visitId,
+        uploadDTO.file,
+        uploadDTO.orientation
+      );
 
+      return res.status(201).json({
+        url
+      });
     } catch (err) {
       console.error('[UploadController visitImgUpload Error]:', err);
-      return res.status(500).json({ message: 'Errore durante il caricamento dell\'immagine della visita.' });
+      return res.status(400).json({
+        message: 'Errore durante il caricamento dell\'immagine della visita.',
+        error: err.message
+      });
     }
   }
 

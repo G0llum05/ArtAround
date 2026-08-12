@@ -35,29 +35,105 @@
     "openingHours": [
       {
         "weeklyStandard": [
-          { "day": 0, "slots": [{ "startTime": "10:00", "endTime": "18:30" }], "closed": false },
-          { "day": 1, "slots": [], "closed": true },
-          { "day": 2, "slots": [{ "startTime": "09:00", "endTime": "13:00" }], "closed": false },
-          { "day": 3, "slots": [{ "startTime": "09:00", "endTime": "13:00" }], "closed": false },
-          { "day": 4, "slots": [{ "startTime": "09:00", "endTime": "13:00" }], "closed": false },
-          { "day": 5, "slots": [{ "startTime": "10:00", "endTime": "18:30" }], "closed": false },
-          { "day": 6, "slots": [{ "startTime": "10:00", "endTime": "18:30" }], "closed": false }
+          {
+            "day": 0,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 1,
+            "slots": [],
+            "closed": true
+          },
+          {
+            "day": 2,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "13:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 3,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "13:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 4,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "13:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 5,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 6,
+            "slots": [
+              {
+                "startTime": "10:00",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          }
         ],
         "exceptions": []
       }
     ],
     "ticketInfo": {
       "prices": [
-        { "planName": "Intero", "price": 5.0, "target": "Adulti" },
-        { "planName": "Ridotto", "price": 3.0, "target": "Under 26, Over 65, Studenti universitari" },
-        { "planName": "Gratuito", "price": 0.0, "target": "Under 18, Possessori Card Cultura, Persone con disabilità" }
+        {
+          "planName": "Intero",
+          "price": 5,
+          "target": "Adulti"
+        },
+        {
+          "planName": "Ridotto",
+          "price": 3,
+          "target": "Under 26, Over 65, Studenti universitari"
+        },
+        {
+          "planName": "Gratuito",
+          "price": 0,
+          "target": "Under 18, Possessori Card Cultura, Persone con disabilità"
+        }
       ],
-      "discountCode": ["BOSTUDENT2026", "CULTURA26"]
+      "discountCode": [
+        "BOSTUDENT2026",
+        "CULTURA26"
+      ]
     },
     "isActive": true,
     "disableFriendly": true,
     "requirements": "Struttura interamente accessibile con rampe, elevatori e ascensori. Si raccomanda la prenotazione per visite guidate e gruppi scolastici.",
-    "visits": ["visit_seta_idraulica", "visit_meccanica_packaging"],
+    "visits": [
+      "visit_seta_idraulica",
+      "visit_meccanica_packaging"
+    ],
     "artworks": [
       "artwork_mulino_seta",
       "artwork_carburatore_weber",
@@ -65,6 +141,44 @@
       "artwork_confezionatrice_gd",
       "artwork_torchio_aldini",
       "artwork_fornace_galotti"
+    ],
+    "pointsOfInterest": [
+      {
+        "name": "Toilette Principale",
+        "type": "toilette",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Uscita Principale",
+        "type": "exit",
+        "floor": "Piano Terra",
+        "room": "Atrio Uscita"
+      },
+      {
+        "name": "Ascensore Principale",
+        "type": "elevator",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Bar / Caffetteria",
+        "type": "bar",
+        "floor": "Piano Terra",
+        "room": "Cortile Interno"
+      },
+      {
+        "name": "Biglietteria",
+        "type": "ticket_office",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Info Point / Navigatore",
+        "type": "info_point",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      }
     ]
   },
   "artists": [
@@ -72,31 +186,70 @@
       "key": "artist_isotti",
       "name": "Giovanni Battista",
       "surname": "Isotti",
-      "artisticCurrents": ["Ingegneria idraulica", "Meccanica del Legno", "Protoindustria Tessile XVII sec."]
+      "artisticCurrents": [
+        "Ingegneria idraulica",
+        "Meccanica del Legno",
+        "Protoindustria Tessile XVII sec."
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_weber",
       "name": "Edoardo",
       "surname": "Weber",
-      "artisticCurrents": ["Ingegneria Automobilistica", "Meccanica di Precisione XX sec."]
+      "artisticCurrents": [
+        "Ingegneria Automobilistica",
+        "Meccanica di Precisione XX sec."
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_ducati",
       "name": "Antonio",
       "surname": "Ducati",
-      "artisticCurrents": ["Elettrotecnica", "Radiotecnica", "Industria Elettronica Bolognese"]
+      "artisticCurrents": [
+        "Elettrotecnica",
+        "Radiotecnica",
+        "Industria Elettronica Bolognese"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_aldini",
       "name": "Giovanni",
       "surname": "Aldini",
-      "artisticCurrents": ["Fisica Applicata", "Illuminismo Scientifico", "Didattica Industriale"]
+      "artisticCurrents": [
+        "Fisica Applicata",
+        "Illuminismo Scientifico",
+        "Didattica Industriale"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_valeriani",
       "name": "Luigi",
       "surname": "Valeriani",
-      "artisticCurrents": ["Economia Politica", "Riformismo Sociale", "Istruzione Tecnica Professionale"]
+      "artisticCurrents": [
+        "Economia Politica",
+        "Riformismo Sociale",
+        "Istruzione Tecnica Professionale"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     }
   ],
   "items": [
@@ -104,55 +257,64 @@
       "key": "item_mulino_medium",
       "description": "Il Mulino da Seta alla Bolognese rappresenta il culmine della tecnologia idraulica e meccanica del Seicento. Costituito da un'imponente ruota idraulica verticale accoppiata a un sistema cilindrico (valico) di rocchetti e fusi, permetteva di torcere meccanicamente centinaia di fili di seta in contemporanea. Grazie a questa innovazione brevettata, Bologna divenne per oltre due secoli il principale centro europeo per la produzione di veli di seta di altissima qualità.",
       "tone": "medium",
-      "length": 280
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_mulino_infantile",
       "description": "Immagina una gigantesca ruota di legno mossa dall'acqua del canale! Questa grande macchina girava senza sosta e faceva muovere centinaia di rocchetti colorati che filavano la seta morbida e lucente. Era la fabbrica più moderna del mondo ben quattro secoli fa, proprio qui a Bologna!",
       "tone": "infantile",
-      "length": 150
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_weber_technical",
       "description": "Il carburatore Weber DCOE a doppio corpo orizzontale ad alte prestazioni è un capolavoro di micromeccanica valvolare e condotti di venturi. Progettato negli anni '30 da Edoardo Weber a Bologna per ottimizzare la miscelazione aria-carburante nei motori da corsa, garantisce una risposta immediata dell'acceleratore attraverso due condotti d'aspirazione indipendenti dotati di getti del massimo, dell'emulsionatore e pompetta di ripresa regolabile.",
       "tone": "technical",
-      "length": 320
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_weber_medium",
       "description": "Nato a Bologna nell'officina di Edoardo Weber, questo carburatore ha rivoluzionato il mondo dell'automobile e del collezionismo sportivo. La sua straordinaria affidabilità ed efficienza resero il marchio Weber sinonimo di prestazioni per marchi leggendari come Ferrari, Alfa Romeo e Maserati.",
       "tone": "medium",
-      "length": 190
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_ducati_simple",
       "description": "Prima di costruire le famose moto veloci che tutti conosciamo, la famiglia Ducati iniziò a Bologna producendo piccolissimi componenti per le radio, come questo condensatore Manens! Era così preciso e ben fatto che venne venduto in tutto il mondo.",
       "tone": "simple",
-      "length": 160
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_ducati_advanced",
       "description": "Il condensatore variabile 'Manens', brevettato nel 1926 da Adriano e Antonio Ducati, si distingue per la tolleranza micrometrica delle sue lamelle in alluminio e per la scocca isolante in bachelite. Questo componente rappresentò la pietra angolare del successo industriale della Società Scientifica Radio Brevetti Ducati, consentendo la sintonia ad alta precisione nelle apparecchiature radio riceventi e trasmettitori d'epoca.",
-      "tone": "advanced",
-      "length": 290
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_gd_technical",
       "description": "Cinematica complessa e sincrono di precisione caratterizzano la confezionatrice automatica GD 5000. Sviluppata a Bologna negli anni '60, la macchina sfrutta un sistema articolato di camme desmodromiche e bracci meccanici in grado di piegare, avvolgere e sigillare astucci e pacchetti ad altissima velocità (oltre 400 pezzi al minuto).",
       "tone": "technical",
-      "length": 270
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_torchio_scientific",
       "description": "Basato sull'applicazione rigorosa del principio di Pascal per la trasmissione della pressione nei fluidi incompressibili, questo modello didattico dimostra l'amplificazione della forza meccanica proporzionale al rapporto tra le sezioni dei pistoni idraulici. Utilizzato per la formazione dei periti dell'Istituto Aldini Valeriani a fine Ottocento.",
-      "tone": "scientific",
-      "length": 240
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_fornace_medium",
       "description": "La Fornace Galotti, costruita nel 1887 per la fabbricazione di laterizi, è dotata di un forno a fuoco continuo sistema Hoffmann. L'architettura in mattoni a vista e le ampie campate rappresentano oggi uno straordinario esempio di riuso funzionale dell'archeologia industriale bolognese lungo la via d'acqua del Canale Navile.",
       "tone": "medium",
-      "length": 230
+      "length": 60,
+      "language": "it"
     }
   ],
   "artworks": [
@@ -161,7 +323,9 @@
       "title": "Modello di Mulino da Seta alla Bolognese (Scala 1:2)",
       "startYear": 1680,
       "endYear": 1720,
-      "artists": ["artist_isotti"],
+      "artists": [
+        "artist_isotti"
+      ],
       "location": {
         "room": "Sala del Mulino da Seta",
         "floor": "Piano Terra",
@@ -173,27 +337,56 @@
         "depth": 180,
         "unit": "cm"
       },
-      "artisticCurrents": ["Protoindustria tessile", "Ingegneria idraulica"],
+      "artisticCurrents": [
+        "Protoindustria tessile",
+        "Ingegneria idraulica"
+      ],
       "details": {
-        "subjects": ["Mulino da seta", "Torcitura idraulica", "Ruota idraulica"],
-        "colors": ["Legno naturale", "Bronzo", "Ottone"],
-        "places": ["Bologna", "Canale Navile"],
+        "subjects": [
+          "Mulino da seta",
+          "Torcitura idraulica",
+          "Ruota idraulica"
+        ],
+        "colors": [
+          "Legno naturale",
+          "Bronzo",
+          "Ottone"
+        ],
+        "places": [
+          "Bologna",
+          "Canale Navile"
+        ],
         "objectType": "Modello meccanico funzionante",
-        "materials": ["Legno di noce", "Ottone", "Ferro battuto", "Filato di seta"],
-        "techniques": ["Carpenteria meccanica in legno", "Tornitura di precisione XVII sec."]
+        "materials": [
+          "Legno di noce",
+          "Ottone",
+          "Ferro battuto",
+          "Filato di seta"
+        ],
+        "techniques": [
+          "Carpenteria meccanica in legno",
+          "Tornitura di precisione XVII sec."
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-001",
-      "images": [],
-      "items": ["item_mulino_medium", "item_mulino_infantile"]
+      "items": [
+        "item_mulino_medium",
+        "item_mulino_infantile"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_carburatore_weber",
       "title": "Carburatore Weber Tipo DCOE 40",
       "startYear": 1930,
       "endYear": 1935,
-      "artists": ["artist_weber"],
+      "artists": [
+        "artist_weber"
+      ],
       "location": {
         "room": "Sala della Meccanica e Motori",
         "floor": "Primo Piano",
@@ -205,27 +398,53 @@
         "depth": 16,
         "unit": "cm"
       },
-      "artisticCurrents": ["Ingegneria automobilistica", "Meccanica di precisione"],
+      "artisticCurrents": [
+        "Ingegneria automobilistica",
+        "Meccanica di precisione"
+      ],
       "details": {
-        "subjects": ["Motore a combustione", "Alimentazione carburante", "Corse automobilistiche"],
-        "colors": ["Argento alluminio", "Ottone"],
-        "places": ["Bologna"],
+        "subjects": [
+          "Motore a combustione",
+          "Alimentazione carburante",
+          "Corse automobilistiche"
+        ],
+        "colors": [
+          "Argento alluminio",
+          "Ottone"
+        ],
+        "places": [
+          "Bologna"
+        ],
         "objectType": "Carburatore doppio corpo per motori da competizione",
-        "materials": ["Lega d'alluminio", "Ottone", "Acciaio temprato"],
-        "techniques": ["Pressofusione in lega leggera", "Lavorazione micrometrica alle macchine utensili"]
+        "materials": [
+          "Lega d'alluminio",
+          "Ottone",
+          "Acciaio temprato"
+        ],
+        "techniques": [
+          "Pressofusione in lega leggera",
+          "Lavorazione micrometrica alle macchine utensili"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-002",
-      "images": [],
-      "items": ["item_weber_technical", "item_weber_medium"]
+      "items": [
+        "item_weber_technical",
+        "item_weber_medium"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_condensatore_ducati",
       "title": "Condensatore Elettrico Ducati Manens",
       "startYear": 1926,
       "endYear": 1930,
-      "artists": ["artist_ducati"],
+      "artists": [
+        "artist_ducati"
+      ],
       "location": {
         "room": "Galleria dell'Elettrotecnica e Radio",
         "floor": "Primo Piano",
@@ -237,20 +456,44 @@
         "depth": 15,
         "unit": "cm"
       },
-      "artisticCurrents": ["Elettrotecnica", "Radiotecnica"],
+      "artisticCurrents": [
+        "Elettrotecnica",
+        "Radiotecnica"
+      ],
       "details": {
-        "subjects": ["Radio ricevitore", "Frequenza radio", "Elettronica d'epoca"],
-        "colors": ["Nero bachelite", "Ottone dorato"],
-        "places": ["Bologna - Borgo Panigale"],
+        "subjects": [
+          "Radio ricevitore",
+          "Frequenza radio",
+          "Elettronica d'epoca"
+        ],
+        "colors": [
+          "Nero bachelite",
+          "Ottone dorato"
+        ],
+        "places": [
+          "Bologna - Borgo Panigale"
+        ],
         "objectType": "Condensatore variabile per radiotecnica",
-        "materials": ["Bachelite", "Alluminio", "Ottone"],
-        "techniques": ["Stampaggio termoplastico di bachelite", "Montaggio di precisione a piastre parallele"]
+        "materials": [
+          "Bachelite",
+          "Alluminio",
+          "Ottone"
+        ],
+        "techniques": [
+          "Stampaggio termoplastico di bachelite",
+          "Montaggio di precisione a piastre parallele"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-003",
-      "images": [],
-      "items": ["item_ducati_simple", "item_ducati_advanced"]
+      "items": [
+        "item_ducati_simple",
+        "item_ducati_advanced"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_confezionatrice_gd",
@@ -269,27 +512,54 @@
         "depth": 150,
         "unit": "cm"
       },
-      "artisticCurrents": ["Automazione industriale", "Packaging Valley"],
+      "artisticCurrents": [
+        "Automazione industriale",
+        "Packaging Valley"
+      ],
       "details": {
-        "subjects": ["Confezionamento automatico", "Ingegneria meccanica", "Cinematica a camme"],
-        "colors": ["Verde industriale", "Acciaio satinato"],
-        "places": ["Bologna"],
+        "subjects": [
+          "Confezionamento automatico",
+          "Ingegneria meccanica",
+          "Cinematica a camme"
+        ],
+        "colors": [
+          "Verde industriale",
+          "Acciaio satinato"
+        ],
+        "places": [
+          "Bologna"
+        ],
         "objectType": "Macchina impacchettatrice ad alta velocità",
-        "materials": ["Acciaio inossidabile", "Ghisa", "Alluminio", "Gomma sintetizzata"],
-        "techniques": ["Assemblaggio cinematico a camme desmodromiche", "Automazione meccanica integrata"]
+        "materials": [
+          "Acciaio inossidabile",
+          "Ghisa",
+          "Alluminio",
+          "Gomma sintetizzata"
+        ],
+        "techniques": [
+          "Assemblaggio cinematico a camme desmodromiche",
+          "Automazione meccanica integrata"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-004",
-      "images": [],
-      "items": ["item_gd_technical"]
+      "items": [
+        "item_gd_technical"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_torchio_aldini",
       "title": "Modello Didattico di Torchio Idraulico (Scuola Aldini Valeriani)",
       "startYear": 1885,
       "endYear": 1890,
-      "artists": ["artist_aldini", "artist_valeriani"],
+      "artists": [
+        "artist_aldini",
+        "artist_valeriani"
+      ],
       "location": {
         "room": "Galleria dell'Istruzione Tecnica",
         "floor": "Secondo Piano",
@@ -301,20 +571,43 @@
         "depth": 40,
         "unit": "cm"
       },
-      "artisticCurrents": ["Didattica scientifica", "Meccanica dei fluidi"],
+      "artisticCurrents": [
+        "Didattica scientifica",
+        "Meccanica dei fluidi"
+      ],
       "details": {
-        "subjects": ["Principio di Pascal", "Pressione idraulica", "Formazione tecnica"],
-        "colors": ["Mogano scuro", "Ottone lucido"],
-        "places": ["Bologna"],
+        "subjects": [
+          "Principio di Pascal",
+          "Pressione idraulica",
+          "Formazione tecnica"
+        ],
+        "colors": [
+          "Mogano scuro",
+          "Ottone lucido"
+        ],
+        "places": [
+          "Bologna"
+        ],
         "objectType": "Strumento scientifico-didattico per laboratorio",
-        "materials": ["Legno di mogano", "Ottone", "Vetro borosilicato graduato"],
-        "techniques": ["Ebanisteria fine", "Tornitura metallica manuale"]
+        "materials": [
+          "Legno di mogano",
+          "Ottone",
+          "Vetro borosilicato graduato"
+        ],
+        "techniques": [
+          "Ebanisteria fine",
+          "Tornitura metallica manuale"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-005",
-      "images": [],
-      "items": ["item_torchio_scientific"]
+      "items": [
+        "item_torchio_scientific"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_fornace_galotti",
@@ -333,20 +626,44 @@
         "depth": 3000,
         "unit": "cm"
       },
-      "artisticCurrents": ["Archeologia industriale", "Architettura in laterizio"],
+      "artisticCurrents": [
+        "Archeologia industriale",
+        "Architettura in laterizio"
+      ],
       "details": {
-        "subjects": ["Fornace Hoffmann", "Cottura laterizi", "Canale Navile", "Produzione industriale mattoni"],
-        "colors": ["Rosso terracotta", "Legno scuro"],
-        "places": ["Bologna - Via della Beverara"],
+        "subjects": [
+          "Fornace Hoffmann",
+          "Cottura laterizi",
+          "Canale Navile",
+          "Produzione industriale mattoni"
+        ],
+        "colors": [
+          "Rosso terracotta",
+          "Legno scuro"
+        ],
+        "places": [
+          "Bologna - Via della Beverara"
+        ],
         "objectType": "Monumento di archeologia industriale e forni Hoffmann",
-        "materials": ["Mattoni pieni in terracotta", "Legno di rovere", "Ferro forgiato"],
-        "techniques": ["Muratura tradizionale a cassa vuota", "Sistema di cottura continua Hoffmann a galleria perimetrale"]
+        "materials": [
+          "Mattoni pieni in terracotta",
+          "Legno di rovere",
+          "Ferro forgiato"
+        ],
+        "techniques": [
+          "Muratura tradizionale a cassa vuota",
+          "Sistema di cottura continua Hoffmann a galleria perimetrale"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-006",
-      "images": [],
-      "items": ["item_fornace_medium"]
+      "items": [
+        "item_fornace_medium"
+      ],
+      "assets": {
+        "images": []
+      }
     }
   ],
   "visits": [
@@ -354,9 +671,12 @@
       "key": "visit_seta_idraulica",
       "title": "Bologna la Superba: Il Mulino da Seta e l'Energia Idraulica (XV-XVIII sec.)",
       "description": "Percorso guidato alla scoperta di Bologna come capitale europea della seta. Attraverso plastici interattivi, il grande modello del mulino da seta in scala 1:2 e i racconti sull'antica rete dei canali (Navile e Reno), il tour mostra come l'energia idraulica abbia dato vita alla prima grande industria cittadina.",
-      "price": 8.0,
+      "price": 8,
       "creator": "staff_user",
-      "artworks": ["artwork_mulino_seta", "artwork_fornace_galotti"],
+      "artworks": [
+        "artwork_mulino_seta",
+        "artwork_fornace_galotti"
+      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -366,26 +686,103 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:00", "endTime": "16:30" }], "closed": false },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "10:30", "endTime": "12:00" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:00", "endTime": "16:30" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "10:30", "endTime": "12:00" }, { "startTime": "15:00", "endTime": "16:30" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Scarpe comode per la deambulazione nelle gallerie della fornace. Adatto a scolaresche e visitatori individuali.",
-      "categories": ["Scienza", "Didattica"]
+      "categories": [
+        "Scienza",
+        "Didattica"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_meccanica_packaging",
       "title": "Dalla Protoindustria alla Packaging Valley: Meccanica e Motori a Bologna",
       "description": "Un itinerario che esplora l'evoluzione della meccanica bolognese nel Novecento. Dalle radici dell'istruzione tecnica (Aldini Valeriani) alle geniali intuizioni elettro-motoristiche (Ducati e Weber), fino alla nascita delle macchine automatiche ad alta velocità (GD) che hanno reso Bologna famosa nel mondo come capitale della Packaging Valley.",
-      "price": 10.0,
+      "price": 10,
       "creator": "staff_user",
       "artworks": [
         "artwork_carburatore_weber",
@@ -402,20 +799,97 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "11:00", "endTime": "12:45" }, { "startTime": "16:00", "endTime": "17:45" }], "closed": false },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [{ "startTime": "11:00", "endTime": "12:45" }], "closed": false },
-            { "day": 3, "slots": [{ "startTime": "11:00", "endTime": "12:45" }], "closed": false },
-            { "day": 4, "slots": [{ "startTime": "11:00", "endTime": "12:45" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "11:00", "endTime": "12:45" }, { "startTime": "16:00", "endTime": "17:45" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "11:00", "endTime": "12:45" }, { "startTime": "16:00", "endTime": "17:45" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:45"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:45"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:45"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:45"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Visita guidata con dimostrazioni di modelli meccanici in funzione. Consigliato per studenti di istituti tecnici e appassionati di motori e tecnologia.",
-      "categories": ["Motori", "Scienza"]
+      "categories": [
+        "Motori",
+        "Scienza"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     }
   ]
 }

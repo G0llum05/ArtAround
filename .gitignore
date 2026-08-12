@@ -29,7 +29,7 @@ package-lock.json
 docker-compose.override.yml.backup
 
 # Immagini assets
-backend/assets/
+# backend/assets/
 
 # --- SICUREZZA & AMBIENTE ---
 # Fondamentale: ignora le credenziali

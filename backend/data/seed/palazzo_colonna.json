@@ -34,25 +34,87 @@
     "openingHours": [
       {
         "weeklyStandard": [
-          { "day": 0, "slots": [], "closed": true },
-          { "day": 1, "slots": [], "closed": true },
-          { "day": 2, "slots": [], "closed": true },
-          { "day": 3, "slots": [], "closed": true },
-          { "day": 4, "slots": [{ "startTime": "09:00", "endTime": "13:15" }], "closed": false },
-          { "day": 5, "slots": [{ "startTime": "09:00", "endTime": "13:15" }], "closed": false },
-          { "day": 6, "slots": [{ "startTime": "09:00", "endTime": "13:15" }], "closed": false }
+          {
+            "day": 0,
+            "slots": [],
+            "closed": true
+          },
+          {
+            "day": 1,
+            "slots": [],
+            "closed": true
+          },
+          {
+            "day": 2,
+            "slots": [],
+            "closed": true
+          },
+          {
+            "day": 3,
+            "slots": [],
+            "closed": true
+          },
+          {
+            "day": 4,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "13:15"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 5,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "13:15"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 6,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "13:15"
+              }
+            ],
+            "closed": false
+          }
         ],
         "exceptions": []
       }
     ],
     "ticketInfo": {
       "prices": [
-        { "planName": "Intero Galleria Colonna", "price": 15.0, "target": "Adulti" },
-        { "planName": "Full Pass (Galleria + Appartamento Principessa Isabelle)", "price": 25.0, "target": "Tutti i visitatori" },
-        { "planName": "Ridotto", "price": 12.0, "target": "Under 18, Studenti fino a 26 anni" },
-        { "planName": "Gratuito", "price": 0.0, "target": "Bambini sotto i 12 anni, Persone con disabilità" }
+        {
+          "planName": "Intero Galleria Colonna",
+          "price": 15,
+          "target": "Adulti"
+        },
+        {
+          "planName": "Full Pass (Galleria + Appartamento Principessa Isabelle)",
+          "price": 25,
+          "target": "Tutti i visitatori"
+        },
+        {
+          "planName": "Ridotto",
+          "price": 12,
+          "target": "Under 18, Studenti fino a 26 anni"
+        },
+        {
+          "planName": "Gratuito",
+          "price": 0,
+          "target": "Bambini sotto i 12 anni, Persone con disabilità"
+        }
       ],
-      "discountCode": ["COLONNA2026", "BAROCCOROMA"]
+      "discountCode": [
+        "COLONNA2026",
+        "BAROCCOROMA"
+      ]
     },
     "isActive": true,
     "disableFriendly": true,
@@ -70,6 +132,44 @@
       "artwork_colonna_moses_guercino",
       "artwork_colonna_galleria_grande",
       "artwork_colonna_martirio_sebastiano_rosa"
+    ],
+    "pointsOfInterest": [
+      {
+        "name": "Toilette Principale",
+        "type": "toilette",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Uscita Principale",
+        "type": "exit",
+        "floor": "Piano Terra",
+        "room": "Atrio Uscita"
+      },
+      {
+        "name": "Ascensore Principale",
+        "type": "elevator",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Bar / Caffetteria",
+        "type": "bar",
+        "floor": "Piano Terra",
+        "room": "Cortile Interno"
+      },
+      {
+        "name": "Biglietteria",
+        "type": "ticket_office",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Info Point / Navigatore",
+        "type": "info_point",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      }
     ]
   },
   "artists": [
@@ -77,37 +177,80 @@
       "key": "artist_annibale_carracci",
       "name": "Annibale",
       "surname": "Carracci",
-      "artisticCurrents": ["Barocco Emiliano", "Pittura di Genere", "Accademia degli Incamminati"]
+      "artisticCurrents": [
+        "Barocco Emiliano",
+        "Pittura di Genere",
+        "Accademia degli Incamminati"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_guido_reni",
       "name": "Guido",
       "surname": "Reni",
-      "artisticCurrents": ["Classicismo Barocco Bolognese", "Seicento Romano"]
+      "artisticCurrents": [
+        "Classicismo Barocco Bolognese",
+        "Seicento Romano"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_bronzino",
       "name": "Agnolo",
       "surname": "Bronzino",
-      "artisticCurrents": ["Manierismo Fiorentino", "Ritrattistica Rinascimentale"]
+      "artisticCurrents": [
+        "Manierismo Fiorentino",
+        "Ritrattistica Rinascimentale"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_guercino",
       "name": "Giovanni Francesco",
       "surname": "Barbieri (Il Guercino)",
-      "artisticCurrents": ["Barocco Emiliano", "Chiaroscuro Cromatico"]
+      "artisticCurrents": [
+        "Barocco Emiliano",
+        "Chiaroscuro Cromatico"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_salvator_rosa",
       "name": "Salvator",
       "surname": "Rosa",
-      "artisticCurrents": ["Barocco Napoletano-Romano", "Pittura di Paesaggio Drammatico"]
+      "artisticCurrents": [
+        "Barocco Napoletano-Romano",
+        "Pittura di Paesaggio Drammatico"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_marcantonio_colonna",
       "name": "Marcantonio II",
       "surname": "Colonna",
-      "artisticCurrents": ["Committenza Barocca", "Vincitore di Lepanto 1571"]
+      "artisticCurrents": [
+        "Committenza Barocca",
+        "Vincitore di Lepanto 1571"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     }
   ],
   "items": [
@@ -115,37 +258,43 @@
       "key": "item_colonna_mangiafagioli_medium",
       "description": "'Il Mangiafagioli', dipinto da Annibale Carracci tra il 1584 e il 1585, è uno dei capolavori più famosi e rivoluzionari della pittura di genere europea. L'opera ritrae con realismo immediato un contadino seduto a una mensa frugale mentre porta alla bocca un cucchiaio di fagioli, tenendo nell'altra mano un pezzo di pane. L'assenza di idealizzazione ed il tocco rapido di pennello anticipano la grande pittura realista moderna.",
       "tone": "medium",
-      "length": 300
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_colonna_san_michele_advanced",
       "description": "La tela raffigurante San Michele Arcangelo che scaccia gli angeli ribelli fu eseguita da Guido Reni nel 1635 per la famiglia Colonna. Il dipinto esprime la perfezione del classicismo barocco bolognese: la figura dell'arcangelo in armatura d'oro ed elmo azzurro si erge con grazia sovrumana mentre calpesta la testa di Lucifero in un contrasto tra luce celeste e tenebre abissali.",
-      "tone": "advanced",
-      "length": 310
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_colonna_stefano_technical",
       "description": "Il ritratto di Stefano IV Colonna, eseguito nel 1546 dal maestro manierista Agnolo Bronzino, raffigura il condottiero in maestosa armatura in acciaio brunito con intarsi in oro. La lucidità formale, il rigore dello sguardo e la resa tattile del metallo riflettente testimoniano la virtuosità della ritrattistica di corte fiorentina del Cinquecento.",
       "tone": "technical",
-      "length": 290
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_colonna_moses_scientific",
       "description": "Dipinto dal Guercino nel 1640, 'Il Ritrovamento di Mosè' raffigura la figlia del Faraone che trae in salvo il piccolo Mosè affidato alle acque del Nilo in un cestello di giunchi. La tela si distingue per i caldi toni cromatici impastati nella luce, i drappeggi serici ed una profonda sensibilità psicologica dei volti.",
-      "tone": "scientific",
-      "length": 280
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_colonna_galleria_advanced",
       "description": "La Sala Grande della Galleria Colonna, lunga oltre 76 metri e decorata con specchi dipinti, soffitti affrescati, marmi policromi e statue antiche, fu concepita per celebrare la vittoria di Marcantonio II Colonna alla Battaglia di Lepanto (1571). Al centro della sala si erge la celebre colonna bellica in marmo giallo antico con il palla da cannone incastrata nei gradini, testimonianza del bombardamento di Roma del 1849.",
-      "tone": "advanced",
-      "length": 330
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_colonna_sebastiano_simple",
       "description": "Questo dipinto di Salvator Rosa mostra il martirio di San Sebastiano legato all'albero e trafitto dalle frecce. Lo sfondo con il cielo nuvoloso ed il bosco cupo rende la scena forte e ricca di dramma.",
       "tone": "simple",
-      "length": 190
+      "length": 60,
+      "language": "it"
     }
   ],
   "artworks": [
@@ -154,7 +303,9 @@
       "title": "Il Mangiafagioli di Annibale Carracci",
       "startYear": 1584,
       "endYear": 1585,
-      "artists": ["artist_annibale_carracci"],
+      "artists": [
+        "artist_annibale_carracci"
+      ],
       "location": {
         "room": "Sala dei Paesaggi",
         "floor": "Piano Nobile",
@@ -166,27 +317,52 @@
         "depth": 4,
         "unit": "cm"
       },
-      "artisticCurrents": ["Barocco Emiliano", "Pittura di Genere Realista"],
+      "artisticCurrents": [
+        "Barocco Emiliano",
+        "Pittura di Genere Realista"
+      ],
       "details": {
-        "subjects": ["Contadino", "Ciotola di fagioli", "Pane e brocca di vino", "Mensa popolare"],
-        "colors": ["Toni di terra", "Marrone", "Bianco lino", "Verde oliva"],
-        "places": ["Bologna / Roma"],
+        "subjects": [
+          "Contadino",
+          "Ciotola di fagioli",
+          "Pane e brocca di vino",
+          "Mensa popolare"
+        ],
+        "colors": [
+          "Toni di terra",
+          "Marrone",
+          "Bianco lino",
+          "Verde oliva"
+        ],
+        "places": [
+          "Bologna / Roma"
+        ],
         "objectType": "Dipinto a olio su tela",
-        "materials": ["Colori a olio su tela di lino"],
-        "techniques": ["Stesura rapida e densa a pennellate visibili senza idealizzazione"]
+        "materials": [
+          "Colori a olio su tela di lino"
+        ],
+        "techniques": [
+          "Stesura rapida e densa a pennellate visibili senza idealizzazione"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-001",
-      "images": [],
-      "items": ["item_colonna_mangiafagioli_medium"]
+      "items": [
+        "item_colonna_mangiafagioli_medium"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_colonna_san_michele_reni",
       "title": "San Michele Arcangelo scaccia gli angeli ribelli",
       "startYear": 1635,
       "endYear": 1635,
-      "artists": ["artist_guido_reni"],
+      "artists": [
+        "artist_guido_reni"
+      ],
       "location": {
         "room": "Sala della Colonna Bellica",
         "floor": "Piano Nobile",
@@ -198,27 +374,50 @@
         "depth": 8,
         "unit": "cm"
       },
-      "artisticCurrents": ["Classicismo Barocco Bolognese"],
+      "artisticCurrents": [
+        "Classicismo Barocco Bolognese"
+      ],
       "details": {
-        "subjects": ["San Michele Arcangelo", "Lucifero", "Angeli ribelli", "Lotta tra Bene e Male"],
-        "colors": ["Oro armatura", "Azzurro mantello", "Rosso fuoco tenebre"],
-        "places": ["Bologna / Roma"],
+        "subjects": [
+          "San Michele Arcangelo",
+          "Lucifero",
+          "Angeli ribelli",
+          "Lotta tra Bene e Male"
+        ],
+        "colors": [
+          "Oro armatura",
+          "Azzurro mantello",
+          "Rosso fuoco tenebre"
+        ],
+        "places": [
+          "Bologna / Roma"
+        ],
         "objectType": "Pala d'altare a olio su tela",
-        "materials": ["Colori a olio su tela"],
-        "techniques": ["Pittura classicista ad altissima morbidezza di sfumature"]
+        "materials": [
+          "Colori a olio su tela"
+        ],
+        "techniques": [
+          "Pittura classicista ad altissima morbidezza di sfumature"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-002",
-      "images": [],
-      "items": ["item_colonna_san_michele_advanced"]
+      "items": [
+        "item_colonna_san_michele_advanced"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_colonna_stefano_bronzino",
       "title": "Ritratto di Stefano IV Colonna in Armatura",
       "startYear": 1546,
       "endYear": 1546,
-      "artists": ["artist_bronzino"],
+      "artists": [
+        "artist_bronzino"
+      ],
       "location": {
         "room": "Sala del Apoteosi di Martino V",
         "floor": "Piano Nobile",
@@ -230,27 +429,50 @@
         "depth": 6,
         "unit": "cm"
       },
-      "artisticCurrents": ["Manierismo Fiorentino"],
+      "artisticCurrents": [
+        "Manierismo Fiorentino"
+      ],
       "details": {
-        "subjects": ["Stefano Colonna", "Armatura in acciaio", "Condottiero di corte"],
-        "colors": ["Grigio brunito lucido", "Rosso velluto", "Oro"],
-        "places": ["Firenze / Roma"],
+        "subjects": [
+          "Stefano Colonna",
+          "Armatura in acciaio",
+          "Condottiero di corte"
+        ],
+        "colors": [
+          "Grigio brunito lucido",
+          "Rosso velluto",
+          "Oro"
+        ],
+        "places": [
+          "Firenze / Roma"
+        ],
         "objectType": "Ritratto a olio su tavola",
-        "materials": ["Tavola di pioppo", "Colori a olio"],
-        "techniques": ["Pittura levigata a finitura smaltata tipica del Bronzino"]
+        "materials": [
+          "Tavola di pioppo",
+          "Colori a olio"
+        ],
+        "techniques": [
+          "Pittura levigata a finitura smaltata tipica del Bronzino"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-003",
-      "images": [],
-      "items": ["item_colonna_stefano_technical"]
+      "items": [
+        "item_colonna_stefano_technical"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_colonna_moses_guercino",
       "title": "Il Ritrovamento di Mosè",
       "startYear": 1640,
       "endYear": 1640,
-      "artists": ["artist_guercino"],
+      "artists": [
+        "artist_guercino"
+      ],
       "location": {
         "room": "Sala dei Troni",
         "floor": "Piano Nobile",
@@ -262,27 +484,49 @@
         "depth": 8,
         "unit": "cm"
       },
-      "artisticCurrents": ["Barocco Emiliano"],
+      "artisticCurrents": [
+        "Barocco Emiliano"
+      ],
       "details": {
-        "subjects": ["Piccolo Mosè", "Figlia del Faraone", "Fiume Nilo"],
-        "colors": ["Rosso bordeaux", "Verde acqua", "Cielo dorato"],
-        "places": ["Cento / Roma"],
+        "subjects": [
+          "Piccolo Mosè",
+          "Figlia del Faraone",
+          "Fiume Nilo"
+        ],
+        "colors": [
+          "Rosso bordeaux",
+          "Verde acqua",
+          "Cielo dorato"
+        ],
+        "places": [
+          "Cento / Roma"
+        ],
         "objectType": "Dipinto a olio su tela",
-        "materials": ["Colori a olio su tela"],
-        "techniques": ["Chiaroscuro avvolgente e resa serica dei tessuti"]
+        "materials": [
+          "Colori a olio su tela"
+        ],
+        "techniques": [
+          "Chiaroscuro avvolgente e resa serica dei tessuti"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-004",
-      "images": [],
-      "items": ["item_colonna_moses_scientific"]
+      "items": [
+        "item_colonna_moses_scientific"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_colonna_galleria_grande",
       "title": "La Sala Grande della Galleria Colonna e la Colonna Bellica",
       "startYear": 1654,
       "endYear": 1703,
-      "artists": ["artist_marcantonio_colonna"],
+      "artists": [
+        "artist_marcantonio_colonna"
+      ],
       "location": {
         "room": "Sala Grande",
         "floor": "Piano Nobile",
@@ -294,27 +538,53 @@
         "depth": 1400,
         "unit": "cm"
       },
-      "artisticCurrents": ["Barocco Romano Monumentale"],
+      "artisticCurrents": [
+        "Barocco Romano Monumentale"
+      ],
       "details": {
-        "subjects": ["Battaglia di Lepanto 1571", "Colonna Bellica", "Specchi dipinti", "Marcantonio II Colonna"],
-        "colors": ["Oro zecchino", "Marmi giallo antico e rosa", "Affreschi voltati"],
-        "places": ["Roma - Via della Pilotta"],
+        "subjects": [
+          "Battaglia di Lepanto 1571",
+          "Colonna Bellica",
+          "Specchi dipinti",
+          "Marcantonio II Colonna"
+        ],
+        "colors": [
+          "Oro zecchino",
+          "Marmi giallo antico e rosa",
+          "Affreschi voltati"
+        ],
+        "places": [
+          "Roma - Via della Pilotta"
+        ],
         "objectType": "Ambiente monumentale barocco con arredi ed opere d'arte integrati",
-        "materials": ["Marmi di scavo", "Legno dorato", "Specchi veneziani", "Affreschi"],
-        "techniques": ["Architettura ed illusione prospettica barocca di gala"]
+        "materials": [
+          "Marmi di scavo",
+          "Legno dorato",
+          "Specchi veneziani",
+          "Affreschi"
+        ],
+        "techniques": [
+          "Architettura ed illusione prospettica barocca di gala"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-005",
-      "images": [],
-      "items": ["item_colonna_galleria_advanced"]
+      "items": [
+        "item_colonna_galleria_advanced"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_colonna_martirio_sebastiano_rosa",
       "title": "Martirio di San Sebastiano",
       "startYear": 1655,
       "endYear": 1655,
-      "artists": ["artist_salvator_rosa"],
+      "artists": [
+        "artist_salvator_rosa"
+      ],
       "location": {
         "room": "Sala dei Paesaggi",
         "floor": "Piano Nobile",
@@ -326,20 +596,40 @@
         "depth": 7,
         "unit": "cm"
       },
-      "artisticCurrents": ["Barocco Napoletano-Romano"],
+      "artisticCurrents": [
+        "Barocco Napoletano-Romano"
+      ],
       "details": {
-        "subjects": ["San Sebastiano", "Martirio", "Paesaggio selvaggio e cupo"],
-        "colors": ["Nero cupo", "Luce su pelle avorio", "Rosso sangue"],
-        "places": ["Napoli / Roma"],
+        "subjects": [
+          "San Sebastiano",
+          "Martirio",
+          "Paesaggio selvaggio e cupo"
+        ],
+        "colors": [
+          "Nero cupo",
+          "Luce su pelle avorio",
+          "Rosso sangue"
+        ],
+        "places": [
+          "Napoli / Roma"
+        ],
         "objectType": "Dipinto a olio su tela",
-        "materials": ["Colori a olio su tela di lino"],
-        "techniques": ["Pittura drammatica con paesaggio burrascoso"]
+        "materials": [
+          "Colori a olio su tela di lino"
+        ],
+        "techniques": [
+          "Pittura drammatica con paesaggio burrascoso"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-006",
-      "images": [],
-      "items": ["item_colonna_sebastiano_simple"]
+      "items": [
+        "item_colonna_sebastiano_simple"
+      ],
+      "assets": {
+        "images": []
+      }
     }
   ],
   "visits": [
@@ -347,7 +637,7 @@
       "key": "visit_colonna_barocco_lepanto",
       "title": "La Magnificenza del Barocco Romano: La Grande Galleria Colonna ed il Mito di Lepanto",
       "description": "Un percorso guidato spettacolare nella galleria barocca più sfarzosa di Roma. Il tour esplora la Sala Grande di 76 metri decorata con specchi dipinti, la Colonna Bellica con la palla da cannone incastrata e gli affreschi celebrativi della vittoria di Marcantonio II Colonna a Lepanto nel 1571.",
-      "price": 15.0,
+      "price": 15,
       "creator": "colonna_staff",
       "artworks": [
         "artwork_colonna_galleria_grande",
@@ -362,26 +652,83 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [], "closed": true },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [], "closed": true },
-            { "day": 3, "slots": [], "closed": true },
-            { "day": 4, "slots": [{ "startTime": "09:30", "endTime": "11:00" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "09:30", "endTime": "11:00" }, { "startTime": "11:30", "endTime": "13:00" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "09:30", "endTime": "11:00" }, { "startTime": "11:30", "endTime": "13:00" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 3,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Apertura speciale del venerdì e sabato mattina.",
-      "categories": ["Rinascimento"]
+      "categories": [
+        "Rinascimento"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_colonna_mangiafagioli_carracci",
       "title": "Il Mangiafagioli di Annibale Carracci e la Pittura di Genere al Palazzo Colonna",
       "description": "Tour focalizzato su uno dei dipinti più rivoluzionari dell'arte europea. Analisi del 'Mangiafagioli' di Annibale Carracci e dei capolavori di pittura di genere e paesaggio realizzati da Salvator Rosa e Gaspard Dughet conservati nella Sala dei Paesaggi.",
-      "price": 12.0,
+      "price": 12,
       "creator": "colonna_staff",
       "artworks": [
         "artwork_colonna_mangiafagioli",
@@ -396,26 +743,76 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [], "closed": true },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [], "closed": true },
-            { "day": 3, "slots": [], "closed": true },
-            { "day": 4, "slots": [{ "startTime": "10:30", "endTime": "11:45" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "10:30", "endTime": "11:45" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "10:30", "endTime": "11:45" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 3,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "11:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "11:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "11:45"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Visita guidata adatta ad appassionati di pittura del Seicento.",
-      "categories": ["Realismo", "Rinascimento"]
+      "categories": [
+        "Realismo",
+        "Rinascimento"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_colonna_ritratti_seicento",
       "title": "I Ritratti ed i Capolavori del Manierismo e del Seicento: Bronzino, Reni e Guercino",
       "description": "Un percorso tra i maestri della pittura emiliana e fiorentina. Dal ritratto in armatura di Stefano Colonna dipinto dal Bronzino alle tele trascinanti ed emotive di Guido Reni e del Guercino.",
-      "price": 15.0,
+      "price": 15,
       "creator": "colonna_staff",
       "artworks": [
         "artwork_colonna_stefano_bronzino",
@@ -431,26 +828,75 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [], "closed": true },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [], "closed": true },
-            { "day": 3, "slots": [], "closed": true },
-            { "day": 4, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "11:30", "endTime": "12:45" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 3,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "12:45"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Percorso totalmente accessibile al piano nobile.",
-      "categories": ["Rinascimento"]
+      "categories": [
+        "Rinascimento"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_colonna_appartamento_isabelle",
       "title": "L'Appartamento della Principessa Isabelle e i Giardini della Pilotta",
       "description": "Esclusiva visita guidata negli appartamenti privati abitati fino al secolo scorso dalla Principessa Isabelle Colonna. Ambienti storici perfettamente intatti con arazzi fiamminghi, sale affrescate da Pinturicchio e vista sui giardini monumentali del Quirinale.",
-      "price": 20.0,
+      "price": 20,
       "creator": "colonna_staff",
       "artworks": [
         "artwork_colonna_galleria_grande",
@@ -465,20 +911,70 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [], "closed": true },
-            { "day": 1, "slots": [], "closed": true },
-            { "day": 2, "slots": [], "closed": true },
-            { "day": 3, "slots": [], "closed": true },
-            { "day": 4, "slots": [{ "startTime": "10:00", "endTime": "11:30" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "10:00", "endTime": "11:30" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "10:00", "endTime": "11:30" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 3,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "10:00",
+                  "endTime": "11:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "10:00",
+                  "endTime": "11:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "10:00",
+                  "endTime": "11:30"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Gruppi a numero chiuso. Consigliata la prenotazione anticipata.",
-      "categories": ["Rinascimento", "Medioevo"]
+      "categories": [
+        "Rinascimento",
+        "Medioevo"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     }
   ]
 }

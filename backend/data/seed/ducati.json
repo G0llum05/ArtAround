@@ -35,25 +35,102 @@
     "openingHours": [
       {
         "weeklyStandard": [
-          { "day": 0, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false },
-          { "day": 1, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false },
-          { "day": 2, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false },
-          { "day": 3, "slots": [], "closed": true },
-          { "day": 4, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false },
-          { "day": 5, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false },
-          { "day": 6, "slots": [{ "startTime": "09:00", "endTime": "18:00" }], "closed": false }
+          {
+            "day": 0,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 1,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 2,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 3,
+            "slots": [],
+            "closed": true
+          },
+          {
+            "day": 4,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 5,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 6,
+            "slots": [
+              {
+                "startTime": "09:00",
+                "endTime": "18:00"
+              }
+            ],
+            "closed": false
+          }
         ],
         "exceptions": []
       }
     ],
     "ticketInfo": {
       "prices": [
-        { "planName": "Intero Museo Ducati", "price": 18.0, "target": "Adulti" },
-        { "planName": "Ridotto", "price": 13.0, "target": "Under 18, Studenti, DOC Club" },
-        { "planName": "Combo Museo + Fabbrica Borgo Panigale", "price": 32.0, "target": "Tutti i visitatori (visita guidata stabilimento)" },
-        { "planName": "Gratuito", "price": 0.0, "target": "Under 11, Persone con disabilità" }
+        {
+          "planName": "Intero Museo Ducati",
+          "price": 18,
+          "target": "Adulti"
+        },
+        {
+          "planName": "Ridotto",
+          "price": 13,
+          "target": "Under 18, Studenti, DOC Club"
+        },
+        {
+          "planName": "Combo Museo + Fabbrica Borgo Panigale",
+          "price": 32,
+          "target": "Tutti i visitatori (visita guidata stabilimento)"
+        },
+        {
+          "planName": "Gratuito",
+          "price": 0,
+          "target": "Under 11, Persone con disabilità"
+        }
       ],
-      "discountCode": ["DUCATIPASSION26", "DESMO2026"]
+      "discountCode": [
+        "DUCATIPASSION26",
+        "DESMO2026"
+      ]
     },
     "isActive": true,
     "disableFriendly": true,
@@ -71,6 +148,44 @@
       "artwork_ducati_916_sbk",
       "artwork_ducati_desmosedici_gp7",
       "artwork_ducati_panigale_v4r"
+    ],
+    "pointsOfInterest": [
+      {
+        "name": "Toilette Principale",
+        "type": "toilette",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Uscita Principale",
+        "type": "exit",
+        "floor": "Piano Terra",
+        "room": "Atrio Uscita"
+      },
+      {
+        "name": "Ascensore Principale",
+        "type": "elevator",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Bar / Caffetteria",
+        "type": "bar",
+        "floor": "Piano Terra",
+        "room": "Cortile Interno"
+      },
+      {
+        "name": "Biglietteria",
+        "type": "ticket_office",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Info Point / Navigatore",
+        "type": "info_point",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      }
     ]
   },
   "artists": [
@@ -78,37 +193,83 @@
       "key": "artist_antonio_ducati",
       "name": "Antonio Cavalieri",
       "surname": "Ducati",
-      "artisticCurrents": ["Elettrotecnica", "Industria Italiana XX sec.", "Fondatore Ducati Borgo Panigale"]
+      "artisticCurrents": [
+        "Elettrotecnica",
+        "Industria Italiana XX sec.",
+        "Fondatore Ducati Borgo Panigale"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_fabio_taglioni",
       "name": "Fabio",
       "surname": "Taglioni (Dottor T)",
-      "artisticCurrents": ["Ingegneria Meccanica", "Sistema Desmodromico", "Progettazione Motociclistica"]
+      "artisticCurrents": [
+        "Ingegneria Meccanica",
+        "Sistema Desmodromico",
+        "Progettazione Motociclistica"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_massimo_tamburini",
       "name": "Massimo",
       "surname": "Tamburini",
-      "artisticCurrents": ["Design Industriale", "Styling Motociclistico d'Avanguardia", "Icona 916"]
+      "artisticCurrents": [
+        "Design Industriale",
+        "Styling Motociclistico d'Avanguardia",
+        "Icona 916"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_gianluigi_mengoli",
       "name": "Gianluigi",
       "surname": "Mengoli",
-      "artisticCurrents": ["Ingegneria Desmoquattro", "Ducati Corse Superbike"]
+      "artisticCurrents": [
+        "Ingegneria Desmoquattro",
+        "Ducati Corse Superbike"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_claudio_domenicali",
       "name": "Claudio",
       "surname": "Domenicali",
-      "artisticCurrents": ["Ingegneria di Gara", "MotoGP & Aerodinamica", "Innovazione Tecnologica"]
+      "artisticCurrents": [
+        "Ingegneria di Gara",
+        "MotoGP & Aerodinamica",
+        "Innovazione Tecnologica"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     },
     {
       "key": "artist_pierre_terblanche",
       "name": "Pierre",
       "surname": "Terblanche",
-      "artisticCurrents": ["Design Motociclistico Contemporaneo", "Concept Design"]
+      "artisticCurrents": [
+        "Design Motociclistico Contemporaneo",
+        "Concept Design"
+      ],
+      "assets": {
+        "profilePicture": null,
+        "gallery": []
+      }
     }
   ],
   "items": [
@@ -116,37 +277,43 @@
       "key": "item_ducati_cucciolo_medium",
       "description": "Nato nel 1946 dalle ceneri della Seconda Guerra Mondiale, il Ducati Cucciolo fu un rivoluzionario micromotore ausiliario a quattro tempi da 48 cc applicabile al telaio di qualsiasi bicicletta. Progettato dall'avvocato Aldo Farinelli e prodotto in centinaia di migliaia di esemplari a Borgo Panigale, garantiva consumi record (oltre 70 km con un litro di benzina) e rappresentò il primo simbolo di mobilità e rinascita economica dell'Italia del dopoguerra.",
       "tone": "medium",
-      "length": 290
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_ducati_marianna_advanced",
       "description": "La Ducati 125 Desmo 'Marianna' del 1956 segna la svolta epocale nella storia dell'ingegneria motociclistica: è la prima motocicletta da gara equipaggiata con il sistema di distribuzione Desmodromica ideato dall'ingegner Fabio Taglioni. Con le tre alberi a camme in testa comandati da ingranaggi, la Marianna eliminò i sfarfallamenti delle valvole ad alti regimi di rotazione, dominando il Motogiro d'Italia e la Milano-Taranto.",
-      "tone": "advanced",
-      "length": 320
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_ducati_750_imola_technical",
       "description": "La Ducati 750 Imola Desmo del 1972 rappresenta l'origine del celebre motore bicilindrico a V di 90° con raffreddamento ad aria. Con questa iconica motocicletta, il pilota britannico Paul Smart e l'italiano Bruno Spaggiari conquistarono uno storico primo e secondo posto alla 200 Miglia di Imola, consacrando il marchio bolognese tra i giganti delle corse mondiali.",
       "tone": "technical",
-      "length": 290
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_ducati_916_scientific",
       "description": "Disegnata da Massimo Tamburini presso il Centro Ricerche Cagiva di San Marino e lanciata sul mercato nel 1994, la Ducati 916 è universalmente considerata un'opera d'arte del design industriale. Caratterizzata dal forcellone monobraccio posteriore, i doppi scarichi sotto la sella, il telaio a traliccio in tubi d'acciaio ed i fari anteriori a fessura, dominò il Campionato Mondiale Superbike conquistando 4 titoli con Carl Fogarty.",
-      "tone": "scientific",
-      "length": 310
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_ducati_desmosedici_advanced",
       "description": "La Ducati Desmosedici GP7 con motore V4 a 90° da 800 cc guidata dal fuoriclasse australiano Casey Stoner ha conquistato nel 2007 il primo storico Titolo Mondiale Piloti e Costruttori in MotoGP per la casa di Borgo Panigale. La GP7 abbinava una velocità di punta imbattibile alla potenza del propulsore desmodromico di gara.",
-      "tone": "advanced",
-      "length": 280
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
     },
     {
       "key": "item_ducati_panigale_simple",
       "description": "La Ducati Panigale V4 R è la moto da strada più potente e tecnologica mai costruita a Bologna! Con le sue grandi ali in fibra di carbonio derivate direttamente dalla MotoGP, sembra un vero jet da combattimento pronto a sfrecciare in pista a oltre 300 km all'ora!",
       "tone": "simple",
-      "length": 210
+      "length": 60,
+      "language": "it"
     }
   ],
   "artworks": [
@@ -155,7 +322,9 @@
       "title": "Ducati Cucciolo T1 (Micromotore Ausiliario 48cc)",
       "startYear": 1946,
       "endYear": 1950,
-      "artists": ["artist_antonio_ducati"],
+      "artists": [
+        "artist_antonio_ducati"
+      ],
       "location": {
         "room": "Sala delle Origini e della Rinascita",
         "floor": "Piano Terra",
@@ -167,27 +336,51 @@
         "depth": 55,
         "unit": "cm"
       },
-      "artisticCurrents": ["Mobilità del Dopoguerra", "Micromeccanica Italiana"],
+      "artisticCurrents": [
+        "Mobilità del Dopoguerra",
+        "Micromeccanica Italiana"
+      ],
       "details": {
-        "subjects": ["Micromotore per bicicletta", "Motore 4 tempi 48cc", "Mobilità urbana"],
-        "colors": ["Rosso bordeaux", "Alluminio lucidato"],
-        "places": ["Bologna - Borgo Panigale"],
+        "subjects": [
+          "Micromotore per bicicletta",
+          "Motore 4 tempi 48cc",
+          "Mobilità urbana"
+        ],
+        "colors": [
+          "Rosso bordeaux",
+          "Alluminio lucidato"
+        ],
+        "places": [
+          "Bologna - Borgo Panigale"
+        ],
         "objectType": "Bicicletta a motore ausiliario d'epoca",
-        "materials": ["Acciaio", "Alluminio", "Gomma"],
-        "techniques": ["Fusione in conchiglia d'alluminio e assemblaggio manuale"]
+        "materials": [
+          "Acciaio",
+          "Alluminio",
+          "Gomma"
+        ],
+        "techniques": [
+          "Fusione in conchiglia d'alluminio e assemblaggio manuale"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-DUCATI-BOLO-001",
-      "images": [],
-      "items": ["item_ducati_cucciolo_medium"]
+      "items": [
+        "item_ducati_cucciolo_medium"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_ducati_125_marianna",
       "title": "Ducati 125 Desmo Bialbero 'Marianna'",
       "startYear": 1956,
       "endYear": 1958,
-      "artists": ["artist_fabio_taglioni"],
+      "artists": [
+        "artist_fabio_taglioni"
+      ],
       "location": {
         "room": "Sala della Distribuzione Desmodromica",
         "floor": "Piano Terra",
@@ -199,27 +392,50 @@
         "depth": 50,
         "unit": "cm"
       },
-      "artisticCurrents": ["Ingegneria Desmodromica", "Gran Fondo Anni '50"],
+      "artisticCurrents": [
+        "Ingegneria Desmodromica",
+        "Gran Fondo Anni '50"
+      ],
       "details": {
-        "subjects": ["Distribuzione Desmodromica", "Motogiro d'Italia", "Motocicletta da competizione"],
-        "colors": ["Rosso corsa Ducati", "Argento lucido"],
-        "places": ["Bologna - Borgo Panigale"],
+        "subjects": [
+          "Distribuzione Desmodromica",
+          "Motogiro d'Italia",
+          "Motocicletta da competizione"
+        ],
+        "colors": [
+          "Rosso corsa Ducati",
+          "Argento lucido"
+        ],
+        "places": [
+          "Bologna - Borgo Panigale"
+        ],
         "objectType": "Motocicletta da corsa d'epoca conservata",
-        "materials": ["Telaio in tubi d'acciaio", "Alluminio battuto a mano per serbatoio"],
-        "techniques": ["Batti-lastra artigianale e sistema valvole Desmodromico a camme d'apertura/chiusura"]
+        "materials": [
+          "Telaio in tubi d'acciaio",
+          "Alluminio battuto a mano per serbatoio"
+        ],
+        "techniques": [
+          "Batti-lastra artigianale e sistema valvole Desmodromico a camme d'apertura/chiusura"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-DUCATI-BOLO-002",
-      "images": [],
-      "items": ["item_ducati_marianna_advanced"]
+      "items": [
+        "item_ducati_marianna_advanced"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_ducati_750_imola",
       "title": "Ducati 750 Imola Desmo (Vittoria Paul Smart 1972)",
       "startYear": 1972,
       "endYear": 1972,
-      "artists": ["artist_fabio_taglioni"],
+      "artists": [
+        "artist_fabio_taglioni"
+      ],
       "location": {
         "room": "Sala delle 200 Miglia di Imola",
         "floor": "Primo Piano",
@@ -231,27 +447,52 @@
         "depth": 60,
         "unit": "cm"
       },
-      "artisticCurrents": ["Motore Bicilindrico a V 90°", "Leggenda Imola 1972"],
+      "artisticCurrents": [
+        "Motore Bicilindrico a V 90°",
+        "Leggenda Imola 1972"
+      ],
       "details": {
-        "subjects": ["Paul Smart #16", "200 Miglia di Imola", "Bicilindrico Desmo"],
-        "colors": ["Verde traslucido aquamarina", "Argento metallizzato"],
-        "places": ["Bologna / Imola"],
+        "subjects": [
+          "Paul Smart #16",
+          "200 Miglia di Imola",
+          "Bicilindrico Desmo"
+        ],
+        "colors": [
+          "Verde traslucido aquamarina",
+          "Argento metallizzato"
+        ],
+        "places": [
+          "Bologna / Imola"
+        ],
         "objectType": "Motocicletta da gara ufficiale della vittoria di Imola",
-        "materials": ["Vetroresina", "Acciaio al cromo-molibdeno", "Alluminio"],
-        "techniques": ["Stampaggio in vetroresina leggera e motore bicilindrico ad aria"]
+        "materials": [
+          "Vetroresina",
+          "Acciaio al cromo-molibdeno",
+          "Alluminio"
+        ],
+        "techniques": [
+          "Stampaggio in vetroresina leggera e motore bicilindrico ad aria"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-DUCATI-BOLO-003",
-      "images": [],
-      "items": ["item_ducati_750_imola_technical"]
+      "items": [
+        "item_ducati_750_imola_technical"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_ducati_916_sbk",
       "title": "Ducati 916 SBK Carl Fogarty (Campionato Mondiale 1994)",
       "startYear": 1994,
       "endYear": 1998,
-      "artists": ["artist_massimo_tamburini", "artist_gianluigi_mengoli"],
+      "artists": [
+        "artist_massimo_tamburini",
+        "artist_gianluigi_mengoli"
+      ],
       "location": {
         "room": "Galleria dei Campioni World Superbike",
         "floor": "Primo Piano",
@@ -263,27 +504,52 @@
         "depth": 65,
         "unit": "cm"
       },
-      "artisticCurrents": ["Design Motociclistico Tamburini", "Dominio World SBK"],
+      "artisticCurrents": [
+        "Design Motociclistico Tamburini",
+        "Dominio World SBK"
+      ],
       "details": {
-        "subjects": ["Carl Fogarty #1", "Forcellone monobraccio", "Doppio scarico sottosella"],
-        "colors": ["Rosso Corsa", "Bianco tabella porta-numero"],
-        "places": ["Bologna - Borgo Panigale"],
+        "subjects": [
+          "Carl Fogarty #1",
+          "Forcellone monobraccio",
+          "Doppio scarico sottosella"
+        ],
+        "colors": [
+          "Rosso Corsa",
+          "Bianco tabella porta-numero"
+        ],
+        "places": [
+          "Bologna - Borgo Panigale"
+        ],
         "objectType": "Moto da corsa del Campionato Mondiale Superbike",
-        "materials": ["Fibra di carbonio", "Kevlar", "Traliccio in tubi d'acciaio", "Magnesio"],
-        "techniques": ["Lavorazione di fibra di carbonio in autoclave e motore Desmoquattro liquid-cooled"]
+        "materials": [
+          "Fibra di carbonio",
+          "Kevlar",
+          "Traliccio in tubi d'acciaio",
+          "Magnesio"
+        ],
+        "techniques": [
+          "Lavorazione di fibra di carbonio in autoclave e motore Desmoquattro liquid-cooled"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-DUCATI-BOLO-004",
-      "images": [],
-      "items": ["item_ducati_916_scientific"]
+      "items": [
+        "item_ducati_916_scientific"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_ducati_desmosedici_gp7",
       "title": "Ducati Desmosedici GP7 Casey Stoner (Campione del Mondo MotoGP 2007)",
       "startYear": 2007,
       "endYear": 2007,
-      "artists": ["artist_claudio_domenicali"],
+      "artists": [
+        "artist_claudio_domenicali"
+      ],
       "location": {
         "room": "Tempio della MotoGP",
         "floor": "Primo Piano",
@@ -295,27 +561,52 @@
         "depth": 65,
         "unit": "cm"
       },
-      "artisticCurrents": ["Ingegneria MotoGP", "Motore V4 800cc Desmosedici"],
+      "artisticCurrents": [
+        "Ingegneria MotoGP",
+        "Motore V4 800cc Desmosedici"
+      ],
       "details": {
-        "subjects": ["Casey Stoner #27", "Titolo Mondiale MotoGP 2007", "Propulsore V4 Desmo"],
-        "colors": ["Rosso Ducati MotoGP", "Bianco sponsor"],
-        "places": ["Bologna - Borgo Panigale"],
+        "subjects": [
+          "Casey Stoner #27",
+          "Titolo Mondiale MotoGP 2007",
+          "Propulsore V4 Desmo"
+        ],
+        "colors": [
+          "Rosso Ducati MotoGP",
+          "Bianco sponsor"
+        ],
+        "places": [
+          "Bologna - Borgo Panigale"
+        ],
         "objectType": "Prototipo da gara iridato MotoGP",
-        "materials": ["Fibra di carbonio strutturale", "Titanio", "Alluminio ricavato dal pieno"],
-        "techniques": ["Lavorazioni meccaniche con macchine utensili a 5 assi e telemetria integrata"]
+        "materials": [
+          "Fibra di carbonio strutturale",
+          "Titanio",
+          "Alluminio ricavato dal pieno"
+        ],
+        "techniques": [
+          "Lavorazioni meccaniche con macchine utensili a 5 assi e telemetria integrata"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-DUCATI-BOLO-005",
-      "images": [],
-      "items": ["item_ducati_desmosedici_advanced"]
+      "items": [
+        "item_ducati_desmosedici_advanced"
+      ],
+      "assets": {
+        "images": []
+      }
     },
     {
       "key": "artwork_ducati_panigale_v4r",
       "title": "Ducati Panigale V4 R con Appendici Aerodinamiche in Carbonio",
       "startYear": 2019,
       "endYear": 2024,
-      "artists": ["artist_claudio_domenicali", "artist_pierre_terblanche"],
+      "artists": [
+        "artist_claudio_domenicali",
+        "artist_pierre_terblanche"
+      ],
       "location": {
         "room": "Galleria dell'Innovazione e dell'Aerodinamica",
         "floor": "Piano Terra",
@@ -327,20 +618,42 @@
         "depth": 70,
         "unit": "cm"
       },
-      "artisticCurrents": ["Aerodinamica Integrata", "Hyperbike Stradale V4"],
+      "artisticCurrents": [
+        "Aerodinamica Integrata",
+        "Hyperbike Stradale V4"
+      ],
       "details": {
-        "subjects": ["Ali in carbonio", "Desmosedici Stradale R", "Pista e Strada"],
-        "colors": ["Rosso Corsa Ducati", "Carbonio a vista"],
-        "places": ["Bologna - Borgo Panigale"],
+        "subjects": [
+          "Ali in carbonio",
+          "Desmosedici Stradale R",
+          "Pista e Strada"
+        ],
+        "colors": [
+          "Rosso Corsa Ducati",
+          "Carbonio a vista"
+        ],
+        "places": [
+          "Bologna - Borgo Panigale"
+        ],
         "objectType": "Superbike stradale omologata da competizione",
-        "materials": ["Fibra di carbonio preconfezionata", "Alluminio perimetro conchiglia", "Titanio"],
-        "techniques": ["Simulazione fluido-dinamica CFD e galleria del vento"]
+        "materials": [
+          "Fibra di carbonio preconfezionata",
+          "Alluminio perimetro conchiglia",
+          "Titanio"
+        ],
+        "techniques": [
+          "Simulazione fluido-dinamica CFD e galleria del vento"
+        ]
       },
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-DUCATI-BOLO-006",
-      "images": [],
-      "items": ["item_ducati_panigale_simple"]
+      "items": [
+        "item_ducati_panigale_simple"
+      ],
+      "assets": {
+        "images": []
+      }
     }
   ],
   "visits": [
@@ -348,7 +661,7 @@
       "key": "visit_ducati_origini_cucciolo",
       "title": "Dalla Radiotecnica al Cucciolo: Le Origini di Borgo Panigale (1926-1950)",
       "description": "Un viaggio nei primi venticinque anni di storia di Ducati. Dalla nascita della Società Scientifica Radio Brevetti dei tre fratelli Ducati alla trasformazione industriale nel dopoguerra con la produzione del mitico micromotore Cucciolo, simbolo di mobilità della rinascita italiana.",
-      "price": 12.0,
+      "price": 12,
       "creator": "ducati_staff",
       "artworks": [
         "artwork_ducati_cucciolo"
@@ -362,26 +675,103 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "09:30", "endTime": "10:45" }, { "startTime": "14:30", "endTime": "15:45" }], "closed": false },
-            { "day": 1, "slots": [{ "startTime": "09:30", "endTime": "10:45" }], "closed": false },
-            { "day": 2, "slots": [{ "startTime": "09:30", "endTime": "10:45" }], "closed": false },
-            { "day": 3, "slots": [], "closed": true },
-            { "day": 4, "slots": [{ "startTime": "09:30", "endTime": "10:45" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "09:30", "endTime": "10:45" }, { "startTime": "14:30", "endTime": "15:45" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "09:30", "endTime": "10:45" }, { "startTime": "14:30", "endTime": "15:45" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "10:45"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "10:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "10:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "10:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "10:45"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "10:45"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "15:45"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Percorso totalmente accessibile all'interno del Museo Ducati.",
-      "categories": ["Motori", "Scienza"]
+      "categories": [
+        "Motori",
+        "Scienza"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_ducati_mito_desmo",
       "title": "Il Mito Desmo e le 200 Miglia: L'Era dell'Ingegnere Fabio Taglioni",
       "description": "Itinerario guidato attraverso le invenzioni rivoluzionarie di Fabio Taglioni (il 'Dottor T'). Il tour esplora il brevetto del sistema Desmodromico sulla 125 Marianna e la nascita del bicilindrico a V di 90° con la trionfale vittoria di Paul Smart a Imola nel 1972.",
-      "price": 18.0,
+      "price": 18,
       "creator": "ducati_staff",
       "artworks": [
         "artwork_ducati_125_marianna",
@@ -396,26 +786,103 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "11:00", "endTime": "12:30" }, { "startTime": "16:00", "endTime": "17:30" }], "closed": false },
-            { "day": 1, "slots": [{ "startTime": "11:00", "endTime": "12:30" }], "closed": false },
-            { "day": 2, "slots": [{ "startTime": "11:00", "endTime": "12:30" }], "closed": false },
-            { "day": 3, "slots": [], "closed": true },
-            { "day": 4, "slots": [{ "startTime": "11:00", "endTime": "12:30" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "11:00", "endTime": "12:30" }, { "startTime": "16:00", "endTime": "17:30" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "11:00", "endTime": "12:30" }, { "startTime": "16:00", "endTime": "17:30" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:30"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:30"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "11:00",
+                  "endTime": "12:30"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Consigliata per appassionati di meccanica, motorismo storico e ingegneria.",
-      "categories": ["Motori", "Scienza"]
+      "categories": [
+        "Motori",
+        "Scienza"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_ducati_superbike_legend",
       "title": "Superbike Legend: Dalla Ducati 916 di Tamburini alla Dominazione Mondiale",
       "description": "Tour incentrato sull'epopea Ducati nel Campionato Mondiale Superbike. Analisi del capolavoro stilistico e meccanico della Ducati 916 ideata da Massimo Tamburini ed i successi leggendari di piloti come Carl Fogarty, Troy Bayliss e Chaz Davies.",
-      "price": 20.0,
+      "price": 20,
       "creator": "ducati_staff",
       "artworks": [
         "artwork_ducati_916_sbk",
@@ -430,26 +897,90 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "12:00", "endTime": "13:30" }], "closed": false },
-            { "day": 1, "slots": [{ "startTime": "12:00", "endTime": "13:30" }], "closed": false },
-            { "day": 2, "slots": [{ "startTime": "12:00", "endTime": "13:30" }], "closed": false },
-            { "day": 3, "slots": [], "closed": true },
-            { "day": 4, "slots": [{ "startTime": "12:00", "endTime": "13:30" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "12:00", "endTime": "13:30" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "12:00", "endTime": "13:30" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "12:00",
+                  "endTime": "13:30"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Visita guidata ad alto impatto emozionale per amanti delle moto sportive.",
-      "categories": ["Motori"]
+      "categories": [
+        "Motori"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     },
     {
       "key": "visit_ducati_motogp_hightech",
       "title": "MotoGP & High Tech: Casey Stoner, le Desmosedici e l'Aerodinamica V4",
       "description": "Percorso d'avanguardia dedicato alle corse nella massima categoria del motociclismo. Dal Titolo Mondiale MotoGP 2007 di Casey Stoner sulla Desmosedici GP7 fino alle più recenti innovazioni aerodinamiche e alla Panigale V4 R.",
-      "price": 25.0,
+      "price": 25,
       "creator": "ducati_staff",
       "artworks": [
         "artwork_ducati_desmosedici_gp7",
@@ -464,20 +995,85 @@
       "weeklySchedule": [
         {
           "weeklyStandard": [
-            { "day": 0, "slots": [{ "startTime": "15:00", "endTime": "16:45" }], "closed": false },
-            { "day": 1, "slots": [{ "startTime": "15:00", "endTime": "16:45" }], "closed": false },
-            { "day": 2, "slots": [{ "startTime": "15:00", "endTime": "16:45" }], "closed": false },
-            { "day": 3, "slots": [], "closed": true },
-            { "day": 4, "slots": [{ "startTime": "15:00", "endTime": "16:45" }], "closed": false },
-            { "day": 5, "slots": [{ "startTime": "15:00", "endTime": "16:45" }], "closed": false },
-            { "day": 6, "slots": [{ "startTime": "15:00", "endTime": "16:45" }], "closed": false }
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:45"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:45"
+                }
+              ],
+              "closed": false
+            }
           ],
           "exceptions": []
         }
       ],
       "disableFriendly": true,
       "requirements": "Adatto ad appassionati di corse, studenti universitari e tecnici.",
-      "categories": ["Motori", "Scienza"]
+      "categories": [
+        "Motori",
+        "Scienza"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isRunning": false
     }
   ]
 }

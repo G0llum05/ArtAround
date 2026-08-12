@@ -1,4 +1,3 @@
-re
 const path = require('path');
 const fs = require('fs-extra');
 const sharp = require('sharp');
@@ -18,8 +17,9 @@ class UploadService {
   }
 
   static async visitImgUpload(museumId, visitId, file, orientation) {
-    if (!museumId || !visitId || !file || !orientation) {
-      throw new Error('museumId, visitId, orientation e file sono obbligatori per il caricamento dell\'immagine della visita.');
+    const targetOrientation = orientation || 'landscape';
+    if (!museumId || !visitId || !file) {
+      throw new Error('museumId, visitId e file sono obbligatori per il caricamento dell\'immagine della visita.');
     }
 
     // Controllo se la visita appartiene al museo
@@ -27,22 +27,21 @@ class UploadService {
       throw new Error('Museo non trovato o la visita non appartiene a questo museo.');
     }
 
-    const path = path.join(__dirname, '../assets/museums', museumId, 'visit', visitId, 'meta');
-    const name = `visit_${orientation}.webp`;
-    const fullPath = path.join(path, name);
+    const targetDir = path.join(__dirname, '../assets/museums', museumId, 'visit', visitId, 'meta');
+    const fileName = `visit_${targetOrientation}.webp`;
+    const fullPath = path.join(targetDir, fileName);
+
+    // crea dir se non esiste
+    await fs.ensureDir(targetDir);
+
+    await this.saveImage(file.buffer, fullPath, file.mimetype);
 
     const updatedVisit = await Visit.findByIdAndUpdate(visitId,
       {
-        $push: { 'assets.images.url': fullPath },
-        $set: { 'assets.images.orientation': orientation }
+        $push: { 'assets.images': { url: fullPath, orientation: targetOrientation } }
       }, { new: true });
 
     if (!updatedVisit) throw new Error('Visita non trovata.');
-
-    // crea dir se non esiste
-    await fs.ensureDir(path.dirname(path));
-
-    await this.saveImage(file.buffer, fullPath, file.mimetype);
 
     return fullPath;
   }

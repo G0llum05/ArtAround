@@ -1,6 +1,8 @@
 :host {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
   background-color: var(--background);
   color: var(--on-surface);
@@ -12,6 +14,7 @@
 .home-container {
   flex-grow: 1;
   width: 100%;
+  max-width: 100rem;
   margin: 0 auto;
   padding: var(--margin-mobile);
   display: flex;

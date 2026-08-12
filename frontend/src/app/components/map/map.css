@@ -1,0 +1,96 @@
+:host {
+  display: block;
+}
+
+/* --- OVERLAY SCURO DI SFONDO --- */
+.map-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* --- PANNELLO PRINCIPALE DELLA MODALE --- */
+.map-panel {
+  background-color: var(--surface, #fff);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 900px; /* Leggermente più largo per dare spazio alla mappa */
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* --- HEADER (Titolo, Sottotitolo e Pulsante X) --- */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--outline-variant, #e0e0e0);
+  flex-shrink: 0;
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--on-surface, #333);
+  font-family: var(--font-sans, sans-serif);
+}
+
+.panel-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--on-surface-variant, #666);
+  font-family: var(--font-sans, sans-serif);
+}
+
+/* --- PULSANTE CHIUDI (X) --- */
+.close-btn {
+  background-color: var(--surface-variant);
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: var(--primary, #f0f0f0);
+  color: var(--on-primary, #000);
+}
+
+/* --- CONTENUTO INTERNO (Gestito tramite ng-content) --- */
+.map-content {
+  padding: 1rem;
+  overflow: auto; /* Permette lo scroll se l'immagine è enorme */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- CLASSE DI SUPPORTO PER LE IMMAGINI INSERITE NEL CONTENUTO --- */
+.map-image {
+  width: 100%;          /* Occupa tutta la larghezza disponibile */
+  height: auto;         /* Mantiene perfettamente le proporzioni originali */
+  max-height: 75vh;     /* Impedisce all'immagine di uscire dallo schermo in altezza */
+  object-fit: contain;  /* Assicura che l'intera immagine sia visibile senza ritagli */
+  display: block;
+  margin: auto;
+  border-radius: var(--radius-md, 8px);
+}

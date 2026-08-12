@@ -18,9 +18,9 @@
           <div [style.background-image]="'url(' + item.imageUrls[0] + ')'" class="carousel-slide">
             <div class="carousel-overlay">
               <app-badges-list
-                [disableFriendly]="item.disableFriendly"
-                [free]="item.cost == 0"
-                [verified]="item.isVerified"
+                [disableFriendly]="item.disableFriendly || false"
+                [free]="item.cost === 0"
+                [verified]="item.isVerified || false"
               ></app-badges-list>
               <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
               <div class="slide-content">

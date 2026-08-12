@@ -199,8 +199,13 @@
   border-bottom: 0.0625rem solid var(--outline-variant);
 }
 
-.divider::before { margin-right: var(--spacing-md); }
-.divider::after { margin-left: var(--spacing-md); }
+.divider::before {
+  margin-right: var(--spacing-md);
+}
+
+.divider::after {
+  margin-left: var(--spacing-md);
+}
 
 .social-grid {
   display: flex;
@@ -247,6 +252,7 @@
   color: var(--primary);
   font-weight: bold;
   text-decoration: none;
+  cursor: pointer;
   transition: opacity 0.2s;
 }
 

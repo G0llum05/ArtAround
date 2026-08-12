@@ -2,7 +2,7 @@
   display: block;
 }
 
-/* --- OVERLAY SFONDO (Scurisce il Navigator dietro) --- */
+/* --- OVERLAY SFONDO --- */
 .settings-overlay {
   position: fixed;
   top: 0;
@@ -14,11 +14,10 @@
   display: flex;
   justify-content: center;
   align-items: flex-end; /* Su mobile parte dal basso */
-  /* Forza l'accelerazione hardware (GPU) */
-  will-change: transform, opacity;
+  will-change: transform, opacity; /* Ottimizzazione GPU */
 }
 
-/* --- PANNELLO IMPOSTAZIONI --- */
+/* --- PANNELLO IMPOSTAZIONI (Mobile-First) --- */
 .settings-panel {
   width: 100%;
   max-height: 95vh;
@@ -35,10 +34,10 @@
   to { transform: translateY(0); }
 }
 
-/* Su Desktop diventa un modale centrato */
+/* Desktop Modale Centrato */
 @media (min-width: 48rem) {
   .settings-overlay {
-    align-items: center; /* Centra nello schermo */
+    align-items: center;
     padding: var(--spacing-xl);
   }
   .settings-panel {
@@ -61,27 +60,49 @@
   justify-content: space-between;
   align-items: flex-start;
 }
+
 .panel-title {
   font-family: var(--font-serif);
   font-size: var(--headline-lg-size);
   margin: 0 0 4px 0;
   color: var(--on-surface);
 }
+
 .panel-subtitle {
   font-size: var(--body-md-size);
   color: var(--on-surface-variant);
   margin: 0;
 }
+
+/* Bottone Chiudi (X) */
+.icon-btn {
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-full);
+  transition: all 0.2s;
+}
+
+.icon-md {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
+}
+
 .close-btn {
   background-color: var(--surface-variant);
   color: var(--on-surface);
 }
+
 .close-btn:hover {
   background-color: var(--error);
   color: #fff;
 }
 
-/* --- CONTENUTO (Scrollabile se serve) --- */
+/* --- CONTENUTO (Scrollabile) --- */
 .settings-content {
   padding: var(--spacing-md) var(--spacing-lg);
   overflow-y: auto;
@@ -90,7 +111,7 @@
   gap: var(--spacing-md);
 }
 
-/* --- CARDS --- */
+/* --- CARDS BASE --- */
 .card {
   background-color: var(--surface);
   border: 1px solid var(--outline-variant);
@@ -98,26 +119,30 @@
   display: flex;
   flex-direction: column;
 }
+
 .card-body {
   padding: var(--spacing-md);
 }
+
 .card-title {
   font-family: var(--font-serif);
   font-size: var(--headline-md-size);
   margin: 0 0 var(--spacing-sm) 0;
 }
+
 .card-desc {
   font-size: var(--body-md-size);
   color: var(--on-surface-variant);
   margin: 0 0 var(--spacing-md) 0;
 }
 
-/* --- SELECT CUSTOM (Lingua) --- */
+/* --- LINGUA (Select Nativa) --- */
 .select-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 .custom-select {
   width: 100%;
   appearance: none;
@@ -131,7 +156,11 @@
   outline: none;
   cursor: pointer;
 }
-.custom-select:focus { border-color: var(--primary); }
+
+.custom-select:focus {
+  border-color: var(--primary);
+}
+
 .select-icon {
   position: absolute;
   right: var(--spacing-md);
@@ -141,12 +170,13 @@
   fill: var(--on-surface-variant);
 }
 
-/* --- GRIGLIA RUOLI (Tono) --- */
+/* --- TONO DELLA GUIDA (Griglia Bottoni) --- */
 .role-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-sm);
 }
+
 .role-btn {
   background-color: var(--background);
   color: var(--on-surface);
@@ -162,11 +192,13 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .role-icon {
   width: 2.2rem;
   height: 2.2rem;
   fill: currentColor;
 }
+
 .role-btn.active {
   background-color: var(--primary);
   color: var(--on-primary);
@@ -174,12 +206,13 @@
   font-weight: bold;
 }
 
-/* --- CHIPS (Durata) --- */
+/* --- DURATA (Chips) --- */
 .chips-group {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
 }
+
 .chip {
   flex: 1;
   background-color: var(--background);
@@ -189,10 +222,11 @@
   padding: var(--spacing-sm) var(--spacing-md);
   font-family: var(--font-sans);
   font-size: var(--body-lg-size);
+  text-align: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: center;
 }
+
 .chip.active {
   background-color: var(--primary);
   color: var(--on-primary);
@@ -200,13 +234,15 @@
   font-weight: bold;
 }
 
-/* --- FOOTER (Pulsante Salva) --- */
+/* --- FOOTER (Pulsante Chiudi e Salva) --- */
 .panel-footer {
   padding: var(--spacing-lg);
   border-top: 1px solid var(--outline-variant);
   display: flex;
 }
+
 .flex-fill { flex: 1; }
+
 .btn {
   padding: 0.8rem 1.4rem;
   border-radius: var(--radius-default);
@@ -220,7 +256,12 @@
   font-size: var(--body-lg-size);
   transition: opacity 0.2s;
 }
-.btn-primary { background-color: var(--primary); color: var(--on-primary); }
-.btn-primary:hover { opacity: 0.9; }
-.icon-btn { border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: var(--spacing-sm); border-radius: var(--radius-full); transition: all 0.2s; }
-.icon-md { width: 1.5rem; height: 1.5rem; fill: currentColor; }
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}

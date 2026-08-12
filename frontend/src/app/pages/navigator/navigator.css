@@ -1,3 +1,6 @@
+/* =========================================
+   BASE E CONTENITORE PRINCIPALE
+   ========================================= */
 :host {
   display: flex;
   flex-direction: column;
@@ -5,14 +8,12 @@
   background-color: var(--background);
   color: var(--on-surface);
   font-family: var(--font-sans);
-  font-size: var(--body-lg-size);
 }
 
-/* Container Principale */
 .navigator-container {
   flex-grow: 1;
   width: 100%;
-  max-width: 80rem; /* 1280px */
+  max-width: 100rem;
   margin: 0 auto;
   padding: var(--margin-mobile);
   display: flex;
@@ -28,7 +29,9 @@
   }
 }
 
-/* Header */
+/* =========================================
+   HEADER APP
+   ========================================= */
 .nav-header {
   display: flex;
   justify-content: space-between;
@@ -39,24 +42,20 @@
 .hero-title {
   font-family: var(--font-serif);
   font-size: var(--headline-lg-size);
-  font-weight: var(--headline-lg-weight);
   margin: 0;
 }
 
-/* Base Cards */
+/* =========================================
+   STILE BASE DELLE CARD
+   ========================================= */
 .card {
   background-color: var(--surface);
-  border: 0.0625rem solid var(--secondary); /* 1px */
+  border: 0.0625rem solid var(--secondary);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 0.0625rem 0.125rem rgba(0,0,0,0.04); /* 0 1px 2px */
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-}
-
-.card:hover {
-  box-shadow: 0 0.375rem 1rem rgba(0,0,0,0.08); /* 0 6px 16px */
 }
 
 .card-body {
@@ -69,129 +68,194 @@
 .card-title {
   font-family: var(--font-serif);
   font-size: var(--headline-md-size);
-  font-weight: var(--headline-md-weight);
   margin: 0 0 var(--spacing-md) 0;
 }
 
-/* --- GESTIONE SVG --- */
-
-.icon-sm {
-  width: 1.25rem; /* 20px */
-  height: 1.25rem;
-  fill: currentColor;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.icon-md {
-  width: 1.5rem; /* 24px */
-  height: 1.5rem;
-  fill: currentColor;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.icon-lg {
-  width: 1.75rem; /* 28px */
-  height: 1.75rem;
-  fill: currentColor;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.btn-icon {
-  width: 1.25rem; /* 20px */
-  height: 1.25rem;
-  fill: currentColor;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.card-svg {
-  width: 1.5rem; /* 24px */
-  height: 1.5rem;
-  color: var(--secondary);
-  fill: currentColor;
-  display: inline-block;
-  vertical-align: middle;
-  transition: transform 0.2s ease, fill 0.2s ease;
-}
-
-.card:hover .card-svg {
-  transform: scale(1.1);
-}
-
-/* --- VISITA ATTIVA E STRUTTURA GRID --- */
-.active-grid {
+/* =========================================
+   LA GRIGLIA MOBILE (Singola Colonna)
+   ========================================= */
+.navigator-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-md);
+
+  grid-template-areas:
+    "media"
+    "chat"
+    "actions"
+    "itinerary";
 }
 
-@media (min-width: 48rem) {
-  .active-grid { grid-template-columns: 2fr 1fr; }
-}
+.area-media { grid-area: media; border-color: var(--primary); }
+.area-chat { grid-area: chat; }
+.area-actions { grid-area: actions; }
+.area-itinerary { grid-area: itinerary; }
 
-/* Card Multimediale (Foto + Audio uniti) */
-.media-card {
-  border: 0.0625rem solid var(--primary); /* 1px */
-  display: flex;
-  flex-direction: column;
-}
-
+/* --- Setup Media (Immagine) Mobile --- */
 .artwork-img-wrap {
   width: 100%;
   height: 40vh;
-  min-height: 15.625rem; /* 250px */
   position: relative;
   background-color: var(--surface-variant);
-  border-bottom: 0.0625rem solid var(--outline-variant); /* 1px */
-}
-
-@media (min-width: 48rem) {
-  .artwork-img-wrap {
-    height: 100%;
-    min-height: 28.125rem; /* 450px */
-  }
+  border-bottom: 0.0625rem solid var(--outline-variant);
 }
 
 .card-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
 }
 
-.media-card:hover .card-img {
-  transform: scale(1.02);
-}
-
-/* Sottotitoli Overlay */
 .subtitles-overlay {
   position: absolute;
   bottom: var(--spacing-md);
   left: var(--spacing-md);
-  right: var(--spacing-md);
+  right: 4.5rem;
   background-color: var(--surface);
-  border: 0.0625rem solid var(--tertiary); /* 1px */
-  color: #ffffff;
+  border: 1px solid var(--tertiary);
+  color: var(--on-surface);
   padding: var(--spacing-md);
   border-radius: var(--radius-lg);
-  font-family: var(--font-sans);
-  font-size: var(--body-lg-size);
-  line-height: var(--body-lg-line);
   text-align: center;
-  backdrop-filter: blur(0.5rem); /* 8px */
-  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.2); /* 0 4px 12px */
+  backdrop-filter: blur(0.5rem);
 }
 
-/* Audio Section Integrata */
-.audio-section {
-  flex-grow: 0;
+.floating-cc {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: 10;
   background-color: var(--surface);
-  padding: var(--spacing-lg);
+  border: 1px solid var(--outline-variant);
+  color: var(--on-surface);
+  border-radius: var(--radius-default);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  cursor: pointer;
 }
 
+.floating-cc.active {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+  color: var(--on-secondary);
+}
+
+/* --- Setup Audio Mobile --- */
+.audio-section {
+  padding: var(--spacing-lg);
+  background-color: var(--surface);
+}
+
+/* --- Setup Aree Interne Mobile --- */
+.area-chat .card-body {
+  justify-content: flex-end; /* Spinge la chat verso il basso */
+}
+
+.area-actions .card-body {
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.action-row {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.services-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+/* =========================================
+   IL LAYOUT DESKTOP (Griglia Infallibile)
+   ========================================= */
+@media (min-width: 60rem) {
+
+  .navigator-grid {
+    /* 3 Colonne */
+    grid-template-columns: 1.5fr 1.5fr 1fr;
+
+    /* 2 Righe: La prima prende lo spazio restante (1fr), la seconda è grande quanto i bottoni (auto) */
+    grid-template-rows: 1fr auto;
+
+    /* DISEGNO DELLA GRIGLIA */
+    grid-template-areas:
+      "media chat    itinerary"
+      "media actions itinerary";
+
+    /* Diamo un'altezza fissa al contenitore così tutto si allunga */
+    height: 75vh;
+    min-height: 35rem;
+  }
+
+  /* 1. MEDIA CARD (Si allunga per tutta la colonna) */
+  .area-media {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* IL TRUCCO: Posizionamento assoluto per evitare che l'immagine sfondi la griglia */
+  .artwork-img-wrap {
+    flex-grow: 1; /* Prende tutto lo spazio in alto */
+    position: relative;
+    height: auto;
+  }
+
+  .card-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .subtitles-overlay {
+    bottom: var(--spacing-md);
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+  }
+
+  .floating-cc {
+    top: var(--spacing-md);
+    bottom: auto;
+  }
+
+  /* La barra audio rimane inchiodata in basso */
+  .audio-section {
+    flex-shrink: 0;
+  }
+
+  /* 2. CHAT CARD */
+  .area-chat {
+    height: 100%;
+  }
+
+  /* 3. AZIONI CARD (I bottoni) */
+  .area-actions {
+    height: 100%;
+  }
+
+  .area-actions .card-body {
+    flex-direction: column; /* Impila Dimmi di più sopra i bottoni piccoli */
+    justify-content: space-between;
+  }
+
+  /* 4. ITINERARIO CARD */
+  .area-itinerary {
+    height: 100%;
+  }
+
+  /* Aggiunge la scrollbar se l'itinerario è troppo lungo */
+  .area-itinerary .card-body {
+    overflow-y: auto;
+  }
+}
+
+/*  COMPONENTI INTERNI (Colori, Bottoni, SVG)  */
+
+/* --- AUDIO PLAYER --- */
 .audio-info {
   display: flex;
   justify-content: space-between;
@@ -200,199 +264,28 @@
   color: var(--on-surface-variant);
   margin-bottom: var(--spacing-sm);
 }
-
 .progress-track {
-  height: 0.25rem; /* 4px */
+  height: 0.375rem;
   background-color: var(--outline-variant);
   border-radius: var(--radius-full);
   margin-bottom: var(--spacing-md);
   overflow: hidden;
 }
-
 .progress-fill {
   height: 100%;
   background-color: var(--tertiary);
 }
-
 .audio-controls {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: var(--spacing-xl);
-  margin-bottom: var(--spacing-md);
+  margin-top: var(--spacing-md);
 }
 
-.btn-play {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: var(--radius-full);
-  padding: 0;
-}
-
-/* Controlli Volume e Sottotitoli */
-.controls-row {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.volume-slider {
-  flex: 1;
-  accent-color: var(--tertiary);
-  cursor: pointer;
-}
-
-.btn-cc {
-  background-color: transparent;
-  border: 0.0625rem solid var(--outline-variant); /* 1px */
-  color: var(--on-surface-variant);
-  border-radius: var(--radius-default);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: all 0.2s ease;
-}
-
-.btn-cc.active {
-  background-color: var(--secondary);
-  color: var(--on-secondary);
-  border-color: var(--secondary);
-}
-
-/* --- Quick Stack --- */
-.quick-stack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-/* Card Interattiva Unificata */
-.unified-interactive-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
-}
-
-/* Layout Azioni Specifiche */
-.action-row {
-  display: flex;
-  gap: var(--spacing-sm);
-}
-
+/* --- BOTTONI BASE --- */
 .flex-fill { flex: 1; }
 
-.btn-square {
-  width: 3.5rem;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: var(--radius-default);
-}
-
-/* Chat Section */
-.ai-chat-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.chat-bubble {
-  background-color: var(--surface-variant);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  border: 0.0625rem solid var(--outline-variant); /* 1px */
-}
-
-.chat-text {
-  font-size: var(--body-md-size);
-  color: var(--on-surface);
-  margin: 0;
-}
-
-.typing { animation: blink 1s infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-
-.input-group {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.chat-input {
-  width: 100%;
-  padding: var(--spacing-md) 3.5rem var(--spacing-md) var(--spacing-md);
-  border-radius: var(--radius-full);
-  border: 0.0625rem solid var(--outline-variant); /* 1px */
-  background-color: var(--background);
-  font-family: var(--font-sans);
-  font-size: var(--body-lg-size);
-  color: var(--on-surface);
-}
-
-.chat-input:focus {
-  outline: 0.125rem solid var(--primary); /* 2px */
-  border-color: transparent;
-}
-
-.btn-mic {
-  position: absolute;
-  right: 0.375rem; /* 6px */
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--radius-full);
-  background-color: var(--primary);
-  color: var(--on-primary);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.btn-mic.recording {
-  background-color: var(--error);
-  animation: pulse 1.5s infinite;
-}
-
-.char-counter {
-  font-size: var(--label-md-size);
-  color: var(--outline);
-  text-align: right;
-  padding-right: var(--spacing-sm);
-}
-
-/* Services */
-.services-row {
-  display: flex;
-  gap: var(--spacing-sm);
-  justify-content: space-between;
-}
-
-.chip {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-md) var(--spacing-sm);
-  font-size: var(--label-md-size);
-  font-family: var(--font-sans);
-  color: var(--on-surface-variant);
-  background-color: var(--surface-variant);
-  border: 0.0625rem solid var(--outline-variant); /* 1px */
-  border-radius: var(--radius-default);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.chip:hover {
-  background-color: var(--outline-variant);
-}
-
-/* Bottoni Base */
 .btn {
   padding: 0.6rem 1.4rem;
   border-radius: var(--radius-default);
@@ -402,89 +295,48 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  gap: var(--spacing-sm);
   font-family: var(--font-sans);
   font-size: var(--body-lg-size);
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
+/* Bottone Primario ("Dimmi di più") */
 .btn-primary {
   background-color: var(--primary);
   color: var(--on-primary);
+  border: 1px solid var(--primary);
+  transition: opacity 0.2s ease;
 }
-
 .btn-primary:hover {
   opacity: 0.9;
-  transform: translateY(-0.125rem); /* -2px */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
+/* Bottone Secondario ("Mappa") */
 .btn-secondary {
-  background-color: transparent;
-  color: var(--on-surface);
-  border: 0.0625rem solid var(--outline-variant); /* 1px */
-  transition: background-color 0.2s ease;
+  background-color: var(--secondary);
+  color: var(--on-secondary);
+  border: 1px solid var(--outline-variant);
+  transition: opacity 0.2s ease;
+}
+.btn-secondary:hover {
+ opacity: 0.9;
 }
 
-.btn-secondary:hover { background-color: var(--surface-variant); }
-
-/* Timeline / Itinerario */
-.timeline {
-  list-style: none;
+/* Bottone Quadrato */
+.btn-square {
+  width: 3.5rem;
+  height: 3.5rem;
   padding: 0;
-  margin: 0;
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+  align-items: center;
+  justify-content: center;
 }
 
-.timeline-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-md);
-  position: relative;
-}
-
-.dot {
-  width: 0.75rem; /* 12px */
-  height: 0.75rem; /* 12px */
-  border-radius: var(--radius-full);
-  background-color: var(--outline-variant);
-  z-index: 2;
-  margin-top: 0.375rem; /* 6px */
-}
-
-.timeline-item.active .dot {
-  background-color: var(--primary);
-  box-shadow: 0 0 0 0.25rem var(--surface-variant); /* 0 0 0 4px */
-}
-
-.timeline-item:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  left: 0.3125rem; /* 5px */
-  top: 1.125rem; /* 18px */
-  bottom: -1rem; /* -16px */
-  width: 0.125rem; /* 2px */
-  background-color: var(--outline-variant);
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-.timeline-title {
-  font-size: var(--body-lg-size);
-  font-weight: var(--headline-md-weight);
-  color: var(--on-surface);
-}
-
-.timeline-duration {
-  font-size: var(--body-md-size);
-  color: var(--on-surface-variant);
-}
-
-/* Icon Utilities Extra (per bottoni rotondi senza testo) */
+/* Bottoni Rotondi (Play, Riavvolgi, ecc) */
 .icon-btn {
   background: transparent;
   border: none;
@@ -493,8 +345,95 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-sm);
   border-radius: var(--radius-full);
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
-.icon-btn:hover { background-color: var(--surface-variant); }
+.icon-btn:hover {
+  background-color: var(--surface-variant);
+  color: var(--primary);
+}
+
+/* Bottone Play Speciale */
+.btn-play {
+  width: 4rem;
+  height: 4rem;
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-radius: var(--radius-full);
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.btn-play:hover {
+  transform: scale(1.05);
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+/* --- CHIPS (Servizi) --- */
+.chip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--body-md-size);
+  color: var(--on-surface-variant);
+  background-color: var(--background);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.chip:hover {
+  background-color: var(--surface-variant);
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+
+/* Gestion SVG */
+/* Disabilita i click sugli SVG per evitare bug coi bottoni */
+.icon-sm, .icon-md, .icon-lg, .btn-icon, .card-svg {
+  fill: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+  pointer-events: none;
+}
+
+.icon-sm {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.icon-md {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.icon-lg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.btn-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* SVG speciali (es. Mappa) con transizione dedicata */
+.card-svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--secondary);
+  transition: transform 0.2s ease;
+}
+.btn-secondary:hover .card-svg {
+  transform: scale(1.15);
+}
+
+.btn-secondary .card-svg{
+  color: var(--on-secondary);
+}

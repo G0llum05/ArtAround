@@ -1,0 +1,25 @@
+<div class="map-overlay" (click)="close()">
+
+  <!-- Se l'utente clicca sullo sfondo scuro esterno ➔ la modale si chiude (close() viene eseguito).
+  Se l'utente clicca dentro il pannello bianco della mappa ➔ l'evento si ferma lì dentro -->
+
+  <div class="map-panel" (click)="$event.stopPropagation()">
+
+    <header class="panel-header">
+      <div>
+        <h2 class="panel-title">Mappa del Museo</h2>
+        <p class="panel-subtitle">Visualizza il percorso e le sale</p>
+      </div>
+      <button type="button" class="close-btn" (click)="close()" aria-label="Chiudi">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+          <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="map-content">
+      <img [src]="imageUrl()" class="map-image">
+    </div>
+
+  </div>
+</div>

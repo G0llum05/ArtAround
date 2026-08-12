@@ -1,11 +1,23 @@
-import { Component, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {Component, signal, computed, OnInit, effect} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {Itinerary} from '../../components/itinerary/itinerary';
+import {Chat} from '../../components/chat/chat';
+import {NavigatorSettings} from '../../components/navigator-settings/navigator-settings';
+import {ToneType, UserNavigatorSettings} from '../../models/appModel/userNavigatorSettings';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { debounceTime, skip, switchMap } from 'rxjs/operators';
+import { Map } from '../../components/map/map';
+import { ChatMessage } from '../../models/appModel/chatMessage';
+
+import {dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS, messagesDummy} from './dummy'
+
+const settingsKey = 'navigatorSettings'
 
 @Component({
   selector: 'app-navigator',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Itinerary, Chat, NavigatorSettings, Map],
   templateUrl: './navigator.html',
   styleUrl: './navigator.css'
 })
@@ -13,22 +25,55 @@ export class Navigator {
   // Stati UI
   isPlaying = signal<boolean>(false);
   showSubtitles = signal<boolean>(true);
-  volume = signal<number>(50);
+  isSettingsOpen = signal<boolean>(false);
+  isMapOpen = signal<boolean>(false);
+
+  //Setting
+  currentSettings = signal<UserNavigatorSettings>({
+      tone: 'adulto',
+      language: 'en',
+      duration: 30
+    });
 
   // Chat e Dettatura
+  messages = signal<ChatMessage[]>(messagesDummy)
   chatText = signal<string>('');
   isDictating = signal<boolean>(false);
+
+
+  //effect sempre nel costruttore per injection contest
+  constructor() {
+    const saved = localStorage.getItem(settingsKey);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      this.currentSettings.update(current => ({ ...current, ...parsed })); //così se i dati non sono completi si completano
+    }
+
+    effect(() => {
+      localStorage.setItem(settingsKey, JSON.stringify(this.currentSettings()));
+    })
+
+    toObservable(this.currentSettings).pipe(
+      takeUntilDestroyed(), // Chiude il tubo se il componente viene distrutto
+      skip(1), // Opzionale: evita di fare la chiamata API al primo caricamento della pagina (quando legge dal localStorage)
+      debounceTime(500), // Aspetta mezzo secondo di inattività
+      switchMap(settings => {
+        console.log("Salvataggio sul server in corso...", settings);
+        // return this.apiService.updateNavigatorSettings(settings);
+        return [];
+      })
+    ).subscribe();
+  }
+
+  //TODO navigator service inject
+  //TODO chiamate api facili inziali come per prendere l'itinerario e tutta la visita si usa to signal
 
   // Sottotitoli
   currentSubtitle = signal<string>("Nel dipinto possiamo notare i dettagli delle vesti dorate...");
 
   // Itinerario
-  itinerary = signal([
-    { id: 1, title: 'Sala del Trono', duration: '10 min', completed: true },
-    { id: 2, title: 'Galleria degli Specchi', duration: '15 min', completed: false },
-    { id: 3, title: 'Appartamenti Reali', duration: '20 min', completed: false },
-    { id: 4, title: 'Giardini all\'Italiana', duration: '30 min', completed: false }
-  ]);
+  currentItineraryStepIndex = signal<number>(0);
+  itinerary = signal(DUMMY_ITINERARY_ARTWORKS);
 
   remainingChars = computed(() => 200 - (this.chatText()?.length || 0));
 
@@ -38,27 +83,28 @@ export class Navigator {
 
   toggleSubtitles(): void {
     this.showSubtitles.update(v => !v);
+    //TODO subtitles
   }
 
   toggleDictation(): void {
     this.isDictating.update(v => !v);
-    if (this.isDictating()) {
-      setTimeout(() => {
-        this.chatText.update(text => text + " Mi puoi spiegare meglio questo dettaglio?");
-        this.isDictating.set(false);
-      }, 2000);
-    }
+    //TODO dictation
   }
 
   openSettings(): void {
-    console.log("Apertura impostazioni...");
+    this.isSettingsOpen.set(true);
   }
 
   openMap(): void {
-    console.log("Apertura mappa...");
+    this.isMapOpen.set(true);
   }
 
   tellMeMore(): void {
     console.log("Richiesta maggiori informazioni sull'opera...");
   }
+
+  changeItineraryStep(index: number): void {
+    this.currentItineraryStepIndex.set(index);
+  }
+
 }

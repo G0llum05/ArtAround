@@ -13,7 +13,7 @@
 .contact-page-container {
   flex-grow: 1;
   width: 100%;
-  max-width: 80rem;
+  max-width: 100rem;
   margin: 0 auto;
   padding: var(--margin-mobile);
   display: flex;

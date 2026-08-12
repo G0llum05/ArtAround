@@ -1,0 +1,43 @@
+<ul class="itinerary-container">
+  @for (item of itinerarySteps(); track item.id; let i = $index) {
+    <li class="itinerary-step"
+        [class.completed]="item.completed"
+        [class.current]="item.isCurrent">
+
+      <!-- Parte grafica: Pallino e Linea verticale -->
+      <div class="step-indicator-wrapper">
+        <div class="step-circle" (click)="clickedInterestOfIndex(i)">
+          @if (item.completed) {
+            <!-- Icona spunta per i completati -->
+            <svg class="step-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+          } @else if (item.isCurrent) {
+            <!-- Numero o indicatore per quello attuale -->
+            <span class="step-number">{{ i + 1 }}</span>
+          } @else {
+            <!-- Pallino vuoto per i futuri -->
+            <span class="step-dot"></span>
+          }
+        </div>
+        <!-- Linea di collegamento verticale -->
+        @if (!$last) {
+          <div class="step-line" [class.line-active]="item.completed"></div>
+        }
+      </div>
+
+
+      <div class="step-content">
+        <span class="item-title">{{ item.title }}</span>
+
+        <!-- Info Stanza e Piano con Icona Mappa -->
+        <div class="item-info">
+          <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+          <span>{{ item.room }} • Piano {{ item.floor }}</span>
+        </div>
+        <div class="item-info">
+          <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm-99.5 291.5Q275-137 226-186t-77.5-114.5Q120-366 120-440t28.5-139.5Q177-645 226-694t114.5-77.5Q406-800 480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80q-74 0-139.5-28.5ZM678-242q82-82 82-198t-82-198q-82-82-198-82t-198 82q-82 82-82 198t82 198q82 82 198 82t198-82ZM480-440Z"/></svg>
+          <span> {{ item.duration}} </span>
+        </div>
+      </div>
+    </li>
+  }
+</ul>

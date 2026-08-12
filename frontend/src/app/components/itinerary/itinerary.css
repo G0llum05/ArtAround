@@ -1,0 +1,160 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+/* --- CONTENITORE PRINCIPALE --- */
+.itinerary-container {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* Lo spazio è gestito dai singoli step per far passare la linea */
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.5rem;
+  list-style: none;
+  box-sizing: border-box;
+}
+
+/* --- SINGOLO STEP (Pallino + Testo) --- */
+.itinerary-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  position: relative;
+}
+
+/* --- COLONNA GRAFICA (Pallino e Linea) --- */
+.step-indicator-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Il cerchio principale */
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-variant, #e0e0e0);
+  color: var(--on-surface-variant, #666);
+  font-weight: bold;
+  font-size: 0.9rem;
+  z-index: 2;
+  transition: all 0.3s ease;
+  border: 2px solid var(--outline-variant, #ccc);
+}
+
+/* La linea verticale che collega i pallini */
+.step-line {
+  width: 3px;
+  flex-grow: 1;
+  min-height: 4.5rem; /* Altezza minima del collegamento tra un punto e l'altro */
+  background-color: var(--outline-variant, #e0e0e0);
+  margin: 4px 0;
+  transition: background-color 0.3s ease;
+}
+
+/* Linea attiva (per i tratti già completati) */
+.step-line.line-active {
+  background-color: var(--primary, #007bff);
+}
+
+/* --- STATI DEL PALLINO --- */
+
+/* 1. Completato (Blu o colore primario con spunta bianca) */
+.itinerary-step.completed .step-circle {
+  background-color: var(--primary, #007bff);
+  color: var(--on-primary, #fff);
+  border-color: var(--primary, #007bff);
+}
+
+.step-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* 2. Corrente / Attivo (Stile in evidenza, es. Arancione o Primario marcato) */
+.itinerary-step.current .step-circle {
+  background-color: var(--primary, #ff8c00); /* Oppure un colore d'accento */
+  color: #fff;
+  border-color: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.2); /* Effetto alone luminoso */
+  transform: scale(1.1); /* Leggermente più grande per metterlo al centro dell'attenzione */
+}
+
+/* --- CONTENUTO TESTUALE DELLA TAPPA --- */
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px; /* Allinea otticamente il testo al centro del cerchio da 32px */
+  transition: opacity 0.3s ease;
+  color: var(--on-surface);
+}
+
+.item-title {
+  font-size: var(--body-md-size, 0.95rem);
+  font-weight: 500;
+  color: var(--on-surface, #333);
+}
+
+.item-desc {
+  font-size: var(--label-md-size);
+  color: var(--on-surface-variant, #777);
+}
+
+@media(min-width: 48rem)  {
+  .item-title {
+    font-size: var(--body-lg-size);
+  }
+
+  .item-desc {
+    font-size: var(--body-md-size,);
+  }
+}
+
+/* Modifiche di testo quando lo step è completato */
+.itinerary-step.completed .item-title {
+  color: var(--on-surface-variant, #777);
+}
+
+/* Stile in evidenza per il testo della tappa corrente */
+.itinerary-step.current .item-title {
+  font-weight: 700;
+  color: var(--primary, #007bff);
+}
+
+/* --- POSIZIONE (Stanza e Piano) --- */
+.item-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--on-surface-variant, #666);
+  margin: 2px 0;
+}
+
+.info-icon {
+  width: 1rem;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+/* Adattamento dei colori quando la tappa è attiva o completata */
+.itinerary-step.current .info-location {
+  color: var(--primary);
+  opacity: 0.9;
+}
+
+.itinerary-step.completed .info-location {
+  opacity: 0.6;
+}

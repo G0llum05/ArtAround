@@ -26,26 +26,42 @@ const SUPPORTED_LANGUAGES: LanguageType[] = [
 })
 export class NavigatorSettings{
   //two-way binding figlio padre
-  tone = model<ToneType>('adulto');
-  language = model<string>('it');
-  duration = model<number>(30);
+  settings = model<UserNavigatorSettings>({
+    tone: 'adulto',
+    language: 'en',
+    duration: 30
+  });
 
   // Unico output per chiedere al padre di nascondere la modale
   closeSettings = output<void>();
-  supportedLanguages: LanguageType[] = SUPPORTED_LANGUAGES;
 
   // Aggiornano direttamente il model (e quindi il Navigator simultaneamente)
   setTone(newTone: ToneType) {
-    this.tone.set(newTone);
+    this.settings.update(current => ({
+      ...current,
+      tone: newTone
+      })
+    );
   }
 
   setDuration(newDuration: number) {
-    this.duration.set(newDuration);
+    this.settings.update(current => ({
+        ...current,
+        duration: newDuration
+      })
+    );
+  }
+
+  setLanguage(newLanguage: string) {
+    this.settings.update(current => ({
+      ...current,
+      language: newLanguage
+    }))
   }
 
   close() {
     this.closeSettings.emit();
   }
 
-  protected readonly SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES;
+  readonly supportedLanguages = SUPPORTED_LANGUAGES;
 }

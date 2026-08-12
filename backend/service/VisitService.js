@@ -1,7 +1,5 @@
 const Visit = require('../data/model/Visit');
 const Mapper = require('../data/mapper/VisitMapper');
-const UploadService = require('./UploadService');
-const ImageUrlService = require('./ImageUrlService');
 
 class VisitService {
   static async getAllVisits(category) {
@@ -110,44 +108,53 @@ class VisitService {
    */
   static async getVisitHomePresentation() {
 
-    const visits = await Visit.find({ isActive: { $ne: false } }).lean();
-    if (!visits || visits.length === 0) {
-      return [];
+    try {
+      const visits = await Visit.find({ isActive: { $ne: false } })
+        .populate('creator', 'name surname email')
+        .lean();
+      if (!visits || visits.length === 0) {
+        return [];
+      }
+
+      console.log("DEBUG -> Esempio una visita: ", visits[0]);
+      console.log("Assets completi:", JSON.stringify(visits[0].assets, null, 2));
+
+
+      // Ordina le visite per numero di like e visualizzazioni (decrescente)
+      visits.sort((a, b) => {
+        const likesDiff = (b.likesCount || 0) - (a.likesCount || 0);
+        if (likesDiff !== 0) return likesDiff;
+        const viewsDiff = (b.views?.total || 0) - (a.views?.total || 0);
+        return viewsDiff;
+      });
+
+      // Prendi le prime 10 visite più popolari
+      const topVisits = visits.slice(0, 10);
+
+      // Immagini di default per il test (landscape per desktop e portrait per mobile)
+      const DEFAULT_LANDSCAPE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000";
+      const DEFAULT_PORTRAIT = "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000";
+
+      topVisits.forEach(visit => {
+        if (!visit.assets) visit.assets = { images: [] };
+        if (!Array.isArray(visit.assets.images)) visit.assets.images = [];
+
+        const hasLandscape = visit.assets.images.some(img => (typeof img === 'object' && img?.orientation === 'landscape'));
+        const hasPortrait = visit.assets.images.some(img => (typeof img === 'object' && img?.orientation === 'portrait'));
+
+        if (!hasLandscape) {
+          visit.assets.images.push({ url: DEFAULT_LANDSCAPE, orientation: 'landscape' });
+        }
+        if (!hasPortrait) {
+          visit.assets.images.push({ url: DEFAULT_PORTRAIT, orientation: 'portrait' });
+        }
+      });
+
+      return topVisits;
+    } catch (error) {
+      console.error("Error in getVisitHomePresentation:", error);
+      throw new Error('Error retrieving visit home presentation');
     }
-
-    // Ordina le visite per numero di like e visualizzazioni (decrescente)
-    visits.sort((a, b) => {
-      const likesDiff = (b.likesCount || 0) - (a.likesCount || 0);
-      if (likesDiff !== 0) return likesDiff;
-      const viewsDiff = (b.views?.total || 0) - (a.views?.total || 0);
-      return viewsDiff;
-    });
-
-    // Prendi le prime 10 visite più popolari
-    const topVisits = visits.slice(0, 10);
-
-    // TODO CHECK fare immagini catching
-    // immagini di default per CIASCUNA delle 10 visite
-    const defaultImages = [
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000",
-      "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000"
-    ];
-
-    // Matrice: per ogni visita associamo l'array di 2 immagini
-    const imageUrlsList = topVisits.map(() => defaultImages);    // const imageUrls = await ImageUrlService.getVisitImageUrl(visit.museumId, visit._id);
-
-
-
-    // // TODO CHECK Da definire meglio
-    const badges = topVisits.map(v => v.price === 0 ? 'Gratuito' : ((v.likesCount || 0) > 10 ? 'Popolare' : ''));
-
-    // if (visit.p;rice === 0) {
-    //   badge = 'Gratuito';
-    // } else if (visit.likesCount > 10) {
-    //   badge = 'Popolare';
-    // }
-
-    return Mapper.toVisitHomePresentationList(topVisits, imageUrlsList, badges);
   }
 }
 

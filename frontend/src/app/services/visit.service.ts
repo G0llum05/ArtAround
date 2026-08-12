@@ -1,8 +1,9 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {VisitResponse, VisitRequest, VisitHomePresentationResponse} from '../models/visit.model';
-import {MuseumHomePresentationResponse, MuseumResponse} from '../models/museum.model';
+import { inject, Injectable } from '@angular/core';
+import { tap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { VisitResponse, VisitRequest, VisitHomePresentationResponse } from '../models/visit.model';
+import { MuseumHomePresentationResponse, MuseumResponse } from '../models/museum.model';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,7 @@ export class VisitService {
   }
 
   getHomePresentation(): Observable<VisitHomePresentationResponse[]> {
-    return this.http.get<VisitHomePresentationResponse[]>(`${this.apiUrl}homePresentation`);
+    return this.http.get<VisitHomePresentationResponse[]>(`${this.apiUrl}homePresentation`).pipe(tap(data => console.log('Home Presentation Data:', data)));
   }
 
   create(visit: VisitRequest) {

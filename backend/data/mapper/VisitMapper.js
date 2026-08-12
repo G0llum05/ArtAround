@@ -51,28 +51,21 @@ class VisitMapper {
     };
   }
 
-  static toSingleVisitHomePresentationRes(visit, imageUrls) {
+  static toSingleVisitHomePresentationResponse(visit) {
     if (!visit) return null;
     return new VisitHomePresentationResponseDTO(
       visit._id ? visit._id.toString() : visit.id,
       visit.title,
       visit.description,
-      visit.verified,
+      visit.isVerified,
       visit.disableFriendly,
       visit.maxDuration,
       visit.price,
-      imageUrls,
+      visit.assets,
+      visit.isClosingSoon,
+      visit.isNew,
     );
   }
-
-  static toVisitHomePresentationList(visits, imageUrlsList = []) {
-    if (!visits || !Array.isArray(visits)) return [];
-    return visits.map((visit, index) => {
-      const urls = imageUrlsList[index] || [];
-      return VisitMapper.toSingleVisitHomePresentationRes(visit, urls);
-    });
-  }
-
 }
 
 module.exports = VisitMapper;

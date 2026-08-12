@@ -23,7 +23,7 @@
         <!-- Card Continua Visita -->
         <div class="card active-card cursor-pointer">
           <div class="card-img-wrap">
-            <img class="card-img" [src]="visit.imageUrl" [alt]="visit?.title">
+            <img class="card-img" [src]="visit.imageUrl || '/assets/images/place_holder.jpg'" [alt]="visit?.title">
             <div class="badge">
               <span class="pulse"></span>
               <span>Visita Attiva</span>

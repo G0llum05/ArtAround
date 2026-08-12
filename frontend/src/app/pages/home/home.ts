@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { Carousel } from '../../components/carousel/carousel';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { VisitService } from '../../services/visit.service';
-import { VisitHomePresentationResponse } from '../../models/visit.model';
 
 interface ArtworkPlaceholder {
   id: string;

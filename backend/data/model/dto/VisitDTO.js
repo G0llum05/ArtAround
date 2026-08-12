@@ -59,13 +59,15 @@ class VisitHomePresentationRequestDTO {
 }
 
 class VisitHomePresentationResponseDTO {
-  constructor(id, title, description, verified, disabledFriendly, imageUrls = []) {
+  constructor(id, title, description, verified, disableFriendly, duration, cost, imageUrls = []) {
     this.id = id;
     this.title = title;
     this.description = description;
     this.verified = verified;
-    this.disabledFriendly = disabledFriendly;
+    this.disableFriendly = disableFriendly;
     this.imageUrls = imageUrls;
+    this.duration = duration;
+    this.cost = cost;
   }
 }
 

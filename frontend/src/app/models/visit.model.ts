@@ -78,12 +78,12 @@ export interface VisitHomePresentationResponse {
   id: string,
   title: string,
   description: string,
-  verified: boolean,
-  disabledFriendly: boolean,
-  badge: string,
+  isVerified: boolean,
+  disableFriendly: boolean,
   imageUrls: string[],
   duration: number,
-  free: boolean,
   cost: number,
+  isClosingSoon: boolean,
+  isNew: boolean,
 }
 

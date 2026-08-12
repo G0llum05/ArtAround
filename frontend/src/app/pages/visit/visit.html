@@ -11,14 +11,13 @@
       <header class="card-header">
         <h2 class="card-title">Scegli il museo</h2>
       </header>
-      <div class="select-wrapper">
-        <select class="custom-select" formControlName="museo">
-          <option value="" disabled selected hidden>Seleziona un museo</option>
-          <option value="uffizi">Galleria degli Uffizi</option>
-          <option value="louvre">Museo del Louvre</option>
-        </select>
-        <svg class="select-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-360 280-560h400L480-360Z"/></svg>
-      </div>
+      <app-input-field-search-text
+        [museums]="museumList()"
+        [selectedMuseumId]="formVisit.get('museumId')?.value"
+        (museumSelected)="formVisit.patchValue({ museumId: $event })"
+        (cleared)="formVisit.patchValue({ museumId: '' })"
+      >
+      </app-input-field-search-text>
     </section>
 
     <!-- 2. Chi sei? -->
@@ -134,5 +133,8 @@
   </form>
 
   <!-- RISULTATO DELLA RICERCA -->
-  <app-visit-results-grid></app-visit-results-grid>
+  <app-visit-results-grid
+    [visits]="allVisitsOfMuseum()"
+    [isLoading]="isLoadingVisit()"
+  ></app-visit-results-grid>
 </main>

@@ -58,11 +58,13 @@ class MuseumVisitPlanResponseDTO {
 }
 
 class MuseumHomePresentationResponseDTO {
-  constructor(name, description, city, imageUrls = []) {
+  constructor(id, name, description, city, imageUrls = [], disableFriendly) {
+    this.id = id
     this.name = name;
     this.description = description;
     this.city = city;
     this.imageUrls = imageUrls;
+    this.disableFriendly = disableFriendly;
   }
 }
 

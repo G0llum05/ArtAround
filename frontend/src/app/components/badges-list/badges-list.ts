@@ -7,6 +7,6 @@ import {VisitHomePresentationResponse} from '../../models/visit.model';
   templateUrl: './badges-list.html',
   styleUrl: './badges-list.css',
 })
-export class BadgesList {
+export class BadgesList{
   visit = input.required<VisitHomePresentationResponse>();
 }

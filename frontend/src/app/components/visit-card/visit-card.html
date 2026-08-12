@@ -12,7 +12,7 @@
     <header class="card-header">
       <h3 class="card-title">{{ visit().title }}</h3>
       <span class="card-price">
-        {{ visit().free ? 'Gratis' : '€' + (visit().cost) }}
+        {{ (visit().cost == 0) ? 'Gratis' : '€' + (visit().cost) }}
       </span>
     </header>
 

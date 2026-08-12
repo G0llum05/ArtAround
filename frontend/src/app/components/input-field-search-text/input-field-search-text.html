@@ -1,0 +1,24 @@
+<div class="autocomplete-container">
+  <input
+    type="text"
+    class="custom-select"
+    placeholder="Cerca e seleziona un museo..."
+    [value]="displayValue()"
+    (input)="onSearchInput($any($event.target).value)"
+    (focus)="isDropdownOpen.set(true)"
+    (keydown)="onKeyDown($event)"
+  />
+  <!-- Aggiunto (keydown) per catturare il tasto TAB -->
+
+  @if (isDropdownOpen() && filteredMuseums().length > 0) {
+    <ul class="dropdown-suggestions">
+      @for (museum of filteredMuseums(); track museum.id) {
+        <li
+          (click)="selectMuseum(museum)"
+          class="suggestion-item">
+          {{ museum.name }}
+        </li>
+      }
+    </ul>
+  }
+</div>

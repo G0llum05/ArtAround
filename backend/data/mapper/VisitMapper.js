@@ -20,7 +20,7 @@ class VisitMapper {
       visit.endDate,
       visit.active,
       visit.weeklySchedule,
-      visit.disabledFriendly,
+      visit.disableFriendly,
       visit.requirements,
       visit.quiz,
       visit.categories || [],
@@ -43,7 +43,7 @@ class VisitMapper {
       endDate: visitRequestDTO.endDate,
       active: visitRequestDTO.active,
       weeklySchedule: visitRequestDTO.weeklySchedule,
-      disabledFriendly: visitRequestDTO.disabledFriendly,
+      disableFriendly: visitRequestDTO.disableFriendly,
       requirements: visitRequestDTO.requirements,
       quiz: visitRequestDTO.quiz,
       categories: visitRequestDTO.categories || [],
@@ -53,20 +53,15 @@ class VisitMapper {
 
   static toSingleVisitHomePresentationRes(visit, imageUrls) {
     if (!visit) return null;
-    // TODO CHECK mancano dei campi
-    const free = visit.price === 0 || !visit.price;
-    const cost = visit.price || 0;
-    const duration = visit.minDuration || visit.maxDuration || 0;
     return new VisitHomePresentationResponseDTO(
       visit._id ? visit._id.toString() : visit.id,
       visit.title,
       visit.description,
       visit.verified,
-      visit.disabledFriendly,
+      visit.disableFriendly,
+      visit.maxDuration,
+      visit.price,
       imageUrls,
-      duration,
-      free,
-      cost
     );
   }
 

@@ -1,7 +1,50 @@
 const UploadService = require('../../service/UploadService');
+const UploadMapper = require('../../data/mapper/UploadMapper');
 const Imager = require('../../utils/Imager');
 
 class UploadController {
+  /* 
+    * caricare un'immagine del museo
+    */
+  static async museumImgUpload(req, res) {
+    try {
+      const uploadDTO = UploadMapper.toUploadMuseumImgDTO(req);
+      if (!uploadDTO) {
+        return res.status(400).json({ message: 'Errore: dati di caricamento non validi.' });
+      }
+      url = await UploadService.museumImgUpload(uploadDTO);
+      return res.status(201).json({ message: 'Immagine del museo caricata con successo.', url });
+    } catch (err) {
+      console.error('[UploadController museumImgUpload Error]:', err);
+      return res.status(500).json({ message: 'Errore durante il caricamento dell\'immagine del museo.' });
+    }
+  }
+
+
+  /* 
+    * caricare un'immagine della visita
+    */
+  static async visitImgUpload(req, res) {
+    try {
+      const uploadDTO = UploadMapper.toUploadVisitImgDTO(req);
+      if (!uploadDTO) {
+        return res.status(400).json({ message: 'Errore: dati di caricamento non validi.' });
+      }
+
+      url = await UploadService.visitImgUpload(uploadDTO);
+      return res.status(201).json({ message: 'Immagine della visita caricata con successo.', url });
+
+    } catch (err) {
+      console.error('[UploadController visitImgUpload Error]:', err);
+      return res.status(500).json({ message: 'Errore durante il caricamento dell\'immagine della visita.' });
+    }
+  }
+
+
+
+
+
+
   static async handleUpload(req, res) {
     try {
       console.log('[UploadController] Content-Type:', req.headers['content-type']);

@@ -1,6 +1,6 @@
 class Sanitizer {
   static ALLOWED_LANGS = ['it', 'en', 'fr', 'es', 'de', 'cn', 'ru'];
-  static ALLOWED_TONES = ['infantile', 'simple', 'medium', 'advanced', 'technical'];
+  static ALLOWED_TONES = ['infantile', 'simple', 'medium', 'technical'];
   static ALLOWED_LENGTHS = [15, 30, 60];
   static ALLOWED_POIS = ['toilette', 'bar', 'exit', 'elevator', 'ticket_office', 'info_point'];
 

@@ -59,13 +59,12 @@ class VisitHomePresentationRequestDTO {
 }
 
 class VisitHomePresentationResponseDTO {
-  constructor(id, title, description, verified, disabledFriendly, badge = '', imageUrls = []) {
+  constructor(id, title, description, verified, disabledFriendly, imageUrls = []) {
     this.id = id;
     this.title = title;
     this.description = description;
     this.verified = verified;
     this.disabledFriendly = disabledFriendly;
-    this.badge = badge;
     this.imageUrls = imageUrls;
   }
 }

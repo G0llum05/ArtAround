@@ -178,7 +178,7 @@ async function main() {
 
       // CONFERMA O CAMBIO OBBLIGATORIO DI LINGUA, TONO E LUNGHEZZA
       console.log(`\n${colors.cyan}--- CONFIGURAZIONE PARAMETRI OBBLIGATORI ---${colors.reset}`);
-      
+
       const langInput = await askQuestion(` 🌐 Lingua [it/en/fr/es/de/cn] (corrente: '${activeLanguage}'): ${colors.reset}`);
       if (langInput.trim()) {
         const sanitizedLang = Sanitizer.sanitizeLanguage(langInput);
@@ -189,7 +189,7 @@ async function main() {
         }
       }
 
-      const toneInput = await askQuestion(` 🎭 Tono [infantile/simple/medium/advanced/technical] (corrente: '${activeTone}'): ${colors.reset}`);
+      const toneInput = await askQuestion(` 🎭 Tono [infantile/simple/medium/technical] (corrente: '${activeTone}'): ${colors.reset}`);
       if (toneInput.trim()) {
         const sanitizedTone = Sanitizer.sanitizeTone(toneInput);
         if (sanitizedTone) {
@@ -286,8 +286,8 @@ async function printState({ itemRes, visitId, currentArtworkIndex, totalArtworks
   const textToDisplay = typeof item === 'string' ? item : (item?.description || JSON.stringify(item));
 
   // Carica l'opera target per la stampa a terminale
-  const targetArtworkId = (typeof item === 'object' && item?.artwork) 
-    ? item.artwork 
+  const targetArtworkId = (typeof item === 'object' && item?.artwork)
+    ? item.artwork
     : await NavigatorService.getArtworkId(visitId, currentArtworkIndex);
 
   const artwork = await Artwork.findById(targetArtworkId).populate('artists').exec();
@@ -296,15 +296,15 @@ async function printState({ itemRes, visitId, currentArtworkIndex, totalArtworks
   console.log(`${colors.bright}🖼️  OPERA ${currentArtworkIndex + 1}/${totalArtworks}: "${artwork?.title || 'Opera'}"${colors.reset}`);
   console.log(`📍 Posizione: Stanza "${artwork?.location?.room || 'Galleria Principale'}", Piano: ${artwork?.location?.floor || 'Piano Terra'}`);
   console.log(`🏷️ QR Code: [${artwork?.qrCode || 'ART_QR'}]`);
-  
+
   console.log(`\n${colors.green}${colors.bright}🔊 CONTENUTO (Tono: ${tone.toUpperCase()}, Lingua: ${language.toUpperCase()}, Durata: ${length}s):${colors.reset}`);
   console.log(`${colors.bright}"${textToDisplay}"${colors.reset}`);
 
   const isAI = typeof item === 'object' ? item?.isAIGenerated : true;
   const author = typeof item === 'object' ? (item?.authorName || 'AI Engine') : 'AI Engine';
 
-  const sourceLabel = fromCache 
-    ? `${colors.green}⚡ Cache MongoDB (Risposta Istantanea 0ms)${colors.reset}` 
+  const sourceLabel = fromCache
+    ? `${colors.green}⚡ Cache MongoDB (Risposta Istantanea 0ms)${colors.reset}`
     : `${colors.magenta}✨ Generato al volo da AI API / Adaptor${colors.reset}`;
 
   console.log(`\n${colors.cyan}🔍 [DEBUG INFO ITEM]:${colors.reset}`);

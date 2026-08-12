@@ -51,7 +51,7 @@ class VisitMapper {
     };
   }
 
-  static toSingleVisitHomePresentationRes(visit, imageUrls, badge = '') {
+  static toSingleVisitHomePresentationRes(visit, imageUrls) {
     if (!visit) return null;
     // TODO CHECK mancano dei campi
     const free = visit.price === 0 || !visit.price;
@@ -63,7 +63,6 @@ class VisitMapper {
       visit.description,
       visit.verified,
       visit.disabledFriendly,
-      badge,
       imageUrls,
       duration,
       free,
@@ -71,12 +70,11 @@ class VisitMapper {
     );
   }
 
-  static toVisitHomePresentationList(visits, imageUrlsList = [], badges = []) {
+  static toVisitHomePresentationList(visits, imageUrlsList = []) {
     if (!visits || !Array.isArray(visits)) return [];
     return visits.map((visit, index) => {
       const urls = imageUrlsList[index] || [];
-      const badge = badges[index] || '';
-      return VisitMapper.toSingleVisitHomePresentationRes(visit, urls, badge);
+      return VisitMapper.toSingleVisitHomePresentationRes(visit, urls);
     });
   }
 

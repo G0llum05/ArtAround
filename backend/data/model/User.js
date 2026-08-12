@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ImageSchema = require('./schemas/ImageSchemas');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -69,6 +70,10 @@ const userSchema = new mongoose.Schema({
   preferences: {
     type: Map,
     of: String
+  },
+
+  assets: {
+    profilePicture: ImageSchema
   }
 });
 

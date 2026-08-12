@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const ScheduleSchema = require('./schemas/VisitingHoursSchema');
+const ImageSchema = require('./schemas/ImageSchemas');
 
 
 const visitSchema = new mongoose.Schema({
@@ -26,7 +27,7 @@ const visitSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  
+
   // Items?
   artworks: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -64,12 +65,12 @@ const visitSchema = new mongoose.Schema({
   disableFriendly: {
     type: Boolean
   },
-  
+
   // Description of what we need for the visit
   requirements: {
     type: String
   },
-  
+
   // Se il creatore della visita vuole mettere delle domande fatte da lui può farlo, altrimenti vengono generate
   // quiz: { 
   //   type: mongoose.Schema.Types.ObjectId,
@@ -80,9 +81,9 @@ const visitSchema = new mongoose.Schema({
   categories: [{
     type: String,
     enum: [
-      'Rinascimento', 'Arte Moderna', 'Motori', 'Scienza', 'Archeologia', 
-      'Musica', 'Didattica', 'Antica Grecia', 'Antica Roma', 'Oriente', 
-      'Antico Egitto', 'Medioevo', 'Neoclassicismo', 'Impressionismo', 
+      'Rinascimento', 'Arte Moderna', 'Motori', 'Scienza', 'Archeologia',
+      'Musica', 'Didattica', 'Antica Grecia', 'Antica Roma', 'Oriente',
+      'Antico Egitto', 'Medioevo', 'Neoclassicismo', 'Impressionismo',
       'Realismo', 'Puntinismo', 'Avanguardie'
     ]
   }],
@@ -107,13 +108,13 @@ const visitSchema = new mongoose.Schema({
     }
   },
 
-  badge: {
-    type: String
-  },
-
   isRunning: {
     type: Boolean,
     default: false
+  },
+
+  assets: {
+    images: [ImageSchema]
   }
 
 });

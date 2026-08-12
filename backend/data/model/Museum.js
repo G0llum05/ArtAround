@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const ScheduleSchema = require('./schemas/VisitingHoursSchema');
 const SocialSchema = require('./schemas/SocialSchema');
 const pointOfInterestSchema = require('./schemas/pointOfInterestSchema');
+const ImageSchema = require('./schemas/ImageSchemas');
 
 
 const museumSchema = new mongoose.Schema({
@@ -113,6 +114,11 @@ const museumSchema = new mongoose.Schema({
   // Requisiti generali per la visita
   requirements: {
     type: String
+  },
+
+  assets: {
+    profilePicture: ImageSchema,
+    gallery: [ImageSchema]
   }
 }, { timestamps: true });
 

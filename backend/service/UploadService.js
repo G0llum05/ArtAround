@@ -1,8 +1,65 @@
+re
 const path = require('path');
 const fs = require('fs-extra');
 const sharp = require('sharp');
 const Imager = require('../utils/Imager');
+const Museum = require('../data/model/Museum');
+const Visit = require('../data/model/Visit');
+const Artwork = require('../data/model/Artwork');
+const Artist = require('../data/model/Artist');
+const User = require('../data/model/User');
+
 class UploadService {
+
+  static async museumImgUpload(museumId, file, orientation) {
+    if (!museumId || !file) {
+      throw new Error('museumId e file sono obbligatori per il caricamento dell\'immagine del museo.');
+    }
+  }
+
+  static async visitImgUpload(museumId, visitId, file, orientation) {
+    if (!museumId || !visitId || !file || !orientation) {
+      throw new Error('museumId, visitId, orientation e file sono obbligatori per il caricamento dell\'immagine della visita.');
+    }
+
+    // Controllo se la visita appartiene al museo
+    if (!await Museum.exists({ _id: museumId, visits: visitId })) {
+      throw new Error('Museo non trovato o la visita non appartiene a questo museo.');
+    }
+
+    const path = path.join(__dirname, '../assets/museums', museumId, 'visit', visitId, 'meta');
+    const name = `visit_${orientation}.webp`;
+    const fullPath = path.join(path, name);
+
+    const updatedVisit = await Visit.findByIdAndUpdate(visitId,
+      {
+        $push: { 'assets.images.url': fullPath },
+        $set: { 'assets.images.orientation': orientation }
+      }, { new: true });
+
+    if (!updatedVisit) throw new Error('Visita non trovata.');
+
+    // crea dir se non esiste
+    await fs.ensureDir(path.dirname(path));
+
+    await this.saveImage(file.buffer, fullPath, file.mimetype);
+
+    return fullPath;
+  }
+
+  static async saveImage(fileBuffer, fullPath, mimeType) {
+    if (Imager.isRaster(mimeType)) {
+      await sharp(fileBuffer)
+        .webp({ quality: 82, effort: 4 })
+        .toFile(fullPath);
+    } else {
+      await fs.writeFile(fullPath, fileBuffer);
+    }
+  }
+
+
+
+  // TODO CHECK REFACTOR FINO A QUA
 
   static getMuseumRelatedDir({ museumId, visitId, artworkId, artistId, isMeta }) {
     if (!museumId) {
@@ -15,7 +72,7 @@ class UploadService {
     if (artworkId) {
       return path.join(baseMuseumDir, 'artworks', artworkId);
     }
-    
+
     if (artistId) {
       // assets/museums/:museumId/visit/:visitId/meta
       return path.join(baseMuseumDir, 'visit', artistId, 'meta');
@@ -48,10 +105,10 @@ class UploadService {
       console.error(`[UploadService] Errore durante la scansione della cartella ${dirPath}:`, err);
     }
   }
-  
+
   static async getArtworkImages({ museumId, artworkId }) {
     if (!artworkId || !museumId) return [];
-    
+
     let artworkUrls = [];
 
     const targetDir = path.join(__dirname, '../assets/museums', museumId, 'artworks', artworkId);
@@ -62,7 +119,7 @@ class UploadService {
 
   static async getArtistImages({ museumId, artistId }) {
     if (!artistId || !museumId) return [];
-    
+
     let artistUrls = [];
 
     const targetDir = path.join(__dirname, '../assets/museums', museumId, 'artists', artistId);
@@ -95,7 +152,7 @@ class UploadService {
     if (options.orientation === 'landscape' || options.orientation === 'portrait') {
       return options.orientation;
     }
-    
+
     try {
       const metadata = await sharp(fileBuffer).metadata();
       if (metadata && metadata.width && metadata.height) {
@@ -117,7 +174,7 @@ class UploadService {
         if (Imager.isRaster(toSaveFileInfo.mimeType)) {
           fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.suffix}.webp`;
           filePath = path.join(toSaveFileInfo.targetDir, fileName);
-          finalMimeType = 'image/webp';      
+          finalMimeType = 'image/webp';
           await sharp(toSaveFileInfo.fileBuffer)
             .webp({ quality: 82, effort: 4 })
             .toFile(filePath);
@@ -126,7 +183,7 @@ class UploadService {
           fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.suffix}.${ext}`;
           filePath = path.join(toSaveFileInfo.targetDir, fileName);
           finalMimeType = toSaveFileInfo.mimeType;
-    
+
           await fs.writeFile(filePath, toSaveFileInfo.fileBuffer);
         }
         break;
@@ -135,7 +192,7 @@ class UploadService {
           fileName = `${toSaveFileInfo.userId}.webp`;
           filePath = path.join(toSaveFileInfo.basePropicDir, fileName);
           finalMimeType = 'image/webp';
-          
+
           await sharp(toSaveFileInfo.fileBuffer)
             .webp({ quality: 82, effort: 4 })
             .toFile(filePath);
@@ -194,7 +251,7 @@ class UploadService {
     }
 
     const tag = 'MUSEUM';
-    
+
     let toSaveFileInfo = {
       prefix,
       suffix,
@@ -204,7 +261,7 @@ class UploadService {
       mimeType,
       tag
     };
-    
+
     const newFileInfo = await this.processAndSaveImage(toSaveFileInfo);
 
     const fileStats = await fs.stat(newFileInfo.filePath);

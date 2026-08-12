@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const ArtworkLocationSchema = require('./schemas/ArtworkLocationSchema');
 const ArtworkDimensionsSchema = require('./schemas/ArtworkDimensionsSchema');
 const ArtworkDetailsSchema = require('./schemas/ArtworkDetailsSchema');
+const ImageSchema = require('./schemas/ImageSchemas');
 
 const artworkSchema = new mongoose.Schema({
   title: {
@@ -30,8 +31,10 @@ const artworkSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  // CHECK TODO: da decidere copletamente la gestione delle immagini
-  images: [String],
+
+  assets: {
+    images: [ImageSchema]
+  },
 
   items: [{
     type: mongoose.Schema.Types.ObjectId,

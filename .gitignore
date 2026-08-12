@@ -15,7 +15,7 @@ yarn-debug.log*
 frontend/package-lock.json
 
 # --- Immagini Museum
-backend/assets
+# backend/assets
 
 # --- DOCKER ---
 # Ignora i dati persistenti dei volumi (se mappati in locale)

@@ -138,7 +138,7 @@ async function seed() {
 
     // 4. Insert Items
     console.log('[Seed] Inserting items...');
-    const VALID_ITEM_TONES = ['infantile', 'simple', 'medium', 'advanced', 'technical'];
+    const VALID_ITEM_TONES = ['infantile', 'simple', 'medium', 'technical'];
     const sanitizeSeedTone = (tone) => {
       if (!tone) return 'medium';
       const t = String(tone).toLowerCase();

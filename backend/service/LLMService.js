@@ -319,7 +319,7 @@ class LLMService {
       return { intent: 'SIMPLIFY_TONE', requestedTone: 'simple', confidence: 0.98 };
     }
     if (textLower.includes('dettagli') || textLower.includes('approfond') || textLower.includes('tecnic') || textLower.includes('esperti') || textLower.includes('scientific') || textLower.includes('studioso') || textLower.includes('diffic')) {
-      return { intent: 'ADVANCE_TONE', requestedTone: 'advanced', confidence: 0.95 };
+      return { intent: 'THECNICAL_THONE', requestedTone: 'thecnical', confidence: 0.95 };
     }
     if (textLower.includes('prossim') || textLower.includes('avanti') || textLower.includes('dopo') || textLower.includes('successiv')) {
       return { intent: 'NEXT_ITEM', confidence: 0.99 };
@@ -395,7 +395,7 @@ class LLMService {
     if (tone === 'infantile') {
       return `${prefix} Ciao! Guarda che bella quest'opera intitolata "${artworkTitle}"! È stata creata con colori vivaci per raccontarci una storia fantastica su persone e luoghi speciali del passato. Riesci a vedere tutti i dettagli nascosti?`;
     }
-    if (tone === 'advanced' || tone === 'technical' || tone === 'scientific' || tone === 'expert') {
+    if (tone === 'technical' || tone === 'scientific' || tone === 'expert') {
       return `${prefix} L'opera "${artworkTitle}" costituisce una testimonianza emblematica dell'evoluzione stilistica del periodo. La composizione formale, l'uso del chiaroscuro e la gestione della prospettiva spaziale rivelano un'intellettualizzazione rigorosa dei codici visivi contemporanei.`;
     }
     if (tone === 'simple') {

@@ -17,8 +17,8 @@ class MuseumService {
   }
 
   static async getVisitsByMuseumId(musId) {
-    const result = await Museum.findById(musId).select('visits').lean();
-    return result ? result.visits : [];
+      const result = (await Museum.findById(musId, 'visits').populate('visits').lean())?.visits;
+      return result ? result : [];
   }
 
   static async createMuseum(data) {
@@ -43,12 +43,13 @@ class MuseumService {
     return MuseumMapper.toMuseumVisitPlanResponseDTO(museum, imageUrls);
   }
 
-  static async getMuseumHomePresentationById(id) {
-    const museum = await Museum.findById(id).lean();
+  static async getMuseumHomePresentation() {
+    const museums = await Museum.find().lean();
 
-    const imageUrls = await ImageUrlService.getMuseumImageUrl(id);
-    
-    return MuseumMapper.toMuseumHomePresentationResponseDTO(museum, imageUrls);
+    //const imageUrls = await ImageUrlService.getMuseumImageUrl();
+    const imageUrl = "https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.vecteezy.com%2Ffree-photos%2Fplaceholder-gallery%3Fpage%3D2&opi=89978449";
+
+    return {museums, imageUrl};
   }
 }
 

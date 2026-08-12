@@ -42,19 +42,19 @@ export interface MuseumResponse {
     isActive: boolean,
 
     services: {
-        hasToilette: boolean, 
-        hasDisabledToilette: boolean, 
+        hasToilette: boolean,
+        hasDisabledToilette: boolean,
         hasElevator: boolean,
-        hasStairs: boolean, 
+        hasStairs: boolean,
         hasBar: boolean,
         hasRestaurant: boolean,
         hasShop: boolean,
         hasParking: boolean,
-        hasAudioGuide: boolean, 
-        hasAirConditioning: boolean, 
-        hasHeating: boolean, 
-        hasWifi: boolean, 
-        hasGuidedTours: boolean, 
+        hasAudioGuide: boolean,
+        hasAirConditioning: boolean,
+        hasHeating: boolean,
+        hasWifi: boolean,
+        hasGuidedTours: boolean,
         hasCloakroom: boolean
     },
 
@@ -128,19 +128,19 @@ export interface MuseumRequest {
     isActive: boolean,
 
     services: {
-        hasToilette: boolean, 
-        hasDisabledToilette: boolean, 
+        hasToilette: boolean,
+        hasDisabledToilette: boolean,
         hasElevator: boolean,
-        hasStairs: boolean, 
+        hasStairs: boolean,
         hasBar: boolean,
         hasRestaurant: boolean,
         hasShop: boolean,
         hasParking: boolean,
-        hasAudioGuide: boolean, 
-        hasAirConditioning: boolean, 
-        hasHeating: boolean, 
-        hasWifi: boolean, 
-        hasGuidedTours: boolean, 
+        hasAudioGuide: boolean,
+        hasAirConditioning: boolean,
+        hasHeating: boolean,
+        hasWifi: boolean,
+        hasGuidedTours: boolean,
         hasCloakroom: boolean
     },
 
@@ -190,12 +190,14 @@ export interface MuseumVisitPlanResponse {
         }[],
         discountCode: number
     },
-    imageUrls: string[] 
+    imageUrls: string[]
 }
 
 export interface MuseumHomePresentationResponse {
+    id: string,
     name: string,
     description: string,
     city: string,
-    imageUrls: string[]
+    imageUrls: string[],
+    disableFriendly: boolean,
 }

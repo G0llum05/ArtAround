@@ -43,10 +43,12 @@ class MuseumMapper {
     if (!museum) return null;
 
     return new MuseumHomePresentationResponseDTO(
+      museum._id,
       museum.name,
       museum.description,
       museum.address ? museum.address.city : null,
-      imageUrls
+      imageUrls,
+      museum.accessibility.disableFriendly
     )
   }
 

@@ -15,6 +15,7 @@ const visitSchema = new mongoose.Schema({
 
   price: {
     type: Number,
+    default: 0
   },
 
   license: {

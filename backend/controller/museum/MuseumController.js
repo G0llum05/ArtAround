@@ -1,4 +1,6 @@
 const MuseumService = require('../../service/MuseumService');
+const MuseumMapper = require('../../data/mapper/MuseumMapper');
+const VisitMapper = require('../../data/mapper/VisitMapper');
 
 class MuseumController {
   static async getAll(req, res) {
@@ -12,7 +14,7 @@ class MuseumController {
 
   static async getById(req, res) {
     try {
-      id = req.params.id;
+      const id = req.params.id;
       const museums = await MuseumService.getMuseumById(id);
       res.status(200).json(museums);
     } catch (e) {
@@ -29,10 +31,15 @@ class MuseumController {
     }
   }
 
-  static async getVisitsByMuseumId(req, res) {
+  static async getVisitsPresentationByMuseumId(req, res) {
     try {
-      const visits = await MuseumService.getVisitsByMuseumId(req.params.id || req.body.id);
-      res.status(200).json(visits);
+      const imageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000";
+      const visits = await MuseumService.getVisitsByMuseumId(req.params.id || req.body.id) || [];
+      const visitsPresentation = visits.map(
+          visit => VisitMapper.toSingleVisitHomePresentationRes(visit, [imageUrl], "")
+      );
+      console.log("DEUBUGGGGGG -> ",visits);
+      res.status(200).json(visitsPresentation);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -76,7 +83,7 @@ class MuseumController {
   static async getVisitPlan(req, res) {
     try {
       const id = req.params.id;
-      const museumVisitPlanDTO = MuseumService.getMuseumVisitPlanById(id);
+      const museumVisitPlanDTO = await MuseumService.getMuseumVisitPlanById(id);
       res.status(200).json(museumVisitPlanDTO);
     } catch (e) {
       res.status(500).json({ message: e.message});
@@ -85,13 +92,15 @@ class MuseumController {
 
   static async getHomePresentation(req, res) {
     try {
-      const id = req.params.id;
-      const museumHomePresentationDTO = MuseumService.getMuseumHomePresentationById(id);
-      res.status(200).json(museumHomePresentationDTO);
+      const {museums, imageUrl} = await MuseumService.getMuseumHomePresentation();
+      const response = museums.map(mus => {
+          return MuseumMapper.toMuseumHomePresentationResponseDTO(mus, [imageUrl]);
+      })
+      res.status(200).json(response);
     } catch (e) {
-      res.status(500).json({ message: e.message });
+        res.status(500).json({ message: e.message });
     }
-  } 
+  }
 }
 
 module.exports = MuseumController;

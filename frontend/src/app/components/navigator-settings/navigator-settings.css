@@ -1,0 +1,226 @@
+:host {
+  display: block;
+}
+
+/* --- OVERLAY SFONDO (Scurisce il Navigator dietro) --- */
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Su mobile parte dal basso */
+  /* Forza l'accelerazione hardware (GPU) */
+  will-change: transform, opacity;
+}
+
+/* --- PANNELLO IMPOSTAZIONI --- */
+.settings-panel {
+  width: 100%;
+  max-height: 95vh;
+  background-color: var(--background);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Su Desktop diventa un modale centrato */
+@media (min-width: 48rem) {
+  .settings-overlay {
+    align-items: center; /* Centra nello schermo */
+    padding: var(--spacing-xl);
+  }
+  .settings-panel {
+    max-width: 40rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    animation: popIn 0.2s ease-out;
+  }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* --- HEADER PANNELLO --- */
+.panel-header {
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-lg-size);
+  margin: 0 0 4px 0;
+  color: var(--on-surface);
+}
+.panel-subtitle {
+  font-size: var(--body-md-size);
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+.close-btn {
+  background-color: var(--surface-variant);
+  color: var(--on-surface);
+}
+.close-btn:hover {
+  background-color: var(--error);
+  color: #fff;
+}
+
+/* --- CONTENUTO (Scrollabile se serve) --- */
+.settings-content {
+  padding: var(--spacing-md) var(--spacing-lg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* --- CARDS --- */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+}
+.card-body {
+  padding: var(--spacing-md);
+}
+.card-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-md-size);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+.card-desc {
+  font-size: var(--body-md-size);
+  color: var(--on-surface-variant);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+/* --- SELECT CUSTOM (Lingua) --- */
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.custom-select {
+  width: 100%;
+  appearance: none;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  padding: var(--spacing-sm) var(--spacing-md);
+  outline: none;
+  cursor: pointer;
+}
+.custom-select:focus { border-color: var(--primary); }
+.select-icon {
+  position: absolute;
+  right: var(--spacing-md);
+  width: var(--spacing-lg);
+  height: var(--spacing-lg);
+  pointer-events: none;
+  fill: var(--on-surface-variant);
+}
+
+/* --- GRIGLIA RUOLI (Tono) --- */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+}
+.role-btn {
+  background-color: var(--background);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  padding: var(--spacing-md) var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.role-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  fill: currentColor;
+}
+.role-btn.active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+  font-weight: bold;
+}
+
+/* --- CHIPS (Durata) --- */
+.chips-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+.chip {
+  flex: 1;
+  background-color: var(--background);
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+.chip.active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+  font-weight: bold;
+}
+
+/* --- FOOTER (Pulsante Salva) --- */
+.panel-footer {
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--outline-variant);
+  display: flex;
+}
+.flex-fill { flex: 1; }
+.btn {
+  padding: 0.8rem 1.4rem;
+  border-radius: var(--radius-default);
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+  transition: opacity 0.2s;
+}
+.btn-primary { background-color: var(--primary); color: var(--on-primary); }
+.btn-primary:hover { opacity: 0.9; }
+.icon-btn { border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: var(--spacing-sm); border-radius: var(--radius-full); transition: all 0.2s; }
+.icon-md { width: 1.5rem; height: 1.5rem; fill: currentColor; }

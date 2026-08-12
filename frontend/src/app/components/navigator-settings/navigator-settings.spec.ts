@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VisitPreview } from './visit-preview';
+import { NavigatorSettings } from './navigator-settings';
 
-describe('VisitPreview', () => {
-  let component: VisitPreview;
-  let fixture: ComponentFixture<VisitPreview>;
+describe('NavigatorSettings', () => {
+  let component: NavigatorSettings;
+  let fixture: ComponentFixture<NavigatorSettings>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [VisitPreview],
+      imports: [NavigatorSettings],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(VisitPreview);
+    fixture = TestBed.createComponent(NavigatorSettings);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -2,7 +2,12 @@
   <!-- Immagine e Badge in alto a destra -->
   <div class="card-image-wrapper">
     <img [alt]="visit().title" [src]="visit().imageUrls[0]" class="card-img">
-    <app-badges-list [visit]="visit()"> </app-badges-list>
+    <app-badges-list
+      [disableFriendly] = "visit().disableFriendly"
+      [free] = "(visit().cost == 0)"
+      [verified]="visit().isVerified"
+    >
+    </app-badges-list>
   </div>
 
   <!-- Contenuto -->

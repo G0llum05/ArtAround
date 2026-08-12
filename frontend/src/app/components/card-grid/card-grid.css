@@ -24,21 +24,20 @@
 /* Regole di base (Smartphone): 2 colonne forzate */
 .results-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
   gap: var(--spacing-sm);
   align-items: stretch;
 }
 
 @media (min-width: 48rem) {
   .results-grid {
-    grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-md);
   }
 }
 
 @media (min-width: 64rem) {
   .results-grid {
-    grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
     gap: var(--spacing-md);
   }
 }

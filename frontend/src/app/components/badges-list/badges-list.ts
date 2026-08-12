@@ -8,5 +8,7 @@ import {VisitHomePresentationResponse} from '../../models/visit.model';
   styleUrl: './badges-list.css',
 })
 export class BadgesList{
-  visit = input.required<VisitHomePresentationResponse>();
+  disableFriendly = input<boolean>(false);
+  free = input<boolean>(false);
+  verified = input<boolean>(false);
 }

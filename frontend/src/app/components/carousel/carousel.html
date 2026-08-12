@@ -17,7 +17,11 @@
         @for (item of extendedItems(); track item.id || $index) {
           <div [style.background-image]="'url(' + item.imageUrls[0] + ')'" class="carousel-slide">
             <div class="carousel-overlay">
-              <app-badges-list [visit]="item"></app-badges-list>
+              <app-badges-list
+                [disableFriendly]="item.disableFriendly"
+                [free]="item.cost == 0"
+                [verified]="item.isVerified"
+              ></app-badges-list>
               <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
               <div class="slide-content">
                 <div class="badges-wrapper">
@@ -35,7 +39,7 @@
                 <h3 class="slide-title">{{ item.title }}</h3>
                 <p class="slide-desc">{{ item.description }}</p>
 
-                <button class="btn-primary" type="button">
+                <button class="btn-primary" type="button" (click)="learnMore(item.id)">
                   SCOPRI DI PIÙ
                   <svg class="btn-icon" fill="currentColor" height="20px" viewBox="0 -960 960 960"
                        width="20px" xmlns="http://www.w3.org/2000/svg">

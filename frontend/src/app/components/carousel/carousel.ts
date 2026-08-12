@@ -1,5 +1,6 @@
-import { Component, input, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, input, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router'
 import {VisitHomePresentationResponse} from '../../models/visit.model';
 import {BadgesList} from '../badges-list/badges-list';
 
@@ -20,6 +21,8 @@ export class Carousel implements OnInit, OnDestroy {
   private timer: any;
   private animationTimer: any;
 
+  private readonly router = inject(Router);
+
   // Lista virtuale con il primo elemento duplicato in fondo
   extendedItems = computed(() => {
     if (!this.items() || this.items().length === 0) return [];
@@ -37,6 +40,10 @@ export class Carousel implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stopAutoPlay();
     clearTimeout(this.animationTimer);
+  }
+
+  learnMore(visitId: string): void {
+    this.router.navigate(['/marketplace/marketplace.html/visit', visitId]);
   }
 
   startAutoPlay(): void {

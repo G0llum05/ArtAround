@@ -12,7 +12,6 @@
 .home-container {
   flex-grow: 1;
   width: 100%;
-  max-width: 80rem;
   margin: 0 auto;
   padding: var(--margin-mobile);
   display: flex;

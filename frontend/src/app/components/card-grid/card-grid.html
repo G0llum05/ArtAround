@@ -1,11 +1,11 @@
 <section class="results-section">
   <header class="results-header">
-    <h2 class="results-title">Esperienze disponibili</h2>
+    <h2 class="results-title"> Musei </h2>
     <p class="results-subtitle">
       @if (!isLoading()) {
-        Trovate <strong>{{ visits().length }}</strong> visite in base ai tuoi criteri
+        I musei con cui collaboriamo
       } @else {
-        Stiamo cercando le visite perfette per te...
+        Stiamo caricando i musei con cui collaboriamo
       }
     </p>
   </header>
@@ -13,7 +13,7 @@
   <div class="results-grid">
     <!-- SKELETON LOADER -->
     @if (isLoading()) {
-      @for (skeleton of [1, 2, 3, 4 ,5 ,6]; track skeleton) {
+      @for (skeleton of [1, 2, 3, 4, 5, 6]; track skeleton) {
         <div class="skeleton-card">
           <div class="skeleton skeleton-img"></div>
           <div class="skeleton-content">
@@ -23,13 +23,10 @@
           </div>
         </div>
       }
-    }
-    @else {
-      @for (visit of visits(); track visit.id) {
-        <app-visit-card [visit]="visit" > </app-visit-card>
-      }
+    } @else {
+      <ng-content></ng-content>
       <!-- EMPTY STATE -->
-      @if (visits().length === 0) {
+      @if (length() === 0) {
         <div class="empty-state">
           <p>Nessuna visita corrisponde ai tuoi filtri.</p>
         </div>

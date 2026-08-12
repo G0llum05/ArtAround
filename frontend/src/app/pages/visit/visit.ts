@@ -3,7 +3,7 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {delay, of} from 'rxjs';
-import {VisitResultsGrid} from '../../components/visit-results-grid/visit-results-grid';
+import {CardGrid} from '../../components/card-grid/card-grid';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; //per la disiscrizione dagli observable
 
 import {VisitService} from '../../services/visit.service';
@@ -12,11 +12,12 @@ import {MuseumService} from '../../services/museum.service';
 import {MuseumHomePresentationResponse, MuseumResponse} from '../../models/museum.model';
 import {InputFieldSearchText} from '../../components/input-field-search-text/input-field-search-text';
 import {VisitHomePresentationResponse, VisitResponse} from '../../models/visit.model';
+import {VisitCard} from '../../components/visit-card/visit-card';
 
 @Component({
   selector: 'app-visit-customization',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, VisitResultsGrid, InputFieldSearchText],
+  imports: [CommonModule, ReactiveFormsModule, CardGrid, InputFieldSearchText, VisitCard],
   templateUrl: './visit.html',
   styleUrl: './visit.css'
 })
@@ -147,7 +148,7 @@ export class Visit implements OnInit {
       .subscribe({
         next: (visits) => {
           this.allVisitsOfMuseum.set(visits);
-          console.log("Cosa mi manda il server?", visits);
+          console.log("Cosa mi manda il server?");
           this.isLoadingVisit.set(false);
         },
         error: (err) => {

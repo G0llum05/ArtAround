@@ -121,4 +121,13 @@
       [items]="recommendedExhibitions()">
     </app-carousel>
   </section>
+
+  <app-card-grid
+    [length]="allMuseums().length || 0"
+    [isLoading]="isLoadingMuseums()"
+  >
+    @for (museum of allMuseums(); track museum.id) {
+      <app-museum-card [museum]="museum" > </app-museum-card>
+    }
+  </app-card-grid>
 </main>

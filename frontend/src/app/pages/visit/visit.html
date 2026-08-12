@@ -133,8 +133,13 @@
   </form>
 
   <!-- RISULTATO DELLA RICERCA -->
-  <app-visit-results-grid
-    [visits]="allVisitsOfMuseum()"
+  <app-card-grid
+    [length]="allVisitsOfMuseum().length"
     [isLoading]="isLoadingVisit()"
-  ></app-visit-results-grid>
+  >
+    @for (visit of allVisitsOfMuseum(); track visit.id) {
+      <app-visit-card [visit]="visit" > </app-visit-card>
+    }
+
+  </app-card-grid>
 </main>

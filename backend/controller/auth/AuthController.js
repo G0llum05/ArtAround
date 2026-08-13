@@ -96,7 +96,7 @@ class AuthController {
       // mettiano nuovo token nel coockie
       setRefreshTokenCookie(res, result.refreshToken);
 
-      res.status(200).json(new AuthResponseDTO(result.user, result.accessToken));
+      res.status(200).json(AuthMapper.toLoginResponseDTO(result.user, result.accessToken, result.refreshToken));
     } catch (error) {
       clearRefreshTokenCookie(res);
       res.status(401).json({ message: error.message });

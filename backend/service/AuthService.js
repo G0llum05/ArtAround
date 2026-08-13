@@ -351,7 +351,7 @@ class AuthService {
     const newAccessToken = TokenService.generateAccessToken(user);
 
     return {
-      user: UserMapper.toUserResponseDTO(user),
+      user: user,
       accessToken: newAccessToken,
       refreshToken: newRefreshToken
     };

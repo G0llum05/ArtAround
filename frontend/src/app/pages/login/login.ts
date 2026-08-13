@@ -1,8 +1,8 @@
 import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule} from '@angular/forms';
-import {AuthService} from '../../services/auth.service';
-import {UserRequest} from '../../models/user.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { UserRequest } from '../../models/user.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; //per la disiscrizione dagli observable
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
@@ -17,7 +17,7 @@ export class Login {
   private destroyRef = inject(DestroyRef);
   readonly authService = inject(AuthService);
 
-  isLoginMode = signal<boolean>(false);
+  isLoginMode = signal<boolean>(true);
 
   authForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -49,30 +49,49 @@ export class Login {
   }
 
   onSubmit(): void {
-    if (this.authForm.valid) {
-      console.log(this.isLoginMode() ? 'Login data:' : 'Signup data:', this.authForm.value);
-
-      if (!this.isLoginMode()) {
-        this.authService.register(this.formDataToUserModel(this.authForm.value))
-          .pipe(
-            takeUntilDestroyed(this.destroyRef), //non necessario per le chiamate http ma per sicurezza aggiunto
-          )
-          .subscribe({
-          next: (data) => {
-            console.log(data);
+    // submit signup
+    console.log(this.isLoginMode() ? 'Login data:' : 'Signup data:', this.authForm.value);
+    if (this.authForm.valid && !this.isLoginMode()) {
+      this.authService.register(this.formDataToUserModel(this.authForm.value))
+        .pipe(
+          takeUntilDestroyed(this.destroyRef), //non necessario per le chiamate http ma per sicurezza aggiunto
+        )
+        .subscribe({
+          // TODO CHECK parte grafica
+          next: () => {
             this.authForm.markAllAsTouched()
+            console.log('Registration successful!');
           },
-          error: (err) => {
-            console.log(err);
+          error: (error) => {
+            console.error('Registration failed:', error);
           }
         });
-      }
-    } else {
-      this.authForm.markAllAsTouched();
+    } else if (this.authForm.get('email')?.valid && this.authForm.get('password')?.valid && this.isLoginMode()) { // submit login
+      this.authService.login({
+        email: this.authForm.get('email')?.value,
+        password: this.authForm.get('password')?.value
+      }).pipe(
+        takeUntilDestroyed(this.destroyRef), //non necessario per le chiamate http ma per sicurezza aggiunto
+      )
+        .subscribe({
+          next: (response) => {
+            console.log('Login successful!', response);
+          },
+          error: (error) => {
+            console.error('Login failed:', error);
+          }
+        });
     }
   }
 
   onLogout(): void {
-
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log('Logout successful!');
+      },
+      error: (error) => {
+        console.error('Logout failed:', error);
+      }
+    });
   }
 }

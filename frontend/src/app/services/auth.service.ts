@@ -14,19 +14,32 @@ export class AuthService {
   private readonly ACCESS_TOKEN_KEY = 'artaround_accessToken';
   private readonly http = inject(HttpClient);
 
-  private readonly _currentUser = signal<UserResponse | null>(null);
+  private readonly _currentUser = signal<AuthResponse | null>(null);
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly isLoggedIn = computed(() => this.currentUser() != null);
 
-  register(userData: UserRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, userData).pipe(
+  register(userData: UserRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/signup`, userData);
+  }
+
+  login(credentials: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
-        this._currentUser.set(response.user);
+        this._currentUser.set(response);
         localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
       })
     );
   }
+
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
+      tap(() => {
+        this._currentUser.set(null);
+        localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+      }));
+  }
+
 
 
 

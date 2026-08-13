@@ -41,7 +41,11 @@ export interface UserResponse {
 }
 
 export interface AuthResponse {
-  user: UserResponse;
+  userId: string;
+  name: string;
+  surname: string;
+  email: string;
+  role: 'guest' | 'student' | 'teacher' | 'museumstaff' | 'admin';
   accessToken: string;
   refreshToken: string;
 }

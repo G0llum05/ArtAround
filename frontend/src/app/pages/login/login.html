@@ -103,7 +103,7 @@
             Registrati
           </button>
         } @else {
-          <button [disabled]="!(authForm.get('email')?.valid && authForm.get('email')?.valid)" class="btn-submit" type="submit">
+          <button [disabled]="!(authForm.get('email')?.valid && authForm.get('password')?.valid)" class="btn-submit" type="submit">
             Accedi
           </button>
         }

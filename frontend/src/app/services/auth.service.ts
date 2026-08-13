@@ -16,9 +16,7 @@ export class AuthService {
 
 
   register(userData: UserRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, userData, { withCredentials: true }).pipe(
-      tap(response => this.handleAuthSuccess(response))
-    );
+    return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, userData)
   }
 
 
@@ -29,7 +27,7 @@ export class AuthService {
 
 
 
-
+  /*
   // --- Reactive Signals State ---
   readonly currentUser = signal<UserResponse | null>(null);
   readonly accessToken = signal<string | null>(localStorage.getItem(this.ACCESS_TOKEN_KEY));
@@ -66,9 +64,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Login Locale (Email & Password oppure LoginRequest).
-   */
   login(credentialsOrEmail: LoginRequest | string, password?: string): Observable<AuthResponse> {
     const payload: LoginRequest = typeof credentialsOrEmail === 'string'
       ? { email: credentialsOrEmail, password: password || '' }
@@ -79,13 +74,6 @@ export class AuthService {
     );
   }
 
-  /**
-   * Registrazione Locale.
-   */
-
-  /**
-   * Rinnovo trasparente del token tramite Cookie HttpOnly.
-   */
   refreshToken(): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe(
       tap(response => this.handleAuthSuccess(response)),
@@ -96,9 +84,6 @@ export class AuthService {
     );
   }
 
-  /**
-   * Logout dell'utente. Revoca la sessione lato server e cancella lo stato locale.
-   */
   logout(): void {
     this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
       catchError(() => of(null)) // Ignora eventuali errori di logout lato server
@@ -108,51 +93,33 @@ export class AuthService {
     });
   }
 
-  /**
-   * Carica le informazioni sanificate dell'utente attualmente autenticato.
-   */
   loadCurrentUser(): Observable<UserResponse> {
     return this.http.get<UserResponse>(`${this.apiUrl}/me`).pipe(
       tap(user => this.currentUser.set(user))
     );
   }
 
-  /**
-   * Aggiorna le preferenze dell'utente (es. lingua, notifiche, accessibilità).
-   */
   updatePreferences(preferences: Record<string, string>): Observable<{ message: string; user: UserResponse }> {
     return this.http.put<{ message: string; user: UserResponse }>(`${this.apiUrl}/preferences`, { preferences }).pipe(
       tap(res => this.currentUser.set(res.user))
     );
   }
 
-  /**
-   * Invia una richiesta di cambio ruolo (teacher / museumstaff).
-   */
   requestRoleUpgrade(requestedRole: 'teacher' | 'museumstaff'): Observable<any> {
     return this.http.post(`${this.apiUrl}/request-role`, { requestedRole }).pipe(
       tap(() => this.loadCurrentUser().subscribe())
     );
   }
 
-  /**
-   * Avvia il flusso di login con Google tramite reindirizzamento del browser.
-   */
   loginWithGoogle(): void {
     window.location.href = `${this.apiUrl}/google`;
   }
 
-  /**
-   * Verifica se l'utente possiede uno dei ruoli specificati.
-   */
   hasRole(...allowedRoles: string[]): boolean {
     const role = this.userRole();
     return allowedRoles.includes(role);
   }
 
-  /**
-   * Restituisce l'Access Token corrente.
-   */
   getAccessToken(): string | null {
     return this.accessToken();
   }
@@ -186,4 +153,5 @@ export class AuthService {
       (window as any).ShellStore.set('user', null);
     }
   }
+  */
 }

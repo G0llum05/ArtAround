@@ -129,10 +129,7 @@ export class Carousel implements OnInit, OnDestroy {
   }
 
   getImageUrl(item: VisitHomePresentationResponse): string {
-    if (item.assets.images && item.assets.images.length > 0) {
-      return item.assets.images[0].url;
-    }
-    // TODO CHECK
-    return '/assets/images/place_holder.jpg';
+    const place_holder = '/assets/images/place_holder.jpg\''
+    return item.assets.images.find(image => image.orientation=="landscape")?.url || place_holder;
   }
 }

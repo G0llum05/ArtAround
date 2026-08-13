@@ -20,4 +20,11 @@ export class MuseumCard {
   onCardClick(): void {
     this.router.navigate(['/marketplace/marketplace.html/museum', this.museum().id]);
   }
+
+  getImageUrl(): string {
+    const place_holder = '/assets/images/place_holder.jpg'
+    //return item.assets.images.find(image => image.orientation=="landscape")?.url || place_holder;
+    return place_holder;
+  }
+  //TODO sistemare assets
 }

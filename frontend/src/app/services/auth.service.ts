@@ -1,18 +1,34 @@
-/*
-
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { UserResponse, AuthResponse, LoginRequest, UserRequest } from '../models/user.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = '/api/auth';
+  private readonly apiUrl = `${environment.apiUrl}/auth`;
   private readonly ACCESS_TOKEN_KEY = 'artaround_accessToken';
+  private readonly http = inject(HttpClient);
+
+
+  register(userData: UserRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, userData, { withCredentials: true }).pipe(
+      tap(response => this.handleAuthSuccess(response))
+    );
+  }
+
+
+
+
+
+
+
+
+
 
   // --- Reactive Signals State ---
   readonly currentUser = signal<UserResponse | null>(null);
@@ -32,7 +48,6 @@ export class AuthService {
   });
 
   constructor(
-    private http: HttpClient,
     private router: Router
   ) {
     // Tenta di caricare il profilo o ripristinare la sessione tramite cookie all'avvio dell'app
@@ -50,6 +65,10 @@ export class AuthService {
       });
     }
   }
+
+  /**
+   * Login Locale (Email & Password oppure LoginRequest).
+   */
   login(credentialsOrEmail: LoginRequest | string, password?: string): Observable<AuthResponse> {
     const payload: LoginRequest = typeof credentialsOrEmail === 'string'
       ? { email: credentialsOrEmail, password: password || '' }
@@ -62,14 +81,11 @@ export class AuthService {
 
   /**
    * Registrazione Locale.
-  register(userData: UserRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, userData, { withCredentials: true }).pipe(
-      tap(response => this.handleAuthSuccess(response))
-    );
-  }
+   */
 
   /**
    * Rinnovo trasparente del token tramite Cookie HttpOnly.
+   */
   refreshToken(): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe(
       tap(response => this.handleAuthSuccess(response)),
@@ -82,6 +98,7 @@ export class AuthService {
 
   /**
    * Logout dell'utente. Revoca la sessione lato server e cancella lo stato locale.
+   */
   logout(): void {
     this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
       catchError(() => of(null)) // Ignora eventuali errori di logout lato server
@@ -93,6 +110,7 @@ export class AuthService {
 
   /**
    * Carica le informazioni sanificate dell'utente attualmente autenticato.
+   */
   loadCurrentUser(): Observable<UserResponse> {
     return this.http.get<UserResponse>(`${this.apiUrl}/me`).pipe(
       tap(user => this.currentUser.set(user))
@@ -101,6 +119,7 @@ export class AuthService {
 
   /**
    * Aggiorna le preferenze dell'utente (es. lingua, notifiche, accessibilità).
+   */
   updatePreferences(preferences: Record<string, string>): Observable<{ message: string; user: UserResponse }> {
     return this.http.put<{ message: string; user: UserResponse }>(`${this.apiUrl}/preferences`, { preferences }).pipe(
       tap(res => this.currentUser.set(res.user))
@@ -109,6 +128,7 @@ export class AuthService {
 
   /**
    * Invia una richiesta di cambio ruolo (teacher / museumstaff).
+   */
   requestRoleUpgrade(requestedRole: 'teacher' | 'museumstaff'): Observable<any> {
     return this.http.post(`${this.apiUrl}/request-role`, { requestedRole }).pipe(
       tap(() => this.loadCurrentUser().subscribe())
@@ -117,12 +137,14 @@ export class AuthService {
 
   /**
    * Avvia il flusso di login con Google tramite reindirizzamento del browser.
+   */
   loginWithGoogle(): void {
     window.location.href = `${this.apiUrl}/google`;
   }
 
   /**
    * Verifica se l'utente possiede uno dei ruoli specificati.
+   */
   hasRole(...allowedRoles: string[]): boolean {
     const role = this.userRole();
     return allowedRoles.includes(role);
@@ -130,6 +152,7 @@ export class AuthService {
 
   /**
    * Restituisce l'Access Token corrente.
+   */
   getAccessToken(): string | null {
     return this.accessToken();
   }
@@ -164,4 +187,3 @@ export class AuthService {
     }
   }
 }
-*/

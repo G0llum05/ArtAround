@@ -1,3 +1,20 @@
+.results-header {
+  margin-bottom: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.results-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-lg-size);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.results-subtitle {
+  font-size: var(--body-lg-size);
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
 .carousel-container {
   display: flex;
   flex-direction: column;
@@ -95,14 +112,19 @@
   letter-spacing: 1px;
 }
 
-.badge-nuovo {
-  background-color: var(--tertiary);
-  color: var(--on-secondary); /* Colore del testo a contrasto */
+.badge-alert {
+  background-color: var(--primary);
+  color: var(--on-primary);
 }
 
-.badge-alert {
+.badge-nuovo {
   background-color: var(--secondary);
   color: var(--on-secondary);
+}
+
+.badge-free{
+  background-color: var(--tertiary);
+  color: var(--on-secondary); /* Colore del testo a contrasto */
 }
 
 .slide-title {

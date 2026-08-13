@@ -3,14 +3,14 @@
   <!-- Sezione Benvenuto -->
   <section class="hero-section">
     <h1 class="hero-title">
-      @if (userName()) {
-        Bentornato, {{ userName() }}.
-      } @else {
-        Benvenuto
-      }
+      ArtAround
     </h1>
     <p class="hero-desc">
-      Pronto a scoprire qualcosa di nuovo? La tua visita personalizzata ti aspetta.
+      @if (userName()) {
+        Bentornato, <strong>{{ userName() }}</strong>, cosa vuoi fare oggi?
+      } @else {
+        Pronto a scoprire qualcosa di nuovo? La tua visita personalizzata ti aspetta.
+      }
     </p>
   </section>
 

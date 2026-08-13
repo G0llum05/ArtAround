@@ -19,20 +19,21 @@
   padding: var(--margin-mobile);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
   box-sizing: border-box;
+  margin-top: var(--spacing-md);
 }
 
 @media (min-width: 48rem) {
   .home-container {
-    padding: var(--spacing-xl) var(--margin-desktop);
+    padding: var(--spacing-lg) var(--margin-desktop);
   }
 }
 
 /* BENVENUTO */
 .hero-title {
   font-family: var(--font-serif);
-  font-size: var(--headline-lg-size);
+  font-size: var(--headline-xl-size);
   font-weight: var(--headline-lg-weight);
   margin: 0 0 var(--spacing-xs) 0;
 }

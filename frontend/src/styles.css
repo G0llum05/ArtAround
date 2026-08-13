@@ -30,6 +30,10 @@
   --font-sans: 'Alegreya Sans', sans-serif;
 
   /* Typography: Sizes (1rem = 16px) */
+  --headline-xl-size: 3rem;
+  --headline-xl-weight: 700;
+  --headline-xl-line: 3.5rem;
+
   --headline-lg-size: 2rem;
   --headline-lg-weight: 700;
   --headline-lg-line: 2.5rem;

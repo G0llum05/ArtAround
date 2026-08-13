@@ -147,9 +147,9 @@ class AuthService {
     }
 
     const isTokenExpired = existingUser.emailVerificationExpires && existingUser.emailVerificationExpires < Date.now();
-    // if (!isTokenExpired) {
-    //   throw new Error("L'indirizzo email è già registrato. Controlla la cartella spam o attendi la scadenza del link prima di richiederne uno nuovo.");
-    // }
+    if (!isTokenExpired) {
+      throw new Error("L'indirizzo email è già registrato. Controlla la cartella spam o attendi la scadenza del link prima di richiederne uno nuovo.");
+    }
 
     // token è scaduto o non è stato fatto ancora un tentativo
     const { token, expires } = this._generateVerificationToken();

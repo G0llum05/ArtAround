@@ -98,9 +98,15 @@
           </div>
         </div>
 
-        <button [disabled]="authForm.invalid" class="btn-submit" type="submit">
-          {{ isLoginMode() ? 'Accedi' : 'Registrati' }}
-        </button>
+        @if(!isLoginMode()){
+          <button [disabled]="authForm.invalid" class="btn-submit" type="submit">
+            Registrati
+          </button>
+        } @else {
+          <button [disabled]="!(authForm.get('email')?.valid && authForm.get('email')?.valid)" class="btn-submit" type="submit">
+            Accedi
+          </button>
+        }
 
         <footer class="auth-footer">
           {{ isLoginMode() ? 'Nuovo su ArtAround?' : 'Hai già un account?' }}

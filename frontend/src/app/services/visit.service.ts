@@ -4,16 +4,17 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { VisitResponse, VisitRequest, VisitHomePresentationResponse } from '../models/visit.model';
 import { MuseumHomePresentationResponse, MuseumResponse } from '../models/museum.model';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VisitService {
-  private readonly apiUrl: string = 'http://localhost:8000/api/visit/';
+  private readonly apiUrl: string = `${environment.apiUrl}/visit`;
   private readonly http = inject(HttpClient);
 
   getAll(): Observable<VisitResponse[]> {
-    return this.http.get<VisitResponse[]>(`${this.apiUrl}`);
+    return this.http.get<VisitResponse[]>(`${this.apiUrl}/`);
   }
 
   getMarketPlaceFeed(): Observable<VisitResponse[]> {
@@ -37,7 +38,7 @@ export class VisitService {
   }
 
   getHomePresentation(): Observable<VisitHomePresentationResponse[]> {
-    return this.http.get<VisitHomePresentationResponse[]>(`${this.apiUrl}homePresentation`).pipe(tap(data => console.log('Home Presentation Data:', data)));
+    return this.http.get<VisitHomePresentationResponse[]>(`${this.apiUrl}/homePresentation`);
   }
 
   create(visit: VisitRequest) {

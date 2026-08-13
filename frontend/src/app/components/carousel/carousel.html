@@ -1,4 +1,11 @@
 <div class="carousel-container">
+  <header class="results-header">
+    <h2 class="results-title"> Visite </h2>
+    <p class="results-subtitle">
+      Le più viste e amate
+    </p>
+  </header>
+
   <div class="carousel-wrapper">
 
     <!-- Freccia Sinistra -->
@@ -19,7 +26,6 @@
             <div class="carousel-overlay">
               <app-badges-list
                 [disableFriendly]="item.disableFriendly || false"
-                [free]="item.price === 0"
                 [verified]="item.isVerified || false"
               ></app-badges-list>
               <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
@@ -32,14 +38,19 @@
                   }
                   @if (item.isNew) {
                     <span class="badge badge-nuovo">
-                      Nuovo
+                      New
+                    </span>
+                  }
+                  @if (item.price < 20) {
+                    <span class="badge badge-free">
+                      Free
                     </span>
                   }
                 </div>
                 <h3 class="slide-title">{{ item.title }}</h3>
                 <p class="slide-desc">{{ item.description }}</p>
 
-                <button class="btn-primary" type="button" (click)="learnMore(item.id)">
+                <button (click)="learnMore(item.id)" class="btn-primary" type="button">
                   SCOPRI DI PIÙ
                   <svg class="btn-icon" fill="currentColor" height="20px" viewBox="0 -960 960 960"
                        width="20px" xmlns="http://www.w3.org/2000/svg">

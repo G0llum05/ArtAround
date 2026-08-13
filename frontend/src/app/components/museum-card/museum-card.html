@@ -2,7 +2,7 @@
 
   <!-- Immagine -->
   <div class="card-image-wrapper">
-    <img [alt]="museum().name" [src]="museum().imageUrls[0]" class="card-img">
+    <img [alt]="museum().name" [src]="getImageUrl()" class="card-img">
     <app-badges-list
       [disableFriendly]="museum().disableFriendly"
     ></app-badges-list>

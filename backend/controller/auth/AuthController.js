@@ -24,7 +24,7 @@ class AuthController {
       }
 
 
-      const message = await authService.signupLocalUser(signupDTO, clientIp);
+      const message = await authService.signup(signupDTO);
 
       res.status(201).json({ message: message });
     } catch (error) {

@@ -1,92 +1,140 @@
 <div class="auth-wrapper">
   <main class="auth-card">
 
-    <!-- Selettore Modalità -->
-    <div class="auth-toggle">
-      <button type="button" class="toggle-btn" [class.active]="isLoginMode()" (click)="toggleMode(true)">
-        Accedi
+    @if (authService.isLoggedIn()) {
+      <!-- SEZIONE UTENTE LOGGATO -->
+      <header class="auth-header">
+        <h1 class="auth-title">Account Attivo</h1>
+        <p class="auth-subtitle">Sei attualmente connesso con il seguente profilo:</p>
+      </header>
+
+      <div class="user-info-box">
+        <div class="info-row">
+          <strong>Nome e Cognome:</strong>
+          <span>{{ authService.currentUser()?.name }} {{ authService.currentUser()?.surname }}</span>
+        </div>
+        <div class="info-row">
+          <strong>Email:</strong>
+          <span>{{ authService.currentUser()?.email || 'Non disponibile' }}</span>
+        </div>
+        <div class="info-row">
+          <strong>Role:</strong>
+          <span>{{ authService.currentUser()?.role || 'Non disponibile' }}</span>
+        </div>
+      </div>
+
+      <button (click)="onLogout()" class="btn-submit btn-logout" type="button">
+        Effettua il Logout
       </button>
-      <button type="button" class="toggle-btn" [class.active]="!isLoginMode()" (click)="toggleMode(false)">
-        Registrati
-      </button>
-    </div>
 
-    <header class="auth-header">
-      <h1 class="auth-title">{{ isLoginMode() ? 'Bentornato' : 'Benvenuto' }}</h1>
-      <p class="auth-subtitle">
-        {{ isLoginMode() ? 'Accedi per continuare il tuo viaggio artistico.' : 'Iscriviti per iniziare il tuo viaggio artistico.' }}
-      </p>
-    </header>
+    } @else {
+      <!-- SEZIONE LOGIN / REGISTRAZIONE CLASSICA -->
+        <!-- Selettore Modalità -->
+      <div class="auth-toggle">
+        <button (click)="toggleMode(true)" [class.active]="isLoginMode()" class="toggle-btn" type="button">
+          Accedi
+        </button>
+        <button (click)="toggleMode(false)" [class.active]="!isLoginMode()" class="toggle-btn" type="button">
+          Registrati
+        </button>
+      </div>
 
-    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <header class="auth-header">
+        <h1 class="auth-title">{{ isLoginMode() ? 'Bentornato' : 'Benvenuto' }}</h1>
+        <p class="auth-subtitle">
+          {{ isLoginMode() ? 'Accedi per continuare il tuo viaggio artistico.' : 'Iscriviti per iniziare il tuo viaggio artistico.' }}
+        </p>
+      </header>
 
-      <!-- Campo Nome (Solo Registrazione) -->
-      @if (!isLoginMode()) {
+      <form (ngSubmit)="onSubmit()" [formGroup]="authForm" class="auth-form">
+        <!-- Campo Nome e Cognome (Solo Registrazione) -->
+        @if (!isLoginMode()) {
+          <div class="form-group">
+            <label class="form-label" for="name">Nome</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
+              </svg>
+              <input class="form-input" formControlName="name" id="name" placeholder="Nome" type="text">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="surname">Cognome</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
+              </svg>
+              <input class="form-input" formControlName="surname" id="surname" placeholder="Cognome" type="text">
+            </div>
+          </div>
+        }
+
         <div class="form-group">
-          <label for="name" class="form-label">Name</label>
+          <label class="form-label" for="email">Email</label>
           <div class="input-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-              <path d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
+            <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/>
             </svg>
-            <input type="text" id="name" formControlName="name" class="form-input" placeholder="Nome">
-          </div>
-          <div class="input-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-              <path d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
-            </svg>
-            <input type="text" id="name" formControlName="surname" class="form-input" placeholder="Cognome">
+            <input class="form-input" formControlName="email" id="email" placeholder="you@example.com" type="email">
           </div>
         </div>
-      }
 
-      <div class="form-group">
-        <label for="email" class="form-label">Email</label>
-        <div class="input-wrapper">
-          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-            <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/>
-          </svg>
-          <input type="email" id="email" formControlName="email" class="form-input" placeholder="you@example.com">
+        <div class="form-group">
+          <div class="label-row">
+            <label class="form-label" for="password">Password</label>
+            @if (isLoginMode()) {
+              <a class="forgot-link" href="/TODO()">Forgot Password?</a>
+            }
+          </div>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M223.5-423.5Q200-447 200-480t23.5-56.5Q247-560 280-560t56.5 23.5Q360-513 360-480t-23.5 56.5Q313-400 280-400t-56.5-23.5ZM280-240q-100 0-170-70T40-480q0-100 70-170t170-70q67 0 121.5 33t86.5 87h352l120 120-180 180-80-60-80 60-85-60h-47q-32 54-86.5 87T280-240Zm0-80q56 0 98.5-34t56.5-86h125l58 41 82-61 71 55 75-75-40-40H435q-14-52-56.5-86T280-640q-66 0-113 47t-47 113q0 66 47 113t113 47Z"/>
+            </svg>
+            <input class="form-input" formControlName="password" id="password" placeholder="••••••••" type="password">
+          </div>
         </div>
+
+        <button [disabled]="authForm.invalid" class="btn-submit" type="submit">
+          {{ isLoginMode() ? 'Accedi' : 'Registrati' }}
+        </button>
+
+        <footer class="auth-footer">
+          {{ isLoginMode() ? 'Nuovo su ArtAround?' : 'Hai già un account?' }}
+          <a (click)="toggleMode(!isLoginMode())" class="signup-link">
+            {{ isLoginMode() ? 'Registrati' : 'Accedi' }}
+          </a>
+        </footer>
+      </form>
+
+      <div class="divider">
+        <span>continua con</span>
       </div>
 
-      <div class="form-group">
-        <div class="label-row">
-          <label for="password" class="form-label">Password</label>
-          @if (isLoginMode()) {
-            <a href="/TODO()" class="forgot-link">Forgot Password?</a>
-          }
-        </div>
-        <div class="input-wrapper">
-          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-            <path d="M223.5-423.5Q200-447 200-480t23.5-56.5Q247-560 280-560t56.5 23.5Q360-513 360-480t-23.5 56.5Q313-400 280-400t-56.5-23.5ZM280-240q-100 0-170-70T40-480q0-100 70-170t170-70q67 0 121.5 33t86.5 87h352l120 120-180 180-80-60-80 60-85-60h-47q-32 54-86.5 87T280-240Zm0-80q56 0 98.5-34t56.5-86h125l58 41 82-61 71 55 75-75-40-40H435q-14-52-56.5-86T280-640q-66 0-113 47t-47 113q0 66 47 113t113 47Z"/>
+      <div class="social-grid">
+        <button class="btn-social" type="button">
+          <svg class="social-icon" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4"/>
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853"/>
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05"/>
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335"/>
+            <path d="M1 1h22v22H1z" fill="none"/>
           </svg>
-          <!-- CORRETTO: placeholder chiuso correttamente -->
-          <input type="password" id="password" formControlName="password" class="form-input" placeholder="••••••••">
-        </div>
+          Google
+        </button>
       </div>
-
-      <button type="submit" class="btn-submit" [disabled]="authForm.invalid">
-        {{ isLoginMode() ? 'Accedi' : 'Registrati' }}
-      </button>
-
-      <footer class="auth-footer">
-        {{ isLoginMode() ? 'Nuovo su ArtAround?' : 'Hai già un account?' }}
-        <a class="signup-link" (click)="toggleMode(!isLoginMode())" style="cursor: pointer;">
-          {{ isLoginMode() ? 'Registrati' : 'Accedi' }}
-        </a>
-      </footer>
-    </form>
-
-    <div class="divider">
-      <span>continua con</span>
-    </div>
-
-    <div class="social-grid">
-      <button type="button" class="btn-social">
-        <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/><path d="M1 1h22v22H1z" fill="none"/></svg>
-        Google
-      </button>
-    </div>
+    }
 
   </main>
 </div>

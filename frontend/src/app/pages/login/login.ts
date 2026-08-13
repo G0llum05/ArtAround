@@ -1,6 +1,6 @@
 import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {UserRequest} from '../../models/user.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; //per la disiscrizione dagli observable
@@ -8,16 +8,16 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
-  private readonly authService: AuthService = inject(AuthService);
+  readonly authService = inject(AuthService);
 
-  isLoginMode = signal<boolean>(true);
+  isLoginMode = signal<boolean>(false);
 
   authForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -70,5 +70,9 @@ export class Login {
     } else {
       this.authForm.markAllAsTouched();
     }
+  }
+
+  onLogout(): void {
+
   }
 }

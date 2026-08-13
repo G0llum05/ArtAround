@@ -3,7 +3,7 @@
 }
 
 .auth-wrapper {
-  min-height: 100vh;
+  min-height: 92vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,10 +79,47 @@
   margin: 0;
 }
 
+/* --- SEZIONE UTENTE LOGGATO --- */
+.user-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  background-color: var(--surface-variant);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-default);
+  border: 0.0625rem solid var(--outline-variant);
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  color: var(--on-surface);
+}
+
+.info-row strong {
+  font-size: var(--label-md-size);
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-logout {
+  background-color: var(--primary);
+  color: var(--on-primary, #ffffff);
+}
+
+.btn-logout:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+/* --- FORM E INPUT --- */
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-sm);
 }
 
 .form-group {
@@ -106,7 +143,7 @@
 
 .forgot-link {
   font-family: var(--font-sans);
-  font-size: var(--body-sm-size);
+  font-size: var(--body-md-size);
   font-weight: bold;
   color: var(--primary);
   text-decoration: none;
@@ -166,6 +203,7 @@
   cursor: pointer;
   transition: opacity 0.2s, transform 0.1s;
   margin-top: var(--spacing-xs);
+  width: 100%;
 }
 
 .btn-submit:hover:not(:disabled) {
@@ -181,6 +219,7 @@
   cursor: not-allowed;
 }
 
+/* --- SOCIAL & DIVIDER --- */
 .divider {
   display: flex;
   align-items: center;
@@ -188,12 +227,11 @@
   margin: var(--spacing-xl) 0;
   color: var(--on-surface-variant);
   font-family: var(--font-sans);
-  font-size: var(--body-sm-size);
+  font-size: var(--body-md-size);
   font-weight: bold;
 }
 
-.divider::before,
-.divider::after {
+.divider::before, .divider::after {
   content: '';
   flex: 1;
   border-bottom: 0.0625rem solid var(--outline-variant);

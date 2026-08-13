@@ -14,6 +14,10 @@ export class AuthService {
   private readonly ACCESS_TOKEN_KEY = 'artaround_accessToken';
   private readonly http = inject(HttpClient);
 
+  private readonly _currentUser = signal<UserResponse | null>(null);
+
+  readonly currentUser = this._currentUser.asReadonly();
+  readonly isLoggedIn = computed(() => this.currentUser() != null);
 
   register(userData: UserRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, userData)

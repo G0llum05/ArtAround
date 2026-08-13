@@ -1,10 +1,12 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError, of, timer, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators'
 import { tap, catchError } from 'rxjs/operators';
 import { UserResponse, AuthResponse, LoginRequest, UserRequest } from '../models/user.model';
 import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
@@ -40,10 +42,30 @@ export class AuthService {
       }));
   }
 
+  // Matti di seguito ti metto del codice che puoi eliminare ma che ti potrebbe servire per gestire le sessioni
+  // un polling ("interrogazione ciclica") ti permette di fare con observables in modo figo quello che in js faresti con setIntervalTimer
+  // Lo puoi far partire in seguito a un evento e rimane attivo fin che non lo termini (unsubscribe) o fino alla fine dell'applicazione
+ // La funzione che ti ho messo restituisce un observables che va usato come vedi nella prima riga
 
+  private pollingSubscription: Subscription = this.startPolling().subscribe()
 
+  startPolling(intervalMs: number = 5000): Observable<any> {
+    // timer(0, intervalMs) emette subito (dopo 0ms) e poi ogni intervalMs millisecondi
+    return timer(0, intervalMs).pipe(
+      // switchMap intercetta ogni "tick" del timer e lancia la chiamata HTTP,
+      // annullando la precedente se non ha ancora risposto (evita sovrapposizioni)
+      switchMap(() => this.http.get("test"))
+    );
+  }
 
-
+  //Andrebbe terminato così ma essendo un componente provided in root non è necessario
+  /*
+  ngOnDestroy(): void {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
+  }
+   */
 
 
 

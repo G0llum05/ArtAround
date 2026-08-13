@@ -11,6 +11,7 @@ import { finalize } from 'rxjs'
 import { CardGrid } from '../../components/card-grid/card-grid';
 import { MuseumCard } from '../../components/museum-card/museum-card';
 import {MuseumHomePresentationResponse} from '../../models/museum.model';
+import {AuthService} from '../../services/auth.service';
 
 interface ArtworkPlaceholder {
   id: string;
@@ -29,6 +30,8 @@ interface ArtworkPlaceholder {
   styleUrl: './home.css'
 })
 export class Home {
+  authService = inject(AuthService);
+
   userName = signal<string>('John Doe');
 
   activeVisit = signal<ArtworkPlaceholder>({

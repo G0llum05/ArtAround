@@ -1,3 +1,5 @@
+// TODO CHECK: STATO VISITE AVVIATE
+
 const mongoose = require('mongoose');
 const ImageSchema = require('./schemas/ImageSchemas');
 

@@ -210,9 +210,10 @@ class AuthService {
 
     let token = null;
     let expires = null;
-    if (newLocalUser) {
-      ({ token, expires } = this._generateVerificationToken());
-    }
+    // Per il momento non verifico l'email, quindi non genero il token di verifica
+    // if (newLocalUser) {
+    // ({ token, expires } = this._generateVerificationToken());
+    // }
 
     const newUser = new User({
       name: name,
@@ -220,7 +221,9 @@ class AuthService {
       email: email,
       password: hashedPassword,
       googleId: googleId || null,
-      isEmailVerified: false,
+      // Per il momento non verifico l'email 
+      // isEmailVerified: false,
+      isEmailVerified: true,
       emailVerificationToken: token,
       emailVerificationExpires: expires,
       nOfEmailVerificationAttempts: 0,

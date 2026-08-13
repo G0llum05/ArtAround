@@ -20,7 +20,12 @@ export class AuthService {
   readonly isLoggedIn = computed(() => this.currentUser() != null);
 
   register(userData: UserRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, userData)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, userData).pipe(
+      tap(response => {
+        this._currentUser.set(response.user);
+        localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
+      })
+    );
   }
 
 

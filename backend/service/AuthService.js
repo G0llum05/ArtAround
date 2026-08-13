@@ -147,9 +147,9 @@ class AuthService {
     }
 
     const isTokenExpired = existingUser.emailVerificationExpires && existingUser.emailVerificationExpires < Date.now();
-    if (!isTokenExpired) {
-      throw new Error("L'indirizzo email è già registrato. Controlla la cartella spam o attendi la scadenza del link prima di richiederne uno nuovo.");
-    }
+    // if (!isTokenExpired) {
+    //   throw new Error("L'indirizzo email è già registrato. Controlla la cartella spam o attendi la scadenza del link prima di richiederne uno nuovo.");
+    // }
 
     // token è scaduto o non è stato fatto ancora un tentativo
     const { token, expires } = this._generateVerificationToken();
@@ -219,7 +219,7 @@ class AuthService {
       surname: surname,
       email: email,
       password: hashedPassword,
-      googleId: googleId,
+      googleId: googleId || null,
       isEmailVerified: false,
       emailVerificationToken: token,
       emailVerificationExpires: expires,
@@ -267,7 +267,7 @@ class AuthService {
   async _sendVerificationEmail(user, token) {
     const resend = new Resend(process.env.RESEND_API_KEY);
     // link di conferma
-    const verifyUrl = `${process.env.ALLOWED_ORIGINS}/api/auth/verifyEmail?token=${token}`;
+    const verifyUrl = `${process.env.BACKEND_URL}/api/auth/verifyEmail?token=${token}`;
 
     try {
       const data = await resend.emails.send({

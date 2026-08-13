@@ -30,6 +30,9 @@ async function connectDB() {
   try {
     await mongoose.connect(uri);
     console.log('[MongoDB] Successfully connected.');
+    const User = require('../data/model/User');
+    await User.updateMany({ googleId: null }, { $unset: { googleId: "" } }).catch(() => {});
+    await User.syncIndexes().catch(err => console.warn('[MongoDB] User syncIndexes notice:', err.message));
   } catch (err) {
     console.error('[MongoDB] Connection error:', err.message, '- Retrying in 5s...');
     await new Promise(resolve => setTimeout(resolve, 5000));

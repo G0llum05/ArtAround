@@ -13,15 +13,12 @@ function setupMiddlewares(app) {
   app.use(helmet({ contentSecurityPolicy: false }));
 
   // CORS
-  const defaultOrigins = [
+  const allowedOrigins = [
     'http://localhost:4200',
     'http://localhost:8000',
     'https://site252623.tw.cs.unibo.it',
     'http://site252623.tw.cs.unibo.it'
   ];
-  const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : defaultOrigins;
 
   app.use(cors({
     origin: (origin, callback) => {

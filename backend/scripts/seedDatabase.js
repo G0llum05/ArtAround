@@ -87,9 +87,6 @@ async function seed() {
 
     // 1. Clear existing dataset
     console.log('[Seed] Cleaning old collection data...');
-    if (seedData.users.length > 0) {
-      await User.deleteMany({ email: { $in: seedData.users.map(u => u.email) } });
-    }
     await Item.deleteMany({});
     await Artist.deleteMany({});
     await Artwork.deleteMany({});
@@ -102,24 +99,6 @@ async function seed() {
     const itemMap = {};
     const artworkMap = {};
     const visitMap = {};
-
-    // 2. Insert Users
-    console.log('[Seed] Inserting users...');
-    for (const userData of seedData.users) {
-      if (userMap[userData.key]) continue; // avoid duplicates if key re-used
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
-      const user = new User({
-        name: userData.name,
-        surname: userData.surname,
-        email: userData.email,
-        password: hashedPassword,
-        role: userData.role,
-        roleStatus: userData.roleStatus || 'approved'
-      });
-      const savedUser = await user.save();
-      userMap[userData.key] = savedUser._id;
-    }
-    console.log(`[Seed] Inserted ${Object.keys(userMap).length} user(s).`);
 
     // 3. Insert Artists
     console.log('[Seed] Inserting artists...');

@@ -5,6 +5,7 @@ import { Visit } from './pages/visit/visit';
 import { Contacts } from './pages/contacts/contacts';
 import { Login } from './pages/login/login';
 import { Navigator } from './pages/navigator/navigator';
+import {Marketplace} from './pages/marketplace/marketplace';
 
 export const routes: Routes = [
   {
@@ -14,6 +15,10 @@ export const routes: Routes = [
   {
     path: 'visit',
     component: Visit
+  },
+  {
+    path: 'marketplace',
+    component: Marketplace
   },
   {
     path: 'contacts',

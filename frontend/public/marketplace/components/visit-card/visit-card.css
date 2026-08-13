@@ -1,0 +1,162 @@
+/* File: public/css/mkt-visit-card.css */
+
+.mkt-visit-card {
+  flex: 0 0 260px;
+  background-color: var(--background);
+  border: 1px solid var(--on-surface);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  cursor: pointer;
+}
+
+.mkt-visit-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: var(--on-surface);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.mkt-card-thumb {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+}
+
+.mkt-card-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0, 0, 0, 0.95) 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.6rem;
+  box-sizing: border-box;
+}
+
+.mkt-card-views-badge {
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #c9d1d9;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mkt-card-like-btn {
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #8b949e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mkt-card-like-btn:hover {
+  transform: scale(1.15);
+  color: var(--primary);
+}
+
+.mkt-card-like-btn.liked {
+  color: var(--primary);
+}
+
+.mkt-views-badge {
+  background: rgba(22, 27, 34, 0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--tertiary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mkt-card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.mkt-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.3;
+  color: #f0f6fc;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mkt-card-creator {
+  font-size: 0.8rem;
+  color: var(--secondary);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.mkt-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mkt-card-price {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--tertiary);
+}
+
+.mkt-card-price.free {
+  color: #e3b341;
+}
+
+.mkt-card-license {
+  font-size: 0.75rem;
+  color: #8b949e;
+  background: #21262d;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Icona per il Like (se presente nei caroselli o card estese)[cite: 10] */
+.mkt-heart-icon {
+  font-size: 1.2rem;
+  color: #8b949e;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.mkt-like-btn.liked .mkt-heart-icon {
+  color: var(--primary);
+}

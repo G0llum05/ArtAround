@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+div {
+  width: 100%;
+  max-width: 100rem;
+  padding: var(--margin-mobile);
+  margin: var(--spacing-md) auto 0;
+  box-sizing: border-box;
+}
+
+mkt-shell {
+  background-color: var(--background);
+  color: var(--on-surface);
+  display: block;
+  width: 100%;
+}
+
+@media (min-width: 48rem) {
+  div {
+    padding: var(--spacing-lg) var(--margin-desktop);
+  }
+}

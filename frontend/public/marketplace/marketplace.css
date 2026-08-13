@@ -1,32 +1,61 @@
-/* Footer */
-.simple-footer {
+/* File: public/css/mkt-shell.css */
+
+/* Wrapper Principale[cite: 10] */
+.mkt-wrapper {
+  background-color: var(--background);
+  color: var(--on-surface);
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Header Bar[cite: 10] */
+.mkt-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-lg) var(--margin-mobile);
-  background-color: var(--surface);
-  border-top: 1px solid var(--outline-variant);
-  text-align: center;
-  font-family: var(--font-sans);
-  font-size: var(--body-md-size);
-  color: var(--on-surface-variant);
-  width: 100%;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--on-surface);
 }
 
-.footer-nav {
-  display: flex;
-  gap: var(--spacing-md);
-}
-
-.footer-nav a {
-  color: var(--on-surface-variant);
-  text-decoration: none;
-  font-size: var(--label-md-size);
-  transition: color 0.2s ease;
-}
-
-.footer-nav a:hover {
+.mkt-link {
   color: var(--primary);
+  cursor: pointer;
+}
+
+.mkt-link:hover {
+  text-decoration: underline;
+}
+
+.mkt-main-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0;
+  color: var(--on-surface);
+}
+
+.mkt-header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.mkt-search-input {
+  background: var(--secondary);
+  border: 1px solid var(--on-surface);
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 220px;
+}
+
+.mkt-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+  width: 280px;
 }

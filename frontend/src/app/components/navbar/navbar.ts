@@ -29,7 +29,7 @@ export class Navbar {
   navItems: Entry[] = [
     { name: 'Home', path: '/'},
     { name: 'Visite', path: '/visit'},
-    { name: 'Marketplace', path: '/marketplace/marketplace.html'},
+    { name: 'Marketplace', path: '/marketplace'},
     { name: 'Contatti', path: '/contacts'},
     { name: 'Navigator', path: '/navigator'},
   ];

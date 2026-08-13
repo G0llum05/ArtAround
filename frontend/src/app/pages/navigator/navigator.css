@@ -71,9 +71,7 @@
   margin: 0 0 var(--spacing-md) 0;
 }
 
-/* =========================================
-   LA GRIGLIA MOBILE (Singola Colonna)
-   ========================================= */
+/* LA GRIGLIA MOBILE (Singola Colonna) */
 .navigator-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -81,8 +79,8 @@
 
   grid-template-areas:
     "media"
-    "chat"
     "actions"
+    "chat"
     "itinerary";
 }
 
@@ -90,6 +88,23 @@
 .area-chat { grid-area: chat; }
 .area-actions { grid-area: actions; }
 .area-itinerary { grid-area: itinerary; }
+
+.area-chat {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+
+}
+
+.area-chat .card-body {
+   height: 100%;
+   display: flex;
+   flex-direction: column;
+   flex-grow: 1;
+   overflow: hidden;
+   padding: var(--spacing-md);
+ }
 
 /* --- Setup Media (Immagine) Mobile --- */
 .artwork-img-wrap {
@@ -129,7 +144,7 @@
   right: var(--spacing-md);
   z-index: 10;
   background-color: var(--surface);
-  border: 1px solid var(--outline-variant);
+  border: 1px solid var(--tertiary);
   color: var(--on-surface);
   border-radius: var(--radius-default);
   padding: var(--spacing-xs) var(--spacing-sm);
@@ -137,8 +152,8 @@
 }
 
 .floating-cc.active {
-  background-color: var(--secondary);
-  border-color: var(--secondary);
+  background-color: var(--tertiary);
+  border-color: var(--tertiary);
   color: var(--on-secondary);
 }
 
@@ -411,6 +426,14 @@
 .icon-md {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+.floating-cc .icon-md{
+  color: var(--on-surface);
+}
+
+.floating-cc.active .icon-md{
+  color: var(--on-secondary)
 }
 
 .icon-lg {

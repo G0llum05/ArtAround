@@ -43,7 +43,11 @@ class GoogleProfileDTO {
 
 class LoginResponseDTO {
   constructor(user, accessToken, refreshToken) {
-    this.user = user;
+    this.userId = user._id;
+    this.name = user.name;
+    this.surname = user.surname;
+    this.email = user.email;
+    this.role = user.role;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
   }

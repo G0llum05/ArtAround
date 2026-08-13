@@ -56,13 +56,15 @@ class AuthController {
    */
   async login(req, res) {
     try {
-      loginDTO = AuthMapper.toLoginRequestDTO(req.body, req.ip || req.connection.remoteAddress);
+      const loginDTO = AuthMapper.toLoginRequestDTO(req.body, req.ip || req.connection.remoteAddress);
 
       if (!loginDTO.email || !loginDTO.password) {
         return res.status(400).json({ message: 'Email e password obbligatorie.' });
       }
 
-      const result = await authService.loginLocalUser(loginDTO);
+      const result = await authService.loginLocalUser(loginDTO.email, loginDTO.password, loginDTO.ip);
+
+      console.log('Login result:', result);
 
       // mettiamo il refresh token nel cookie 
       setRefreshTokenCookie(res, result.refreshToken);

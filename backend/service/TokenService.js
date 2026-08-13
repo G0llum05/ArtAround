@@ -41,9 +41,13 @@ class TokenService {
     const randomToken = crypto.randomBytes(40).toString('hex');
     const expiresAt = new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000);
 
-    const refreshToken = MapperRefreshToken.toRefreshTokenModel(randomToken, user._id, ipAddress, expiresAt);
+    const refreshToken = MapperRefreshToken.toNewRefreshTokenDTO(randomToken, user._id, expiresAt, ipAddress);
 
-    await refreshToken.save();
+    // salva il refresh token nel database
+    await RefreshToken.create(
+      refreshToken
+    );
+
     return randomToken;
   }
 

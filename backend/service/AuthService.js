@@ -220,7 +220,7 @@ class AuthService {
       surname: surname,
       email: email,
       password: hashedPassword,
-      googleId: googleId || null,
+      googleId: googleId || undefined,
       // Per il momento non verifico l'email 
       // isEmailVerified: false,
       isEmailVerified: true,

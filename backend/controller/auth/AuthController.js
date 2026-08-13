@@ -64,8 +64,6 @@ class AuthController {
 
       const result = await authService.loginLocalUser(loginDTO.email, loginDTO.password, loginDTO.ip);
 
-      console.log('Login result:', result);
-
       // mettiamo il refresh token nel cookie 
       setRefreshTokenCookie(res, result.refreshToken);
 

@@ -1,7 +1,9 @@
 const {
   VisitResponseDTO,
   VisitRequestDTO,
-  VisitHomePresentationResponseDTO
+  VisitImageRequestDTO,
+  VisitHomePresentationRequestDTO,
+  TopTenVisitsResponseDTO
 } = require('../model/dto/VisitDTO');
 
 class VisitMapper {
@@ -51,9 +53,9 @@ class VisitMapper {
     };
   }
 
-  static toSingleVisitHomePresentationResponse(visit) {
+  static toTopTenVisitsResponse(visit) {
     if (!visit) return null;
-    return new VisitHomePresentationResponseDTO(
+    return new TopTenVisitsResponseDTO(
       visit._id ? visit._id.toString() : visit.id,
       visit.title,
       visit.description,
@@ -61,9 +63,9 @@ class VisitMapper {
       visit.disableFriendly,
       visit.maxDuration,
       visit.price,
-      visit.assets,
       visit.isClosingSoon,
       visit.isNew,
+      visit.assets,
     );
   }
 }

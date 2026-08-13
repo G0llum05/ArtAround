@@ -40,7 +40,7 @@ const artworkSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Item'
   }]
-});
+}, { timestamps: true });
 
 
 module.exports = mongoose.model('Artwork', artworkSchema);

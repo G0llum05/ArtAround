@@ -106,7 +106,7 @@ class VisitService {
    * Restituisce le top 10 visite più popolari per il marketplace, ordinate per numero di like e visualizzazioni.
     * @returns {Promise<Array>} Array di oggetti contenenti le informazioni delle visite più popolari.
    */
-  static async getVisitHomePresentation() {
+  static async getTopTenVisits() {
 
     try {
       const visits = await Visit.find({ isActive: { $ne: false } })
@@ -116,20 +116,16 @@ class VisitService {
         return [];
       }
 
-      console.log("DEBUG -> Esempio una visita: ", visits[0]);
-      console.log("Assets completi:", JSON.stringify(visits[0].assets, null, 2));
+      // prime 10 visite più popolari
+      const topVisits = await this._sortVisitsByPopularity(visits);
+      topVisits.splice(10);
 
 
-      // Ordina le visite per numero di like e visualizzazioni (decrescente)
-      visits.sort((a, b) => {
-        const likesDiff = (b.likesCount || 0) - (a.likesCount || 0);
-        if (likesDiff !== 0) return likesDiff;
-        const viewsDiff = (b.views?.total || 0) - (a.views?.total || 0);
-        return viewsDiff;
-      });
+      for (const visit of topVisits) {
+        visit.isClosingSoon = await this._isVisitClosingSoon(visit);
+        visit.isNew = await this._isVisitNew(visit);
+      }
 
-      // Prendi le prime 10 visite più popolari
-      const topVisits = visits.slice(0, 10);
 
       // Immagini di default per il test (landscape per desktop e portrait per mobile)
       const DEFAULT_LANDSCAPE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000";
@@ -150,11 +146,35 @@ class VisitService {
         }
       });
 
+
       return topVisits;
     } catch (error) {
-      console.error("Error in getVisitHomePresentation:", error);
+      console.error('Error retrieving visit home presentation:', error);
       throw new Error('Error retrieving visit home presentation');
     }
+  }
+
+  static async _sortVisitsByPopularity(visits) {
+    visits.sort((a, b) => {
+      const likesDiff = (b.likesCount || 0) - (a.likesCount || 0);
+      if (likesDiff !== 0) return likesDiff;
+      const viewsDiff = (b.views?.total || 0) - (a.views?.total || 0);
+      return viewsDiff;
+    });
+    return visits;
+  }
+
+  // TODO CHECK al momento facciamo una funzione fittizia
+  static async _isVisitClosingSoon(visit) {
+    return false;
+  }
+
+  // check dal timestamp createdAt se la visita è nuova (ultimi 30 giorni)
+  static async _isVisitNew(visit) {
+    const now = new Date();
+    const createdAt = new Date(visit.createdAt);
+    const diffInDays = (now - createdAt) / (1000 * 60 * 60 * 24);
+    return diffInDays <= 30;
   }
 }
 

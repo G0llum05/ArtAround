@@ -647,7 +647,7 @@
     {
       "key": "visit_vaticani_sistina_michelangelo",
       "title": "Il Sacro e l'Eterno: La Cappella Sistina ed il Giudizio Universale di Michelangelo",
-      "description": "Un tour guidato indimenticabile incentrato sul capolavoro supremo di Michelangelo Buonarroti. La visita illustra la teologia ed il dinamismo della Volta (dalla Creazione di Adamo al Peccato Originale) e la colossale parete del Giudizio Universale con i suoi oltre trecento personaggi scolpiti nell'affresco.",
+      "description": "Alla scoperta della Volta e del Giudizio Universale di Michelangelo.",
       "price": 25,
       "creator": "vaticani_staff",
       "artworks": [
@@ -751,12 +751,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_vaticani_stanze_raffaello",
       "title": "Le Stanze di Raffaello ed il Rinascimento in Vaticano",
-      "description": "Itinerario dedicato agli appartamenti papali affrescati da Raffaello Sanzio e dai suoi allievi. Esplorazione della Stanza della Segnatura con la 'Scuola di Atene' e la 'Disputa del Sacramento', simbolo dell'armonia tra filosofia antica e teologia cristiana.",
+      "description": "Gli appartamenti papali affrescati da Raffaello e la celebre Scuola di Atene.",
       "price": 20,
       "creator": "vaticani_staff",
       "artworks": [
@@ -854,12 +854,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_vaticani_cortile_ottagono",
       "title": "I Capolavori del Cortile Ottagono: Dal Laocoonte all'Apollo del Belvedere",
-      "description": "Percorso guidato tra le sculture dell'antichità greco-romana conservate nel Museo Pio-Clementino. Il tour rivela le storie ed il mito del Gruppo del Laocoonte e dell'Apollo del Belvedere, che modellarono il gusto artistico di Michelangelo e dei maestri del Rinascimento.",
+      "description": "Le sculture dell'antichità classica che hanno ispirato i maestri del Rinascimento.",
       "price": 18,
       "creator": "vaticani_staff",
       "artworks": [
@@ -954,12 +954,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_vaticani_pinacoteca_tesori",
       "title": "Tesori della Pinacoteca Vaticana: Da Leonardo e Raffaello a Caravaggio",
-      "description": "Un tour d'eccezione nella Pinacoteca Vaticana che raccoglie le grandi pale d'altare e i quadri da cavalletto dei massimi maestri della pittura italiana: La Trasfigurazione di Raffaello, La Deposizione di Caravaggio ed il San Girolamo di Leonardo da Vinci.",
+      "description": "I più grandi capolavori della pittura italiana riuniti nella Pinacoteca Vaticana.",
       "price": 22,
       "creator": "vaticani_staff",
       "artworks": [
@@ -1053,7 +1053,7 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     }
   ]
 }

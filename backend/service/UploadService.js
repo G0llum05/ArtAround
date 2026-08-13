@@ -36,14 +36,17 @@ class UploadService {
 
     await this.saveImage(file.buffer, fullPath, file.mimetype);
 
+    const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
+    const publicUrl = `/${relativePath}`; // Risultato: /assets/museums/.../visit_landscape.webp
+
     const updatedVisit = await Visit.findByIdAndUpdate(visitId,
       {
-        $push: { 'assets.images': { url: fullPath, orientation: targetOrientation } }
+        $push: { 'assets.images': { url: publicUrl, orientation: targetOrientation } }
       }, { new: true });
 
     if (!updatedVisit) throw new Error('Visita non trovata.');
 
-    return fullPath;
+    return publicUrl;
   }
 
   static async saveImage(fileBuffer, fullPath, mimeType) {

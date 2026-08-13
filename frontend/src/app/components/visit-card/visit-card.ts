@@ -15,17 +15,24 @@ export class VisitCard {
 
   router = inject(Router);
 
+  imageUrl = computed(() => {
+    const visit = this.visit();
+    if (visit.assets.images && visit.assets.images.length > 0) {
+      return visit.assets.images[0];
+    } else {
+      return '/assets/images/place_holder.jpg';
+    }
+  });
+
   formatedDuration: Signal<string> = computed(
     () => {
       const duration = this.visit().duration;
-      let durationFormated: string = Math.floor(duration).toString() + 'h ';
-      if(duration - Math.trunc(duration)==0.5){
-        durationFormated += '30m';
+      if (duration >= 60) {
+        const h = Math.floor(duration / 60);
+        const m = duration % 60;
+        return m > 0 ? `${h}h ${m}m` : `${h}h`;
       }
-      if(duration===8){
-        durationFormated += '+';
-      }
-      return durationFormated;
+      return `${duration}m`;
     }
   )
 

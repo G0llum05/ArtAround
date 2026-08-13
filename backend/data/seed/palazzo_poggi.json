@@ -659,7 +659,7 @@
     {
       "key": "visit_poggi_anatomia",
       "title": "Il Teatro della Scienza: Anatomia e Ceroplastica a Palazzo Poggi (XVIII sec.)",
-      "description": "Un affascinante viaggio nella stagione dell'Illuminismo bolognese. La visita guida alla scoperta delle celebri Camere dell'Anatomia e della Ceroplastica, ammirando gli 'Spogliati' in legno di Ercole Lelli e i capolavori in cera di Anna Morandi Manzolini e Giovanni Manzolini, che resero Bologna il centro europeo di riferimento per gli studi medici anatomici.",
+      "description": "Alla scoperta delle ceroplastiche anatomiche e degli 'Spogliati' in legno del Settecento.",
       "price": 7,
       "creator": "poggi_staff",
       "artworks": [
@@ -766,12 +766,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_poggi_ulisse",
       "title": "Le Storie di Ulisse e il Rinascimento Manierista a Palazzo Poggi",
-      "description": "Itinerario storico-artistico incentrato sulla meravigliosa decorazione pittorica del palazzo. Esplorazione della Sala di Ulisse con il grande ciclo di affreschi dipinti da Pellegrino Tibaldi a metà del Cinquecento, capolavoro del Manierismo emiliano celebre per la potenza muscolare dei personaggi e la narrazione mitologica.",
+      "description": "Gli affreschi mitologici di Pellegrino Tibaldi capolavoro del Manierismo emiliano.",
       "price": 6,
       "creator": "poggi_staff",
       "artworks": [
@@ -865,13 +865,13 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_poggi_marsili_navi",
       "title": "Wunderkammer, Navi e la Scienza del Generale Marsili",
-      "description": "Tour dedicato alle collezioni scientifiche dell'Istituto delle Scienze fondato da Luigi Ferdinando Marsili nel 1711. Dai modelli in scala di vascelli da guerra e fortificazioni militari alle meraviglie naturali della Wunderkammer di Ulisse Aldrovandi con le sue matrici xilografiche ed erbari del XVI secolo.",
-      "price": 8,
+      "description": "I vascelli in scala, la Wunderkammer di Aldrovandi ed i modelli scientifici del Settecento.",
+      "price": 0,
       "creator": "poggi_staff",
       "artworks": [
         "artwork_poggi_navi_marsili",
@@ -964,13 +964,13 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": false
     },
     {
       "key": "visit_poggi_camere_scienze",
       "title": "Le Camere delle Scienze: Ostetricia, Fisica e Geografia dell'Ateneo",
-      "description": "Percorso didattico ed enciclopedico attraverso le stanze di studio di Palazzo Poggi: dalla rivoluzionaria scuola di ostetricia di Giovanni Antonio Galli alla fisica sperimentale e geografia cartesiana dell'Università di Bologna.",
-      "price": 5,
+      "description": "Percorso didattico tra la storica scuola di ostetricia e la fisica dell'Università di Bologna.",
+      "price": 0,
       "creator": "poggi_staff",
       "artworks": [
         "artwork_poggi_ostetricia",
@@ -1055,7 +1055,7 @@
           "exceptions": []
         }
       ],
-      "disableFriendly": true,
+      "disableFriendly": false,
       "requirements": "Struttura museale universitaria completamente fruibile.",
       "categories": [
         "Scienza",
@@ -1064,7 +1064,7 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     }
   ]
 }

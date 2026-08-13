@@ -636,7 +636,7 @@
     {
       "key": "visit_colonna_barocco_lepanto",
       "title": "La Magnificenza del Barocco Romano: La Grande Galleria Colonna ed il Mito di Lepanto",
-      "description": "Un percorso guidato spettacolare nella galleria barocca più sfarzosa di Roma. Il tour esplora la Sala Grande di 76 metri decorata con specchi dipinti, la Colonna Bellica con la palla da cannone incastrata e gli affreschi celebrativi della vittoria di Marcantonio II Colonna a Lepanto nel 1571.",
+      "description": "Un tour nella galleria barocca tra specchi dipinti, la Colonna Bellica e gli affreschi.",
       "price": 15,
       "creator": "colonna_staff",
       "artworks": [
@@ -722,12 +722,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_colonna_mangiafagioli_carracci",
       "title": "Il Mangiafagioli di Annibale Carracci e la Pittura di Genere al Palazzo Colonna",
-      "description": "Tour focalizzato su uno dei dipinti più rivoluzionari dell'arte europea. Analisi del 'Mangiafagioli' di Annibale Carracci e dei capolavori di pittura di genere e paesaggio realizzati da Salvator Rosa e Gaspard Dughet conservati nella Sala dei Paesaggi.",
+      "description": "Alla scoperta del Mangiafagioli di Carracci e dei maestri della pittura di genere.",
       "price": 12,
       "creator": "colonna_staff",
       "artworks": [
@@ -806,12 +806,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": false
     },
     {
       "key": "visit_colonna_ritratti_seicento",
       "title": "I Ritratti ed i Capolavori del Manierismo e del Seicento: Bronzino, Reni e Guercino",
-      "description": "Un percorso tra i maestri della pittura emiliana e fiorentina. Dal ritratto in armatura di Stefano Colonna dipinto dal Bronzino alle tele trascinanti ed emotive di Guido Reni e del Guercino.",
+      "description": "I grandi ritratti ed i capolavori del Seicento tra Bronzino, Guido Reni e Guercino.",
       "price": 15,
       "creator": "colonna_staff",
       "artworks": [
@@ -882,7 +882,7 @@
           "exceptions": []
         }
       ],
-      "disableFriendly": true,
+      "disableFriendly": false,
       "requirements": "Percorso totalmente accessibile al piano nobile.",
       "categories": [
         "Rinascimento"
@@ -890,12 +890,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_colonna_appartamento_isabelle",
       "title": "L'Appartamento della Principessa Isabelle e i Giardini della Pilotta",
-      "description": "Esclusiva visita guidata negli appartamenti privati abitati fino al secolo scorso dalla Principessa Isabelle Colonna. Ambienti storici perfettamente intatti con arazzi fiamminghi, sale affrescate da Pinturicchio e vista sui giardini monumentali del Quirinale.",
+      "description": "Visita esclusiva negli appartamenti storici e nei giardini monumentali del palazzo.",
       "price": 20,
       "creator": "colonna_staff",
       "artworks": [
@@ -974,7 +974,7 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": false
     }
   ]
 }

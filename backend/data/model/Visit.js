@@ -63,6 +63,11 @@ const visitSchema = new mongoose.Schema({
   // Domenica = [0] -> Lunedi = [6]
   weeklySchedule: [ScheduleSchema],
 
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+
   disableFriendly: {
     type: Boolean
   },
@@ -109,15 +114,10 @@ const visitSchema = new mongoose.Schema({
     }
   },
 
-  isRunning: {
-    type: Boolean,
-    default: false
-  },
-
   assets: {
     images: [ImageSchema]
   }
 
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Visit', visitSchema);

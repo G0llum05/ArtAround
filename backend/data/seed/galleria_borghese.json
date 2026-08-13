@@ -646,7 +646,7 @@
     {
       "key": "visit_borghese_marmi_bernini",
       "title": "I Marmi dell'Anima: Il Genio Barocco di Gian Lorenzo Bernini",
-      "description": "Un viaggio mozzafiato tra i gruppi scultorei in marmo a tutto tondo realizzati da Gian Lorenzo Bernini per il Cardinale Scipione Borghese. La visita si incentra su Apollo e Dafne, il Ratto di Proserpina e il David, mostrando come la pietra bianca sia stata trasformata in carne, movimento ed emozione pura.",
+      "description": "I capolavori scultorei in marmo di Bernini tra mito, movimento ed emozione.",
       "price": 15,
       "creator": "borghese_staff",
       "artworks": [
@@ -756,12 +756,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_borghese_luce_caravaggio",
       "title": "Luce e Ombra: Caravaggio e i Maestri del Barocco Romano",
-      "description": "Itinerario guidato tra la più imponente concentrazione di capolavori di Caravaggio conservati in un singolo museo. Analisi dettagliata di Davide con la testa di Golia, la Madonna dei Palafrenieri, il Fanciullo con canestra di frutta e la Caccia di Diana del Domenichino.",
+      "description": "I più grandi capolavori di Caravaggio in un viaggio straordinario tra luce e chiaroscuro.",
       "price": 18,
       "creator": "borghese_staff",
       "artworks": [
@@ -867,12 +867,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_borghese_raffaello_canova",
       "title": "Dalla Bellezza Ideale al Neoclassicismo: Raffaello, Tiziano e Canova",
-      "description": "Un tour incentrato sulla grazia e sull'armonia classica ed estetica. Dalla celebre statua di Paolina Bonaparte scolpita da Antonio Canova come Venere Vincitrice, alla Deposizione di Raffaello Sanzio e alla poesia cromatica di Tiziano con Amor Sacro e Amor Profano.",
+      "description": "Dalla grazia neoclassica della Paolina Borghese ai capolavori di Raffaello e Tiziano.",
       "price": 20,
       "creator": "borghese_staff",
       "artworks": [
@@ -967,12 +967,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_borghese_scipione_pinacoteca",
       "title": "I Segreti del Cardinale Scipione Borghese: Meraviglie della Pinacoteca",
-      "description": "Percorso esaustivo tra le sale affrescate di Villa Borghese Pinciana alla scoperta della collezione privata creata da Scipione Borghese. Una panoramica completa sulle opere rinascimentali e barocche conservate al piano nobile della villa.",
+      "description": "Esplora la storica collezione privata di pittura rinascimentale e barocca.",
       "price": 15,
       "creator": "borghese_staff",
       "artworks": [
@@ -1066,7 +1066,7 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     }
   ]
 }

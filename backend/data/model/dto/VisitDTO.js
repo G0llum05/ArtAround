@@ -58,16 +58,18 @@ class VisitHomePresentationRequestDTO {
   }
 }
 
-class VisitHomePresentationResponseDTO {
-  constructor(id, title, description, verified, disableFriendly, imageUrls = [], duration = 0, cost = 0) {
+class TopTenVisitsResponseDTO {
+  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, assets = []) {
     this.id = id;
     this.title = title;
     this.description = description;
-    this.verified = verified;
+    this.isVerified = isVerified;
     this.disableFriendly = disableFriendly;
-    this.imageUrls = imageUrls;
     this.duration = duration;
-    this.cost = cost;
+    this.price = price;
+    this.isClosingSoon = isClosingSoon;
+    this.isNew = isNew;
+    this.assets = assets;
   }
 }
 
@@ -76,5 +78,5 @@ module.exports = {
   VisitRequestDTO,
   VisitImageRequestDTO,
   VisitHomePresentationRequestDTO,
-  VisitHomePresentationResponseDTO
+  TopTenVisitsResponseDTO
 };

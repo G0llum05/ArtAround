@@ -15,11 +15,11 @@
       <div [class.no-transition]="isInstant()" [style.transform]="'translateX(-' + (currentIndex() * 100) + '%)'"
            class="carousel-track">
         @for (item of extendedItems(); track item.id || $index) {
-          <div [style.background-image]="'url(' + item.imageUrls[0] + ')'" class="carousel-slide">
+          <div [style.background-image]="'url(' + getImageUrl(item) + ')'" class="carousel-slide">
             <div class="carousel-overlay">
               <app-badges-list
                 [disableFriendly]="item.disableFriendly || false"
-                [free]="item.cost === 0"
+                [free]="item.price === 0"
                 [verified]="item.isVerified || false"
               ></app-badges-list>
               <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->

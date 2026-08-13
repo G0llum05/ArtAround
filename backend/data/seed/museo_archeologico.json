@@ -623,8 +623,8 @@
     {
       "key": "visit_archeo_felsina_etrusca",
       "title": "Felsina Etrusca: I Segreti delle Necropoli e la Certosa",
-      "description": "Un viaggio indietro nel tempo nella Bologna etrusca (Felsina). Il percorso guida tra i preziosi corredi funerari delle necropoli della Certosa e di San Vitale, le stele decorate con il viaggio nell'Oltretomba e la celebre Situla Benvenuti con i suoi rilievi di animali fantastici e banchetti orientali.",
-      "price": 8,
+      "description": "Alla scoperta della Bologna etrusca tra stele funerarie e la famosa Situla Benvenuti.",
+      "price": 0,
       "creator": "archeo_staff",
       "artworks": [
         "artwork_archeo_situla_benvenuti",
@@ -729,12 +729,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_archeo_egitto_faraoni",
       "title": "L'Egitto dei Faraoni: La Collezione Egizia di Pelagio Palagi",
-      "description": "Esplorazione guidata di una delle collezioni egizie più importanti d'Europa. Dalle mummie e sarcofagi d'epoca alla splendida statua bronzea di Nespamedu ageminata in oro, fino ai celebri rilievi della tomba di Horemheb provenienti da Saqqara.",
+      "description": "Un viaggio tra mummie, sarcofagi e i rilievi della tomba di Horemheb.",
       "price": 10,
       "creator": "archeo_staff",
       "artworks": [
@@ -832,7 +832,7 @@
           "exceptions": []
         }
       ],
-      "disableFriendly": true,
+      "disableFriendly": false,
       "requirements": "Consigliata la prenotazione per i gruppi per la gestione dei flussi nelle sale ipogee.",
       "categories": [
         "Antico Egitto",
@@ -841,12 +841,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_archeo_fidia_bellezza",
       "title": "Fidia e l'Ideale di Bellezza: La Scultura Greca e Romana",
-      "description": "Itinerario dedicato ai capolavori dell'antichità classica conservati a Palazzo Galvani. Il tour si focalizza sulla celeberrima Athena Lemnia (copia romana del V sec. a.C. dall'originale di Fidia) ed analizza l'evoluzione dell'armonia del corpo umano dalla Grecia all'Impero Romano.",
+      "description": "L'evoluzione della scultura classica e dell'armonia del corpo da Fidia all'Impero Romano.",
       "price": 7,
       "creator": "archeo_staff",
       "artworks": [
@@ -941,12 +941,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_archeo_guerrieri_villanoviani",
       "title": "Prima di Bologna: I Principi e i Guerrieri dell'Età del Bronzo e del Ferro",
-      "description": "Tour archeologico sulle origini del territorio bolognese: dai primi insediamenti della Civiltà Villanoviana (VIII sec. a.C.) all'affermarsi dei guerrieri etruschi, analizzando armi in bronzo, elmi crestati, gioielli e vasellame ceramico.",
+      "description": "Le origini del territorio bolognese tra la Civiltà Villanoviana e i principi etruschi.",
       "price": 6,
       "creator": "archeo_staff",
       "artworks": [
@@ -1041,7 +1041,7 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     }
   ]
 }

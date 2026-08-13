@@ -618,7 +618,7 @@
     {
       "key": "visit_carducci_nobel",
       "title": "Giosuè Carducci: La Vita, i Libri e il Premio Nobel (1890-1907)",
-      "description": "Un percorso intimo attraverso le stanze abitate dal poeta nei suoi ultimi diciassette anni di vita. La visita si snoda tra la maestosa biblioteca personale con oltre 40.000 volumi, lo studio privato con la scrivania originale e la sala espositiva che custodisce il diploma e la medaglia d'oro del Premio Nobel per la Letteratura ricevuto nel 1906.",
+      "description": "Esplora la casa, lo studio e la biblioteca personale del primo Premio Nobel italiano.",
       "price": 6,
       "creator": "carducci_staff",
       "artworks": [
@@ -730,12 +730,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_carducci_poesia",
       "title": "Inverno e Primavera Poetica: Dal Neoclassicismo alle Odi Barbare",
-      "description": "Tour letterario focalizzato sulla genesi delle più celebri opere carducciane e sui manoscritti autografi conservati a Casa Carducci. Analisi della sperimentazione metrica delle Odi Barbare e delle Rime Nuove, arricchita dalla lettura e ascolto di brani scelti.",
+      "description": "Un itinerario letterario tra i manoscritti autografi e la poesia di Carducci.",
       "price": 8,
       "creator": "carducci_staff",
       "artworks": [
@@ -830,12 +830,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_carducci_giardino",
       "title": "Il Giardino del Poeta e il Simbolismo di Bistolfi",
-      "description": "Itinerario all'aperto ed estetico nel giardino monumentale della casa, incentrato sul grande gruppo scultoreo in marmo di Carrara realizzato dallo scultore simbolista Leonardo Bistolfi in memoria di Carducci. Un viaggio tra arte simbolista, natura e poesia risorgimentale.",
+      "description": "Passeggiata nel giardino monumentale tra natura e il monumento simbolista di Bistolfi.",
       "price": 5,
       "creator": "carducci_staff",
       "artworks": [
@@ -929,7 +929,7 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     }
   ]
 }

@@ -660,7 +660,7 @@
     {
       "key": "visit_ducati_origini_cucciolo",
       "title": "Dalla Radiotecnica al Cucciolo: Le Origini di Borgo Panigale (1926-1950)",
-      "description": "Un viaggio nei primi venticinque anni di storia di Ducati. Dalla nascita della Società Scientifica Radio Brevetti dei tre fratelli Ducati alla trasformazione industriale nel dopoguerra con la produzione del mitico micromotore Cucciolo, simbolo di mobilità della rinascita italiana.",
+      "description": "Dai primi brevetti radio al micromotore Cucciolo che ha motorizzato l'Italia.",
       "price": 12,
       "creator": "ducati_staff",
       "artworks": [
@@ -765,12 +765,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_ducati_mito_desmo",
       "title": "Il Mito Desmo e le 200 Miglia: L'Era dell'Ingegnere Fabio Taglioni",
-      "description": "Itinerario guidato attraverso le invenzioni rivoluzionarie di Fabio Taglioni (il 'Dottor T'). Il tour esplora il brevetto del sistema Desmodromico sulla 125 Marianna e la nascita del bicilindrico a V di 90° con la trionfale vittoria di Paul Smart a Imola nel 1972.",
+      "description": "Alla scoperta del sistema Desmodromico e delle leggendarie vittorie a Imola.",
       "price": 18,
       "creator": "ducati_staff",
       "artworks": [
@@ -876,12 +876,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": false
     },
     {
       "key": "visit_ducati_superbike_legend",
       "title": "Superbike Legend: Dalla Ducati 916 di Tamburini alla Dominazione Mondiale",
-      "description": "Tour incentrato sull'epopea Ducati nel Campionato Mondiale Superbike. Analisi del capolavoro stilistico e meccanico della Ducati 916 ideata da Massimo Tamburini ed i successi leggendari di piloti come Carl Fogarty, Troy Bayliss e Chaz Davies.",
+      "description": "L'epopea in Superbike tra il capolavoro della 916 e i piloti storici.",
       "price": 20,
       "creator": "ducati_staff",
       "artworks": [
@@ -974,12 +974,12 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_ducati_motogp_hightech",
       "title": "MotoGP & High Tech: Casey Stoner, le Desmosedici e l'Aerodinamica V4",
-      "description": "Percorso d'avanguardia dedicato alle corse nella massima categoria del motociclismo. Dal Titolo Mondiale MotoGP 2007 di Casey Stoner sulla Desmosedici GP7 fino alle più recenti innovazioni aerodinamiche e alla Panigale V4 R.",
+      "description": "Il mondo delle corse MotoGP, dalla Desmosedici GP7 alla tecnologia V4 R.",
       "price": 25,
       "creator": "ducati_staff",
       "artworks": [
@@ -1073,7 +1073,7 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     }
   ]
 }

@@ -13,6 +13,6 @@ const artistSchema = new mongoose.Schema({
     profilePicture: ImageSchema,
     gallery: [ImageSchema]
   }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Artist', artistSchema);

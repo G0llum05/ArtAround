@@ -75,6 +75,6 @@ const userSchema = new mongoose.Schema({
   assets: {
     profilePicture: ImageSchema
   }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

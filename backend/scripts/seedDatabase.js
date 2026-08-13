@@ -261,7 +261,7 @@ async function seed() {
         categories: visitData.categories || [],
         likesCount: visitData.likesCount ?? Math.floor(Math.random() * 150) + 20,
         views: visitData.views || { total: Math.floor(Math.random() * 500) + 100, weekly: Math.floor(Math.random() * 100) + 10 },
-        isRunning: visitData.isRunning || false,
+        isVerified: visitData.isVerified ?? true,
         assets: {
           images: formattedVisitImages
         }

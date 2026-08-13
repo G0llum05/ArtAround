@@ -1,8 +1,8 @@
 import { Component, input, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router'
-import {VisitHomePresentationResponse} from '../../models/visit.model';
-import {BadgesList} from '../badges-list/badges-list';
+import { VisitHomePresentationResponse } from '../../models/visit.model';
+import { BadgesList } from '../badges-list/badges-list';
 
 @Component({
   selector: 'app-carousel',
@@ -74,7 +74,7 @@ export class Carousel implements OnInit, OnDestroy {
     // Pulisci eventuali timeout pendenti per evitare conflitti
     this.resetAutoPlayTimer();
     //evito spam click
-    if(this.animationTimer) {
+    if (this.animationTimer) {
       return;
     }
 
@@ -126,5 +126,13 @@ export class Carousel implements OnInit, OnDestroy {
       this.isInstant.set(false);
       this.currentIndex.set(index);
     }
+  }
+
+  getImageUrl(item: VisitHomePresentationResponse): string {
+    if (item.assets.images && item.assets.images.length > 0) {
+      return item.assets.images[0].url;
+    }
+    // TODO CHECK
+    return '/assets/images/place_holder.jpg';
   }
 }

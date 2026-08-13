@@ -98,7 +98,7 @@ class VisitController {
 
   static async getVisitHomePresentation(req, res) {
     try {
-      const result = await VisitService.getVisitHomePresentation();
+      const result = await VisitService.getTopTenVisits();
       if (!result) {
         return res.status(404).json({ message: 'Visite di presentazione non trovata' });
       }
@@ -107,7 +107,7 @@ class VisitController {
       // Mapper.toVisitHomePresentationList(topVisits);
 
       // TODO CHECK isVerivied è verified da fixare
-      res.status(200).json(result.map(visit => VisitMapper.toSingleVisitHomePresentationResponse(visit)));
+      res.status(200).json(result.map(visit => VisitMapper.toTopTenVisitsResponse(visit)));
     } catch (error) {
       res.status(500).json({ message: 'Errore durante la generazione della presentazione home per la visita', error: error.message });
     }

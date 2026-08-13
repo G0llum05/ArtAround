@@ -33,7 +33,7 @@ export interface VisitResponse {
     weekly: number
   },
   badge: string,
-  isRunning: boolean
+  isVerified?: boolean
 }
 
 export interface VisitRequest {
@@ -66,7 +66,7 @@ export interface VisitRequest {
     weekly: number
   },
   badge: string,
-  isRunning: boolean
+  isVerified?: boolean
 }
 
 export interface VisitImageRequest {
@@ -78,16 +78,15 @@ export interface VisitHomePresentationResponse {
   id: string,
   title: string,
   description: string,
-  isVerified?: boolean,
-  verified?: boolean,
+  isVerified: boolean,
   disableFriendly: boolean,
   imageUrls: string[],
-  assets?: {
-    images: any[]
+  duration: number, // minutes
+  price: number,
+  isClosingSoon: boolean,
+  isNew: boolean,
+  assets: {
+    images: { url: string; orientation: string }[];
   },
-  duration: number,
-  cost: number,
-  isClosingSoon?: boolean,
-  isNew?: boolean,
 }
 

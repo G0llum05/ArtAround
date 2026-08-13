@@ -1,10 +1,10 @@
 <article class="visit-card" (click)="onCardClick()">
   <!-- Immagine e Badge in alto a destra -->
   <div class="card-image-wrapper">
-    <img [alt]="visit().title" [src]="visit().imageUrls[0]" class="card-img">
+    <img [alt]="visit().title" [src]="imageUrl()" class="card-img">
     <app-badges-list
       [disableFriendly] = "visit().disableFriendly || false"
-      [free] = "(visit().cost === 0)"
+      [free] = "(visit().price === 0)"
       [verified]="visit().isVerified || false"
     >
     </app-badges-list>
@@ -17,7 +17,7 @@
     <header class="card-header">
       <h3 class="card-title">{{ visit().title }}</h3>
       <span class="card-price">
-        {{ (visit().cost == 0) ? 'Gratis' : '€' + (visit().cost) }}
+        {{ (visit().price == 0) ? 'Gratis' : '€' + (visit().price) }}
       </span>
     </header>
 

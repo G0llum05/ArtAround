@@ -670,8 +670,8 @@
     {
       "key": "visit_seta_idraulica",
       "title": "Bologna la Superba: Il Mulino da Seta e l'Energia Idraulica (XV-XVIII sec.)",
-      "description": "Percorso guidato alla scoperta di Bologna come capitale europea della seta. Attraverso plastici interattivi, il grande modello del mulino da seta in scala 1:2 e i racconti sull'antica rete dei canali (Navile e Reno), il tour mostra come l'energia idraulica abbia dato vita alla prima grande industria cittadina.",
-      "price": 8,
+      "description": "Scopri la rete dei canali e la storia di Bologna capitale europea della seta.",
+      "price": 0,
       "creator": "staff_user",
       "artworks": [
         "artwork_mulino_seta",
@@ -767,7 +767,7 @@
           "exceptions": []
         }
       ],
-      "disableFriendly": true,
+      "disableFriendly": false,
       "requirements": "Scarpe comode per la deambulazione nelle gallerie della fornace. Adatto a scolaresche e visitatori individuali.",
       "categories": [
         "Scienza",
@@ -776,13 +776,13 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     },
     {
       "key": "visit_meccanica_packaging",
       "title": "Dalla Protoindustria alla Packaging Valley: Meccanica e Motori a Bologna",
-      "description": "Un itinerario che esplora l'evoluzione della meccanica bolognese nel Novecento. Dalle radici dell'istruzione tecnica (Aldini Valeriani) alle geniali intuizioni elettro-motoristiche (Ducati e Weber), fino alla nascita delle macchine automatiche ad alta velocità (GD) che hanno reso Bologna famosa nel mondo come capitale della Packaging Valley.",
-      "price": 10,
+      "description": "L'evoluzione della meccanica e dei motori a Bologna fino alla Packaging Valley.",
+      "price": 0,
       "creator": "staff_user",
       "artworks": [
         "artwork_carburatore_weber",
@@ -880,7 +880,7 @@
           "exceptions": []
         }
       ],
-      "disableFriendly": true,
+      "disableFriendly": false,
       "requirements": "Visita guidata con dimostrazioni di modelli meccanici in funzione. Consigliato per studenti di istituti tecnici e appassionati di motori e tecnologia.",
       "categories": [
         "Motori",
@@ -889,7 +889,7 @@
       "assets": {
         "images": []
       },
-      "isRunning": false
+      "isVerified": true
     }
   ]
 }

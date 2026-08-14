@@ -33,7 +33,7 @@ Progetto Tecnologie Web A.A. 2025/26
     
         Client --> Security
     ──────
-  #### 📌 Modulo 1: Hashing, Gestione Token & Protezione API (Backend)
+  #### Modulo 1: Hashing, Gestione Token & Protezione API (Backend)
 
   1. Strategia di Gestione Sessioni (Access Token + Refresh Token in Cookie HttpOnly):
       • Access Token (JWT a breve durata, es. 15 min): Inviato nell'header Authorization: Bearer <token> per autenticare le
@@ -53,7 +53,7 @@ Progetto Tecnologie Web A.A. 2025/26
       email e ruoli inviati nel body.
 
   ──────
-  #### 📌 Modulo 2: Flussi Utente (Signup, Login, Profilo & OAuth)
+  #### Modulo 2: Flussi Utente (Signup, Login, Profilo & OAuth)
 
   1. Registrazione (Signup):
       • Assegnazione controllata dei ruoli (gli utenti standard si registrano come guest o student; l'elevazione a
@@ -68,7 +68,7 @@ Progetto Tecnologie Web A.A. 2025/26
       della query string.
 
   ──────
-  #### 📌 Modulo 3: Integrazione lato Frontend (Angular / Web App)
+  #### Modulo 3: Integrazione lato Frontend (Angular / Web App)
 
   1. Auth Service & Reattività:
       • Gestione dello stato dell'utente autenticato tramite RxJS BehaviorSubject o Angular Signal (currentUser, isLoggedIn,
@@ -80,6 +80,18 @@ Progetto Tecnologie Web A.A. 2025/26
   3. Guardie di Navigazione (Route Guards):
       • AuthGuard: Protegge le rotte riservate reindirizzando al login gli utenti non autenticati.
       • RoleGuard: Protegge le sezioni riservate ai singoli ruoli (es. dashboard musei per museumstaff).
+  ### Modulo 4: Mail Checker
+    Utilizziamo un servizio per invio di mail di conferma improntato all'unficazione di utenti al login. Per vincoli amministrativi della macchina di laboratorio, non funziona. Ma se avessimo accesso al pannello di controllo del DNS potremmo abilitarlo e ottenere un livello di sicurezza ulteriore.
+    DNS Records
+    Domain Verification
+    DKIM
+    Type    Name    Content    TTL    Status
+    TXT    resend._domainkey.site252623.tw.cs    p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDu+wQuxt6/2IyR6JvKqcVnSt2YwoOTG9pG6Tmrv62I1xpY78jU+AAYtb5d4dmENTP2DBCvS/4ks1iZkwqRhV7j9OpibDMt6sy5f471S/6PGd6v6azMR4I96HQc7k5+PgQR8RGl6qLlaXegdGn3cFehDvDc4jtacLeDKq0yhEbO8wIDAQAB    Auto    not started
+    Enable Sending
+    SPF
+    Type    Name    Content    TTL    Priority    Status
+    MX    send.site252623.tw.cs    feedback-smtp.eu-west-1.amazonses.com    Auto    10    not started
+    TXT    send.site252623.tw.cs    v=spf1 include:amazonses.com ~all    Auto        not started
   ──────
   ## UPLOAD
   ### Architettura di Upload di Immagini

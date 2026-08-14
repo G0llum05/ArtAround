@@ -1,4 +1,4 @@
-const { UserResponseDTO, UserRequestDTO } = require('../model/dto/UserDTO');
+const { UserResponseDTO, UserRequestDTO, TransporterRequestDTO } = require('../model/dto/UserDTO');
 
 class UserMapper {
     static toUserResponseDTO(userModel) {
@@ -26,6 +26,18 @@ class UserMapper {
             preferences: userRequestDTO.preferences
         }
     }
+
+    static toTransporterRequestDTO(data) {
+        if (!data) return null;
+        return new TransporterRequestDTO(
+            data.clientId,
+            data.clientSecret,
+            data.refreshToken,
+            data.noreplyAddr,
+            data.noreplyPass
+        );
+    }
 }
 
 module.exports = UserMapper;
+

@@ -10,7 +10,7 @@ class UserResponseDTO {
         this.preferences = preferences;
     }
 }
-// crezione  e update letsgoski :)
+
 class UserRequestDTO {
     constructor(name, surname, email, password, role, preferences) {
         this.name = name;

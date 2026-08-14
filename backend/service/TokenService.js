@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const MapperRefreshToken = require('../data/mapper/RefreshTokenMapper');
 const RefreshToken = require('../data/model/RefreshToken');
+const VerificationCode = require('../data/model/VerificationCode');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRATION = '15m';
@@ -65,6 +66,72 @@ class TokenService {
     return refreshToken;
   }
 
+
+  /**
+   * crea il codice di verifica per l'acesso mail-password
+   */
+  async createVerificationMailCode(user) {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // 2. Calcola la scadenza (es. 10 minuti da adesso)
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
+    // await VerificationCode.deleteMany({ userId: user._id });
+
+    await new VerificationCode({
+      userId: user._id,
+      code: code,
+      expiresAt: expiresAt
+    }).save();
+    return code;
+  }
+
+  /**
+   * Cerca se esiste un codice attivo (non scaduto) per l'utente
+   */
+  async getActiveCode(userId) {
+    const activeCodeRecord = await VerificationCode.findOne({ userId });
+    
+    // Ritorna il record solo se esiste ed è effettivamente valido nel tempo
+    if (activeCodeRecord && activeCodeRecord.expiresAt > new Date()) {
+      return activeCodeRecord;
+    }
+    
+    return null;
+  }
+
+  /**
+   * Verifica se il codice inserito dall'utente è corretto.
+   * Gestione tentativi e scadenze slegata dal modello User (risiede in VerificationCode).
+   */
+  async verifyCode(userId, inputCode) {
+    const tokenRecord = await this.getActiveCode(userId);
+
+    if (!tokenRecord) {
+      throw new Error('Codice di verifica scaduto o non valido.');
+    }
+
+    if (tokenRecord.attempts >= 3) {
+      throw new Error('Hai superato il numero massimo di tentativi (3). Richiedi un nuovo codice di verifica.');
+    }
+
+    if (tokenRecord.code !== String(inputCode).trim()) {
+      tokenRecord.attempts += 1;
+      await tokenRecord.save();
+
+      const remainingAttempts = 3 - tokenRecord.attempts;
+      if (remainingAttempts <= 0) {
+        throw new Error('Codice errato. Hai raggiunto il numero massimo di tentativi (3).');
+      }
+      throw new Error(`Codice errato. Tentativi rimasti: ${remainingAttempts}`);
+    }
+
+    // Rimozione del codice di verifica una volta convalidato
+    await VerificationCode.deleteOne({ _id: tokenRecord._id });
+
+    return true;
+  }
 
   /**
     * invalida (revoca) un singolo refresh token.

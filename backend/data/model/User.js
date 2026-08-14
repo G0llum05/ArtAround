@@ -17,21 +17,21 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  // verifica email
-  isEmailVerified: {
-    type: Boolean,
-    default: false
-  },
-  emailVerificationToken: {
-    type: String
-  },
-  emailVerificationExpires: {
-    type: Date
-  },
-  nOfEmailVerificationAttempts: {
-    type: Number,
-    default: 0
-  },
+  // // verifica email
+  // isEmailVerified: {
+  //   type: Boolean,
+  //   default: false
+  // },
+  // emailVerificationToken: {
+  //   type: String
+  // },
+  // emailVerificationExpires: {
+  //   type: Date
+  // },
+  // nOfEmailVerificationAttempts: {
+  //   type: Number,
+  //   default: 0
+  // },
 
   password: {
     type: String,

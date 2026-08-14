@@ -50,6 +50,21 @@ class AuthController {
     }
   }
 
+  async verifyCode(req, res) {
+    try {
+      const { email, code } = req.body;
+      if (!email || !code) {
+        return res.status(400).json({ message: 'Email e codice di verifica sono obbligatori.' });
+      }
+
+      const result = await authService.verifyCode(email, code);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+
 
   /**
    * POST /api/auth/login

@@ -37,6 +37,7 @@ jobs:
           echo "GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}" >> .env
           echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> .env
           echo "BACKEND_URL=${{ secrets.BACKEND_URL }}" >> .env
+          echo "NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}" >> .env
           echo "ADMIN1=${{ secrets.ADMIN1 }}" >> .env
           echo "ADMIN2=${{ secrets.ADMIN2 }}" >> .env
           echo "ADMIN3=${{ secrets.ADMIN3 }}" >> .env

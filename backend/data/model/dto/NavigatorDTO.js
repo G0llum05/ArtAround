@@ -1,5 +1,6 @@
 const Sanitizer = require('../../../utils/Sanitizer');
 
+// language, length, tone, museumId, visitId, currentArtworkIndex, audioFile, itemAction, targetPoiType, targetArtist
 class NavigatorRequestDTO {
   constructor(body = {}, file = null) {
     // attributi base

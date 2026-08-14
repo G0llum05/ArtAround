@@ -1,5 +1,4 @@
-// const User = require('../data/model/User');
-// const Artist = require('../data/model/Artist');
+const mongoose = require('mongoose');
 const Item = require('../data/model/Item');
 const Artwork = require('../data/model/Artwork');
 const Visit = require('../data/model/Visit');
@@ -251,6 +250,9 @@ class NavigatorService {
 
 
   static async getArtworkId(visitId, currentArtworkIndex) {
+    if (!visitId || !mongoose.Types.ObjectId.isValid(visitId)) {
+      throw new Error(`ID visita non valido: "${visitId}". Dev'essere un ObjectId MongoDB di 24 caratteri.`);
+    }
     const visit = await Visit.findById(visitId).populate('artworks').exec();
     if (!visit) {
       throw new Error(`Visita con ID "${visitId}" non trovata.`);

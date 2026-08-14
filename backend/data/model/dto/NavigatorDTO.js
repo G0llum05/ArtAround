@@ -1,6 +1,6 @@
+const mongoose = require('mongoose');
 const Sanitizer = require('../../../utils/Sanitizer');
 
-// language, length, tone, museumId, visitId, currentArtworkIndex, audioFile, itemAction, targetPoiType, targetArtist
 class NavigatorRequestDTO {
   constructor(body = {}, file = null) {
     // attributi base
@@ -20,12 +20,12 @@ class NavigatorRequestDTO {
 
     // museo, visita e opera
     this.museumId = body.museumId && typeof body.museumId === 'string' ? body.museumId.trim() : null;
-    if (!this.museumId) {
-      throw new Error(`Parametro 'museumId' mancante o non valido: ${body.museumId}`);
+    if (!this.museumId || !mongoose.Types.ObjectId.isValid(this.museumId)) {
+      throw new Error(`Parametro 'museumId' non valido: "${body.museumId}". Deve essere un ObjectId MongoDB di 24 caratteri.`);
     }
     this.visitId = body.visitId && typeof body.visitId === 'string' ? body.visitId.trim() : null;
-    if (!this.visitId) {
-      throw new Error(`Parametro 'visitId' mancante o non valido: ${body.visitId}`);
+    if (!this.visitId || !mongoose.Types.ObjectId.isValid(this.visitId)) {
+      throw new Error(`Parametro 'visitId' non valido: "${body.visitId}". Deve essere un ObjectId MongoDB di 24 caratteri.`);
     }
 
     const parsedIdx = parseInt(body.currentArtworkIndex, 10);

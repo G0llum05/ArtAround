@@ -2,6 +2,21 @@ import { ArtworkResponse } from "./artwork.model";
 import { UserResponse } from "./user.model";
 import { Schedule } from "./subModels/schedule.model";
 
+export interface VisitHomePresentationResponse {
+  id: string,
+  title: string,
+  description: string,
+  isVerified: boolean,
+  disableFriendly: boolean,
+  duration: number, // minutes
+  price: number,
+  isClosingSoon: boolean,
+  isNew: boolean,
+  assets: {
+    images: { url: string; orientation: string }[];
+  },
+}
+
 export interface VisitResponse {
   id: string,
   title: string,
@@ -73,19 +88,3 @@ export interface VisitImageRequest {
   museumId: string,
   visitId: string
 }
-
-export interface VisitHomePresentationResponse {
-  id: string,
-  title: string,
-  description: string,
-  isVerified: boolean,
-  disableFriendly: boolean,
-  duration: number, // minutes
-  price: number,
-  isClosingSoon: boolean,
-  isNew: boolean,
-  assets: {
-    images: { url: string; orientation: string }[];
-  },
-}
-

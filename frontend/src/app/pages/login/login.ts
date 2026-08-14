@@ -1,9 +1,10 @@
-import { Component, inject, signal, DestroyRef } from '@angular/core';
+import { Component, inject, signal, DestroyRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserRequest } from '../../models/user.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; //per la disiscrizione dagli observable
+import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 @Component({
@@ -12,7 +13,9 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
   readonly authService = inject(AuthService);
@@ -25,6 +28,24 @@ export class Login {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]]
   });
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['status'] === 'success') {
+        // L'utente torna da Google: chiediamo i dati al backend inviando il cookie
+        this.authService.refreshToken().subscribe({
+          next: (res) => {
+            console.log('Login con Google completato con successo!', res);
+            // Reindirizziamo alla Home pulendo l'URL
+            this.router.navigate(['/']);
+          },
+          error: (err) => {
+            console.error('Errore durante il recupero dei dati di Google:', err);
+          }
+        });
+      }
+    });
+  }
 
   formDataToUserModel(user: any): UserRequest {
     return {
@@ -94,4 +115,9 @@ export class Login {
       }
     });
   }
+
+  googleLogin(): void {
+    this.authService.googleLogin()
+  }
+
 }

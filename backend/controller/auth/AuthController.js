@@ -188,7 +188,7 @@ class AuthController {
       if (!req.user) return res.redirect(`${clientUrl}/login?error=auth_failed`);
       const clientIp = req.ip || req.connection.remoteAddress;
 
-      const result = await authService.loginWithGoogle(req.user, clientIp);
+      const result = await authService.googleCallback(req.user, clientIp);
       setRefreshTokenCookie(res, result.refreshToken);
 
       // Reindirizzamento pulito al frontend-old Angular

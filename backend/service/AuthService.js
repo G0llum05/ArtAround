@@ -91,12 +91,13 @@ class AuthService {
   * @returns {Promise<Object>} - utente esistente o nuovo utente creato
   */
   async loginWithGoogle(profile) {
-    const email = profile.emails && profile.emails[0] ? profile.emails[0].value.toLowerCase().trim() : null;
+    console.log('[AuthService] loginWithGoogle profile:', profile);
+    const email = profile.email
     if (!email) {
       throw new Error('Nessun indirizzo email restituito dal profilo Google.');
     }
 
-    const googleId = profile.id;
+    const googleId = profile.googleId;
     if (!googleId) {
       throw new Error('Nessun ID Google restituito dal profilo.');
     }

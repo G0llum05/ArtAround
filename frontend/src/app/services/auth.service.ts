@@ -42,10 +42,28 @@ export class AuthService {
       }));
   }
 
+  googleLogin(): void {
+    window.location.href = `${this.apiUrl}/google`;
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe( // withCredentials: true per inviare i cookie che contenono il refresh token
+      tap(response => {
+        this._currentUser.set(response);
+        localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
+      }),
+      catchError(err => {
+        this._currentUser.set(null);
+        localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+        return throwError(() => err);
+      })
+    );
+  }
+
   // Matti di seguito ti metto del codice che puoi eliminare ma che ti potrebbe servire per gestire le sessioni
   // un polling ("interrogazione ciclica") ti permette di fare con observables in modo figo quello che in js faresti con setIntervalTimer
   // Lo puoi far partire in seguito a un evento e rimane attivo fin che non lo termini (unsubscribe) o fino alla fine dell'applicazione
- // La funzione che ti ho messo restituisce un observables che va usato come vedi nella prima riga
+  // La funzione che ti ho messo restituisce un observables che va usato come vedi nella prima riga
 
   private pollingSubscription: Subscription = this.startPolling().subscribe()
 

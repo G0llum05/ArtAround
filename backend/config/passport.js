@@ -9,7 +9,8 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL
 },
-  async (profile, done) => {
+  async (accessToken, refreshToken, profile, done) => {
+    // async (profile, done) => {
     try {
       const googleProfileDTO = AuthMapper.toGoogleProfileDTO(profile);
       // metodo loginWithGoogle nel service auth

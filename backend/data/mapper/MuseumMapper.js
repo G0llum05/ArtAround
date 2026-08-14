@@ -1,4 +1,4 @@
-const { MuseumResponseDTO, MuseumRequestDTO, MuseumVisitPlanResponseDTO ,MuseumHomePresentationResponseDTO } = require('../model/dto/MuseumDTO');
+const { MuseumResponseDTO, MuseumRequestDTO, MuseumVisitPlanResponseDTO, MuseumHomePresentationResponseDTO } = require('../model/dto/MuseumDTO');
 
 class MuseumMapper {
   static toMuseumResponseDTO(museum) {
@@ -26,8 +26,21 @@ class MuseumMapper {
     );
   }
 
+  static toMuseumHomePresentationResponseDTO(museum) {
+    if (!museum) return null;
+
+    return new MuseumHomePresentationResponseDTO(
+      museum._id,
+      museum.name,
+      museum.description,
+      museum.address ? museum.address.city : null,
+      museum.accessibility.disableFriendly,
+      museum.assets
+    )
+  }
+
   static toMuseumVisitPlanResponseDTO(museum, imageUrls = []) {
-    if(!museum) return null;
+    if (!museum) return null;
     return new MuseumVisitPlanResponseDTO(
       museum._id || museum.id,
       museum.name,
@@ -39,18 +52,6 @@ class MuseumMapper {
     );
   }
 
-  static toMuseumHomePresentationResponseDTO(museum, imageUrls = []) {
-    if (!museum) return null;
-
-    return new MuseumHomePresentationResponseDTO(
-      museum._id,
-      museum.name,
-      museum.description,
-      museum.address ? museum.address.city : null,
-      imageUrls,
-      museum.accessibility.disableFriendly
-    )
-  }
 
   static toMuseum(museumRequestDTO) {
     if (!museumRequestDTO) return null;

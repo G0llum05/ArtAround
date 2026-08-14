@@ -2,8 +2,8 @@ import { Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MuseumHomePresentationResponse } from '../../models/museum.model';
-import {BadgesList} from '../badges-list/badges-list';
-import {TruncatePipe} from '../../pipes/truncate-pipe';
+import { BadgesList } from '../badges-list/badges-list';
+import { TruncatePipe } from '../../pipes/truncate-pipe';
 
 @Component({
   selector: 'app-museum-card',
@@ -21,10 +21,8 @@ export class MuseumCard {
     this.router.navigate(['/marketplace/marketplace.html/museum', this.museum().id]);
   }
 
-  getImageUrl(): string {
+  getImageUrl(item: MuseumHomePresentationResponse): string {
     const place_holder = '/assets/images/place_holder.jpg'
-    //return item.assets.images.find(image => image.orientation=="landscape")?.url || place_holder;
-    return place_holder;
+    return item.assets.images.find(image => image.orientation == "landscape")?.url || place_holder;
   }
-  //TODO sistemare assets
 }

@@ -12,6 +12,18 @@ class MuseumController {
     }
   }
 
+  static async getHomePresentation(req, res) {
+    try {
+      const museums = await MuseumService.getMuseumHomePresentation();
+      const response = museums.map(mus => {
+        return MuseumMapper.toMuseumHomePresentationResponseDTO(mus);
+      })
+      res.status(200).json(response);
+    } catch (e) {
+      res.status(500).json({ message: e.message });
+    }
+  }
+
   static async getById(req, res) {
     try {
       const id = req.params.id;
@@ -36,9 +48,9 @@ class MuseumController {
       const imageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000";
       const visits = await MuseumService.getVisitsByMuseumId(req.params.id || req.body.id) || [];
       const visitsPresentation = visits.map(
-          visit => VisitMapper.toSingleVisitHomePresentationRes(visit, [imageUrl], "")
+        visit => VisitMapper.toSingleVisitHomePresentationRes(visit, [imageUrl], "")
       );
-      console.log("DEUBUGGGGGG -> ",visits);
+      console.log("DEUBUGGGGGG -> ", visits);
       res.status(200).json(visitsPresentation);
     } catch (e) {
       res.status(500).json({ message: e.message });
@@ -86,21 +98,10 @@ class MuseumController {
       const museumVisitPlanDTO = await MuseumService.getMuseumVisitPlanById(id);
       res.status(200).json(museumVisitPlanDTO);
     } catch (e) {
-      res.status(500).json({ message: e.message});
+      res.status(500).json({ message: e.message });
     }
   }
 
-  static async getHomePresentation(req, res) {
-    try {
-      const {museums, imageUrl} = await MuseumService.getMuseumHomePresentation();
-      const response = museums.map(mus => {
-          return MuseumMapper.toMuseumHomePresentationResponseDTO(mus, [imageUrl]);
-      })
-      res.status(200).json(response);
-    } catch (e) {
-        res.status(500).json({ message: e.message });
-    }
-  }
 }
 
 module.exports = MuseumController;

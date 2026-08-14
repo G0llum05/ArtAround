@@ -80,7 +80,6 @@ export interface VisitHomePresentationResponse {
   description: string,
   isVerified: boolean,
   disableFriendly: boolean,
-  imageUrls: string[],
   duration: number, // minutes
   price: number,
   isClosingSoon: boolean,

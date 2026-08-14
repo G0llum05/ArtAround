@@ -2,7 +2,7 @@ const express = require('express');
 const MuseumController = require('./MuseumController');
 const router = express.Router();
 
-// TODO CHECK non è quello della home ma quello dell'editor
+router.get('/homePresentation', MuseumController.getHomePresentation);
 router.get('/homePresentation', MuseumController.getHomePresentation);
 router.get('/', MuseumController.getAll);
 router.post('/', MuseumController.create);

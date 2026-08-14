@@ -16,14 +16,14 @@
 
   <!-- Sezione Centrale Dinamica -->
   <section class="main-section">
-    @if (activeVisit(); as visit) {
+    @if (authService.currentVisit(); as visit) {
       <!-- Layout con Visita Attiva (Bento Grid asimmetrica) -->
       <div class="active-grid">
 
         <!-- Card Continua Visita -->
         <div class="card active-card cursor-pointer">
           <div class="card-img-wrap">
-            <img class="card-img" [src]="visit.imageUrl || '/assets/images/place_holder.jpg'" [alt]="visit?.title">
+            <img class="card-img" [src]="'/assets/images/place_holder.jpg'" [alt]="visit?.title">
             <div class="badge">
               <span class="pulse"></span>
               <span>Visita Attiva</span>
@@ -34,11 +34,11 @@
               <svg class="small-svg" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
                 <path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/>
               </svg>
-              <span>{{visit.location}}</span>
+              <span>{{ "Location TODO" }}</span>
             </div>
             <h2 class="card-title">{{visit.title}}</h2>
             <p class="card-text">
-              Hai messo in pausa la guida audio vicino all'opera <strong>{{visit.title}}</strong>. Riprendi per ascoltare il commento.
+              Hai messo in pausa la guida audio vicino all'opera <strong>{{ "Current Artwork TODO"}}</strong>. Riprendi per ascoltare il commento.
             </p>
 
             <div class="btn-container">
@@ -118,7 +118,9 @@
   <section class="section-carousel">
     <app-carousel
       title="Mostre Consigliate"
-      [items]="recommendedExhibitions()">
+      [items]="recommendedExhibitions()"
+      [isLoading]="isLoadingVisits()"
+    >
     </app-carousel>
   </section>
 

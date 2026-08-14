@@ -6,6 +6,7 @@ import { switchMap } from 'rxjs/operators'
 import { tap, catchError } from 'rxjs/operators';
 import { UserResponse, AuthResponse, LoginRequest, UserRequest } from '../models/user.model';
 import { environment } from '../../environments/environment';
+import {VisitResponse} from '../models/visit.model';
 
 
 @Injectable({
@@ -17,9 +18,11 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   private readonly _currentUser = signal<AuthResponse | null>(null);
+  private readonly _currentVisit = signal<VisitResponse | null>(null);
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly isLoggedIn = computed(() => this.currentUser() != null);
+  readonly currentVisit = this._currentVisit.asReadonly();
 
   register(userData: UserRequest): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/signup`, userData);
@@ -65,6 +68,7 @@ export class AuthService {
   // Lo puoi far partire in seguito a un evento e rimane attivo fin che non lo termini (unsubscribe) o fino alla fine dell'applicazione
   // La funzione che ti ho messo restituisce un observables che va usato come vedi nella prima riga
 
+  /*
   private pollingSubscription: Subscription = this.startPolling().subscribe()
 
   startPolling(intervalMs: number = 5000): Observable<any> {
@@ -75,6 +79,8 @@ export class AuthService {
       switchMap(() => this.http.get("test"))
     );
   }
+  */
+
 
   //Andrebbe terminato così ma essendo un componente provided in root non è necessario
   /*

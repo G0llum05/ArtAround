@@ -13,15 +13,6 @@ import { MuseumCard } from '../../components/museum-card/museum-card';
 import {MuseumHomePresentationResponse} from '../../models/museum.model';
 import {AuthService} from '../../services/auth.service';
 
-interface ArtworkPlaceholder {
-  id: string;
-  title: string;
-  author: string;
-  location: string;
-  imageUrl: string;
-}
-
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -32,21 +23,18 @@ interface ArtworkPlaceholder {
 export class Home {
   authService = inject(AuthService);
 
-  userName = signal<string>('John Doe');
-
-  activeVisit = signal<ArtworkPlaceholder>({
-    id: '123',
-    title: 'Gamberetto allo spiedo',
-    author: 'Gr8llo',
-    location: 'Geologia G1',
-    imageUrl: '/assets/images/place_holder.jpg'
-  });
+  //TODO VISITA CORRENTE
 
   private visitService = inject(VisitService);
-  recommendedExhibitions = toSignal(this.visitService.getHomePresentation(), { initialValue: [] });
+  isLoadingVisits = signal<boolean>(true)
+  recommendedExhibitions = toSignal(this.visitService.getHomePresentation().pipe(
+    finalize(() => this.isLoadingVisits.set(false)),
+    )
+    , { initialValue: [] });
 
   private museumService = inject(MuseumService);
   isLoadingMuseums = signal<boolean>(true);
+  //finalize si attiva sempre anche quando fallisce
   allMuseums = toSignal(this.museumService.getMuseumHomePresentation().pipe(
       finalize( () => this.isLoadingMuseums.set(false))
     )

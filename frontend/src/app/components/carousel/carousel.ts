@@ -14,6 +14,7 @@ import { BadgesList } from '../badges-list/badges-list';
 export class Carousel implements OnInit, OnDestroy {
   items = input.required<VisitHomePresentationResponse[]>();
   autoPlayInterval = input(5000)
+  isLoading = input<boolean>(false)
 
   currentIndex = signal<number>(0);
   isInstant = signal<boolean>(false);

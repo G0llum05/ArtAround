@@ -258,3 +258,39 @@
     right: -1.5rem;
   }
 }
+
+/* --- SKELETON LOADER CAROSELLO --- */
+@keyframes shimmer {
+  0% { background-position: -25rem 0; }
+  100% { background-position: 25rem 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-variant) 25%, var(--on-secondary) 50%, var(--surface-variant) 75%);
+  background-size: 50rem 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-slide {
+  background-color: var(--surface-variant);
+  position: relative;
+}
+
+.skeleton-overlay {
+  background: var(--surface-variant);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem 2rem;
+  gap: 1rem;
+}
+
+.skeleton-badge {
+  width: 5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-full);
+}
+
+.skeleton-text {
+  border-radius: 0.25rem;
+}

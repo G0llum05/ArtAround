@@ -15,13 +15,12 @@
   flex-grow: 1;
   width: 100%;
   max-width: 100rem;
-  margin: 0 auto;
   padding: var(--margin-mobile);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
   box-sizing: border-box;
-  margin-top: var(--spacing-md);
+  margin: var(--spacing-md) auto 0;
 }
 
 @media (min-width: 48rem) {

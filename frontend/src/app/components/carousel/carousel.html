@@ -19,52 +19,63 @@
 
     <!-- Viewport del carosello -->
     <div (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()" class="carousel-viewport">
-      <div [class.no-transition]="isInstant()" [style.transform]="'translateX(-' + (currentIndex() * 100) + '%)'"
-           class="carousel-track">
-        @for (item of extendedItems(); track item.id || $index) {
-          <div [style.background-image]="'url(' + getImageUrl(item) + ')'" class="carousel-slide">
-            <div class="carousel-overlay">
-              <app-badges-list
-                [disableFriendly]="item.disableFriendly || false"
-                [verified]="item.isVerified || false"
-              ></app-badges-list>
-              <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
-              <div class="slide-content">
-                <div class="badges-wrapper">
-                  @if (item.isClosingSoon) {
-                    <span class="badge badge-alert">
-                      Chiude tra poco
-                    </span>
-                  }
-                  @if (item.isNew) {
-                    <span class="badge badge-nuovo">
-                      New
-                    </span>
-                  }
-                  @if (item.price === 0) {
-                    <span class="badge badge-free">
-                      Free
-                    </span>
-                  }
-                </div>
-                <h3 class="slide-title">{{ item.title }}</h3>
-                <p class="slide-desc">{{ item.description }}</p>
-
-                <button (click)="learnMore(item.id)" class="btn-primary" type="button">
-                  SCOPRI DI PIÙ
-                  <svg class="btn-icon" fill="currentColor" height="20px" viewBox="0 -960 960 960"
-                       width="20px" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
-                  </svg>
-                </button>
-              </div>
-
+      @if (isLoading()) {
+        <div class="carousel-slide skeleton-slide">
+          <div class="carousel-overlay skeleton-overlay">
+            <div class="skeleton skeleton-badge"></div>
+            <div class="slide-content" style="width: 100%;">
+              <div class="skeleton skeleton-text" style="width: 60%; height: 2rem;"></div>
+              <div class="skeleton skeleton-text" style="width: 80%; height: 1rem;"></div>
+              <div class="skeleton skeleton-text" style="width: 40%; height: 2.2rem; margin-top: 0.5rem;"></div>
             </div>
           </div>
-        }
-      </div>
-    </div>
+        </div>
+      } @else {
+        <div [class.no-transition]="isInstant()" [style.transform]="'translateX(-' + (currentIndex() * 100) + '%)'"
+             class="carousel-track">
+          @for (item of extendedItems(); track item.id || $index) {
+            <div [style.background-image]="'url(' + getImageUrl(item) + ')'" class="carousel-slide">
+              <div class="carousel-overlay">
+                <app-badges-list
+                  [disableFriendly]="item.disableFriendly || false"
+                  [verified]="item.isVerified || false"
+                ></app-badges-list>
+                <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
+                <div class="slide-content">
+                  <div class="badges-wrapper">
+                    @if (item.isClosingSoon) {
+                      <span class="badge badge-alert">
+                      Chiude tra poco
+                    </span>
+                    }
+                    @if (item.isNew) {
+                      <span class="badge badge-nuovo">
+                      New
+                    </span>
+                    }
+                    @if (item.price == 0) {
+                      <span class="badge badge-free">
+                      Free
+                    </span>
+                    }
+                  </div>
+                  <h3 class="slide-title">{{ item.title }}</h3>
+                  <p class="slide-desc">{{ item.description }}</p>
 
+                  <button (click)="learnMore(item.id)" class="btn-primary" type="button">
+                    SCOPRI DI PIÙ
+                    <svg class="btn-icon" fill="currentColor" height="20px" viewBox="0 -960 960 960"
+                         width="20px" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
     <!-- Freccia Destra -->
     @if (items() && items().length > 1) {
       <button (click)="next()" aria-label="Successivo" class="nav-arrow next-arrow" type="button">

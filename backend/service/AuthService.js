@@ -178,8 +178,7 @@ class AuthService {
       throw new Error("Hai superato il numero massimo di tentativi di verifica email. Contatta l'assistenza per sbloccare l'account.");
     }
 
-    // genera e invia nuovo codice di verifica per la registrazione (isLogin = false)
-    await this._createAndSendVerificationCode(existingUser, false);
+    await this._createAndSendVerificationCode(existingUser, 'SIGNIN');
 
     return {
       message: 'Un nuovo link di verifica è stato inviato alla tua email.',
@@ -189,26 +188,31 @@ class AuthService {
 
 
   /**
-    * gestione registrazione utenti già presenti nel DB per le registrazioni con google
-    */
+   * Gestione utenti già presenti nel DB per le registrazioni/login con Google.
+   * Collega il googleId all'utente locale esistente ed invia il codice di verifica 'GOOGLE'
+   * per evitare la creazione di due profili differenti per la stessa email.
+   */
   async _handleExistingUserForGoogleSignup(existingUser, googleId) {
-    // utente già registrato con google
+    // Se l'utente ha già il googleId associato, restituisci direttamente l'utente
     if (existingUser.googleId) {
       return existingUser;
     }
 
-    // TODO CHECK Srebbe da fare un listener che elimina gli utenti che non si sono verificati entro il limite del token 
-    // utente già registrato con email ma non con google, devo guardare se l'email è verificata
-    if (!existingUser.isEmailVerified) {
-      throw new Error("L'indirizzo email è già registrato ma non è stato verificato. Controlla la tua email per confermare l'account o richiedi un nuovo link di verifica.");
-    }
+    // Verifica se esiste un codice attivo che ha superato il massimo dei tentativi
+    // const activeCode = await TokenService.getActiveCode(existingUser._id);
+    // if (activeCode && activeCode.attempts >= TokenService.getMaxAttempts()) {
+    //   throw new Error("Hai superato il numero massimo di tentativi di verifica email. Contatta l'assistenza per sbloccare l'account.");
+    // }
 
-    // utente già registrato con email e verificato, ora lo registro anche con google
+    // await this._createAndSendVerificationCode(existingUser, 'GOOGLE');
+
+    // Collega il profilo Google all'utente locale per evitare profili duplicati
     existingUser.googleId = googleId;
-    // non tengo i dati di google (nome e cognome) perchè se uno ha scelto di con nome e cognome hanno priorità su quelli base di google
     await existingUser.save();
+
     return existingUser;
   }
+
 
 
   /**
@@ -224,13 +228,6 @@ class AuthService {
   async _createNewUser(email, name, surname, hashedPassword, googleId, newLocalUser) {
     const roleConfig = await RoleManagementService.determineUserRoleOnSignup(email, null);
 
-    let token = null;
-    let expires = null;
-    // Per il momento non verifico l'email, quindi non genero il token di verifica
-    // if (newLocalUser) {
-    // ({ token, expires } = this._generateVerificationToken());
-    // }
-
     const newUser = new User({
       name: name,
       surname: surname,
@@ -244,7 +241,7 @@ class AuthService {
 
     await newUser.save();
     if (newLocalUser) {
-      await this._createAndSendVerificationCode(newUser, false);
+      await this._createAndSendVerificationCode(newUser, 'SIGNUP');
     }
 
     return {
@@ -266,12 +263,12 @@ class AuthService {
   /**
    * email di verifica tramite Resend
    */
-  async _createAndSendVerificationCode(user, isLogin) {
+  async _createAndSendVerificationCode(user, accessMode) {
     console.log(`[AuthService Debug] Avvio creazione codice di verifica per l'utente: ${user.email}`);
     const codeStart = Date.now();
     const code = await TokenService.createVerificationMailCode(user);
     console.log(`[AuthService Debug] Codice generato in ${Date.now() - codeStart}ms (${code}). Invio mail tramite Mailer...`);
-    await Mailer.sendLoginConfirmation(user.email, user.name, code, isLogin);
+    await Mailer.sendLoginConfirmation(user.email, user.name, code, accessMode);
     console.log(`[AuthService Debug] Procedura _createAndSendVerificationCode completata per ${user.email}.`);
   }
 

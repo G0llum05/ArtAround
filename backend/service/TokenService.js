@@ -7,6 +7,7 @@ const VerificationCode = require('../data/model/VerificationCode');
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRATION = '15m';
 const REFRESH_TOKEN_DAYS = 7;
+const MAX_ATTEMPTS = 10;
 
 class TokenService {
   /**
@@ -67,6 +68,10 @@ class TokenService {
   }
 
 
+  getMaxAttempts() {
+    return MAX_ATTEMPTS;
+  }
+
   /**
    * crea il codice di verifica per l'acesso mail-password
    */
@@ -77,8 +82,8 @@ class TokenService {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
-    // await VerificationCode.deleteMany({ userId: user._id });
-
+    // Rimuove tutti i codici vecchi (non necessariamente scaduti) e ne crea un nuovo
+    await VerificationCode.deleteMany({ userId: user._id });
     await new VerificationCode({
       userId: user._id,
       code: code,
@@ -90,12 +95,15 @@ class TokenService {
   /**
    * Cerca se esiste un codice attivo (non scaduto) per l'utente
    */
+
   async getActiveCode(userId) {
+    // per un solo user ci sarà un solo codice di verifica e sarà quello corretto
     const activeCodeRecord = await VerificationCode.findOne({ userId });
     
     // Ritorna il record solo se esiste ed è effettivamente valido nel tempo
     if (activeCodeRecord && activeCodeRecord.expiresAt > new Date()) {
       return activeCodeRecord;
+      console.log(`[TokenService Debug] Codice: ${activeCodeRecord.lean().code}.`);
     }
     
     return null;
@@ -112,17 +120,17 @@ class TokenService {
       throw new Error('Codice di verifica scaduto o non valido.');
     }
 
-    if (tokenRecord.attempts >= 3) {
-      throw new Error('Hai superato il numero massimo di tentativi (3). Richiedi un nuovo codice di verifica.');
+    if (tokenRecord.attempts >= MAX_ATTEMPTS) {
+      throw new Error(`Hai superato il numero massimo di tentativi (${MAX_ATTEMPTS}). Richiedi un nuovo codice di verifica.`);
     }
 
     if (tokenRecord.code !== String(inputCode).trim()) {
       tokenRecord.attempts += 1;
       await tokenRecord.save();
 
-      const remainingAttempts = 3 - tokenRecord.attempts;
+      const remainingAttempts = MAX_ATTEMPTS - tokenRecord.attempts;
       if (remainingAttempts <= 0) {
-        throw new Error('Codice errato. Hai raggiunto il numero massimo di tentativi (3).');
+        throw new Error(`Codice errato. Hai raggiunto il numero massimo di tentativi (${MAX_ATTEMPTS}).`);
       }
       throw new Error(`Codice errato. Tentativi rimasti: ${remainingAttempts}`);
     }

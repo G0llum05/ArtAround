@@ -1,0 +1,84 @@
+<div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-card">
+    <button type="button" class="btn-close" (click)="onClose()" aria-label="Chiudi">
+      <svg viewBox="0 0 24 24" class="icon-close">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      </svg>
+    </button>
+
+    <div class="modal-header">
+      <div class="icon-badge">
+        <svg viewBox="0 -960 960 960" class="icon-mail">
+          <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/>
+        </svg>
+      </div>
+      <h2 id="modal-title" class="modal-title">Verifica la tua Email</h2>
+      <p class="modal-subtitle">
+        Abbiamo inviato un codice di sicurezza a 6 cifre a:
+        <span class="email-highlight">{{ email }}</span>
+      </p>
+    </div>
+
+    <form (submit)="$event.preventDefault(); verify()" class="modal-body">
+      <div class="otp-container" (paste)="onPaste($event)">
+        @for (digit of digits(); track $index) {
+          <input
+            #digitInput
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="1"
+            class="otp-field"
+            [class.filled]="digit !== ''"
+            [class.has-error]="errorMessage() !== null"
+            [value]="digit"
+            (input)="onInput($event, $index)"
+            (keydown)="onKeyDown($event, $index)"
+            [disabled]="isLoading() || successMessage() !== null"
+            autocomplete="off"
+          />
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <div class="alert alert-error" role="alert">
+          <svg viewBox="0 0 24 24" class="alert-icon">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      @if (successMessage()) {
+        <div class="alert alert-success" role="status">
+          <svg viewBox="0 0 24 24" class="alert-icon">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span>{{ successMessage() }}</span>
+        </div>
+      }
+
+      <div class="modal-actions">
+        <button
+          type="submit"
+          class="btn-verify"
+          [disabled]="!isCodeComplete() || isLoading() || successMessage() !== null"
+        >
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            <span>Verifica in corso...</span>
+          } @else {
+            <span>Conferma Codice</span>
+          }
+        </button>
+      </div>
+    </form>
+
+    <div class="modal-footer">
+      <p class="resend-text">
+        Non hai ricevuto l'email? Controlla la cartella spam o
+        <button type="button" class="btn-resend" (click)="onClose()">riprova la registrazione</button>.
+      </p>
+    </div>
+  </div>
+</div>

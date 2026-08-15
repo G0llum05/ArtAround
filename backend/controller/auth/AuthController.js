@@ -57,13 +57,18 @@ class AuthController {
         return res.status(400).json({ message: 'Email e codice di verifica sono obbligatori.' });
       }
 
-      const result = await authService.verifyCode(email, code);
-      res.status(200).json(result);
+      const clientIp = req.ip || req.connection.remoteAddress;
+      const result = await authService.verifyCode(email, code, clientIp);
+
+      // Imposta il refresh token nei cookie HTTP-Only sicuri (come nel login)
+      setRefreshTokenCookie(res, result.refreshToken);
+
+      // Restituisce la risposta con il DTO del profilo utente e i token
+      res.status(200).json(AuthMapper.toLoginResponseDTO(result.user, result.accessToken, result.refreshToken));
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
-
 
 
   /**

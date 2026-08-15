@@ -6,10 +6,12 @@ import { UserRequest } from '../../models/user.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; //per la disiscrizione dagli observable
 import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { VerifyCodeModal } from '../../components/verify-code-modal/verify-code-modal';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, VerifyCodeModal],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -21,6 +23,11 @@ export class Login implements OnInit {
   readonly authService = inject(AuthService);
 
   isLoginMode = signal<boolean>(true);
+  showVerifyModal = signal<boolean>(false);
+  pendingVerifyEmail = signal<string>('');
+  verificationSuccessMessage = signal<string | null>(null);
+
+  isSubmitting = signal<boolean>(false);
 
   authForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -59,51 +66,102 @@ export class Login implements OnInit {
   toggleMode(isLogin: boolean): void {
     this.isLoginMode.set(isLogin);
     this.authForm.reset();
+    this.verificationSuccessMessage.set(null);
+    this.isSubmitting.set(false);
 
     const nameControl = this.authForm.get('name');
+    const surnameControl = this.authForm.get('surname');
+
     if (isLogin) {
       nameControl?.clearValidators();
+      surnameControl?.clearValidators();
     } else {
       nameControl?.setValidators(Validators.required);
+      surnameControl?.setValidators(Validators.required);
     }
     nameControl?.updateValueAndValidity();
+    surnameControl?.updateValueAndValidity();
   }
 
   onSubmit(): void {
-    // submit signup
-    console.log(this.isLoginMode() ? 'Login data:' : 'Signup data:', this.authForm.value);
-    if (this.authForm.valid && !this.isLoginMode()) {
+    if (this.isSubmitting()) {
+      console.log('[Frontend Debug] Invio già in corso, click ignorato.');
+      return;
+    }
+
+    console.log(this.isLoginMode() ? '[Frontend Debug] Intent login:' : '[Frontend Debug] Intent signup:', this.authForm.value);
+
+    if (!this.isLoginMode()) { // REGISTRAZIONE
+      if (this.authForm.invalid) {
+        this.authForm.markAllAsTouched();
+        console.warn('[Frontend Debug] Form di registrazione NON valido:', this.getInvalidControls());
+        return;
+      }
+
+      const email = this.authForm.get('email')?.value;
+      const requestStartTime = Date.now();
+      this.isSubmitting.set(true);
+      console.log(`[Frontend Debug] [${new Date().toISOString()}] Inizio chiamata HTTP POST /signup per email: ${email}`);
+
       this.authService.register(this.formDataToUserModel(this.authForm.value))
         .pipe(
-          takeUntilDestroyed(this.destroyRef), //non necessario per le chiamate http ma per sicurezza aggiunto
+          takeUntilDestroyed(this.destroyRef),
         )
         .subscribe({
-          // TODO CHECK parte grafica
           next: () => {
-            this.authForm.markAllAsTouched()
-            console.log('Registration successful!');
+            this.isSubmitting.set(false);
+            const elapsed = Date.now() - requestStartTime;
+            console.log(`[Frontend Debug] [${new Date().toISOString()}] Risposta POST /signup ricevuta dal backend in ${elapsed}ms. Apertura modale di verifica...`);
+            this.pendingVerifyEmail.set(email);
+            this.showVerifyModal.set(true);
           },
           error: (error) => {
-            console.error('Registration failed:', error);
+            this.isSubmitting.set(false);
+            const elapsed = Date.now() - requestStartTime;
+            console.error(`[Frontend Debug] [${new Date().toISOString()}] Registrazione fallita dopo ${elapsed}ms:`, error);
           }
         });
-    } else if (this.authForm.get('email')?.valid && this.authForm.get('password')?.valid && this.isLoginMode()) { // submit login
+    } else { // LOGIN
+      const emailControl = this.authForm.get('email');
+      const passwordControl = this.authForm.get('password');
+
+      if (!emailControl?.valid || !passwordControl?.valid) {
+        this.authForm.markAllAsTouched();
+        console.warn('[Frontend Debug] Form di login NON valido (email o password non corrette).');
+        return;
+      }
+
+      this.isSubmitting.set(true);
       this.authService.login({
-        email: this.authForm.get('email')?.value,
-        password: this.authForm.get('password')?.value
+        email: emailControl.value,
+        password: passwordControl.value
       }).pipe(
-        takeUntilDestroyed(this.destroyRef), //non necessario per le chiamate http ma per sicurezza aggiunto
+        takeUntilDestroyed(this.destroyRef),
       )
         .subscribe({
           next: (response) => {
+            this.isSubmitting.set(false);
             console.log('Login successful!', response);
           },
           error: (error) => {
+            this.isSubmitting.set(false);
             console.error('Login failed:', error);
           }
         });
     }
   }
+
+  private getInvalidControls(): string[] {
+    const invalid: string[] = [];
+    const controls = this.authForm.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        invalid.push(name);
+      }
+    }
+    return invalid;
+  }
+
 
   onLogout(): void {
     this.authService.logout().subscribe({
@@ -120,4 +178,16 @@ export class Login implements OnInit {
     this.authService.googleLogin()
   }
 
+  onCodeVerified(res?: any): void {
+    this.showVerifyModal.set(false);
+    console.log('Utente verificato ed autenticato con successo:', res);
+    this.router.navigate(['/']);
+  }
+
+
+  onVerifyCancelled(): void {
+    this.showVerifyModal.set(false);
+  }
+
 }
+

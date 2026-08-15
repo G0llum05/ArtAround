@@ -56,12 +56,13 @@ class AuthService {
 
   /**
    * Processa l'inputCode dell'utente per la verifica via email.
-   * La gestione dei tentativi e lo stato di verifica risiedono interamente in VerificationCode.
+   * A seguito della verifica riuscita, genera i token di sessione ed il profilo utente.
    * @param {string} email - Email dell'utente
    * @param {string} inputCode - Codice a 6 cifre inserito
-   * @returns {Promise<Object>} - Esito positivo
+   * @param {string} ipAddress - Indirizzo IP del client
+   * @returns {Promise<Object>} - Oggetto con user, accessToken e refreshToken
    */
-  async verifyCode(email, inputCode) {
+  async verifyCode(email, inputCode, ipAddress) {
     if (!email || !inputCode) {
       throw new Error('Email e codice di verifica sono obbligatori.');
     }
@@ -74,8 +75,17 @@ class AuthService {
     // Verifica il codice ed incrementa gli tentativi o elimina il record se corretto
     await TokenService.verifyCode(user._id, inputCode);
 
-    return { message: 'Email verificata con successo.' };
+    // Genera i token di sessione (accessToken e refreshToken) come nel login
+    const accessToken = TokenService.generateAccessToken(user);
+    const refreshToken = await TokenService.generateRefreshToken(user, ipAddress);
+
+    return {
+      user: user,
+      accessToken,
+      refreshToken
+    };
   }
+
 
 
   /**
@@ -164,12 +174,12 @@ class AuthService {
   async _handleExistingUserForLocalSignup(existingUser, name, surname, hashedPassword) {
     // controllo se esiste un codice attivo e se ha superato i tentativi
     const activeCode = await TokenService.getActiveCode(existingUser._id);
-    if (activeCode && activeCode.attempts >= 3) {
+    if (activeCode && activeCode.attempts >= TokenService.getMaxAttempts()) {
       throw new Error("Hai superato il numero massimo di tentativi di verifica email. Contatta l'assistenza per sbloccare l'account.");
     }
 
-    // genera e invia nuovo codice di verifica
-    await this._createAndSendVerificationCode(existingUser);
+    // genera e invia nuovo codice di verifica per la registrazione (isLogin = false)
+    await this._createAndSendVerificationCode(existingUser, false);
 
     return {
       message: 'Un nuovo link di verifica è stato inviato alla tua email.',
@@ -233,8 +243,8 @@ class AuthService {
     });
 
     await newUser.save();
-    if (newLocalUser && token) {
-      await this._createAndSendVerificationCode(newUser);
+    if (newLocalUser) {
+      await this._createAndSendVerificationCode(newUser, false);
     }
 
     return {
@@ -256,10 +266,15 @@ class AuthService {
   /**
    * email di verifica tramite Resend
    */
-  async _createAndSendVerificationCode(user) {
-    const code = await TokenService.createVerificationMailCode(user);    
-    await Mailer.sendLoginConfirmation(user.email, user.name, code);
+  async _createAndSendVerificationCode(user, isLogin) {
+    console.log(`[AuthService Debug] Avvio creazione codice di verifica per l'utente: ${user.email}`);
+    const codeStart = Date.now();
+    const code = await TokenService.createVerificationMailCode(user);
+    console.log(`[AuthService Debug] Codice generato in ${Date.now() - codeStart}ms (${code}). Invio mail tramite Mailer...`);
+    await Mailer.sendLoginConfirmation(user.email, user.name, code, isLogin);
+    console.log(`[AuthService Debug] Procedura _createAndSendVerificationCode completata per ${user.email}.`);
   }
+
 
   /**
    * Cerca un utente per email restituendo il Mongoose Document (senza .lean()).

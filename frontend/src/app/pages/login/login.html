@@ -44,7 +44,16 @@
         <p class="auth-subtitle">
           {{ isLoginMode() ? 'Accedi per continuare il tuo viaggio artistico.' : 'Iscriviti per iniziare il tuo viaggio artistico.' }}
         </p>
+        @if (verificationSuccessMessage()) {
+          <div class="verification-success-alert">
+            <svg viewBox="0 0 24 24" class="alert-icon">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <span>{{ verificationSuccessMessage() }}</span>
+          </div>
+        }
       </header>
+
 
       <form (ngSubmit)="onSubmit()" [formGroup]="authForm" class="auth-form">
         <!-- Campo Nome e Cognome (Solo Registrazione) -->
@@ -99,14 +108,15 @@
         </div>
 
         @if(!isLoginMode()){
-          <button [disabled]="authForm.invalid" class="btn-submit" type="submit">
-            Registrati
+          <button [disabled]="isSubmitting() || authForm.invalid" class="btn-submit" type="submit">
+            {{ isSubmitting() ? 'Invio in corso...' : 'Registrati' }}
           </button>
         } @else {
-          <button [disabled]="!(authForm.get('email')?.valid && authForm.get('password')?.valid)" class="btn-submit" type="submit">
-            Accedi
+          <button [disabled]="isSubmitting() || !(authForm.get('email')?.valid && authForm.get('password')?.valid)" class="btn-submit" type="submit">
+            {{ isSubmitting() ? 'Accesso in corso...' : 'Accedi' }}
           </button>
         }
+
 
         <footer class="auth-footer">
           {{ isLoginMode() ? 'Nuovo su ArtAround?' : 'Hai già un account?' }}
@@ -144,3 +154,12 @@
 
   </main>
 </div>
+
+@if (showVerifyModal()) {
+  <app-verify-code-modal
+    [email]="pendingVerifyEmail()"
+    (verified)="onCodeVerified()"
+    (cancelled)="onVerifyCancelled()"
+  ></app-verify-code-modal>
+}
+

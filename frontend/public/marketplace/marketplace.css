@@ -1,4 +1,5 @@
-/* public/marketplace/marketplace.css */
+@import url('./components/museum-card/museum-card.css');
+@import url('./components/visit-card/visit-card.css');
 
 :host {
   display: block;
@@ -211,8 +212,8 @@
 }
 
 .mkt-filter-pill:hover {
-  background-color: var(--secondary);
-  color: var(--on-secondary);
+  background-color: var(--surface-variant);
+  color: var(--primary);
 }
 
 .mkt-filter-pill.mkt-active {
@@ -253,6 +254,26 @@
   scroll-snap-align: start;
 }
 
+.mkt-arrow{
+  margin-top: auto;
+  align-self: flex-end;
+  transition: transform 0.2s ease;
+}
+
+.mkt-card:hover .mkt-arrow {
+  transform: translateX(4px);
+}
+
+.mkt-card-svg{
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--secondary);
+  fill: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+  transition: transform 0.2s ease, fill 0.2s ease;
+}
+
 
 /* MEDIA QUERY: MOBILE E PORTRAIT (Desktop First - max-width)*/
 @media (max-width: 48rem) {
@@ -263,18 +284,97 @@
 
   /* Riduzione Card Principali in alto */
   .mkt-action-card {
-    min-height: 90px;
+    min-height: 6rem;
     padding: var(--spacing-lg) var(--spacing-md);
   }
 
   .mkt-large-card {
-    min-height: 160px;
+    min-height: 10rem;
     padding: var(--spacing-lg);
   }
 
   /* Riduzione Card nello scroll orizzontale */
   .mkt-track-card {
-    min-width: 200px;
-    height: 140px;
+    min-width: 12.5rem;
+    height: 9rem;
   }
+}
+
+/* --- SEZIONE CONTROLLI (Ricerca + Filtri) --- */
+.mkt-controls-section {
+  padding: 0;
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-md);
+  align-items: center;
+  overflow-x: auto;
+}
+
+.mkt-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1.5; /* ⬅️ Occupa tutto lo spazio rimasto nel wrapper */
+  max-width: 20rem;
+}
+
+#mkt-museum-search-input {
+  width: 100%;
+  box-sizing: border-box; /* ⬅️ Include padding e bordi nel calcolo dell'altezza */
+  height: 2.5rem;          /* ⬅️ Altezza fissa unificata */
+  padding: 0 var(--spacing-md);
+  border-radius: var(--radius-lg);
+  border: 0.0625rem solid var(--primary);
+  background-color: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#mkt-museum-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.125rem rgba(0, 0, 0, 0.05);
+}
+
+.mkt-quick-filters {
+  display: flex;
+  gap: var(--spacing-xs);
+  overflow-x: auto;
+  padding-bottom: 0;
+  flex-shrink: 0;
+}
+
+.mkt-filter-pill {
+  box-sizing: border-box;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface);
+  color: var(--on-surface-variant);
+  border: 0.0625rem solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  padding: 0 var(--spacing-md);
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.mkt-filter-pill.mkt-active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+  font-weight: 600;
+}
+
+.mkt-empty-text {
+  padding: var(--spacing-md);
+  color: var(--on-surface-variant);
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
 }

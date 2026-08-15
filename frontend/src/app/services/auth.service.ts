@@ -6,7 +6,7 @@ import { switchMap } from 'rxjs/operators'
 import { tap, catchError } from 'rxjs/operators';
 import { UserResponse, AuthResponse, LoginRequest, UserRequest } from '../models/user.model';
 import { environment } from '../../environments/environment';
-import {VisitResponse} from '../models/visit.model';
+import {VisitHomePresentationResponse, VisitResponse} from '../models/visit.model';
 
 
 @Injectable({
@@ -18,7 +18,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   private readonly _currentUser = signal<AuthResponse | null>(null);
-  private readonly _currentVisit = signal<VisitResponse | null>(null);
+  private readonly _currentVisit = signal<VisitHomePresentationResponse | null>(null);
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly isLoggedIn = computed(() => this.currentUser() != null);

@@ -78,7 +78,7 @@ export class MktCardGrid extends HTMLElement {
     this.innerHTML = `
       <section class="mkt-results-section">
         <header class="mkt-results-header">
-          <h2 class="mkt-results-title">Musei</h2>
+          <h2 class="mkt-results-title"> Viste </h2>
           <p class="mkt-results-subtitle">${subtitle}</p>
         </header>
         <div class="mkt-results-grid">

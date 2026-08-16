@@ -13,7 +13,7 @@ function getModuleRouters() {
     if (mod.isDirectory()) {
       const dirPath = path.join(controllerDir, mod.name);
       const files = fs.readdirSync(dirPath);
-      const routerFile = files.find(f => f.endsWith('router.js') || f.endsWith('Routes.js'));
+      const routerFile = files.find(f => f.endsWith('Router.js'));
       if (routerFile) {
         routers.push({
           name: mod.name,

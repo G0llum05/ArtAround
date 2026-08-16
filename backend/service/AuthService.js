@@ -25,7 +25,7 @@ class AuthService {
       if (existingUser.password) {
         throw new Error('Account già esistente!'); // se c'è una password già salvata non posso creare nuovo account
       }
-      await this._handleExistingUserForLocalSignup(existingUser, name, surname, hashedPassword);
+      await this._handleExistingUserForLocalSignup(existingUser, name, surname, hashedPassword, gender);
       return { message: 'Un nuovo codice di verifica è stato inviato alla tua email.' };
     }
 
@@ -169,7 +169,7 @@ class AuthService {
   /**
    * gestione registrazione utenti già presenti nel DB per le registrazioni locali
    */
-  async _handleExistingUserForLocalSignup(existingUser, name, surname, hashedPassword) {
+  async _handleExistingUserForLocalSignup(existingUser, name, surname, hashedPassword, gender) {
     
     // controllo se esiste un codice attivo e se ha superato i tentativi
     const activeCode = await TokenService.getActiveCode(existingUser._id);
@@ -181,6 +181,7 @@ class AuthService {
     existingUser.password = hashedPassword;
     if (name) existingUser.name = name;
     if (surname) existingUser.surname = surname;
+    if (gender) existingUser.gender = gender;
     await existingUser.save();
 
     return {
@@ -196,8 +197,16 @@ class AuthService {
    * per evitare la creazione di due profili differenti per la stessa email.
    */
   async _handleExistingUserForGoogleSignup(existingUser, googleId) {
-    // Se l'utente ha già il googleId associato, restituisci direttamente l'utente
+    // Se l'utente non ha alcun gender (null o undefined), impostiamo 'other' come fallback
+    if (!existingUser.gender) {
+      existingUser.gender = 'other';
+    }
+
+    // Se l'utente ha già il googleId associato, restituisci direttamente l'utente preservando il gender già storato
     if (existingUser.googleId) {
+      if (existingUser.isModified()) {
+        await existingUser.save();
+      }
       return existingUser;
     }
 

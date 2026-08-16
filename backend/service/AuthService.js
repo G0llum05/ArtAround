@@ -4,7 +4,6 @@ const User = require('../data/model/User');
 const TokenService = require('./TokenService');
 const RoleManagementService = require('./RoleManagementService');
 const UserMapper = require('../data/mapper/UserMapper');
-const Mailer = require('../middleware/mailerMiddleware');
 class AuthService {
 
 
@@ -261,14 +260,14 @@ class AuthService {
 
 
   /**
-   * email di verifica tramite Resend
+   * email di verifica tramite Nodemailer con gmail smtp
    */
   async _createAndSendVerificationCode(user, accessMode) {
     console.log(`[AuthService Debug] Avvio creazione codice di verifica per l'utente: ${user.email}`);
     const codeStart = Date.now();
     const code = await TokenService.createVerificationMailCode(user);
     console.log(`[AuthService Debug] Codice generato in ${Date.now() - codeStart}ms (${code}). Invio mail tramite Mailer...`);
-    await Mailer.sendLoginConfirmation(user.email, user.name, code, accessMode);
+    await TokenService.sendMailConfirmation(user.email, user.name, code, accessMode);
     console.log(`[AuthService Debug] Procedura _createAndSendVerificationCode completata per ${user.email}.`);
   }
 
@@ -292,11 +291,12 @@ class AuthService {
 
   async _getUserByVerificationToken(token) {
     if (!token || token.expiresAt <= new Date()) {
-      throw new Error('Codice di Verifica non più valido!')
+      throw new Error('Codice di Verifica non più valido!');
     }
     const id = token.userId;
-    const user = await User.findById({ id });
+    return await User.findById(id);
   }
+
 
   /**
    * Rotazione e Rinnovo del Refresh Token.

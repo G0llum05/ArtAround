@@ -5,7 +5,18 @@
       <!-- SEZIONE UTENTE LOGGATO -->
       <header class="auth-header">
         <h1 class="auth-title">Account Attivo</h1>
-        <p class="auth-subtitle">Sei attualmente connesso con il seguente profilo:</p>
+        @switch(authService.currentUser()?.gender) {
+          @case ('f') {
+            <p class="auth-subtitle">Sei attualmente connessa con il seguente profilo:</p>
+          }
+          @case ('m') {
+            <p class="auth-subtitle">Sei attualmente connesso con il seguente profilo:</p>
+          }@case ('other') {
+            <p class="auth-subtitle">Sei attualmente conness* con il seguente profilo:</p>
+          }@default {
+            <p class="auth-subtitle">Sei attualmente conness* con il seguente profilo:</p>
+          }
+        }
       </header>
 
       <div class="user-info-box">

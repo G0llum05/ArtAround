@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const MapperRefreshToken = require('../data/mapper/RefreshTokenMapper');
 const RefreshToken = require('../data/model/RefreshToken');
 const VerificationCode = require('../data/model/VerificationCode');
+const User = require('../data/model/User');
 const mailer = require('nodemailer');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -118,17 +119,6 @@ async sendMailConfirmation(userEmail, userName, code, accessMode) {
           <p>Horash ArtAround</p>
         `;
         break;
-      case "GOOGLE":
-        subject = 'No-reply: Codice di verifica acesso ArtAround';
-        message = `
-          <h3>Ciao ${userName},</h3>
-          <p>Abbiamo rilevato un nuovo tentativo di login al tuo account ArtAround tramite <strong>Google</strong>.</p>
-          <p>Dobbiamo verificare che sia veramente tu a voler accedere dato che hai già un account registrato in ArtAround</p>
-          <p>Il tuo codice di verifica per completare la verifica è: <strong style="font-size: 1.25rem; color: #9f3d25;">${code}</strong></p>
-          <br>
-          <p>Horash ArtAround</p>
-        `;
-
     }
     const mailOptions = {
       from: `Horash ArtAround <${NOREPLY_MAIL_ADDRESS}>`, // Mittente
@@ -136,7 +126,6 @@ async sendMailConfirmation(userEmail, userName, code, accessMode) {
       subject: subject,
       html: message
     };
-
 
     const sendStart = Date.now();
     const info = await transporter.sendMail(mailOptions);
@@ -171,6 +160,15 @@ async sendMailConfirmation(userEmail, userName, code, accessMode) {
   }
 
   /**
+   * Rimuove un utente non verificato ed il relativo codice dal DB.
+   */
+  async removeUnverifiedUser(userId) {
+    if (!userId) return;
+    await VerificationCode.deleteMany({ userId });
+    await User.findByIdAndDelete(userId);
+  }
+
+  /**
    * Cerca se esiste un codice attivo (non scaduto) per l'utente
    */
   async getActiveCode(userId) {
@@ -187,32 +185,38 @@ async sendMailConfirmation(userEmail, userName, code, accessMode) {
 
   /**
    * Verifica se il codice inserito dall'utente è corretto.
-   * Gestione tentativi e scadenze slegata dal modello User (risiede in VerificationCode).
+   * Se il codice è scaduto o sono stati superati i tentativi massimi, l'utente viene rimosso dal DB.
    */
   async verifyCode(userId, inputCode) {
-    const tokenRecord = await this.getActiveCode(userId);
+    const rawTokenRecord = await VerificationCode.findOne({ userId });
 
-    if (!tokenRecord) {
-      throw new Error('Codice di verifica scaduto o non valido.');
+    // Se il codice non esiste o è scaduto, rimuovi l'utente dal DB
+    if (!rawTokenRecord || rawTokenRecord.expiresAt <= new Date()) {
+      await this.removeUnverifiedUser(userId);
+      throw new Error('Codice di verifica scaduto. La registrazione non verificata è stata annullata per sicurezza. Effettua nuovamente la registrazione.');
     }
 
-    if (tokenRecord.attempts >= MAX_ATTEMPTS) {
-      throw new Error(`Hai superato il numero massimo di tentativi (${MAX_ATTEMPTS}). Richiedi un nuovo codice di verifica.`);
+    // Se l'utente ha già raggiunto o superato i tentativi massimi
+    if (rawTokenRecord.attempts >= MAX_ATTEMPTS) {
+      await this.removeUnverifiedUser(userId);
+      throw new Error(`Hai raggiunto il numero massimo di tentativi (${MAX_ATTEMPTS}). Il profilo non verificato è stato rimosso. Effettua nuovamente la registrazione.`);
     }
 
-    if (tokenRecord.code !== String(inputCode).trim()) {
-      tokenRecord.attempts += 1;
-      await tokenRecord.save();
+    // Se il codice inserito è errato
+    if (rawTokenRecord.code !== String(inputCode).trim()) {
+      rawTokenRecord.attempts += 1;
+      await rawTokenRecord.save();
 
-      const remainingAttempts = MAX_ATTEMPTS - tokenRecord.attempts;
+      const remainingAttempts = MAX_ATTEMPTS - rawTokenRecord.attempts;
       if (remainingAttempts <= 0) {
-        throw new Error(`Codice errato. Hai raggiunto il numero massimo di tentativi (${MAX_ATTEMPTS}).`);
+        await this.removeUnverifiedUser(userId);
+        throw new Error(`Codice errato. Hai raggiunto il numero massimo di tentativi (${MAX_ATTEMPTS}). Il profilo non verificato è stato rimosso. Effettua nuovamente la registrazione.`);
       }
       throw new Error(`Codice errato. Tentativi rimasti: ${remainingAttempts}`);
     }
 
-    // Rimozione del codice di verifica una volta convalidato
-    await VerificationCode.deleteOne({ _id: tokenRecord._id });
+    // Rimozione del codice di verifica una volta convalidato con successo
+    await VerificationCode.findByIdAndDelete(rawTokenRecord._id);
 
     return true;
   }

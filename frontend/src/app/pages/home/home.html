@@ -7,7 +7,20 @@
     </h1>
     <p class="hero-desc">
       @if (authService.currentUser()?.name; as name) {
-        Bentornato, <strong>{{ name }}</strong>, cosa vuoi fare oggi?
+        @switch (authService.currentUser()?.gender) {
+          @case ('f') {
+            Bentornata, <strong>{{ name }}</strong>, cosa vuoi fare oggi?
+          }
+          @case ('m') {
+            Bentornato  , <strong>{{ name }}</strong>, cosa vuoi fare oggi?
+          }
+          @case ('other') {
+            Bentornat*, <strong>{{ name }}</strong>, cosa vuoi fare oggi?
+          }
+          @default {
+            Bentornat*, <strong>{{ name }}</strong>, cosa vuoi fare oggi?
+          }
+        }
       } @else {
         Pronto a scoprire qualcosa di nuovo? La tua visita personalizzata ti aspetta.
       }

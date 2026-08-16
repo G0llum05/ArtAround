@@ -15,19 +15,22 @@ class AuthService {
     * @throws {Error} - errore se l'email è già registrata o altri errori di validazione
   */
   async signup(signupData) {
-    const { email, name, surname, password } = signupData;
+    const { email, name, surname, password, gender } = signupData;
     if (!email || !name || !surname || !password) {
       throw new Error('Tutti i campi obbligatori (name, surname, email, password) devono essere compilati.');
     }
     const hashedPassword = await this._hashPassword(signupData.password);
     const existingUser = await this._getUserByEmail(email);
     if (existingUser) {
+      if (existingUser.password) {
+        throw new Error('Account già esistente!'); // se c'è una password già salvata non posso creare nuovo account
+      }
       await this._handleExistingUserForLocalSignup(existingUser, name, surname, hashedPassword);
-      return { message: 'Un nuovo link di verifica è stato inviato alla tua email.' };
+      return { message: 'Un nuovo codice di verifica è stato inviato alla tua email.' };
     }
 
-    await this._createNewUser(email, name, surname, hashedPassword, null, true);
-    return { message: 'Registrazione completata. Controlla la tua email per confermare l\'account.' };
+    await this._createNewUser(email, name, surname, hashedPassword, null, true, gender);
+    return { message: 'Controlla la tua email per confermare l\'account.' };
   }
 
 
@@ -43,10 +46,6 @@ class AuthService {
     if (!user) {
       throw new Error('Token di verifica non valido o scaduto.');
     }
-
-    user.isEmailVerified = true;
-    user.emailVerificationToken = undefined;
-    user.emailVerificationExpires = undefined;
 
     await user.save();
     return true;
@@ -171,16 +170,21 @@ class AuthService {
    * gestione registrazione utenti già presenti nel DB per le registrazioni locali
    */
   async _handleExistingUserForLocalSignup(existingUser, name, surname, hashedPassword) {
+    
     // controllo se esiste un codice attivo e se ha superato i tentativi
     const activeCode = await TokenService.getActiveCode(existingUser._id);
     if (activeCode && activeCode.attempts >= TokenService.getMaxAttempts()) {
       throw new Error("Hai superato il numero massimo di tentativi di verifica email. Contatta l'assistenza per sbloccare l'account.");
     }
-
-    await this._createAndSendVerificationCode(existingUser, 'SIGNIN');
+    
+    await this._createAndSendVerificationCode(existingUser, 'SIGNUP');
+    existingUser.password = hashedPassword;
+    if (name) existingUser.name = name;
+    if (surname) existingUser.surname = surname;
+    await existingUser.save();
 
     return {
-      message: 'Un nuovo link di verifica è stato inviato alla tua email.',
+      message: 'Un nuovo codice di verifica è stato inviato alla tua email.',
       user: existingUser
     };
   }
@@ -196,14 +200,6 @@ class AuthService {
     if (existingUser.googleId) {
       return existingUser;
     }
-
-    // Verifica se esiste un codice attivo che ha superato il massimo dei tentativi
-    // const activeCode = await TokenService.getActiveCode(existingUser._id);
-    // if (activeCode && activeCode.attempts >= TokenService.getMaxAttempts()) {
-    //   throw new Error("Hai superato il numero massimo di tentativi di verifica email. Contatta l'assistenza per sbloccare l'account.");
-    // }
-
-    // await this._createAndSendVerificationCode(existingUser, 'GOOGLE');
 
     // Collega il profilo Google all'utente locale per evitare profili duplicati
     existingUser.googleId = googleId;
@@ -224,7 +220,7 @@ class AuthService {
   * @returns {Promise<Object>} - nuovo utente creato
   * @throws {Error} - errore se la creazione dell'utente fallisce
   */
-  async _createNewUser(email, name, surname, hashedPassword, googleId, newLocalUser) {
+  async _createNewUser(email, name, surname, hashedPassword, googleId, newLocalUser, gender = 'other') {
     const roleConfig = await RoleManagementService.determineUserRoleOnSignup(email, null);
 
     const newUser = new User({
@@ -233,6 +229,7 @@ class AuthService {
       email: email,
       password: hashedPassword,
       googleId: googleId || undefined,
+      gender: gender || 'other',
       role: roleConfig.role,
       roleStatus: roleConfig.roleStatus,
       requestedRole: roleConfig.requestedRole
@@ -244,7 +241,7 @@ class AuthService {
     }
 
     return {
-      message: 'Registrazione completata. Controlla la tua email per confermare l\'account.',
+      message: 'Controlla la tua email per confermare l\'account.',
       user: newUser
     };
   }
@@ -290,11 +287,19 @@ class AuthService {
 
 
   async _getUserByVerificationToken(token) {
-    if (!token || token.expiresAt <= new Date()) {
-      throw new Error('Codice di Verifica non più valido!');
+    if (!token) {
+      throw new Error('Codice di Verifica non esiste!');
     }
-    const id = token.userId;
-    return await User.findById(id);
+    const userId = token.userId;
+    if(!userId) {
+      throw new Error('Validation token inesistente');
+    }
+
+    if (token.expiresAt <= new Date()) {
+      await User.findByIdAndDelete(userId); //Elimina il nuovo utente se non ha verificato l'account per tempo
+      throw new Error('Codice di Verifica scaduto!');
+    }
+    return await User.findById(userId);
   }
 
 

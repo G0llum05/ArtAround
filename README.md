@@ -9,6 +9,8 @@ Progetto Tecnologie Web A.A. 2025/26
 **generatore CLI** per setuppare una nuova root api e generare automaticamente la documentazione Swagger per le API RESTful basate su Node.js e Express. Questo strumento analizza il codice sorgente dell'applicazione e genera un file di specifica Swagger (in formato JSON o YAML) che descrive le API disponibili, i loro endpoint, i parametri, le risposte e altri dettagli rilevanti.
 - Usare il comando `npm run create:module <Nome>` per creare un nuovo modulo API. Questo comando genererà automaticamente la struttura di base del modulo, inclusi i file necessari per la gestione degli endpoint e la documentazione Swagger associata.
 
+## USER: Scelte implementative
+- Gender: 'f', 'm', 'other', caso di default -> 'other'
 
 ## SECURITY
 ### 🛡️ Architettura di Sicurezza & Autenticazione
@@ -131,3 +133,4 @@ Progetto Tecnologie Web A.A. 2025/26
 two options:
 `npm run navigator:cli --prefix backend`
 `node backend/scripts/test-navigator-cli.js`
+

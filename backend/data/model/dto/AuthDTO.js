@@ -3,11 +3,12 @@
  */
 
 class SignupRequestDTO {
-  constructor(name, surname, email, password) {
+  constructor(name, surname, email, password, gender = 'other') {
     this.name = name;
     this.surname = surname;
     this.email = email;
     this.password = password;
+    this.gender = gender;
   }
 }
 
@@ -42,11 +43,14 @@ class GoogleProfileDTO {
 }
 
 class LoginResponseDTO {
-  constructor(user, accessToken, refreshToken) {
+  constructor(user, accessToken, refreshToken, type, message) {
+    this.type = type;
+    this.message = message;
     this.userId = user._id;
     this.name = user.name;
     this.surname = user.surname;
     this.email = user.email;
+    this.gender = user.gender || 'other';
     this.role = user.role;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;

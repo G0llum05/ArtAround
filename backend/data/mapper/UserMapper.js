@@ -11,7 +11,8 @@ class UserMapper {
             userModel.role,
             userModel.purchasedVisits,
             userModel.likedVisits,
-            userModel.preferences
+            userModel.preferences,
+            userModel.gender
         );
     }
 
@@ -23,7 +24,8 @@ class UserMapper {
             email: userRequestDTO.email,
             password: userRequestDTO.password,
             role: userRequestDTO.role,
-            preferences: userRequestDTO.preferences
+            preferences: userRequestDTO.preferences,
+            gender: userRequestDTO.gender
         }
     }
 

@@ -8,6 +8,7 @@ function authenticateJWT(req, res, next) {
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({
+      type: 'error',
       code: 'UNAUTHORIZED',
       message: 'Accesso non autorizzato. Token JWT mancante o malformato.'
     });
@@ -21,11 +22,13 @@ function authenticateJWT(req, res, next) {
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
+        type: 'error',
         code: 'TOKEN_EXPIRED',
         message: 'Il token JWT è scaduto. Effettua nuovamente il login per ottenere un nuovo token.'
       });
     } else {
       return res.status(401).json({
+        type: 'error',
         code: 'INVALID_TOKEN',
         message: 'Il token JWT fornito non è valido.'
       });

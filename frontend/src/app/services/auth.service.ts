@@ -24,8 +24,8 @@ export class AuthService {
   readonly isLoggedIn = computed(() => this.currentUser() != null);
   readonly currentVisit = this._currentVisit.asReadonly();
 
-  register(userData: UserRequest): Observable<{ message?: string }> {
-    return this.http.post<{ message?: string }>(`${this.apiUrl}/signup`, userData);
+  register(userData: UserRequest): Observable<{ message?: string; type?: 'success' | 'warning' | 'error' | string }> {
+    return this.http.post<{ message?: string; type?: 'success' | 'warning' | 'error' | string }>(`${this.apiUrl}/signup`, userData);
   }
 
   verifyCode(email: string, code: string): Observable<AuthResponse> {
@@ -46,8 +46,8 @@ export class AuthService {
     );
   }
 
-  logout(): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
+  logout(): Observable<{ message?: string; type?: 'success' | 'warning' | 'error' | string }> {
+    return this.http.post<{ message?: string; type?: 'success' | 'warning' | 'error' | string }>(`${this.apiUrl}/logout`, {}).pipe(
       tap(() => {
         this._currentUser.set(null);
         localStorage.removeItem(this.ACCESS_TOKEN_KEY);

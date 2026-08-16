@@ -1,12 +1,12 @@
-import { Component, inject, signal, DestroyRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
-import { UserRequest } from '../../models/user.model';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; //per la disiscrizione dagli observable
-import { Router, ActivatedRoute } from '@angular/router';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { VerifyCodeModal } from '../../components/verify-code-modal/verify-code-modal';
+import { UserRequest } from '../../models/user.model';
+import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -20,12 +20,12 @@ export class Login implements OnInit {
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private alertService = inject(AlertService);
   readonly authService = inject(AuthService);
 
   isLoginMode = signal<boolean>(true);
   showVerifyModal = signal<boolean>(false);
   pendingVerifyEmail = signal<string>('');
-  verificationSuccessMessage = signal<string | null>(null);
 
   isSubmitting = signal<boolean>(false);
 
@@ -33,7 +33,8 @@ export class Login implements OnInit {
     name: ['', Validators.required],
     surname: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]]
+    password: ['', [Validators.required, Validators.minLength(8)]],
+    gender: ['other']
   });
 
   ngOnInit(): void {
@@ -43,13 +44,22 @@ export class Login implements OnInit {
         this.authService.refreshToken().subscribe({
           next: (res) => {
             console.log('Login con Google completato con successo!', res);
-            // Reindirizziamo alla Home pulendo l'URL
+            if (res?.message) {
+              this.alertService.show(res.message, res.type);
+            }
             this.router.navigate(['/']);
           },
           error: (err) => {
             console.error('Errore durante il recupero dei dati di Google:', err);
+            if (err.error?.message) {
+              this.alertService.show(err.error.message, err.error.type || 'error');
+            }
           }
         });
+      } else if (params['status'] === 'verified') {
+        this.alertService.success('Email verificata con successo! Ora puoi accedere al tuo account.');
+      } else if (params['error']) {
+        this.alertService.error('Errore durante la procedura di autenticazione con Google.');
       }
     });
   }
@@ -60,13 +70,19 @@ export class Login implements OnInit {
       surname: user.surname,
       email: user.email,
       password: user.password,
-    }
+      gender: user.gender || 'other'
+    };
   }
 
   toggleMode(isLogin: boolean): void {
     this.isLoginMode.set(isLogin);
-    this.authForm.reset();
-    this.verificationSuccessMessage.set(null);
+    this.authForm.reset({
+      name: '',
+      surname: '',
+      email: '',
+      password: '',
+      gender: 'other'
+    });
     this.isSubmitting.set(false);
 
     const nameControl = this.authForm.get('name');
@@ -108,10 +124,13 @@ export class Login implements OnInit {
           takeUntilDestroyed(this.destroyRef),
         )
         .subscribe({
-          next: () => {
+          next: (res) => {
             this.isSubmitting.set(false);
             const elapsed = Date.now() - requestStartTime;
-            console.log(`[Frontend Debug] [${new Date().toISOString()}] Risposta POST /signup ricevuta dal backend in ${elapsed}ms. Apertura modale di verifica...`);
+            console.log(`[Frontend Debug] [${new Date().toISOString()}] Risposta POST /signup ricevuta in ${elapsed}ms:`, res);
+            if (res?.message) {
+              this.alertService.show(res.message, res.type);
+            }
             this.pendingVerifyEmail.set(email);
             this.showVerifyModal.set(true);
           },
@@ -119,6 +138,9 @@ export class Login implements OnInit {
             this.isSubmitting.set(false);
             const elapsed = Date.now() - requestStartTime;
             console.error(`[Frontend Debug] [${new Date().toISOString()}] Registrazione fallita dopo ${elapsed}ms:`, error);
+            if (error.error?.message) {
+              this.alertService.show(error.error.message, error.error.type || 'error');
+            }
           }
         });
     } else { // LOGIN
@@ -142,10 +164,16 @@ export class Login implements OnInit {
           next: (response) => {
             this.isSubmitting.set(false);
             console.log('Login successful!', response);
+            if (response?.message) {
+              this.alertService.show(response.message, response.type);
+            }
           },
           error: (error) => {
             this.isSubmitting.set(false);
             console.error('Login failed:', error);
+            if (error.error?.message) {
+              this.alertService.show(error.error.message, error.error.type || 'error');
+            }
           }
         });
     }
@@ -162,32 +190,54 @@ export class Login implements OnInit {
     return invalid;
   }
 
-
   onLogout(): void {
     this.authService.logout().subscribe({
-      next: () => {
-        console.log('Logout successful!');
+      next: (res) => {
+        console.log('Logout successful!', res);
+        if (res?.message) {
+          this.alertService.show(res.message, res.type);
+        }
       },
       error: (error) => {
         console.error('Logout failed:', error);
+        if (error.error?.message) {
+          this.alertService.show(error.error.message, error.error.type || 'error');
+        }
       }
     });
   }
 
   googleLogin(): void {
-    this.authService.googleLogin()
+    this.authService.googleLogin();
   }
 
   onCodeVerified(res?: any): void {
     this.showVerifyModal.set(false);
     console.log('Utente verificato ed autenticato con successo:', res);
+    if (res?.message) {
+      this.alertService.show(res.message, res.type);
+    }
     this.router.navigate(['/']);
   }
-
 
   onVerifyCancelled(): void {
     this.showVerifyModal.set(false);
   }
 
+  getGenderLabel(gender?: string): string {
+    let label: string = '';
+    switch (gender) {
+      case 'f':
+        label = 'Femminile (F)';
+        break;
+      case 'm':
+        label = 'Maschile (M)';
+        break;
+      case 'other':
+      default:
+        label = 'other';
+        break;
+    }
+    return label;
+  }
 }
-

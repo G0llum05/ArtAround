@@ -18,7 +18,11 @@
           <span>{{ authService.currentUser()?.email || 'Non disponibile' }}</span>
         </div>
         <div class="info-row">
-          <strong>Role:</strong>
+          <strong>Genere:</strong>
+          <span>{{ getGenderLabel(authService.currentUser()?.gender) }}</span>
+        </div>
+        <div class="info-row">
+          <strong>Ruolo:</strong>
           <span>{{ authService.currentUser()?.role || 'Non disponibile' }}</span>
         </div>
       </div>
@@ -44,19 +48,11 @@
         <p class="auth-subtitle">
           {{ isLoginMode() ? 'Accedi per continuare il tuo viaggio artistico.' : 'Iscriviti per iniziare il tuo viaggio artistico.' }}
         </p>
-        @if (verificationSuccessMessage()) {
-          <div class="verification-success-alert">
-            <svg viewBox="0 0 24 24" class="alert-icon">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-            <span>{{ verificationSuccessMessage() }}</span>
-          </div>
-        }
       </header>
 
 
       <form (ngSubmit)="onSubmit()" [formGroup]="authForm" class="auth-form">
-        <!-- Campo Nome e Cognome (Solo Registrazione) -->
+        <!-- Campo Nome e Cognome e Genere (Solo Registrazione) -->
         @if (!isLoginMode()) {
           <div class="form-group">
             <label class="form-label" for="name">Nome</label>
@@ -76,6 +72,19 @@
                   d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
               </svg>
               <input class="form-input" formControlName="surname" id="surname" placeholder="Cognome" type="text">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="gender">Genere</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+                <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-64q0-36 18-67t50-49q64-32 128.5-46T480-400q61.5 0 126 14t128 46q32 18 50 49t18 67v64H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
+              </svg>
+              <select class="form-input form-select" formControlName="gender" id="gender">
+                <option value="f">Femminile (F)</option>
+                <option value="m">Maschile (M)</option>
+                <option value="other">Preferisco non precisarlo</option>
+              </select>
             </div>
           </div>
         }

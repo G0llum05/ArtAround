@@ -1,8 +1,11 @@
+export type Gender = 'f' | 'm' | 'other' | string;
+
 export interface UserRequest {
   name: string;
   surname: string;
   email: string;
   password: string;
+  gender?: Gender;
 }
 
 export interface LoginRequest {
@@ -15,6 +18,7 @@ export interface SignupRequest {
   surname: string;
   email: string;
   password: string;
+  gender?: Gender;
 }
 
 export interface RoleUpgradeRequest {
@@ -31,6 +35,7 @@ export interface UserResponse {
   name: string;
   surname: string;
   email: string;
+  gender?: Gender;
   role: 'guest' | 'student' | 'teacher' | 'museumstaff' | 'admin';
   // TODO CHECK devono ritornare anche questi campi
   // roleStatus?: 'approved' | 'pending';
@@ -45,7 +50,21 @@ export interface AuthResponse {
   name: string;
   surname: string;
   email: string;
+  gender?: Gender;
   role: 'guest' | 'student' | 'teacher' | 'museumstaff' | 'admin';
   accessToken: string;
   refreshToken: string;
+  type?: 'success' | 'warning' | 'error';
+  message?: string;
+}
+
+export interface AuthFeedback {
+  type: 'good' | 'bad';
+  message: string;
+}
+
+export interface ApiResponse<T = any> {
+  type?: 'success' | 'warning' | 'error';
+  message?: string;
+  data?: T;
 }

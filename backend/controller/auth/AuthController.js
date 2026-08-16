@@ -15,20 +15,32 @@ class AuthController {
 
       const { name, surname, email, password } = signupDTO;
       if (!name || !surname || !email || !password) {
-        return res.status(400).json({ message: 'Tutti i campi obbligatori (name, surname, email, password) devono essere compilati.' });
+        return res.status(400).json({
+          type: 'error',
+          message: 'Tutti i campi obbligatori (name, surname, email, password) devono essere compilati.'
+        });
       }
 
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(email.toLowerCase().trim())) {
-        return res.status(400).json({ message: 'Il formato dell\'indirizzo email inserito non è valido.' });
+        return res.status(400).json({
+          type: 'error',
+          message: 'Il formato dell\'indirizzo email inserito non è valido.'
+        });
       }
 
+      const result = await authService.signup(signupDTO);
+      const msg = result?.message;
 
-      const message = await authService.signup(signupDTO);
-
-      res.status(201).json({ message: message });
+      res.status(201).json({
+        type: 'success',
+        message: msg
+      });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      res.status(400).json({
+        type: 'error',
+        message: error.message
+      });
     }
   }
 
@@ -36,17 +48,26 @@ class AuthController {
     try {
       const { token } = req.query;
       if (!token) {
-        return res.status(400).json({ message: 'Token di verifica mancante' });
+        return res.status(400).json({
+          type: 'error',
+          message: 'Token di verifica mancante'
+        });
       }
 
       const verifiedUser = await authService.verifyEmail(token);
       if (!verifiedUser) {
-        return res.status(400).json({ message: 'Token di verifica non valido' });
+        return res.status(400).json({
+          type: 'error',
+          message: 'Token di verifica non valido'
+        });
       }
 
-      res.redirect(`${process.env.CLIENT_URL}/login?status=verified`); // TODO CHECK Potrebbe essere che mettendo status=verified il frontend possa mostrare un messaggio di conferma all'utente
+      res.redirect(`${process.env.CLIENT_URL}/login?status=verified`);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      res.status(400).json({
+        type: 'error',
+        message: error.message
+      });
     }
   }
 
@@ -54,7 +75,10 @@ class AuthController {
     try {
       const { email, code } = req.body;
       if (!email || !code) {
-        return res.status(400).json({ message: 'Email e codice di verifica sono obbligatori.' });
+        return res.status(400).json({
+          type: 'error',
+          message: 'Email e codice di verifica sono obbligatori.'
+        });
       }
 
       const clientIp = req.ip || req.connection.remoteAddress;
@@ -64,9 +88,19 @@ class AuthController {
       setRefreshTokenCookie(res, result.refreshToken);
 
       // Restituisce la risposta con il DTO del profilo utente e i token
-      res.status(200).json(AuthMapper.toLoginResponseDTO(result.user, result.accessToken, result.refreshToken));
+      const responseDTO = AuthMapper.toLoginResponseDTO(
+        result.user,
+        result.accessToken,
+        result.refreshToken,
+        'success',
+        'Email verificata con successo! Accesso effettuato.'
+      );
+      res.status(200).json(responseDTO);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      res.status(400).json({
+        type: 'error',
+        message: error.message
+      });
     }
   }
 
@@ -79,7 +113,10 @@ class AuthController {
       const loginDTO = AuthMapper.toLoginRequestDTO(req.body, req.ip || req.connection.remoteAddress);
 
       if (!loginDTO.email || !loginDTO.password) {
-        return res.status(400).json({ message: 'Email e password obbligatorie.' });
+        return res.status(400).json({
+          type: 'error',
+          message: 'Email e password obbligatorie.'
+        });
       }
 
       const result = await authService.loginLocalUser(loginDTO.email, loginDTO.password, loginDTO.ip);
@@ -87,14 +124,26 @@ class AuthController {
       // mettiamo il refresh token nel cookie 
       setRefreshTokenCookie(res, result.refreshToken);
 
-      const responseDTO = AuthMapper.toLoginResponseDTO(result.user, result.accessToken, result.refreshToken);
+      const responseDTO = AuthMapper.toLoginResponseDTO(
+        result.user,
+        result.accessToken,
+        result.refreshToken,
+        'success',
+        'Login effettuato con successo.'
+      );
       if (!responseDTO) {
-        return res.status(500).json({ message: 'Errore nella creazione della risposta di login.' });
+        return res.status(500).json({
+          type: 'error',
+          message: 'Errore nella creazione della risposta di login.'
+        });
       }
 
       res.status(200).json(responseDTO);
     } catch (error) {
-      res.status(401).json({ message: error.message });
+      res.status(401).json({
+        type: 'error',
+        message: error.message
+      });
     }
   }
 
@@ -107,19 +156,32 @@ class AuthController {
     try {
       const refreshToken = getRefreshTokenFromCookie(req); // prendiamo refresh token dal cookie sicuro
       if (!refreshToken) {
-        return res.status(401).json({ message: 'Refresh Token mancante nei cookie HTTP-Only.' });
+        return res.status(401).json({
+          type: 'error',
+          message: 'Refresh Token mancante nei cookie HTTP-Only.'
+        });
       }
 
       const clientIp = req.ip || req.connection.remoteAddress;
       const result = await authService.refreshSession(refreshToken, clientIp);
 
-      // mettiano nuovo token nel coockie
+      // mettiano nuovo token nel cookie
       setRefreshTokenCookie(res, result.refreshToken);
 
-      res.status(200).json(AuthMapper.toLoginResponseDTO(result.user, result.accessToken, result.refreshToken));
+      const responseDTO = AuthMapper.toLoginResponseDTO(
+        result.user,
+        result.accessToken,
+        result.refreshToken,
+        'success',
+        'Sessione rinnovata con successo.'
+      );
+      res.status(200).json(responseDTO);
     } catch (error) {
       clearRefreshTokenCookie(res);
-      res.status(401).json({ message: error.message });
+      res.status(401).json({
+        type: 'error',
+        message: error.message
+      });
     }
   }
 
@@ -134,10 +196,16 @@ class AuthController {
       await authService.logout(refreshToken);
       clearRefreshTokenCookie(res);
 
-      res.status(200).json({ message: 'Logout effettuato con successo. Sessione terminata.' });
+      res.status(200).json({
+        type: 'success',
+        message: 'Logout effettuato con successo. Sessione terminata.'
+      });
     } catch (error) {
       clearRefreshTokenCookie(res);
-      res.status(500).json({ message: error.message });
+      res.status(500).json({
+        type: 'error',
+        message: error.message
+      });
     }
   }
 

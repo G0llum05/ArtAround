@@ -3,16 +3,16 @@ const mailer = require('nodemailer');
 const NOREPLY_MAIL_ADDRESS = "noreply.artaround@gmail.com";
 
 
-// 1. Configura il trasportatore (Transporter)
+// configura il trasportatore
 const transporter = mailer.createTransport({
-      service: 'gmail', // utilizza configurazione smtp di google
-      auth: {
-          user: NOREPLY_MAIL_ADDRESS,
-          pass: process.env.NOREPLY_PASSWORD
-      }
-  });
+  service: 'gmail', // utilizza configurazione smtp di google
+  auth: {
+    user: NOREPLY_MAIL_ADDRESS,
+    pass: process.env.NOREPLY_PASSWORD
+  }
+});
 
-async function sendLoginConfirmation  (userEmail, userName, code, accessMode) {
+async function sendLoginConfirmation(userEmail, userName, code, accessMode) {
   const startTime = Date.now();
   console.log(`[Mailer Debug] [${new Date().toISOString()}] Avvio invio email a: ${userEmail}...`);
   try {
@@ -56,7 +56,7 @@ async function sendLoginConfirmation  (userEmail, userName, code, accessMode) {
     const mailOptions = {
       from: `Horash ArtAround <${NOREPLY_MAIL_ADDRESS}>`, // Mittente
       to: userEmail, // Destinatario (email dell'utente)
-      subject: subject, 
+      subject: subject,
       html: message
     };
 

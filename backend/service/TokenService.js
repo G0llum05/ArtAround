@@ -7,7 +7,7 @@ const VerificationCode = require('../data/model/VerificationCode');
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRATION = '15m';
 const REFRESH_TOKEN_DAYS = 7;
-const MAX_ATTEMPTS = 10;
+const MAX_ATTEMPTS = 5;
 
 class TokenService {
   /**
@@ -72,13 +72,14 @@ class TokenService {
     return MAX_ATTEMPTS;
   }
 
+
   /**
    * crea il codice di verifica per l'acesso mail-password
    */
   async createVerificationMailCode(user) {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // 2. Calcola la scadenza (es. 10 minuti da adesso)
+
+    // alcola la scadenza: 10 minuti da adesso
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
@@ -95,17 +96,15 @@ class TokenService {
   /**
    * Cerca se esiste un codice attivo (non scaduto) per l'utente
    */
-
   async getActiveCode(userId) {
     // per un solo user ci sarà un solo codice di verifica e sarà quello corretto
     const activeCodeRecord = await VerificationCode.findOne({ userId });
-    
+
     // Ritorna il record solo se esiste ed è effettivamente valido nel tempo
     if (activeCodeRecord && activeCodeRecord.expiresAt > new Date()) {
       return activeCodeRecord;
-      console.log(`[TokenService Debug] Codice: ${activeCodeRecord.lean().code}.`);
     }
-    
+
     return null;
   }
 

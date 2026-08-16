@@ -6,7 +6,7 @@ import { switchMap } from 'rxjs/operators'
 import { tap, catchError } from 'rxjs/operators';
 import { UserResponse, AuthResponse, LoginRequest, UserRequest } from '../models/user.model';
 import { environment } from '../../environments/environment';
-import {VisitHomePresentationResponse, VisitResponse} from '../models/visit.model';
+import { VisitHomePresentationResponse, VisitResponse } from '../models/visit.model';
 
 
 @Injectable({
@@ -29,7 +29,7 @@ export class AuthService {
   }
 
   verifyCode(email: string, code: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/verify-code`, { email, code }, { withCredentials: true }).pipe(
+    return this.http.post<AuthResponse>(`${this.apiUrl}/verifyCode`, { email, code }, { withCredentials: true }).pipe(
       tap(response => {
         this._currentUser.set(response);
         localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);

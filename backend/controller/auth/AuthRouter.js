@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Registrazione locale e verifica codice
 router.post('/signup', (req, res) => authController.signup(req, res));
-router.post('/verify-code', (req, res) => authController.verifyCode(req, res));
+router.post('/verifyCode', (req, res) => authController.verifyCode(req, res));
 router.get('/verifyEmail', (req, res) => authController.verifyEmail(req, res));
 
 

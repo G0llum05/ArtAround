@@ -13,12 +13,13 @@ export const routes: Routes = [
     component: Home
   },
   {
-    path: 'visit',
-    component: Visit
-  },
-  {
     path: 'marketplace',
-    component: Marketplace
+    children: [
+      {
+        path: '**',
+        component: Marketplace
+      },
+    ],
   },
   {
     path: 'contacts',

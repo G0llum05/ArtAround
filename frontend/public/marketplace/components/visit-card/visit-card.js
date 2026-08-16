@@ -7,12 +7,11 @@ export class MktVisitCard extends HTMLElement {
 
   render() {
     const title = this.getAttribute('data-title') || 'Visita Guidata';
-    const price = this.getAttribute('data-price') || 'Gratis';
+    const price = this.getAttribute('data-price')==0 ? `Gratis` : `€ ${this.getAttribute('data-price')}`;
     const desc = this.getAttribute('data-desc') || '';
     const image = this.getAttribute('data-image') || '/assets/images/place_holder.jpg';
     const duration = this.getAttribute('data-duration') || '';
 
-    // Costruiamo i tag dinamicamente se è presente l'attributo durata
     let tagsHtml = '';
     if (duration) {
       tagsHtml = `
@@ -22,7 +21,6 @@ export class MktVisitCard extends HTMLElement {
       `;
     }
 
-    // Struttura HTML fedele a quella di Angular
     this.innerHTML = `
       <article class="mkt-visit-card-container">
         <div class="mkt-visit-image-wrapper">

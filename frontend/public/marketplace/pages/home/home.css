@@ -1,16 +1,4 @@
-@import url('./components/museum-card/museum-card.css');
-@import url('./components/visit-card/visit-card.css');
-
-:host {
-  display: block;
-  width: 100%;
-  background-color: var(--background);
-  color: var(--on-surface);
-  font-family: var(--font-sans);
-  font-size: var(--body-lg-size);
-}
-
-/* --- CONTAINER PRINCIPALE --- */
+/* --- CONTAINER Home --- */
 /* DEFAULT: DESKTOP */
 .mkt-home-container {
   flex-grow: 1;
@@ -85,8 +73,11 @@
   transition: transform 0.2s ease, fill 0.2s ease;
 }
 
-.mkt-large-card.mkt-visit-card .mkt-card-svg {
+.mkt-large-card.mkt-create-visit-card .mkt-card-svg {
   color: var(--primary);
+}
+.mkt-large-card.mkt-visit-card .mkt-card-svg {
+  color: var(--secondary);
 }
 
 .mkt-card:hover .mkt-card-svg.mkt-arrow {
@@ -169,8 +160,12 @@
   min-height: 220px;
 }
 
-.mkt-large-card.mkt-visit-card {
+.mkt-large-card.mkt-create-visit-card {
   border: 1px solid var(--primary);
+}
+
+.mkt-large-card.mkt-visit-card {
+   border: 1px solid var(--secondary);
 }
 
 .mkt-large-card h2 {
@@ -183,43 +178,6 @@
   color: var(--on-surface-variant);
   font-size: var(--body-lg-size);
   margin: 0;
-}
-
-/* --- FILTRI VELOCI --- */
-.mkt-quick-filters {
-  display: flex;
-  gap: var(--spacing-sm);
-  overflow-x: auto;
-  padding-bottom: var(--spacing-xs);
-  scrollbar-width: none;
-}
-.mkt-quick-filters::-webkit-scrollbar {
-  display: none;
-}
-
-.mkt-filter-pill {
-  white-space: nowrap;
-  padding: 0.4rem 1.2rem;
-  background-color: var(--surface-variant);
-  color: var(--on-surface);
-  border: 1px solid var(--outline-variant);
-  border-radius: var(--radius-full);
-  font-family: var(--font-sans);
-  font-size: var(--label-md-size);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.mkt-filter-pill:hover {
-  background-color: var(--surface-variant);
-  color: var(--primary);
-}
-
-.mkt-filter-pill.mkt-active {
-  background-color: var(--primary);
-  color: var(--on-primary);
-  border-color: var(--primary);
 }
 
 /* --- RIGHE SCORREVOLI (Categorie) --- */
@@ -244,16 +202,29 @@
   overflow-x: auto;
   padding: var(--spacing-xs) 0 var(--spacing-md) 0;
   scroll-snap-type: x mandatory;
+  scrollbar-color: var(--secondary) transparent;
+}
+
+/* --- STILE SCROLLBAR PER CHROME, EDGE E SAFARI --- */
+.mkt-horizontal-track::-webkit-scrollbar {
+  height: 0.5rem;
+}
+
+.mkt-horizontal-track::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mkt-horizontal-track::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);
+  border-radius: 1rem; /* Bordi completamente arrotondati */
+  border: 0.125rem solid var(--background); /* Crea un effetto "spazio" attorno alla barra */
+}
+
+.mkt-horizontal-track::-webkit-scrollbar-thumb:hover {
+  background-color: var(--secondary); /* Si colora quando l'utente ci passa sopra col mouse */
 }
 
 /* DEFAULT: DESKTOP */
-.mkt-track-card {
-  min-width: 260px;
-  height: 180px;
-  flex-shrink: 0;
-  scroll-snap-align: start;
-}
-
 .mkt-arrow{
   margin-top: auto;
   align-self: flex-end;
@@ -292,89 +263,5 @@
     min-height: 10rem;
     padding: var(--spacing-lg);
   }
-
-  /* Riduzione Card nello scroll orizzontale */
-  .mkt-track-card {
-    min-width: 12.5rem;
-    height: 9rem;
-  }
 }
 
-/* --- SEZIONE CONTROLLI (Ricerca + Filtri) --- */
-.mkt-controls-section {
-  padding: 0;
-  margin-bottom: var(--spacing-lg);
-  display: flex;
-  flex-direction: row;
-  gap: var(--spacing-md);
-  align-items: center;
-  overflow-x: auto;
-}
-
-.mkt-search-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  flex: 1.5; /* ⬅️ Occupa tutto lo spazio rimasto nel wrapper */
-  max-width: 20rem;
-}
-
-#mkt-museum-search-input {
-  width: 100%;
-  box-sizing: border-box; /* ⬅️ Include padding e bordi nel calcolo dell'altezza */
-  height: 2.5rem;          /* ⬅️ Altezza fissa unificata */
-  padding: 0 var(--spacing-md);
-  border-radius: var(--radius-lg);
-  border: 0.0625rem solid var(--primary);
-  background-color: var(--surface);
-  color: var(--on-surface);
-  font-family: var(--font-sans);
-  font-size: var(--body-md-size);
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-#mkt-museum-search-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 0.125rem rgba(0, 0, 0, 0.05);
-}
-
-.mkt-quick-filters {
-  display: flex;
-  gap: var(--spacing-xs);
-  overflow-x: auto;
-  padding-bottom: 0;
-  flex-shrink: 0;
-}
-
-.mkt-filter-pill {
-  box-sizing: border-box;
-  height: 2.5rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--surface);
-  color: var(--on-surface-variant);
-  border: 0.0625rem solid var(--outline-variant);
-  border-radius: var(--radius-full);
-  padding: 0 var(--spacing-md);
-  font-family: var(--font-sans);
-  font-size: var(--body-md-size);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.mkt-filter-pill.mkt-active {
-  background-color: var(--primary);
-  color: var(--on-primary);
-  border-color: var(--primary);
-  font-weight: 600;
-}
-
-.mkt-empty-text {
-  padding: var(--spacing-md);
-  color: var(--on-surface-variant);
-  font-family: var(--font-sans);
-  font-size: var(--body-md-size);
-}

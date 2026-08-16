@@ -3,7 +3,7 @@ import { ShellRouter } from '../shell/shell-router.js';
 import { Router } from './routers';
 
 const CSS_ID = 'marketplace-styles';
-const CSS_PATH = 'styles/marketplace.css';
+const CSS_PATH = 'styles/marketplace.registry.css';
 
 export const MarketplaceApp = class MarketplaceApp {
 

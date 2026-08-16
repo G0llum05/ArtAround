@@ -20,7 +20,7 @@
       } @else {
         <a [routerLink]="item.path"
            routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+           [routerLinkActiveOptions]="{ exact: true }"
            class="nav-link"
         > {{ item.name }} </a>
       }

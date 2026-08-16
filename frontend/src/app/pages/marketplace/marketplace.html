@@ -1,5 +1,6 @@
-<div>
+<div class="angular-mkt-container">
   <!-- IL NOSTRO PONTE: Inseriamo il tag Vanilla -->
   <!-- (messaggio-da-vanilla) è il nome del CustomEvent che abbiamo definito nel file .js -->
-  <mkt-home></mkt-home>
+  <!-- [attr.routes] obbliga angular ad usare setAttribute('route', ...) e quindi a creare un nuovo attributo e non a cercare fare quelli esistenti -->
+  <mkt-router [attr.route]="router.url" (angular-navigate)="navigateTo($event)"></mkt-router>
 </div>

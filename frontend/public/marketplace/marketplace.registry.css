@@ -1,0 +1,10 @@
+/* Pages */
+@import url('pages/home/home.css');
+@import url('pages/visit-explorer/visit-explorer.css');
+
+/* Components */
+@import url('./components/museum-card/museum-card.css');
+@import url('./components/visit-card/visit-card.css');
+@import url('components/home-input-fields/input-fields.css');
+@import url('components/input-field-search-visit/input-field-search-visit.css');
+@import url('components/card-grid/card-grid.css');

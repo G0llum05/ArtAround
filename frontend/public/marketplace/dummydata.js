@@ -411,7 +411,7 @@ export const dummyVisits = [
     isVerified: true,
     disableFriendly: true,
     duration: 90,
-    price: 15,
+    price: 0,
     isClosingSoon: false,
     isNew: false,
     assets: { images: [{ url: "https://picsum.photos/seed/v001/800/600", orientation: "landscape" }] }
@@ -423,7 +423,7 @@ export const dummyVisits = [
     isVerified: true,
     disableFriendly: false,
     duration: 60,
-    price: 25,
+    price: 0,
     isClosingSoon: true,
     isNew: false,
     assets: { images: [{ url: "https://picsum.photos/seed/v002/600/800", orientation: "portrait" }] }
@@ -903,9 +903,9 @@ export const dummyVisits = [
     isVerified: true,
     disableFriendly: true,
     duration: 60,
-    price: 8,
+    price: 0,
     isClosingSoon: true,
-    isNew: false,
+    isNew: true,
     assets: { images: [{ url: "https://picsum.photos/seed/v042/600/800", orientation: "portrait" }] }
   },
   {
@@ -999,9 +999,9 @@ export const dummyVisits = [
     isVerified: true,
     disableFriendly: false,
     duration: 45,
-    price: 10,
+    price: 0,
     isClosingSoon: false,
-    isNew: false,
+    isNew: true,
     assets: { images: [{ url: "https://picsum.photos/seed/v050/600/800", orientation: "portrait" }] }
   }
 ];

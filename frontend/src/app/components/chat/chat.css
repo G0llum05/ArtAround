@@ -67,7 +67,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  margin-top: var(--spacing-xs);
+  margin: 0 var(--spacing-xs) 0 var(--spacing-xs);
   z-index: 100;
   flex-shrink: 0;
 }

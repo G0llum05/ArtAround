@@ -21,7 +21,7 @@ export class MuseumService {
   }
 
   getMuseumHomePresentation(): Observable<MuseumHomePresentationResponse[]> {
-    return this.http.get<MuseumHomePresentationResponse[]>(`${this.apiUrl}/homePresentation`)
+    return this.http.get<MuseumHomePresentationResponse[]>(`${this.apiUrl}/homePresentation`);
   }
 
   getById(id: string): Observable<MuseumResponse> {

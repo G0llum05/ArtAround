@@ -1,0 +1,255 @@
+/* --- CONTAINER Visit Explorer --- */
+.mkt-visit-page-container {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+  flex-direction: column;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.mkt-page-header {
+  text-align: left;
+  margin-bottom: var(--spacing-lg);
+}
+
+.mkt-page-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-lg-size);
+  font-weight: var(--headline-lg-weight);
+  line-height: var(--headline-lg-line);
+  margin: 0;
+}
+
+.mkt-page-subtitle {
+  font-size: var(--body-lg-size);
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
+/* --- GRIGLIA DESKTOP FIRST --- */
+.mkt-form-grid {
+  display: grid;
+  gap: var(--spacing-md);
+  grid-template-columns: 1.2fr 1fr;
+  grid-template-areas:
+    "museo     chi-sei"
+    "interessi chi-sei"
+    "opzioni   durata";
+}
+
+.mkt-card-museo { grid-area: museo; }
+.mkt-card-chi-sei { grid-area: chi-sei; }
+.mkt-card-interessi { grid-area: interessi; }
+.mkt-card-durata { grid-area: durata; }
+.mkt-card-opzioni { grid-area: opzioni; }
+
+.mkt-card {
+  background-color: var(--surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.mkt-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--spacing-md);
+}
+
+.mkt-card-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-md-size);
+  font-weight: var(--headline-md-weight);
+  margin: 0;
+}
+
+.mkt-label-muted {
+  font-size: var(--label-md-size);
+  color: var(--on-surface-variant);
+}
+
+.mkt-card-museo {
+  position: relative;
+  border: 1px solid var(--primary);
+  overflow: visible;
+}
+
+/* --- CHI SEI --- */
+.mkt-card-chi-sei .mkt-role-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+  flex-grow: 1;
+  align-content: center;
+  grid-template-rows: 1fr 1fr;
+}
+
+.mkt-role-btn {
+  background-color: var(--background);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  padding: var(--spacing-md) var(--spacing-sm);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.mkt-role-icon {
+  width: 2.8rem;
+  height: 2.8rem;
+  fill: currentColor;
+}
+
+.mkt-role-btn.mkt-active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+/* --- INTERESSI --- */
+.mkt-chips-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.mkt-chip {
+  background-color: var(--background);
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mkt-chip-qualsiasi.mkt-active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.mkt-chips-group.mkt-any-active .mkt-chip:not(.mkt-chip-qualsiasi) {
+  opacity: 0.4;
+}
+
+.mkt-chip.mkt-active:not(.mkt-chip-qualsiasi) {
+  background-color: var(--surface-variant);
+  border-color: var(--secondary);
+  color: var(--secondary);
+  font-weight: var(--label-md-weight);
+}
+
+.mkt-chip.mkt-money-chip.mkt-active:not(.mkt-chip-qualsiasi) {
+  border-color: var(--tertiary);
+  color: var(--tertiary);
+}
+
+.mkt-chip.mkt-verified-chip.mkt-active:not(.mkt-chip-qualsiasi) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.mkt-chip.mkt-partial {
+  background-color: transparent;
+  border: 1px dashed var(--secondary);
+  color: var(--secondary);
+  opacity: 0.6;
+}
+
+.mkt-svg-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.mkt-small-svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: currentColor;
+}
+
+.mkt-image {
+  display: block;
+  width: 100%;
+  height: 8rem;
+  background-color: var(--surface-variant);
+  border-radius: var(--radius-md);
+  background-position: center;
+  object-fit: cover;
+  opacity: 0.85;
+  margin-top: auto;
+}
+
+/* --- DURATA --- */
+.mkt-slider-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+}
+
+.mkt-slider-label {
+  font-size: var(--body-md-size);
+  color: var(--on-surface-variant);
+}
+
+.mkt-custom-slider {
+  flex: 1;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.mkt-duration-value {
+  color: var(--primary);
+  font-weight: var(--headline-md-weight);
+  margin-left: var(--spacing-xs);
+}
+
+/* --- MEDIA QUERY MOBILE --- */
+@media (max-width: 48rem) {
+  .mkt-form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+    grid-template-areas:
+      "museo"
+      "chi-sei"
+      "interessi"
+      "durata"
+      "opzioni";
+  }
+
+  .mkt-card {
+    padding: var(--spacing-md);
+  }
+
+  .mkt-role-btn {
+    font-size: var(--body-md-size);
+    gap: var(--spacing-xs);
+  }
+
+  .mkt-role-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .mkt-image {
+    display: none;
+  }
+}

@@ -1,25 +1,24 @@
 :host {
-  display: block;
+  display: flex;
   width: 100%;
-}
-
-div {
-  width: 100%;
-  max-width: 100rem;
-  padding: var(--margin-mobile);
-  margin: var(--spacing-md) auto 0;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--body-lg-size);
   box-sizing: border-box;
 }
 
-mkt-shell {
-  background-color: var(--background);
-  color: var(--on-surface);
-  display: block;
+.angular-mkt-container {
   width: 100%;
+  max-width: 100rem;
+  box-sizing: border-box;
+  padding: var(--margin-mobile);
+  margin: 0 auto;
+  padding-top: var(--spacing-xl);
 }
 
 @media (min-width: 48rem) {
-  div {
-    padding: var(--spacing-lg) var(--margin-desktop);
+  .angular-mkt-container {
+    padding: var(--spacing-xl) var(--margin-desktop);
   }
 }

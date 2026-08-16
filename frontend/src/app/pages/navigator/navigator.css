@@ -25,13 +25,11 @@
 @media (min-width: 48rem) {
   .navigator-container {
     padding: var(--spacing-xl) var(--margin-desktop);
-    gap: var(--spacing-xl);
+    gap: var(--spacing-md);
   }
 }
 
-/* =========================================
-   HEADER APP
-   ========================================= */
+/* HEADER APP */
 .nav-header {
   display: flex;
   justify-content: space-between;
@@ -42,12 +40,12 @@
 .hero-title {
   font-family: var(--font-serif);
   font-size: var(--headline-lg-size);
+  font-weight: var(--headline-lg-weight);
+  line-height: var(--headline-lg-line);
   margin: 0;
 }
 
-/* =========================================
-   STILE BASE DELLE CARD
-   ========================================= */
+/* TILE BASE DELLE CARD */
 .card {
   background-color: var(--surface);
   border: 0.0625rem solid var(--secondary);
@@ -184,9 +182,7 @@
   flex-wrap: wrap;
 }
 
-/* =========================================
-   IL LAYOUT DESKTOP (Griglia Infallibile)
-   ========================================= */
+/*  IL LAYOUT DESKTOP (Griglia Infallibile) */
 @media (min-width: 60rem) {
 
   .navigator-grid {

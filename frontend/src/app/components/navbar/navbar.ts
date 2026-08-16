@@ -28,7 +28,7 @@ export class Navbar {
 
   navItems: Entry[] = [
     { name: 'Home', path: '/'},
-    { name: 'Visite', path: '/visit'},
+    { name: 'Visite', path: '/marketplace/visit/search'},
     { name: 'Marketplace', path: '/marketplace'},
     { name: 'Contatti', path: '/contacts'},
     { name: 'Navigator', path: '/navigator'},

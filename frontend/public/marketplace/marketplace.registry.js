@@ -1,9 +1,26 @@
+//components
+import {MktHomeInputFields} from "./components/home-input-fields/input-fields.js";
+customElements.define('mkt-home-input-fields', MktHomeInputFields);
+
 import {MktMuseumCard} from "./components/museum-card/musuem-card.js";
 customElements.define('mkt-museum-card', MktMuseumCard);
 
 import {MktVisitCard} from "./components/visit-card/visit-card.js";
 customElements.define('mkt-visit-card', MktVisitCard);
 
-import {Marketplace} from "./marketplace.js";
-customElements.define('mkt-home', Marketplace);
+import {MktInputSearchText} from "./components/input-field-search-visit/input-field-search-visit.js";
+customElements.define('mkt-input-search-visit', MktInputSearchText);
+
+import {MktCardGrid} from "./components/card-grid/card-grid.js";
+customElements.define('mkt-card-grid', MktCardGrid);
+
+//pages
+import {MktVisitExplorer} from "./pages/visit-explorer/visit-explorer.js";
+customElements.define('mkt-visit-explorer', MktVisitExplorer);
+
+import {MktHome} from "./pages/home/home.js";
+customElements.define('mkt-home', MktHome);
+
+import {MktRouter} from "./router.js";
+customElements.define('mkt-router', MktRouter);
 

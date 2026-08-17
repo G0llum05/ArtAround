@@ -16,9 +16,14 @@ class MuseumService {
     return await Museum.find({ name: regex }).lean();
   }
 
-  static async getVisitsByMuseumId(musId) {
-    const result = (await Museum.findById(musId, 'visits').populate('visits').lean())?.visits;
-    return result ? result : [];
+  static async getAllMuseumVisits(musuemId) {
+    // prende visite attive e immagini pure delle visite attive
+    const museum = await Museum.findById(museumId)
+      .populate({
+        path: 'visits',
+        match: { isActive: { $ne: false } } // Filtra a livello di join Mongo solo le visite attive
+      })
+      .lean();
   }
 
   static async createMuseum(data) {

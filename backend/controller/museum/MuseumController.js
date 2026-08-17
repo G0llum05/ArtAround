@@ -43,14 +43,16 @@ class MuseumController {
     }
   }
 
-  static async getVisitsPresentationByMuseumId(req, res) {
+  static async getAllMuseumVisits(req, res) {
     try {
-      const imageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000";
-      const visits = await MuseumService.getVisitsByMuseumId(req.params.id || req.body.id) || [];
+      const visits = await MuseumService.getAllMuseumVisits(req.params.id);
+      if (!visits || visits.length === 0) {
+        return res.status(404).json({ message: 'No visits found for this museum' });
+      }
+
       const visitsPresentation = visits.map(
-        visit => VisitMapper.toSingleVisitHomePresentationRes(visit, [imageUrl], "")
+        visit => VisitMapper.toMuseumVisitForPresentationDTO(visit)
       );
-      console.log("DEUBUGGGGGG -> ", visits);
       res.status(200).json(visitsPresentation);
     } catch (e) {
       res.status(500).json({ message: e.message });

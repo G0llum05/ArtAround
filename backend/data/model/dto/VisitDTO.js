@@ -22,6 +22,38 @@ class VisitResponseDTO {
   }
 }
 
+class TopTenVisitsResponseDTO {
+  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, assets = []) {
+    this.id = id;
+    this.title = title;
+    this.description = description;
+    this.isVerified = isVerified;
+    this.disableFriendly = disableFriendly;
+    this.duration = duration;
+    this.price = price;
+    this.isClosingSoon = isClosingSoon;
+    this.isNew = isNew;
+    this.assets = assets;
+  }
+}
+
+class MuseumVisitForPresentationDTO {
+  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, categories = [], assets = []) {
+    this.id = id;
+    this.title = title;
+    this.description = description;
+    this.isVerified = isVerified;
+    this.disableFriendly = disableFriendly;
+    this.duration = duration;
+    this.price = price;
+    this.isClosingSoon = isClosingSoon;
+    this.isNew = isNew;
+    this.categories = categories;
+    this.assets = assets;
+  }
+}
+
+
 class VisitRequestDTO {
   // constructor(title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories = [], artworks = []) {
   constructor(title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, categories = [], artworks = []) {
@@ -58,25 +90,11 @@ class VisitHomePresentationRequestDTO {
   }
 }
 
-class TopTenVisitsResponseDTO {
-  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, assets = []) {
-    this.id = id;
-    this.title = title;
-    this.description = description;
-    this.isVerified = isVerified;
-    this.disableFriendly = disableFriendly;
-    this.duration = duration;
-    this.price = price;
-    this.isClosingSoon = isClosingSoon;
-    this.isNew = isNew;
-    this.assets = assets;
-  }
-}
-
 module.exports = {
   VisitResponseDTO,
   VisitRequestDTO,
   VisitImageRequestDTO,
   VisitHomePresentationRequestDTO,
-  TopTenVisitsResponseDTO
+  TopTenVisitsResponseDTO,
+  MuseumVisitForPresentationDTO
 };

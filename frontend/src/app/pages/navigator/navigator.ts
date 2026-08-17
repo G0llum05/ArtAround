@@ -1,16 +1,18 @@
-import {Component, signal, computed, OnInit, effect} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
-import {Itinerary} from '../../components/itinerary/itinerary';
-import {Chat} from '../../components/chat/chat';
-import {NavigatorSettings} from '../../components/navigator-settings/navigator-settings';
-import {ToneType, UserNavigatorSettings} from '../../models/appModel/userNavigatorSettings';
+import { Component, signal, inject, computed, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Itinerary } from '../../components/itinerary/itinerary';
+import { Chat } from '../../components/chat/chat';
+import { NavigatorService, StreamChunk } from '../../services/navigator.service';
+import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
+import { ToneType, UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, skip, switchMap } from 'rxjs/operators';
 import { Map } from '../../components/map/map';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 
-import {dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS, messagesDummy} from './dummy'
+
+import { dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS, messagesDummy } from './dummy'
 
 const settingsKey = 'navigatorSettings'
 
@@ -22,18 +24,25 @@ const settingsKey = 'navigatorSettings'
   styleUrl: './navigator.css'
 })
 export class Navigator {
+  private navigatorService = inject(NavigatorService);
+
   // Stati UI
   isPlaying = signal<boolean>(false);
   showSubtitles = signal<boolean>(true);
   isSettingsOpen = signal<boolean>(false);
   isMapOpen = signal<boolean>(false);
+  isLoading = signal<boolean>(false);
+
+  // contesto
+  museumId = signal<string>('650c1f1e1c9d440000a1b2c3');
+  visitId = signal<string>('650c1f1e1c9d440000a1b2c4');
 
   //Setting
   currentSettings = signal<UserNavigatorSettings>({
-      tone: 'adulto',
-      language: 'en',
-      duration: 30
-    });
+    tone: 'adulto',
+    language: 'it',
+    duration: 30
+  });
 
   // Chat e Dettatura
   messages = signal<ChatMessage[]>(messagesDummy)

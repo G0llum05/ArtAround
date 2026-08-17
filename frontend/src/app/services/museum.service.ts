@@ -28,7 +28,7 @@ export class MuseumService {
     return this.http.get<MuseumResponse>(`${this.apiUrl}${id}`);
   }
 
-  getVisitsPresentationByMuseumId(id: string): Observable<VisitHomePresentationResponse[]> {
+  getAllMuseumVisits(id: string): Observable<VisitHomePresentationResponse[]> {
     return this.http.get<VisitHomePresentationResponse[]>(`${this.apiUrl}${id}/visits`);
   }
 

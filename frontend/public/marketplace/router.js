@@ -52,6 +52,9 @@ export class MktRouter extends HTMLElement {
       case '/marketplace/visit/search':
         this.innerHTML += `<mkt-visit-explorer> </mkt-visit-explorer>`;
         break;
+      case '/marketplace/museum':
+        this.innerHTML += `<mkt-museum-home> </mkt-museum-home>`;
+        break;
       default:
         this.innerHTML = ``;
         const payload = {

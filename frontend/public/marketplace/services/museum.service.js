@@ -17,4 +17,16 @@ export class MuseumService {
       console.error(error);
     }
   }
+  static async getVisitsByMuseumId(id) {
+    try{
+      const response = await fetch(`${this.apiUrl}/${id}/visits`, {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+    } catch (error){
+      console.error(error);
+    }
+  }
 }

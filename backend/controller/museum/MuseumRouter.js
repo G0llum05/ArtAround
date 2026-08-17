@@ -3,7 +3,6 @@ const MuseumController = require('./MuseumController');
 const router = express.Router();
 
 router.get('/homePresentation', MuseumController.getHomePresentation);
-router.get('/homePresentation', MuseumController.getHomePresentation);
 router.get('/', MuseumController.getAll);
 router.post('/', MuseumController.create);
 

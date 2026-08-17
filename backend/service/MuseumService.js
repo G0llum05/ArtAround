@@ -1,19 +1,23 @@
 const Museum = require('../data/model/Museum');
-const ImageUrlService = require('./ImageUrlService');
 const MuseumMapper = require('../data/mapper/MuseumMapper');
+const VisitMapper = require('../data/mapper/VisitMapper');
+
 class MuseumService {
   static async getAllMuseum() {
-    return await Museum.find().lean();
+    const museums = await Museum.find().lean();
+    return museums.map((mus) => MuseumMapper.toMuseumResponseDTO(mus));
   }
 
   static async getMuseumById(id) {
-    return await Museum.findById(id).lean();
+    const museum = await Museum.findById(id).lean();
+    return MuseumMapper.toMuseumResponseDTO(museum);
   }
 
   // Ricerca per inizio del nome
   static async searchByName(str) {
     const regex = new RegExp(`^${str}`, 'i');
-    return await Museum.find({ name: regex }).lean();
+    const museum = await Museum.find({ name: regex }).lean();
+    return MuseumMapper.toMuseumResponseDTO(museum);
   }
 
   static async getAllMuseumVisits(museumId) {
@@ -25,79 +29,83 @@ class MuseumService {
       })
       .lean();
     // check immagini con filler
-    if (visits && visits.visits) {
-      for (const visit of visits.visits) {
-        if (!visit.assets) visit.assets = { images: [] };
-        if (!Array.isArray(visit.assets.images)) visit.assets.images = [];
 
-        const hasLandscape = visit.assets.images.some(img => (typeof img === 'object' && img?.orientation === 'landscape'));
-        const hasPortrait = visit.assets.images.some(img => (typeof img === 'object' && img?.orientation === 'portrait'));
-
-        if (!hasLandscape) {
-          visit.assets.images.push({ url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000", orientation: 'landscape' });
-        }
-        if (!hasPortrait) {
-          visit.assets.images.push({ url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000", orientation: 'portrait' });
-        }
-      }
+    if (!visits) {
+      return [];
     }
-
-    return visits ? visits.visits : [];
+    
+    return visits.map
+    (
+      (vis) => {
+        if (!vis.assets?.images || vis.assets.images.length === 0) {
+          this._defaultVisitImageFiller(vis);
+        }
+        return VisitMapper.toMuseumVisitForPresentationDTO(vis);
+      }
+    );
   }
 
   static async createMuseum(data) {
     const museum = new Museum(data);
-    return await museum.save();
+    await museum.save();
+    return MuseumMapper.toMuseumResponseDTO(museum);
   }
 
   static async updateMuseum(id, data) {
-    return await Museum.findByIdAndUpdate(id, data, { new: true }).lean();
+    const museum = await Museum.findByIdAndUpdate(id, data, { new: true }).lean();  
+    return MuseumMapper.toMuseumResponseDTO(museum);
   }
 
   static async deleteMuseum(id) {
-    return await Museum.findByIdAndDelete(id).lean();
+    const museum = await Museum.findByIdAndDelete(id).lean(); 
+    return MuseumMapper.toMuseumResponseDTO(museum);
   }
 
 
   static async getMuseumVisitPlanById(id) {
     const museum = await Museum.findById(id).lean();
-
-    const imageUrls = await ImageUrlService.getMuseumImageUrl(id);
-
-    return MuseumMapper.toMuseumVisitPlanResponseDTO(museum, imageUrls);
+    return MuseumMapper.toMuseumVisitPlanResponseDTO(museum);
   }
 
   static async getMuseumHomePresentation() {
     const museums = await Museum.find({ isActive: true }).lean();
-
-    // Fill default images if missing
-    const museumsWithImages = await this._defautlImageFiller(museums);
-
-    return museumsWithImages;
-
+    
+    return museums.map
+    (
+      (mus) => {
+        if (!mus.assets?.gallery || mus.assets.gallery.length === 0) {
+          this._defaultMuseumImageFiller(mus);
+        }
+        return MuseumMapper.toMuseumHomePresentationResponseDTO(mus);
+      }
+    );
   }
 
 
-  static async _defautlImageFiller(museums) {
+  static async _defaultMuseumImageFiller(museum) {
     // Immagini di default per il test (landscape per desktop e portrait per mobile)
     const DEFAULT_LANDSCAPE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000";
     const DEFAULT_PORTRAIT = "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000";
 
-    museums.forEach(mus => {
-      if (!mus.assets) mus.assets = { images: [] };
-      if (!Array.isArray(mus.assets.images)) mus.assets.images = [];
+    if (!museum.assets) museum.assets = {};
+    if (!Array.isArray(museum.assets.gallery)) museum.assets.gallery = [];
 
-      const hasLandscape = mus.assets.images.some(img => (typeof img === 'object' && img?.orientation === 'landscape'));
-      const hasPortrait = mus.assets.images.some(img => (typeof img === 'object' && img?.orientation === 'portrait'));
 
-      if (!hasLandscape) {
-        mus.assets.images.push({ url: DEFAULT_LANDSCAPE, orientation: 'landscape' });
-      }
-      if (!hasPortrait) {
-        mus.assets.images.push({ url: DEFAULT_PORTRAIT, orientation: 'portrait' });
-      }
-    });
-    return museums;
+    museum.assets.gallery.push({ url: DEFAULT_LANDSCAPE, orientation: 'landscape' });
+    museum.assets.gallery.push({ url: DEFAULT_PORTRAIT, orientation: 'portrait' });
+  }
+  
+  static async _defaultVisitImageFiller(visit) {
+    // Immagini di default per il test (landscape per desktop e portrait per mobile)
+    const DEFAULT_LANDSCAPE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000";
+    const DEFAULT_PORTRAIT = "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000";
+
+    if (!visit.assets) visit.assets = {};
+    if (!Array.isArray(visit.assets.images)) museum.assets.images = [];
+
+
+    visit.assets.images.push({ url: DEFAULT_LANDSCAPE, orientation: 'landscape' });
+    visit.assets.images.push({ url: DEFAULT_PORTRAIT, orientation: 'portrait' });
   }
 }
 

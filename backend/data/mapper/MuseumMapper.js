@@ -4,7 +4,7 @@ class MuseumMapper {
   static toMuseumResponseDTO(museum) {
     if (!museum) return null;
     return new MuseumResponseDTO(
-      museum._id || museum.id,
+      museum._id,
       museum.name,
       museum.description,
       museum.address,
@@ -22,7 +22,8 @@ class MuseumMapper {
       museum.floors,
       museum.transportInfo,
       museum.eventsAndExibitions || museum.eventsAndExhibitions,
-      museum.requirements
+      museum.requirements,
+      museum.assets || { gallery: [] }
     );
   }
 
@@ -34,21 +35,21 @@ class MuseumMapper {
       museum.name,
       museum.description,
       museum.address ? museum.address.city : null,
-      museum.accessibility.disableFriendly,
-      museum.assets
-    )
+      museum.accessibility?.disableFriendly ?? false,
+      museum.assets || { gallery: [] }
+    );
   }
 
-  static toMuseumVisitPlanResponseDTO(museum, imageUrls = []) {
+  static toMuseumVisitPlanResponseDTO(museum) {
     if (!museum) return null;
     return new MuseumVisitPlanResponseDTO(
-      museum._id || museum.id,
+      museum._id,
       museum.name,
       museum.address ? museum.address.city : null,
       museum.maxCapacity,
       museum.actualCapacity,
       museum.ticketInfo,
-      imageUrls
+      museum.assets || { gallery: [] }
     );
   }
 
@@ -73,7 +74,8 @@ class MuseumMapper {
       floors: museumRequestDTO.floors,
       transportInfo: museumRequestDTO.transportInfo,
       eventsAndExhibitions: museumRequestDTO.eventsAndExibitions || museumRequestDTO.eventsAndExhibitions,
-      requirements: museumRequestDTO.requirements
+      requirements: museumRequestDTO.requirements,
+      assets: museumRequestDTO.assets || { gallery: [] }
     };
   }
 

@@ -1,5 +1,5 @@
 class MuseumResponseDTO {
-  constructor(id, name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements) {
+  constructor(id, name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { gallery: [] }) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -19,11 +19,12 @@ class MuseumResponseDTO {
     this.transportInfo = transportInfo;
     this.eventsAndExibitions = eventsAndExibitions;
     this.requirements = requirements;
+    this.assets = assets;
   }
 }
 
 class MuseumRequestDTO {
-  constructor(name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements) {
+  constructor(name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { gallery: [] }) {
     this.name = name;
     this.description = description;
     this.address = address;
@@ -42,6 +43,7 @@ class MuseumRequestDTO {
     this.transportInfo = transportInfo;
     this.eventsAndExibitions = eventsAndExibitions;
     this.requirements = requirements;
+    this.assets = assets;
   }
 }
 

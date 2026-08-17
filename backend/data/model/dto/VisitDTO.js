@@ -1,6 +1,5 @@
 class VisitResponseDTO {
-  // constructor(id, title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }) {
-  constructor(id, title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }) {
+  constructor(id, title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }, assets = { images: [] }) {
     this.id = id;
     this.title = title;
     this.description = description;
@@ -15,15 +14,15 @@ class VisitResponseDTO {
     this.weeklySchedule = weeklySchedule;
     this.disabledFriendly = disabledFriendly;
     this.requirements = requirements;
-    // this.quiz = quiz;
     this.categories = categories;
     this.likesCount = likesCount;
     this.views = views;
+    this.assets = assets;
   }
 }
 
 class TopTenVisitsResponseDTO {
-  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, assets = []) {
+  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, assets = { images: [] }) {
     this.id = id;
     this.title = title;
     this.description = description;
@@ -38,7 +37,7 @@ class TopTenVisitsResponseDTO {
 }
 
 class MuseumVisitForPresentationDTO {
-  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, categories = [], assets = []) {
+  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, categories = [], assets = { images: [] }) {
     this.id = id;
     this.title = title;
     this.description = description;
@@ -55,8 +54,7 @@ class MuseumVisitForPresentationDTO {
 
 
 class VisitRequestDTO {
-  // constructor(title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, quiz, categories = [], artworks = []) {
-  constructor(title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, categories = [], artworks = []) {
+  constructor(title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, categories = [], artworks = [], assets = { images: [] }) {
     this.title = title;
     this.description = description;
     this.price = price;
@@ -70,9 +68,9 @@ class VisitRequestDTO {
     this.weeklySchedule = weeklySchedule;
     this.disabledFriendly = disabledFriendly;
     this.requirements = requirements;
-    // this.quiz = quiz;
     this.categories = categories;
     this.artworks = artworks;
+    this.assets = assets;
   }
 }
 

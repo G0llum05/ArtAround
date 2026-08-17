@@ -3,6 +3,12 @@ import { SocialSchema } from "./subModels/social.model";
 import { VisitResponse } from "./visit.model";
 import { Schedule } from "./subModels/schedule.model";
 import { PointOfInterest } from "./subModels/pointOfInterest.model";
+import { ImageSchema } from "./subModels/image.model";
+
+export interface MuseumAssets {
+  gallery?: ImageSchema[];
+}
+
 export interface MuseumResponse {
   id: string,
   name: string,
@@ -87,7 +93,9 @@ export interface MuseumResponse {
     temporaryExibitions: string[]
   },
 
-  requirements: string
+  requirements: string,
+
+  assets?: MuseumAssets
 }
 
 export interface MuseumRequest {
@@ -173,7 +181,9 @@ export interface MuseumRequest {
     temporaryExibitions: string[]
   },
 
-  requirements: string
+  requirements: string,
+
+  assets?: MuseumAssets
 }
 
 export interface MuseumVisitPlanResponse {
@@ -199,7 +209,5 @@ export interface MuseumHomePresentationResponse {
   description: string,
   city: string,
   disableFriendly: boolean,
-  assets: {
-    images: { url: string; orientation: string }[];
-  }
+  assets: MuseumAssets
 }

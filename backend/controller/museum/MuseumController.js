@@ -15,10 +15,7 @@ class MuseumController {
   static async getHomePresentation(req, res) {
     try {
       const museums = await MuseumService.getMuseumHomePresentation();
-      const response = museums.map(mus => {
-        return MuseumMapper.toMuseumHomePresentationResponseDTO(mus);
-      })
-      res.status(200).json(response);
+      res.status(200).json(museums);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -49,11 +46,7 @@ class MuseumController {
       if (!visits || visits.length === 0) {
         return res.status(404).json({ message: 'No visits found for this museum' });
       }
-
-      const visitsPresentation = visits.map(
-        visit => VisitMapper.toMuseumVisitForPresentationDTO(visit)
-      );
-      res.status(200).json(visitsPresentation);
+      res.status(200).json(visits);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }

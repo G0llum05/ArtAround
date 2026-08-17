@@ -25,10 +25,10 @@ class VisitMapper {
       visit.weeklySchedule,
       visit.disableFriendly,
       visit.requirements,
-      visit.quiz,
       visit.categories || [],
       visit.likesCount || 0,
-      visit.views || { total: 0, weekly: 0 }
+      visit.views || { total: 0, weekly: 0 },
+      visit.assets || { images: [] }
     );
   }
 
@@ -50,7 +50,8 @@ class VisitMapper {
       requirements: visitRequestDTO.requirements,
       quiz: visitRequestDTO.quiz,
       categories: visitRequestDTO.categories || [],
-      artworks: visitRequestDTO.artworks || []
+      artworks: visitRequestDTO.artworks || [],
+      assets: visitRequestDTO.assets || { images: [] }
     };
   }
 
@@ -66,7 +67,7 @@ class VisitMapper {
       visit.price,
       visit.isClosingSoon,
       visit.isNew,
-      visit.assets,
+      visit.assets || { images: [] }
     );
   }
 
@@ -83,7 +84,7 @@ class VisitMapper {
       visit.isClosingSoon,
       visit.isNew,
       visit.categories || [],
-      visit.assets || [],
+      visit.assets || { images: [] }
     );
   }
 }

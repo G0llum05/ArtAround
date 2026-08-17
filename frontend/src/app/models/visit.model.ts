@@ -1,6 +1,11 @@
 import { ArtworkResponse } from "./artwork.model";
 import { UserResponse } from "./user.model";
 import { Schedule } from "./subModels/schedule.model";
+import { ImageSchema } from "./subModels/image.model";
+
+export interface VisitAssets {
+  images?: ImageSchema[];
+}
 
 export interface VisitHomePresentationResponse {
   id: string,
@@ -12,9 +17,7 @@ export interface VisitHomePresentationResponse {
   price: number,
   isClosingSoon: boolean,
   isNew: boolean,
-  assets: {
-    images: { url: string; orientation: string }[];
-  },
+  assets: VisitAssets,
 }
 
 export interface VisitResponse {
@@ -48,7 +51,8 @@ export interface VisitResponse {
     weekly: number
   },
   badge: string,
-  isVerified?: boolean
+  isVerified?: boolean,
+  assets?: VisitAssets
 }
 
 export interface VisitRequest {
@@ -81,7 +85,8 @@ export interface VisitRequest {
     weekly: number
   },
   badge: string,
-  isVerified?: boolean
+  isVerified?: boolean,
+  assets?: VisitAssets
 }
 
 export interface VisitImageRequest {

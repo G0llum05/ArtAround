@@ -1,45 +1,4 @@
-.mkt-results-section {
-  margin-top: var(--spacing-md);
-  padding-top: var(--spacing-lg);
-}
-
-.mkt-results-header {
-  margin-bottom: var(--spacing-lg);
-}
-
-.mkt-results-title {
-  font-family: var(--font-serif);
-  font-size: var(--headline-lg-size);
-  margin: 0 0 var(--spacing-xs) 0;
-}
-
-.mkt-results-subtitle {
-  font-size: var(--body-lg-size);
-  color: var(--on-surface-variant);
-  margin: 0;
-}
-
-/* --- LA MAGIA DELLA GRIGLIA (MOBILE FIRST) --- */
-.mkt-results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-  gap: var(--spacing-sm);
-  align-items: stretch;
-}
-
-@media (min-width: 48rem) {
-  .mkt-results-grid {
-    gap: var(--spacing-md);
-  }
-}
-
-@media (min-width: 64rem) {
-  .mkt-results-grid {
-    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
-  }
-}
-
-/* --- SKELETON LOADER PROPORZIONATI --- */
+/* --- SKELETON LOADER RIDOTTI --- */
 @keyframes mkt-shimmer {
   0% { background-position: -25rem 0; }
   100% { background-position: 25rem 0; }
@@ -67,15 +26,15 @@
 }
 
 .mkt-skeleton-content {
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
 .mkt-skeleton-text {
   border-radius: 0.25rem;
-  height: 1rem;
+  height: 0.875rem;
 }
 
 /* --- STATO VUOTO --- */

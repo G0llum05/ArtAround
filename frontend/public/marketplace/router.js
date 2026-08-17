@@ -40,8 +40,17 @@ export class MktRouter extends HTMLElement {
 
   render() {
     this.routes = this.getAttribute('route') || window.location.pathname;
-
     this.innerHTML = `<link rel="stylesheet" href="/marketplace/marketplace.registry.css"/>\n`
+
+    // Questa RegExp cerca esattamente /marketplace/visit/ seguito da qualsiasi cosa non contenga "/"
+    const visitDetailRegex = /^\/marketplace\/museum\/([^/]+)$/;
+    const match = this.routes.match(visitDetailRegex);
+    if (match) {
+      const visitId = match[1];
+      this.innerHTML += `<mkt-museum-home data-visit-id="${visitId}"></mkt-museum-home>`;
+      return;
+    }
+
     switch (this.routes) {
       case '/marketplace':
         this.innerHTML += `<mkt-home> </mkt-home>`;
@@ -52,13 +61,11 @@ export class MktRouter extends HTMLElement {
       case '/marketplace/visit/search':
         this.innerHTML += `<mkt-visit-explorer> </mkt-visit-explorer>`;
         break;
-      case '/marketplace/museum':
-        this.innerHTML += `<mkt-museum-home> </mkt-museum-home>`;
-        break;
       default:
         this.innerHTML = ``;
+        window.history.replaceState(null, '', '/marketplace');
         const payload = {
-          destination: `page-not-found`,
+          destination: 'page-not-found',
         };
         const navEvent = new CustomEvent('angular-navigate', {
           detail: payload,

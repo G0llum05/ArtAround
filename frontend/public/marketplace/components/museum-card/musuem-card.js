@@ -1,8 +1,12 @@
 // public/marketplace/components/museum-card/museum-card.js
 
+import {goTo} from "../../router.js";
+
 export class MktMuseumCard extends HTMLElement {
   connectedCallback() {
     this.render();
+    this.id = this.getAttribute("data-id");
+    this.setUpEventListeners()
   }
 
   render() {
@@ -13,7 +17,7 @@ export class MktMuseumCard extends HTMLElement {
 
     // Struttura HTML fedele a quella di Angular
     this.innerHTML = `
-      <article class="mkt-museum-card-container">
+      <article class="mkt-museum-card-container" id="museum-card">
         <div class="mkt-museum-image-wrapper">
           <img alt="${title}" src="${image}" class="mkt-museum-img">
         </div>
@@ -32,5 +36,12 @@ export class MktMuseumCard extends HTMLElement {
         </div>
       </article>
     `;
+  }
+
+  setUpEventListeners() {
+    const museumCard = this.querySelector('#museum-card')
+    if(museumCard){
+       goTo(museumCard, `/marketplace/museum/${this.id}`, null)
+    }
   }
 }

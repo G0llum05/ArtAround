@@ -32,7 +32,7 @@ export class MktHome extends HTMLElement {
     } catch(error) {
       console.error("Errore nel recupero dei musei:", error);
     }
-
+    this.render();
     this.setupEventListeners();
   }
 
@@ -63,7 +63,8 @@ export class MktHome extends HTMLElement {
           data-title="${museum.name || ''}"
           data-city="${museum.city || ''}"
           data-desc="${museum.description || ''}"
-          data-image="${imageUrl}">
+          data-image="${imageUrl}"
+          data-id="${museum._id}">
         </mkt-museum-card>
       `;
     }).join("\n");

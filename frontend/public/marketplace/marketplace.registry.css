@@ -8,4 +8,4 @@
 @import url('./components/visit-card/visit-card.css');
 @import url('./components/home-input-fields/input-fields.css');
 @import url('./components/input-field-search-visit/input-field-search-visit.css');
-@import url('./components/card-grid/card-grid.css');
+@import url('components/skeleton-card-grid/skeleton-card-grid.css');

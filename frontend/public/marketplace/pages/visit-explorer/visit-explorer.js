@@ -13,7 +13,7 @@ export class MktVisitExplorer extends HTMLElement {
       verificata: false
     };
     this.partialInterestsList = [];
-    this.allInterests = ['Storia', 'Scienza', 'Arte', 'Natura'];
+    this.allInterests = [];
 
     this.loadingVisit = false;
     this.allMuseumVisit = [];
@@ -66,12 +66,19 @@ export class MktVisitExplorer extends HTMLElement {
     if (!this.state.museumId) return [];
     let list = [...this.allMuseumVisit];
 
+    // Filtro per interessi (se l'utente ha selezionato dei filtri specifici)
+    if (this.state.interessi.length > 0) {
+      list = list.filter(v =>
+        v.categories && this.state.interessi.every(i => v.categories.includes(i))
+      );
+    }
+
     if (this.state.durata) {
       const maxMinutes = this.state.durata * 60;  //converto in minuti
       list = list.filter(v => !v.duration || v.duration <= maxMinutes);
     }
     if (this.state.accessibile) {
-      list = list.filter(v => v.isAccessible || v.disableFriendly === false);
+      list = list.filter(v => v.disableFriendly === false);
     }
     if (this.state.gratuito) {
       list = list.filter(v => v.price === 0 || v.price === '0' || v.price === 'Gratis');
@@ -83,29 +90,16 @@ export class MktVisitExplorer extends HTMLElement {
   }
 
   updateUI() {
+    // Gestione dei bottoni "Chi sei" (Ruoli)
     this.querySelectorAll('.mkt-role-btn').forEach(btn => {
       btn.classList.toggle('mkt-active', btn.getAttribute('data-role') === this.state.chiSei);
     });
 
-    const isAnyActive = this.state.interessi.length === 0;
-    const chipsGroup = this.querySelector('#interessi-group');
-    if (chipsGroup) {
-      chipsGroup.classList.toggle('mkt-any-active', isAnyActive);
-
-      chipsGroup.querySelectorAll('.mkt-chip').forEach(chip => {
-        const val = chip.getAttribute('data-value');
-        if (val === 'Qualsiasi') {
-          chip.classList.toggle('mkt-active', isAnyActive);
-        } else {
-          chip.classList.toggle('mkt-active', this.state.interessi.includes(val));
-          chip.classList.toggle('mkt-partial', this.partialInterestsList.includes(val));
-        }
-      });
-    }
-
+    // Gestione della durata
     const durationValEl = this.querySelector('.mkt-duration-value');
     if (durationValEl) durationValEl.textContent = this.currentDurationStr;
 
+    // Gestione opzioni aggiuntive (Accessibile, Gratuito, Verificata)
     const btnAcc = this.querySelector('#btn-accessibile');
     const btnGrat = this.querySelector('#btn-gratuito');
     const btnVer = this.querySelector('#btn-verificata');
@@ -113,12 +107,90 @@ export class MktVisitExplorer extends HTMLElement {
     if (btnAcc) btnAcc.classList.toggle('mkt-active', this.state.accessibile);
     if (btnGrat) btnGrat.classList.toggle('mkt-active', this.state.gratuito);
     if (btnVer) btnVer.classList.toggle('mkt-active', this.state.verificata);
+
+    // Gestione dinamica dei chip di Interessi (Generati con le classi corrette)
+    const intersetGroup = this.querySelector('#interessi-group');
+    if (intersetGroup) {
+      const isAnyActive = this.state.interessi.length === 0;
+      intersetGroup.classList.toggle('mkt-any-active', isAnyActive);
+
+      // Generiamo il bottone "Qualsiasi" con la classe attiva se nessun interesse è selezionato
+      let html = `<button type="button" class="mkt-chip mkt-chip-qualsiasi ${isAnyActive ? 'mkt-active' : ''}" data-value="Qualsiasi">Qualsiasi</button>\n`;
+
+      // Generiamo gli altri chip applicando le classi active o partial direttamente
+      html += this.allInterests.map(int => {
+        const isActive = this.state.interessi.includes(int);
+        const isPartial = this.partialInterestsList.includes(int);
+
+        let cssClasses = 'mkt-chip';
+        if (isActive) cssClasses += ' mkt-active';
+        if (isPartial) cssClasses += ' mkt-partial';
+
+        return `<button type="button" class="${cssClasses}" data-value="${int}">${int}</button>`;
+      }).join('');
+
+      intersetGroup.innerHTML = html;
+      this.setUpEventListenersInterests();
+    }
+
+    this.updateGrid();
+  }
+
+  updateGrid(){
+    const visitGrid = this.querySelector("#results-container");
+    if (!visitGrid) return;
+
+    if(this.loadingVisit){
+      visitGrid.innerHTML = `<mkt-skeleton-card-grid></mkt-skeleton-card-grid>`;
+      return;
+    }
+
+    if (!this.state.museumId) {
+      visitGrid.innerHTML = `<p class="mkt-empty-text">Seleziona un museo per visualizzare le visite.</p>`;
+      return;
+    }
+
+    const visitsToDisplay = this.filteredVisits;
+
+    if (visitsToDisplay.length === 0) {
+      visitGrid.innerHTML = `
+        <section class="mkt-results-section">
+          <header class="mkt-results-header">
+            <h2 class="mkt-results-title">Visite</h2>
+            <p class="mkt-results-subtitle">Nessuna visita trovata con i filtri selezionati.</p>
+          </header>
+        </section>
+      `;
+      return;
+    }
+
+    const cardsHtml = visitsToDisplay.map(visit => {
+      const imageUrl = visit.assets?.images?.find(img => img.orientation === "landscape")?.url || visit.assets?.images?.[0]?.url || "../assets/images/place_holder.jpg";
+      return `
+        <mkt-visit-card
+          data-title="${visit.title}"
+          data-desc="${visit.description}"
+          data-price="${visit.price}"
+          data-image="${imageUrl}"
+          data-duration="${visit.duration}">
+        </mkt-visit-card>
+      `;
+    }).join('\n');
+
+    visitGrid.innerHTML = `
+      <section class="mkt-results-section">
+        <header class="mkt-results-header">
+          <h2 class="mkt-results-title">Visite</h2>
+          <p class="mkt-results-subtitle">Visite trovate (${visitsToDisplay.length})</p>
+        </header>
+        <div class="mkt-results-grid">
+          ${cardsHtml}
+        </div>
+      </section>
+    `;
   }
 
   render() {
-    const interestsHtml = this.allInterests.map(int =>
-      `<button type="button" class="mkt-chip" data-value="${int}">${int}</button>`
-    ).join('');
 
     this.innerHTML = `
       <main class="mkt-visit-page-container">
@@ -133,7 +205,7 @@ export class MktVisitExplorer extends HTMLElement {
             <header class="mkt-card-header">
               <h2 class="mkt-card-title">Scegli il museo</h2>
             </header>
-            <mkt-input-search-visit id="museum-search"></mkt-input-field-search-visit>
+            <mkt-input-search-visit id="museum-search"></mkt-input-search-visit>
           </section>
 
           <!-- 2. Chi Sei -->
@@ -179,7 +251,6 @@ export class MktVisitExplorer extends HTMLElement {
             </header>
             <div class="mkt-chips-group mkt-any-active" id="interessi-group">
               <button type="button" class="mkt-chip mkt-chip-qualsiasi mkt-active" data-value="Qualsiasi">Qualsiasi</button>
-              ${interestsHtml}
             </div>
             <img class="mkt-image" src="/assets/images/place_holder.jpg">
           </section>
@@ -225,11 +296,21 @@ export class MktVisitExplorer extends HTMLElement {
           </section>
         </form>
 
-        <mkt-card-grid data-is-loading="${this.loadingVisit}" data-length="${this.duration}" id="results-grid">
-        </mkt-card-grid>
+        <div id="results-container">
+        </div>
       </main>
     `;
     this.updateUI();
+  }
+
+
+  setUpEventListenersInterests() {
+    const interessiGroup = this.querySelector('#interessi-group');
+    if (interessiGroup) {
+      interessiGroup.querySelectorAll('.mkt-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => this.toggleInterest(e.currentTarget.getAttribute('data-value')));
+      });
+    }
   }
 
   setupEventListeners() {
@@ -237,12 +318,7 @@ export class MktVisitExplorer extends HTMLElement {
       btn.addEventListener('click', (e) => this.updateState('chiSei', e.currentTarget.getAttribute('data-role')));
     });
 
-    const interessiGroup = this.querySelector('#interessi-group');
-    if (interessiGroup) {
-      interessiGroup.querySelectorAll('.mkt-chip').forEach(chip => {
-        chip.addEventListener('click', (e) => this.toggleInterest(e.currentTarget.getAttribute('data-value')));
-      });
-    }
+    this.setUpEventListenersInterests()
 
     const slider = this.querySelector('#slider-durata');
     if (slider) {
@@ -261,12 +337,30 @@ export class MktVisitExplorer extends HTMLElement {
     if (searchComponent) {
       searchComponent.addEventListener('museumSelected', async (e) => {
         const id = e.detail;
-        this.allMuseumVisit = await MuseumService.getAllMuseumVisits(id);
-        this.updateState('museumId', id);
-      });
-      searchComponent.addEventListener('cleared', () => {
-        this.updateState('museumId', '');
-      });
+        this.loadingVisit = true;
+        this.state.museumId = id;
+        this.updateGrid();
+
+        try {
+          this.allMuseumVisit = await MuseumService.getAllMuseumVisits(id);
+          this.allInterests = [... new Set(this.allMuseumVisit.flatMap(visit => visit.categories))];
+          this.updateGrid();
+        } catch (error) {
+          console.error("Errore nel recupero delle visite:", error);
+          this.allMuseumVisit = [];
+          this.allInterests = [];
+        } finally {
+          this.loadingVisit = false;
+          this.updateUI();
+        }
+      })
     }
+      searchComponent.addEventListener('cleared', () => {
+        this.allMuseumVisit = [];
+        this.allInterests = [];
+        this.state.interessi = [];
+        this.updateState('museumId', '');
+        this.updateGrid();
+      });
   }
 }

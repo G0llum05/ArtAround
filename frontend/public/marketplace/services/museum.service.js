@@ -34,4 +34,20 @@ export class MuseumService {
       console.error(error);
     }
   }
+
+  static async getMuseumById(id) {
+    try{
+      const response = await fetch(`${this.apiUrl}/${id}`, {
+        method: 'GET',
+      })
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }

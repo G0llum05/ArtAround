@@ -253,3 +253,34 @@
     display: none;
   }
 }
+
+
+/* GRID valido anche per skeleton grid*/
+.mkt-results-section {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-lg);
+}
+
+/* --- GRIGLIA (DESKTOP FIRST) --- */
+.mkt-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--spacing-md);
+  align-items: stretch;
+}
+
+/* Tablet e schermi intermedi */
+@media (max-width: 64rem) {
+  .mkt-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: var(--spacing-sm);
+  }
+}
+
+/* Mobile */
+@media (max-width: 48rem) {
+  .mkt-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--spacing-sm);
+  }
+}

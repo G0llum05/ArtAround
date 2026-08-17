@@ -11,8 +11,8 @@ customElements.define('mkt-visit-card', MktVisitCard);
 import {MktInputSearchText} from "./components/input-field-search-visit/input-field-search-visit.js";
 customElements.define('mkt-input-search-visit', MktInputSearchText);
 
-import {MktCardGrid} from "./components/card-grid/card-grid.js";
-customElements.define('mkt-card-grid', MktCardGrid);
+import {MktCardGrid} from "./components/skeleton-card-grid/skeleton-card-grid.js";
+customElements.define('mkt-skeleton-card-grid', MktCardGrid);
 
 //pages
 import {MktVisitExplorer} from "./pages/visit-explorer/visit-explorer.js";

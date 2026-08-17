@@ -21,6 +21,7 @@ export class MktInputSearchText extends HTMLElement {
         _id: 0,
         name: "Nessun museo trovato"
       }];
+      this.updateSuggestions();
     } catch (error) {
       console.error("Errore nel recupero dei musei:", error);
     }

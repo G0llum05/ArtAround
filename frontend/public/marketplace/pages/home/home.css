@@ -203,11 +203,13 @@
   padding: var(--spacing-xs) 0 var(--spacing-md) 0;
   scroll-snap-type: x mandatory;
   scrollbar-color: var(--secondary) transparent;
+  scrollbar-width: thin;
 }
 
 /* --- STILE SCROLLBAR PER CHROME, EDGE E SAFARI --- */
 .mkt-horizontal-track::-webkit-scrollbar {
-  height: 0.5rem;
+  height: 1rem;
+  max-width: 10rem;
 }
 
 .mkt-horizontal-track::-webkit-scrollbar-track {

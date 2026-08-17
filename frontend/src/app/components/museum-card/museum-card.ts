@@ -22,7 +22,7 @@ export class MuseumCard {
   }
 
   getImageUrl(item: MuseumHomePresentationResponse): string {
-    const place_holder = '/assets/images/place_holder.jpg'
-    return item.assets.images.find(image => image.orientation == "landscape")?.url || place_holder;
+    const place_holder = '/assets/images/place_holder.jpg';
+    return item.assets?.gallery?.find(image => image.orientation === 'landscape')?.url || place_holder;
   }
 }

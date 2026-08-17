@@ -1,5 +1,9 @@
 /* --- CONTENITORE PRINCIPALE --- */
 .mkt-museum-page {
+  flex-grow: 1;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
@@ -13,7 +17,9 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  border-bottom: 1px solid var(--outline-variant);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  border-bottom: 0.0625rem solid var(--outline-variant);
   padding-bottom: var(--spacing-md);
 }
 
@@ -28,12 +34,14 @@
   font-size: var(--headline-lg-size);
   font-weight: var(--headline-lg-weight);
   line-height: var(--headline-lg-line);
+  color: var(--on-surface);
   margin: 0;
 }
 
 .mkt-museum-capacity {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--spacing-sm);
   font-size: var(--body-lg-size);
   color: var(--on-surface-variant);
@@ -46,29 +54,29 @@
 }
 
 .mkt-accessibility-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--surface-variant);
-  color: var(--primary);
+  background-color: var(--secondary);
+  color: var(--on-secondary);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-full);
   font-weight: 500;
   font-size: var(--body-md-size);
+  white-space: nowrap;
 }
 
 /* --- GRIGLIA UNICA INIZIALE (CON GRID-TEMPLATE E GRID-AREA) --- */
 .mkt-museum-initial-grid {
   display: grid;
   grid-template:
-    "hero address" 1fr
-    "hero tickets" 1fr
-    "hero hours" 1fr
-    "hero services" 1fr
-    "desc accessibility" auto
-    / 2.3fr 1fr;
+    "hero address"
+    "hero tickets"
+    "hero hours"
+    "hero services"
+    "desc accessibility"
+    / 2fr 1fr;
   gap: var(--spacing-lg);
-  align-items: stretch;
 }
 
 /* Assegnazione Aree */
@@ -76,7 +84,7 @@
   grid-area: hero;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  height: 100%;
+  min-height: 22rem; /* Circa 350px */
 }
 
 .mkt-museum-hero-img {
@@ -93,16 +101,54 @@
 .mkt-desc-area { grid-area: desc; }
 .mkt-accessibility-area { grid-area: accessibility; }
 
+.mkt-tickets-area.mkt-info-card {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.mkt-tickets-area .mkt-info-card-title {
+  color: var(--on-primary);
+}
+
+.mkt-accessibility-area.mkt-detail-card {
+  border-color: var(--secondary);
+}
+
+.mkt-accessibility-area .mkt-section-title{
+  color: var(--secondary);
+}
+
+.mkt-desc-area.mkt-detail-card {
+  border-color: var(--primary);
+}
+
+.mkt-detail-card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.mkt-detail-card a:hover,
+.mkt-detail-card a:visited,
+.mkt-detail-card a:active {
+  text-decoration: none;
+  color: inherit;
+}
+
+.mkt-address-area.mkt-info-card {
+   border-color: var(--primary);
+}
+
 /* Stile comune delle card informative laterali */
 .mkt-info-card {
   background-color: var(--surface);
-  border: 1px solid var(--outline-variant);
+  border: 0.0625rem solid var(--outline-variant);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg); /* <-- Uniformato a spacing-lg */
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  font-size: var(--body-lg-size);
 }
 
 .mkt-card-header-flex {
@@ -112,9 +158,8 @@
 }
 
 .mkt-info-card-title {
-  font-size: var(--label-md-size);
+  font-size: var(--body-lg-size);
   font-weight: 700;
-  letter-spacing: var(--label-md-tracking);
   color: var(--primary);
   margin: 0;
   text-transform: uppercase;
@@ -123,47 +168,52 @@
 .mkt-info-list {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  font-size: var(--body-md-size);
+  gap: 0.5rem;
+  font-size: var(--body-lg-size);
 }
 
 .mkt-address-single-line {
   color: var(--on-surface-variant);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .mkt-info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+  border-bottom: 0.0625rem dashed var(--outline-variant);
+  padding-bottom: 0.25rem;
+}
+
+.mkt-info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .mkt-services-grid-sidebar {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.3rem 0.5rem;
-  font-size: var(--label-md-size);
+  gap: 0.25rem;
+  font-size: var(--body-lg-size);
 }
 
 .mkt-service-item {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   color: var(--on-surface-variant);
 }
 
 /* Stile card centrali (Descrizione e Accessibilità) */
 .mkt-detail-card {
   background-color: var(--surface);
-  border: 1px solid var(--outline-variant);
+  border: 0.0625rem solid var(--outline-variant);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-lg); /* <-- Mantenuto a spacing-lg per coerenza */
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  height: 100%;
 }
 
 .mkt-section-title {
@@ -177,10 +227,10 @@
 }
 
 .mkt-desc-text {
-  font-size: 1.15rem;
-  line-height: 1.6;
+  font-size: var(--body-lg-size);
   color: var(--on-surface-variant);
   margin: 0;
+  line-height: 1.6;
 }
 
 .mkt-contact-list {
@@ -188,9 +238,9 @@
   flex-direction: row;
   flex-wrap: wrap;
   gap: var(--spacing-lg);
-  font-size: var(--body-md-size);
-  border-top: 1px solid var(--outline-variant);
-  padding-top: 0.75rem;
+  font-size: var(--body-lg-size);
+  border-top: 0.0625rem solid var(--outline-variant);
+  padding-top: 1rem;
   margin-top: auto;
 }
 
@@ -208,12 +258,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  font-size: var(--body-md-size);
+  font-size: var(--body-lg-size);
 }
 
 .mkt-check-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   color: var(--on-surface-variant);
 }
@@ -229,6 +279,8 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  border-bottom: 0.125rem solid var(--outline-variant);
+  padding-bottom: 0.5rem;
 }
 
 .mkt-section-heading {
@@ -239,6 +291,25 @@
 
 .mkt-cards-grid-4 {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(13.75rem, 1fr));
   gap: var(--spacing-md);
+}
+
+/* --- RESPONSIVITÀ (Tablet / Mobile) --- */
+@media (max-width: 56.25rem) {
+  .mkt-museum-initial-grid {
+    grid-template:
+      "hero" auto
+      "desc" auto
+      "address" auto
+      "tickets" auto
+      "hours" auto
+      "services" auto
+      "accessibility" auto
+      / 1fr;
+  }
+
+  .mkt-hero-area {
+    min-height: 15.625rem;
+  }
 }

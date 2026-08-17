@@ -263,7 +263,6 @@ export class MktVisitExplorer extends HTMLElement {
         const id = e.detail;
         this.allMuseumVisit = await MuseumService.getAllMuseumVisits(id);
         this.updateState('museumId', id);
-        this.updateUI();
       });
       searchComponent.addEventListener('cleared', () => {
         this.updateState('museumId', '');

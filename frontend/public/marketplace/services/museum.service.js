@@ -17,6 +17,7 @@ export class MuseumService {
       console.error(error);
     }
   }
+
   static async getAllMuseumVisits(id) {
     try {
       const response = await fetch(`${this.apiUrl}/${id}/visits`, {

@@ -14,3 +14,4 @@ router.patch('/:id', MuseumController.update);
 router.delete('/:id', MuseumController.delete);
 
 module.exports = router;
+

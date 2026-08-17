@@ -2,6 +2,7 @@
 @import url('./pages/home/home.css');
 @import url('./pages/visit-explorer/visit-explorer.css');
 @import url('./pages/museum-home/museum-home.css');
+@import url('./pages/visit-editor/visit-editor.css');
 
 /* Components */
 @import url('./components/museum-card/museum-card.css');

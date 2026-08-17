@@ -299,11 +299,11 @@
 @media (max-width: 56.25rem) {
   .mkt-museum-initial-grid {
     grid-template:
-      "hero" auto
-      "desc" auto
       "address" auto
+      "hero" auto
       "tickets" auto
       "hours" auto
+      "desc" auto
       "services" auto
       "accessibility" auto
       / 1fr;

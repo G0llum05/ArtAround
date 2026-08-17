@@ -18,6 +18,9 @@ customElements.define('mkt-skeleton-card-grid', MktCardGrid);
 import {MktVisitExplorer} from "./pages/visit-explorer/visit-explorer.js";
 customElements.define('mkt-visit-explorer', MktVisitExplorer);
 
+import {MktVisitEditor} from "./pages/visit-editor/visit-editor.js";
+customElements.define('mkt-visit-editor', MktVisitEditor);
+
 import {MktMuseumHome} from "./pages/museum-home/museum-home.js";
 customElements.define('mkt-museum-home', MktMuseumHome);
 

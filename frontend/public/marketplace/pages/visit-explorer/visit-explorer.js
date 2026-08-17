@@ -1,3 +1,5 @@
+import {MuseumService} from "../../services/museum.service.js";
+
 export class MktVisitExplorer extends HTMLElement {
   constructor() {
     super();
@@ -14,7 +16,7 @@ export class MktVisitExplorer extends HTMLElement {
     this.allInterests = ['Storia', 'Scienza', 'Arte', 'Natura'];
 
     this.loadingVisit = false;
-    this.foundVisit = [];
+    this.allMuseumVisit = [];
   }
 
   connectedCallback() {
@@ -58,6 +60,26 @@ export class MktVisitExplorer extends HTMLElement {
       this.partialInterestsList = [];
     }
     this.updateUI();
+  }
+
+  get filteredVisits() {
+    if (!this.state.museumId) return [];
+    let list = [...this.allMuseumVisit];
+
+    if (this.state.durata) {
+      const maxMinutes = this.state.durata*60;  //converto in minuti
+      list = list.filter(v => !v.duration || v.duration <= maxMinutes);
+    }
+    if (this.state.accessibile) {
+      list = list.filter(v => v.isAccessible || v.disableFriendly === false);
+    }
+    if (this.state.gratuito) {
+      list = list.filter(v => v.price === 0 || v.price === '0' || v.price === 'Gratis');
+    }
+    if (this.state.verificata) {
+      list = list.filter(v => v.isVerified);
+    }
+    return list;
   }
 
   updateUI() {
@@ -203,7 +225,7 @@ export class MktVisitExplorer extends HTMLElement {
           </section>
         </form>
 
-        <mkt-card-grid data-is-loading="${this.loadingVisit}" data-length="${this.foundVisit.length}" id="results-grid">
+        <mkt-card-grid data-is-loading="${this.loadingVisit}" data-length="${this.duration}" id="results-grid">
         </mkt-card-grid>
       </main>
     `;
@@ -237,8 +259,11 @@ export class MktVisitExplorer extends HTMLElement {
 
     const searchComponent = this.querySelector('#museum-search');
     if (searchComponent) {
-      searchComponent.addEventListener('museumSelected', (e) => {
-        this.updateState('museumId', e.detail);
+      searchComponent.addEventListener('museumSelected', async (e) => {
+        const id = e.detail;
+        this.allMuseumVisit = await MuseumService.getVisitsPresentationByMuseumId(id);
+        this.updateState('museumId', id);
+        this.updateUI();
       });
       searchComponent.addEventListener('cleared', () => {
         this.updateState('museumId', '');

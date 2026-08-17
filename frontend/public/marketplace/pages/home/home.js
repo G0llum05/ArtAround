@@ -65,7 +65,8 @@ export class MktHome extends HTMLElement {
           data-title="${visit.title}"
           data-desc="${visit.description}"
           data-price="${visit.price}"
-          data-image="${imageUrl}">
+          data-image="${imageUrl}"
+          data-duration="${visit.duration}">
         </mkt-visit-card>
       `;
     }).join("\n");

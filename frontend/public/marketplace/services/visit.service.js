@@ -13,4 +13,5 @@ export class VisitService {
         console.error(error);
       }
     }
+
 }

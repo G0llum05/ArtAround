@@ -69,9 +69,9 @@ mkt-visit-card {
 
 .mkt-visit-price {
   font-family: var(--font-sans);
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: var(--on-surface);
+  font-size: var(--body-lg-size);
+  font-weight: bolder;
+  color: var(--tertiary);
   flex-shrink: 0;
   margin-top: 0.2rem;
   white-space: nowrap;

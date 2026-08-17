@@ -5,7 +5,7 @@ export class MktInputSearchText extends HTMLElement {
     super();
     this.museums = [
       {
-        id: 0,
+        _id: 0,
         name: "nessun museo trovato"
       }
     ];
@@ -18,7 +18,7 @@ export class MktInputSearchText extends HTMLElement {
     this.render();
     try {
       this.museums = await MuseumService.getAllHomePresentationMuseums() || [{
-        id: 0,
+        _id: 0,
         name: "Nessun museo trovato"
       }];
     } catch (error) {
@@ -43,7 +43,7 @@ export class MktInputSearchText extends HTMLElement {
   }
 
   get displayValue() {
-    const found = this.museums.find(m => m.id === this.selectedMuseumId);
+    const found = this.museums.find(m => m._id === this.selectedMuseumId);
     return found ? found.name : this.searchTerm;
   }
 
@@ -72,14 +72,14 @@ export class MktInputSearchText extends HTMLElement {
     if (this.isDropdownOpen && results.length > 0) {
       wrapper.innerHTML = `
         <ul class="mkt-dropdown-suggestions">
-          ${results.map(m => `<li class="mkt-suggestion-item" data-id="${m.id}">${m.name}</li>`).join('\n')}
+          ${results.map(m => `<li class="mkt-suggestion-item" data-id="${m._id}">${m.name}</li>`).join('\n')}
         </ul>
       `;
 
       wrapper.querySelectorAll('.mkt-suggestion-item').forEach(item => {
         item.addEventListener('click', (e) => {
-          const id = e.currentTarget.getAttribute('data-id');
-          const museum = this.museums.find(m => m.id === id);
+          const _id = e.currentTarget.getAttribute('data-id');
+          const museum = this.museums.find(m => m._id === _id);
           if (museum) this.selectMuseum(museum);
         });
       });
@@ -120,7 +120,7 @@ export class MktInputSearchText extends HTMLElement {
 
   selectMuseum(museum) {
     this.searchTerm = museum.name;
-    this.selectedMuseumId = museum.id;
+    this.selectedMuseumId = museum._id;
     this.isDropdownOpen = false;
 
     const input = this.querySelector('#search-input');
@@ -128,7 +128,7 @@ export class MktInputSearchText extends HTMLElement {
 
     this.updateSuggestions();
     this.dispatchEvent(new CustomEvent('museumSelected', {
-      detail: museum.id,
+      detail: museum._id,
       bubbles: true,
       composed: true
     }));

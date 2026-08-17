@@ -68,6 +68,19 @@ class VisitMapper {
       visit.assets,
     );
   }
+
+  static toVisitPresentation(visit) {
+      visit._id ? visit._id.toString() : visit.id,
+      visit.title,
+      visit.description,
+      visit.isVerified,
+      visit.disableFriendly,
+      visit.maxDuration,
+      visit.price,
+      visit.isClosingSoon,
+      visit.isNew,
+      visit.assets
+  }
 }
 
 module.exports = VisitMapper;

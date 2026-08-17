@@ -1,5 +1,3 @@
-// public/marketplace/components/card-grid/card-grid.js
-
 export class MktCardGrid extends HTMLElement {
 
   static get observedAttributes() {
@@ -8,7 +6,8 @@ export class MktCardGrid extends HTMLElement {
 
   constructor() {
     super();
-    // Inizializziamo lo stato interno
+    //Attiviamo la Shadow DOM per isolare la struttura e far funzionare il <2slot> obbligatorio per
+    //this.attachShadow({ mode: 'open' });
     this.isLoading = false;
     this.length = 0;
   }
@@ -21,20 +20,17 @@ export class MktCardGrid extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue !== newValue) {
       this.syncStateWithAttributes();
-      this.render(); // Ridisegniamo il componente in base al nuovo stato
+      this.render();
     }
   }
 
-  // Sincronizza le stringhe dell'HTML con le variabili JavaScript
   syncStateWithAttributes() {
     this.isLoading = this.getAttribute('data-is-loading') === 'true';
     this.length = parseInt(this.getAttribute('data-length') || '0', 10);
   }
 
-  // Crea la logica degli skeleton loader
   getSkeletonHtml() {
     let skeletons = '';
-    // Creiamo 6 skeleton dummy, come nel tuo array [1,2,3,4,5,6] di Angular
     for (let i = 0; i < 6; i++) {
       skeletons += `
         <div class="mkt-skeleton-card">
@@ -50,7 +46,6 @@ export class MktCardGrid extends HTMLElement {
     return skeletons;
   }
 
-  // Crea lo stato vuoto
   getEmptyStateHtml() {
     if (!this.isLoading && this.length === 0) {
       return `
@@ -67,18 +62,15 @@ export class MktCardGrid extends HTMLElement {
       ? 'Stiamo caricando le visite secondo i tuoi interessi'
       : 'Visite trovate';
 
-    // Il tag <slot></slot> fa esattamente quello che faceva <ng-content></ng-content>.
-    // Mostra qualsiasi cosa venga messa *dentro* il tag <mkt-card-grid> dall'esterno.
-
-    // Attenzione: se stiamo caricando, non stampiamo lo slot ma solo gli skeleton.
+    // Se sta caricando, mostra gli skeleton. Altrimenti mostra lo slot per le card e lo stato vuoto se serve.
     const gridContent = this.isLoading
       ? this.getSkeletonHtml()
-      : `<slot></slot> ${this.getEmptyStateHtml()}`;
+      : this.getEmptyStateHtml();
 
-    this.innerHTML = `
-      <section class="mkt-results-section">
+      this.innerHTML =
+      `<section class="mkt-results-section">
         <header class="mkt-results-header">
-          <h2 class="mkt-results-title"> Viste </h2>
+          <h2 class="mkt-results-title">Visite</h2>
           <p class="mkt-results-subtitle">${subtitle}</p>
         </header>
         <div class="mkt-results-grid">

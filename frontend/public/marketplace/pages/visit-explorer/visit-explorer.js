@@ -1,4 +1,4 @@
-import {MuseumService} from "../../services/museum.service.js";
+import { MuseumService } from "../../services/museum.service.js";
 
 export class MktVisitExplorer extends HTMLElement {
   constructor() {
@@ -67,7 +67,7 @@ export class MktVisitExplorer extends HTMLElement {
     let list = [...this.allMuseumVisit];
 
     if (this.state.durata) {
-      const maxMinutes = this.state.durata*60;  //converto in minuti
+      const maxMinutes = this.state.durata * 60;  //converto in minuti
       list = list.filter(v => !v.duration || v.duration <= maxMinutes);
     }
     if (this.state.accessibile) {
@@ -261,7 +261,7 @@ export class MktVisitExplorer extends HTMLElement {
     if (searchComponent) {
       searchComponent.addEventListener('museumSelected', async (e) => {
         const id = e.detail;
-        this.allMuseumVisit = await MuseumService.getVisitsPresentationByMuseumId(id);
+        this.allMuseumVisit = await MuseumService.getAllMuseumVisits(id);
         this.updateState('museumId', id);
         this.updateUI();
       });

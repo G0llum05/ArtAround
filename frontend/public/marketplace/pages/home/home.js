@@ -64,7 +64,7 @@ export class MktHome extends HTMLElement {
           data-city="${museum.city || ''}"
           data-desc="${museum.description || ''}"
           data-image="${imageUrl}"
-          data-id="${museum._id}">
+          data-id="${museum.id}">
         </mkt-museum-card>
       `;
     }).join("\n");

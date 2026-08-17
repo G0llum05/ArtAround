@@ -4,8 +4,8 @@ import {goTo} from "../../router.js";
 
 export class MktMuseumCard extends HTMLElement {
   connectedCallback() {
-    this.render();
     this.id = this.getAttribute("data-id");
+    this.render();
     this.setUpEventListeners()
   }
 
@@ -40,7 +40,8 @@ export class MktMuseumCard extends HTMLElement {
 
   setUpEventListeners() {
     const museumCard = this.querySelector('#museum-card')
-    if(museumCard){
+    if(this.id === 'undefined') return;
+    if(museumCard && this.id){
        goTo(museumCard, `/marketplace/museum/${this.id}`, null)
     }
   }

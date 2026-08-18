@@ -4,8 +4,15 @@ const VisitMapper = require('../data/mapper/VisitMapper');
 
 class MuseumService {
   static async getAllMuseum() {
-    return museums = await Museum.find().lean();
-    
+    const museums = await Museum.find().lean();
+    return museums.map(
+      (mus) => {
+        if (!mus.assets?.images || mus.assets.images.length === 0) {
+          this._defaultImageFiller(mus);
+        }
+        return mus;
+      }
+    );
   }
 
   static async getMuseumById(id) {
@@ -54,7 +61,7 @@ class MuseumService {
       path: 'artworks',
       match: {
         isActive: { $ne: false },
-        isPrivate: { $ne: false}
+        // isPrivate: { $ne: false}
       }
     })
     .lean();
@@ -66,7 +73,7 @@ class MuseumService {
         if(!art.assets?.images || art.assets?.images.length === 0) {
           this._defaultImageFiller(art);
         }
-        return vis;
+        return art;
       }
     )
   }

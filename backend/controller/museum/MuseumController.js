@@ -7,16 +7,13 @@ class MuseumController {
   static async getAll(req, res) {
     try {
       const museums = await MuseumService.getAllMuseum();
-      const museumsDTOs = museums.map
+      const museumDTOs = museums.map
       (
         (mus) => {
-          if (!mus.assets?.images || mus.assets.images.length === 0) {
-            this._defaultMuseumImageFiller(mus);
-          }
           return MuseumMapper.toMuseumResponseDTO(mus);
         }
       );
-      res.status(200).json(museums);
+      res.status(200).json(museumDTOs);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -93,7 +90,7 @@ class MuseumController {
           return ArtworkMapper.toArtworkForPresentationDTO(art); 
         }
       );
-      res.status(200).json(visitDTOs || []);
+      res.status(200).json(artworkDTOs || []);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }

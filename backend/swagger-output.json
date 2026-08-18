@@ -851,6 +851,33 @@
         ]
       }
     },
+    "/api/museum/{id}/artworks": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Museum"
+        ]
+      }
+    },
     "/api/museum/{id}/visitPlan": {
       "get": {
         "description": "",
@@ -1277,6 +1304,28 @@
       }
     },
     "/api/upload/user/{userId}/propic": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Upload"
+        ]
+      },
       "post": {
         "description": "",
         "parameters": [
@@ -1293,25 +1342,6 @@
           },
           "400": {
             "description": "Bad Request"
-          }
-        },
-        "tags": [
-          "Upload"
-        ]
-      }
-    },
-    "/api/upload/": {
-      "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
         "tags": [
@@ -1486,52 +1516,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "title": {
+                "museumId": {
                   "example": "any"
                 },
-                "description": {
-                  "example": "any"
-                },
-                "price": {
-                  "example": "any"
-                },
-                "license": {
-                  "example": "any"
-                },
-                "verified": {
-                  "example": "any"
-                },
-                "minDuration": {
-                  "example": "any"
-                },
-                "maxDuration": {
-                  "example": "any"
-                },
-                "startDate": {
-                  "example": "any"
-                },
-                "endDate": {
-                  "example": "any"
-                },
-                "active": {
-                  "example": "any"
-                },
-                "weeklySchedule": {
-                  "example": "any"
-                },
-                "disabledFriendly": {
-                  "example": "any"
-                },
-                "requirements": {
-                  "example": "any"
-                },
-                "quiz": {
-                  "example": "any"
-                },
-                "categories": {
-                  "example": "any"
-                },
-                "artworks": {
+                "userId": {
                   "example": "any"
                 }
               }

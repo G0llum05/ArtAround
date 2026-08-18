@@ -36,7 +36,7 @@ const artworkSchema = new mongoose.Schema({
     images: [ImageSchema]
   },
 
-  items: [{
+  defaultItems: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Item'
   }]

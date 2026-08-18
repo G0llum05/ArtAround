@@ -116,25 +116,10 @@ class VisitController {
 
   static async createVisit(req, res) {
     try {
-      const {
-        title, description, price, license, verified,
-        minDuration, maxDuration, startDate, endDate, active,
-        weeklySchedule, disabledFriendly, requirements, quiz, categories, artworks
-      } = req.body;
+      const request = VisitMapper.createVisit(req.body.museumId, req.body.userId, req.body);
+      const newVisitId = await VisitService.createVisit(request);
 
-      // Normalizzazione Input con Request DTO
-      const visitRequestDTO = new VisitRequestDTO(
-        title, description, price, license, verified,
-        minDuration, maxDuration, startDate, endDate, active,
-        weeklySchedule, disabledFriendly, requirements, quiz, categories, artworks
-      );
-
-      const visitData = VisitMapper.toVisit(visitRequestDTO);
-      const newVisit = await VisitService.createVisit(visitData);
-
-      // Normalizzazione Output con Response DTO
-      const newVisitDTO = VisitMapper.toVisitResponseDTO(newVisit);
-      res.status(201).json(newVisitDTO);
+      res.status(201).json({ visitId: newVisitId });
     } catch (error) {
       res.status(500).json({ message: 'Error creating visit', error: error.message });
     }

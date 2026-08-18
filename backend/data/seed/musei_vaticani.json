@@ -357,12 +357,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-001",
-      "items": [
-        "item_vaticani_sistina_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_vaticani_sistina_advanced"
+      ]
     },
     {
       "key": "artwork_vaticani_scuola_atene",
@@ -414,12 +414,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-002",
-      "items": [
-        "item_vaticani_scuola_atene_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_vaticani_scuola_atene_medium"
+      ]
     },
     {
       "key": "artwork_vaticani_laocoonte",
@@ -467,12 +467,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-003",
-      "items": [
-        "item_vaticani_laocoonte_scientific"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_vaticani_laocoonte_scientific"
+      ]
     },
     {
       "key": "artwork_vaticani_apollo_belvedere",
@@ -519,12 +519,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-004",
-      "items": [
-        "item_vaticani_apollo_technical"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_vaticani_apollo_technical"
+      ]
     },
     {
       "key": "artwork_vaticani_trasfigurazione_raffaello",
@@ -575,12 +575,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-005",
-      "items": [
-        "item_vaticani_trasfigurazione_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_vaticani_trasfigurazione_advanced"
+      ]
     },
     {
       "key": "artwork_vaticani_deposizione_caravaggio",
@@ -629,12 +629,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-VATICANI-ROMA-006",
-      "items": [
-        "item_vaticani_deposizione_simple"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_vaticani_deposizione_simple"
+      ]
     }
   ],
   "visits": [
@@ -644,9 +644,6 @@
       "description": "Alla scoperta della Volta e del Giudizio Universale di Michelangelo.",
       "price": 25,
       "creator": "vaticani_staff",
-      "artworks": [
-        "artwork_vaticani_cappella_sistina"
-      ],
       "minDuration": 75,
       "maxDuration": 105,
       "isActive": true,
@@ -745,7 +742,13 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_vaticani_cappella_sistina",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_vaticani_stanze_raffaello",
@@ -753,10 +756,6 @@
       "description": "Gli appartamenti papali affrescati da Raffaello e la celebre Scuola di Atene.",
       "price": 20,
       "creator": "vaticani_staff",
-      "artworks": [
-        "artwork_vaticani_scuola_atene",
-        "artwork_vaticani_trasfigurazione_raffaello"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -848,7 +847,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_vaticani_scuola_atene",
+          "items": []
+        },
+        {
+          "artwork": "artwork_vaticani_trasfigurazione_raffaello",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_vaticani_cortile_ottagono",
@@ -856,10 +865,6 @@
       "description": "Le sculture dell'antichità classica che hanno ispirato i maestri del Rinascimento.",
       "price": 18,
       "creator": "vaticani_staff",
-      "artworks": [
-        "artwork_vaticani_laocoonte",
-        "artwork_vaticani_apollo_belvedere"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -948,7 +953,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_vaticani_laocoonte",
+          "items": []
+        },
+        {
+          "artwork": "artwork_vaticani_apollo_belvedere",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_vaticani_pinacoteca_tesori",
@@ -956,10 +971,6 @@
       "description": "I più grandi capolavori della pittura italiana riuniti nella Pinacoteca Vaticana.",
       "price": 22,
       "creator": "vaticani_staff",
-      "artworks": [
-        "artwork_vaticani_trasfigurazione_raffaello",
-        "artwork_vaticani_deposizione_caravaggio"
-      ],
       "minDuration": 75,
       "maxDuration": 105,
       "isActive": true,
@@ -1047,7 +1058,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_vaticani_trasfigurazione_raffaello",
+          "items": []
+        },
+        {
+          "artwork": "artwork_vaticani_deposizione_caravaggio",
+          "items": []
+        }
+      ]
     }
   ]
 }

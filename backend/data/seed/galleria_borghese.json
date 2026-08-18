@@ -356,12 +356,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-BORGHESE-ROMA-001",
-      "items": [
-        "item_borghese_paolina_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_borghese_paolina_medium"
+      ]
     },
     {
       "key": "artwork_borghese_apollo_dafne",
@@ -409,12 +409,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-BORGHESE-ROMA-002",
-      "items": [
-        "item_borghese_apollo_dafne_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_borghese_apollo_dafne_advanced"
+      ]
     },
     {
       "key": "artwork_borghese_ratto_proserpina",
@@ -462,12 +462,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-BORGHESE-ROMA-003",
-      "items": [
-        "item_borghese_proserpina_technical"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_borghese_proserpina_technical"
+      ]
     },
     {
       "key": "artwork_borghese_davide_golia",
@@ -517,12 +517,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-BORGHESE-ROMA-004",
-      "items": [
-        "item_borghese_davide_golia_scientific"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_borghese_davide_golia_scientific"
+      ]
     },
     {
       "key": "artwork_borghese_amor_sacro_profano",
@@ -572,12 +572,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-BORGHESE-ROMA-005",
-      "items": [
-        "item_borghese_amor_sacro_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_borghese_amor_sacro_advanced"
+      ]
     },
     {
       "key": "artwork_borghese_deposizione_raffaello",
@@ -628,12 +628,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-BORGHESE-ROMA-006",
-      "items": [
-        "item_borghese_deposizione_simple"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_borghese_deposizione_simple"
+      ]
     }
   ],
   "visits": [
@@ -643,10 +643,6 @@
       "description": "I capolavori scultorei in marmo di Bernini tra mito, movimento ed emozione.",
       "price": 15,
       "creator": "borghese_staff",
-      "artworks": [
-        "artwork_borghese_apollo_dafne",
-        "artwork_borghese_ratto_proserpina"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -750,7 +746,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_borghese_apollo_dafne",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_ratto_proserpina",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_borghese_luce_caravaggio",
@@ -758,10 +764,6 @@
       "description": "I più grandi capolavori di Caravaggio in un viaggio straordinario tra luce e chiaroscuro.",
       "price": 18,
       "creator": "borghese_staff",
-      "artworks": [
-        "artwork_borghese_davide_golia",
-        "artwork_borghese_ratto_proserpina"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -861,7 +863,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_borghese_davide_golia",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_ratto_proserpina",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_borghese_raffaello_canova",
@@ -869,11 +881,6 @@
       "description": "Dalla grazia neoclassica della Paolina Borghese ai capolavori di Raffaello e Tiziano.",
       "price": 20,
       "creator": "borghese_staff",
-      "artworks": [
-        "artwork_borghese_paolina_canova",
-        "artwork_borghese_deposizione_raffaello",
-        "artwork_borghese_amor_sacro_profano"
-      ],
       "minDuration": 75,
       "maxDuration": 105,
       "isActive": true,
@@ -961,7 +968,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_borghese_paolina_canova",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_deposizione_raffaello",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_amor_sacro_profano",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_borghese_scipione_pinacoteca",
@@ -969,11 +990,6 @@
       "description": "Esplora la storica collezione privata di pittura rinascimentale e barocca.",
       "price": 15,
       "creator": "borghese_staff",
-      "artworks": [
-        "artwork_borghese_amor_sacro_profano",
-        "artwork_borghese_deposizione_raffaello",
-        "artwork_borghese_paolina_canova"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -1060,7 +1076,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_borghese_amor_sacro_profano",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_deposizione_raffaello",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_paolina_canova",
+          "items": []
+        }
+      ]
     }
   ]
 }

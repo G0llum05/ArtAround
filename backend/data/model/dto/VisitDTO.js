@@ -88,11 +88,38 @@ class VisitHomePresentationRequestDTO {
   }
 }
 
+class SingleStepNewVisitRequestDTO {
+  constructor(artworkId, itemId, description, tellMeMore, length, language) {
+    this.artworkId = artworkId;
+    this.itemId = itemId || null;
+    this.description = description || null;
+    this.tellMeMore = tellMeMore || null;
+    this.length = length || null;
+    this.language = language || null;
+  }
+}
+
+class CreateVisitDTO {
+  constructor(museumId, userId, visit = {}) {
+    this.museumId = museumId;
+    this.userId = userId
+    this.title = visit.title;
+    this.description = visit.description
+    this.assets = visit.assets
+    this.price = visit.price
+    this.isDisableFriendly = visit.isDisableFriendly
+    this.license = visit.license
+    this.duration = visit.duration
+    this.visit = visit.visit.map(step => new SingleStepNewVisitRequestDTO(step.artworkId, step.itemId, step.description, step.tellMeMore, step.length, step.language))
+  }
+}
+
 module.exports = {
   VisitResponseDTO,
   VisitRequestDTO,
   VisitImageRequestDTO,
   VisitHomePresentationRequestDTO,
   TopTenVisitsResponseDTO,
-  MuseumVisitForPresentationDTO
+  MuseumVisitForPresentationDTO,
+  CreateVisitDTO
 };

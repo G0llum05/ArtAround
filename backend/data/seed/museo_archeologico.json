@@ -338,12 +338,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-ARCHEO-BOLO-001",
-      "items": [
-        "item_archeo_athena_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_archeo_athena_advanced"
+      ]
     },
     {
       "key": "artwork_archeo_situla_benvenuti",
@@ -392,12 +392,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-ARCHEO-BOLO-002",
-      "items": [
-        "item_archeo_situla_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_archeo_situla_medium"
+      ]
     },
     {
       "key": "artwork_archeo_rilievi_horemheb",
@@ -445,12 +445,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-ARCHEO-BOLO-003",
-      "items": [
-        "item_archeo_horemheb_scientific"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_archeo_horemheb_scientific"
+      ]
     },
     {
       "key": "artwork_archeo_stele_certosa",
@@ -497,12 +497,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-ARCHEO-BOLO-004",
-      "items": [
-        "item_archeo_stele_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_archeo_stele_medium"
+      ]
     },
     {
       "key": "artwork_archeo_statua_nespamedu",
@@ -552,12 +552,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-ARCHEO-BOLO-005",
-      "items": [
-        "item_archeo_nespamedu_technical"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_archeo_nespamedu_technical"
+      ]
     },
     {
       "key": "artwork_archeo_elmo_villanoviano",
@@ -606,12 +606,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-ARCHEO-BOLO-006",
-      "items": [
-        "item_archeo_elmo_simple"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_archeo_elmo_simple"
+      ]
     }
   ],
   "visits": [
@@ -621,11 +621,6 @@
       "description": "Alla scoperta della Bologna etrusca tra stele funerarie e la famosa Situla Benvenuti.",
       "price": 0,
       "creator": "archeo_staff",
-      "artworks": [
-        "artwork_archeo_situla_benvenuti",
-        "artwork_archeo_stele_certosa",
-        "artwork_archeo_elmo_villanoviano"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -724,7 +719,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_archeo_situla_benvenuti",
+          "items": []
+        },
+        {
+          "artwork": "artwork_archeo_stele_certosa",
+          "items": []
+        },
+        {
+          "artwork": "artwork_archeo_elmo_villanoviano",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_archeo_egitto_faraoni",
@@ -732,11 +741,6 @@
       "description": "Un viaggio tra mummie, sarcofagi e i rilievi della tomba di Horemheb.",
       "price": 10,
       "creator": "archeo_staff",
-      "artworks": [
-        "artwork_archeo_rilievi_horemheb",
-        "artwork_archeo_statua_nespamedu",
-        "artwork_archeo_athena_lemnia"
-      ],
       "minDuration": 75,
       "maxDuration": 105,
       "isActive": true,
@@ -836,7 +840,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_archeo_rilievi_horemheb",
+          "items": []
+        },
+        {
+          "artwork": "artwork_archeo_statua_nespamedu",
+          "items": []
+        },
+        {
+          "artwork": "artwork_archeo_athena_lemnia",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_archeo_fidia_bellezza",
@@ -844,10 +862,6 @@
       "description": "L'evoluzione della scultura classica e dell'armonia del corpo da Fidia all'Impero Romano.",
       "price": 7,
       "creator": "archeo_staff",
-      "artworks": [
-        "artwork_archeo_athena_lemnia",
-        "artwork_archeo_stele_certosa"
-      ],
       "minDuration": 60,
       "maxDuration": 75,
       "isActive": true,
@@ -936,7 +950,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_archeo_athena_lemnia",
+          "items": []
+        },
+        {
+          "artwork": "artwork_archeo_stele_certosa",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_archeo_guerrieri_villanoviani",
@@ -944,11 +968,6 @@
       "description": "Le origini del territorio bolognese tra la Civiltà Villanoviana e i principi etruschi.",
       "price": 6,
       "creator": "archeo_staff",
-      "artworks": [
-        "artwork_archeo_elmo_villanoviano",
-        "artwork_archeo_situla_benvenuti",
-        "artwork_archeo_stele_certosa"
-      ],
       "minDuration": 50,
       "maxDuration": 70,
       "isActive": true,
@@ -1036,7 +1055,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_archeo_elmo_villanoviano",
+          "items": []
+        },
+        {
+          "artwork": "artwork_archeo_situla_benvenuti",
+          "items": []
+        },
+        {
+          "artwork": "artwork_archeo_stele_certosa",
+          "items": []
+        }
+      ]
     }
   ]
 }

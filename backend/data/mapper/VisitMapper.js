@@ -4,7 +4,8 @@ const {
   VisitImageRequestDTO,
   VisitHomePresentationRequestDTO,
   TopTenVisitsResponseDTO,
-  MuseumVisitForPresentationDTO
+  MuseumVisitForPresentationDTO,
+  CreateVisitDTO
 } = require('../model/dto/VisitDTO');
 
 class VisitMapper {
@@ -86,6 +87,11 @@ class VisitMapper {
       visit.categories || [],
       visit.assets || { images: [] }
     );
+  }
+
+  static createVisit(museumId, userId, visit) {
+    if (!museumId || !userId || !visit) return null;
+    return new CreateVisitDTO(museumId, userId, visit)
   }
 }
 

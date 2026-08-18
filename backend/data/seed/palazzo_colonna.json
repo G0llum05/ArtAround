@@ -342,12 +342,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-001",
-      "items": [
-        "item_colonna_mangiafagioli_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_colonna_mangiafagioli_medium"
+      ]
     },
     {
       "key": "artwork_colonna_san_michele_reni",
@@ -397,12 +397,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-002",
-      "items": [
-        "item_colonna_san_michele_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_colonna_san_michele_advanced"
+      ]
     },
     {
       "key": "artwork_colonna_stefano_bronzino",
@@ -452,12 +452,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-003",
-      "items": [
-        "item_colonna_stefano_technical"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_colonna_stefano_technical"
+      ]
     },
     {
       "key": "artwork_colonna_moses_guercino",
@@ -506,12 +506,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-004",
-      "items": [
-        "item_colonna_moses_scientific"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_colonna_moses_scientific"
+      ]
     },
     {
       "key": "artwork_colonna_galleria_grande",
@@ -564,12 +564,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-005",
-      "items": [
-        "item_colonna_galleria_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_colonna_galleria_advanced"
+      ]
     },
     {
       "key": "artwork_colonna_martirio_sebastiano_rosa",
@@ -618,12 +618,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-COLONNA-ROMA-006",
-      "items": [
-        "item_colonna_sebastiano_simple"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_colonna_sebastiano_simple"
+      ]
     }
   ],
   "visits": [
@@ -633,10 +633,6 @@
       "description": "Un tour nella galleria barocca tra specchi dipinti, la Colonna Bellica e gli affreschi.",
       "price": 15,
       "creator": "colonna_staff",
-      "artworks": [
-        "artwork_colonna_galleria_grande",
-        "artwork_colonna_san_michele_reni"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -716,7 +712,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_colonna_galleria_grande",
+          "items": []
+        },
+        {
+          "artwork": "artwork_colonna_san_michele_reni",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_colonna_mangiafagioli_carracci",
@@ -724,10 +730,6 @@
       "description": "Alla scoperta del Mangiafagioli di Carracci e dei maestri della pittura di genere.",
       "price": 12,
       "creator": "colonna_staff",
-      "artworks": [
-        "artwork_colonna_mangiafagioli",
-        "artwork_colonna_martirio_sebastiano_rosa"
-      ],
       "minDuration": 50,
       "maxDuration": 75,
       "isActive": true,
@@ -800,7 +802,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": false
+      "isVerified": false,
+      "visits": [
+        {
+          "artwork": "artwork_colonna_mangiafagioli",
+          "items": []
+        },
+        {
+          "artwork": "artwork_colonna_martirio_sebastiano_rosa",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_colonna_ritratti_seicento",
@@ -808,11 +820,6 @@
       "description": "I grandi ritratti ed i capolavori del Seicento tra Bronzino, Guido Reni e Guercino.",
       "price": 15,
       "creator": "colonna_staff",
-      "artworks": [
-        "artwork_colonna_stefano_bronzino",
-        "artwork_colonna_san_michele_reni",
-        "artwork_colonna_moses_guercino"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -884,7 +891,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_colonna_stefano_bronzino",
+          "items": []
+        },
+        {
+          "artwork": "artwork_colonna_san_michele_reni",
+          "items": []
+        },
+        {
+          "artwork": "artwork_colonna_moses_guercino",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_colonna_appartamento_isabelle",
@@ -892,10 +913,6 @@
       "description": "Visita esclusiva negli appartamenti storici e nei giardini monumentali del palazzo.",
       "price": 20,
       "creator": "colonna_staff",
-      "artworks": [
-        "artwork_colonna_galleria_grande",
-        "artwork_colonna_stefano_bronzino"
-      ],
       "minDuration": 75,
       "maxDuration": 105,
       "isActive": true,
@@ -968,7 +985,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": false
+      "isVerified": false,
+      "visits": [
+        {
+          "artwork": "artwork_colonna_galleria_grande",
+          "items": []
+        },
+        {
+          "artwork": "artwork_colonna_stefano_bronzino",
+          "items": []
+        }
+      ]
     }
   ]
 }

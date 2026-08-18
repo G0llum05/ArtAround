@@ -19,15 +19,6 @@ router.post('/:id/like', VisitController.likeVisit);
 // POST /:id/view
 router.post('/:id/view', VisitController.viewVisit);
 
-// // TODO CHECK questi due metodi non dovrebbero servire perchè le immagini sono già incluse nel dato visita
-// // GET /:id/artwork-images
-// // Risolve ed inserisce tutte le immagini di ciascun artwork appartenente alla visita singola
-// router.get('/:id/artwork-images', VisitController.getVisitArtworkImages);
-//
-// // GET /:id/artist-images
-// // Risolve ed inserisce tutte le immagini di ciascun artwork appartenente alla visita singola
-// router.get('/:id/artist-images', VisitController.getVisitArtistImages);
-
 // GET /:id/homePresentation
 router.get('/homePresentation', VisitController.getVisitHomePresentation);
 

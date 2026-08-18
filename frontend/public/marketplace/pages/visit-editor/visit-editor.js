@@ -19,14 +19,17 @@ export class MktVisitEditor extends HTMLElement {
     this.innerHTML = `
       <main class="mkt-editor-page">
 
+        <!-- HEADER SUPERIORE -->
         <header class="mkt-editor-header">
-          <div class="mkt-editor-header-top">
+          <h1 class="mkt-editor-title">${this.state.title}</h1>
+          <div class="mkt-editor-header-sub">
             <div class="mkt-museum-pill">
               <svg xmlns="http://www.w3.org/2000/svg" height="1rem" viewBox="0 -960 960 960" width="1rem" fill="currentColor">
                 <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
               </svg>
               <span>${this.state.museumName}</span>
             </div>
+
             <div class="mkt-editor-actions">
               <div class="mkt-status-indicator">
                 <span class="mkt-status-dot"></span>
@@ -36,18 +39,22 @@ export class MktVisitEditor extends HTMLElement {
               <button type="button" class="mkt-btn mkt-btn-primary">Salva & Pubblica</button>
             </div>
           </div>
-
-          <h1 class="mkt-editor-title">${this.state.title}</h1>
         </header>
 
+        <!-- GRIGLIA A TRE COLONNE -->
         <div class="mkt-three-column-grid">
 
-          <mkt-item-library></mkt-item-library>
+          <!-- COLONNA 1: LIBRERIA MODULARE -->
+          <aside class="mkt-column">
+            <mkt-item-library></mkt-item-library>
+          </aside>
 
+          <!-- COLONNA 2: SEQUENZA TOUR (TOUR SEQUENCE) -->
           <section class="mkt-column">
             <h2 class="mkt-column-title">Sequenza del Tour</h2>
 
-            <div class="mkt-stop-block">
+            <!-- Tappa 1 in Card -->
+            <div class="mkt-editor-card">
               <div class="mkt-stop-header">
                 <div class="mkt-stop-title-group">
                   <span class="mkt-stop-number">1</span>
@@ -90,7 +97,8 @@ export class MktVisitEditor extends HTMLElement {
               </button>
             </div>
 
-            <div class="mkt-stop-block">
+            <!-- Tappa Vuota in Card -->
+            <div class="mkt-editor-card">
               <div class="mkt-stop-header">
                 <div class="mkt-stop-title-group">
                   <span class="mkt-stop-number" style="background-color: var(--outline);">2</span>
@@ -104,42 +112,46 @@ export class MktVisitEditor extends HTMLElement {
             </div>
           </section>
 
+          <!-- COLONNA 3: DETTAGLI TOUR (TOUR DETAILS) -->
           <aside class="mkt-column">
             <h2 class="mkt-column-title">Dettagli del Tour</h2>
 
-            <div class="mkt-details-section">
-              <label class="mkt-field-label" for="input-tour-title">Titolo del Tour</label>
-              <input type="text" class="mkt-input" id="input-tour-title" value="${this.state.title}">
-            </div>
-
-            <div class="mkt-details-section">
-              <label class="mkt-field-label" for="input-tour-desc">Descrizione</label>
-              <textarea class="mkt-textarea" id="input-tour-desc" placeholder="Panoramica della visita...">${this.state.description}</textarea>
-            </div>
-
-            <div class="mkt-details-section">
-              <label class="mkt-field-label">Immagine di Copertina</label>
-              <div class="mkt-cover-upload-box">
-                <svg xmlns="http://www.w3.org/2000/svg" height="2rem" viewBox="0 -960 960 960" width="2rem" fill="currentColor"><path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
-              </div>
-            </div>
-
-            <div class="mkt-details-section">
-              <label class="mkt-field-label">Economia & Accesso</label>
-              <div class="mkt-radio-group">
-                <label class="mkt-radio-label">
-                  <input type="radio" name="pricing" value="free" ${this.state.pricingType === 'free' ? 'checked' : ''}>
-                  Gratuito con l'ingresso
-                </label>
-                <label class="mkt-radio-label">
-                  <input type="radio" name="pricing" value="premium" ${this.state.pricingType === 'premium' ? 'checked' : ''}>
-                  Componente aggiuntivo Premium
-                </label>
+            <div class="mkt-editor-card">
+              <div class="mkt-details-section">
+                <label class="mkt-field-label" for="input-tour-title">Titolo del Tour</label>
+                <input type="text" class="mkt-input" id="input-tour-title" value="${this.state.title}">
               </div>
 
-              <div class="mkt-price-row">
-                <span class="mkt-currency-symbol">€</span>
-                <input type="number" class="mkt-price-input" step="0.01" value="${this.state.priceValue}" ${this.state.pricingType === 'free' ? 'disabled' : ''}>
+              <div class="mkt-details-section">
+                <label class="mkt-field-label" for="input-tour-desc">Descrizione</label>
+                <textarea class="mkt-textarea" id="input-tour-desc" placeholder="Panoramica della visita...">${this.state.description}</textarea>
+              </div>
+
+              <div class="mkt-details-section">
+                <label class="mkt-field-label">Immagine di Copertina</label>
+                <div class="mkt-cover-upload-box">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="2rem" viewBox="0 -960 960 960" width="2rem" fill="currentColor"><path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
+                  <span>Carica immagine</span>
+                </div>
+              </div>
+
+              <div class="mkt-details-section">
+                <label class="mkt-field-label">Economia & Accesso</label>
+                <div class="mkt-radio-group">
+                  <label class="mkt-radio-label">
+                    <input type="radio" name="pricing" value="free" ${this.state.pricingType === 'free' ? 'checked' : ''}>
+                    Gratuito con l'ingresso
+                  </label>
+                  <label class="mkt-radio-label">
+                    <input type="radio" name="pricing" value="premium" ${this.state.pricingType === 'premium' ? 'checked' : ''}>
+                    Componente aggiuntivo Premium
+                  </label>
+                </div>
+
+                <div class="mkt-price-row">
+                  <span class="mkt-currency-symbol">€</span>
+                  <input type="number" class="mkt-price-input" step="0.01" value="${this.state.priceValue}" ${this.state.pricingType === 'free' ? 'disabled' : ''}>
+                </div>
               </div>
             </div>
           </aside>
@@ -175,11 +187,6 @@ export class MktVisitEditor extends HTMLElement {
           priceInput.disabled = (this.state.pricingType === 'free');
         }
       });
-    });
-
-    // Ouve o evento emitido pelo componente da biblioteca isolada
-    this.addEventListener('filterChanged', (e) => {
-      console.log('Filtro alterado na biblioteca:', e.detail.filter);
     });
   }
 }

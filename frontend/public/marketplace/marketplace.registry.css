@@ -5,6 +5,7 @@
 @import url('./pages/visit-editor/visit-editor.css');
 
 /* Components */
+@import url('./components/item-library/item-library.css');
 @import url('./components/museum-card/museum-card.css');
 @import url('./components/visit-card/visit-card.css');
 @import url('./components/home-input-fields/input-fields.css');

@@ -64,7 +64,7 @@ export class MktVisitExplorer extends HTMLElement {
 
   get filteredVisits() {
     if (!this.state.museumId) return [];
-    let list = [...this.allMuseumVisit];
+    let list = [...(this.allMuseumVisit || [])];
 
     // Filtro per interessi (se l'utente ha selezionato dei filtri specifici)
     if (this.state.interessi.length > 0) {
@@ -343,7 +343,7 @@ export class MktVisitExplorer extends HTMLElement {
 
         try {
           this.allMuseumVisit = await MuseumService.getAllMuseumVisits(id);
-          this.allInterests = [... new Set(this.allMuseumVisit.flatMap(visit => visit.categories))];
+          this.allInterests = [... new Set(this.allMuseumVisit?.flatMap(visit => visit.categories))];
           this.updateGrid();
         } catch (error) {
           console.error("Errore nel recupero delle visite:", error);

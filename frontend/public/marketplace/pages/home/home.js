@@ -56,7 +56,7 @@ export class MktHome extends HTMLElement {
       const images = museum.assets?.images || [];
       const imageUrl = images.find(img => img.orientation === "landscape")?.url
         || images[0]?.url
-        || "../assets/images/place_holder.jpg";
+        || "/assets/images/place_holder.jpg";
 
       return `
         <mkt-museum-card

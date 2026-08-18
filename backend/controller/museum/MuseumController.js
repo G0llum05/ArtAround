@@ -43,10 +43,7 @@ class MuseumController {
   static async getAllMuseumVisits(req, res) {
     try {
       const visits = await MuseumService.getAllMuseumVisits(req.params.id);
-      if (!visits || visits.length === 0) {
-        return res.status(404).json({ message: 'No visits found for this museum' });
-      }
-      res.status(200).json(visits);
+      res.status(200).json(visits || []);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }

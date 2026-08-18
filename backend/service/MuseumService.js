@@ -5,11 +5,20 @@ const VisitMapper = require('../data/mapper/VisitMapper');
 class MuseumService {
   static async getAllMuseum() {
     const museums = await Museum.find().lean();
-    return museums.map((mus) => MuseumMapper.toMuseumResponseDTO(mus));
+    return museums.map((mus) => {
+      if (!mus.assets?.images || mus.assets.images.length === 0) {
+        this._defaultMuseumImageFiller(mus);
+      }
+      return MuseumMapper.toMuseumResponseDTO(mus);
+    });
   }
 
   static async getMuseumById(id) {
     const museum = await Museum.findById(id).lean();
+    if (!museum) return null;
+    if (!museum.assets?.images || museum.assets.images.length === 0) {
+      this._defaultMuseumImageFiller(museum);
+    }
     return MuseumMapper.toMuseumResponseDTO(museum);
   }
 
@@ -22,7 +31,7 @@ class MuseumService {
 
   static async getAllMuseumVisits(museumId) {
     // prende visite attive e immagini pure delle visite attive
-    const visits = await Museum.findById(museumId)
+    const museum = await Museum.findById(museumId)
       .populate({
         path: 'visits',
         match: { isActive: { $ne: false } } // Filtra a livello di join Mongo solo le visite attive
@@ -30,19 +39,18 @@ class MuseumService {
       .lean();
     // check immagini con filler
 
-    if (!visits) {
+    if (!museum || !museum.visits) {
       return [];
     }
 
-    return visits.map
-      (
-        (vis) => {
-          if (!vis.assets?.images || vis.assets.images.length === 0) {
-            this._defaultVisitImageFiller(vis);
-          }
-          return VisitMapper.toMuseumVisitForPresentationDTO(vis);
+    return museum.visits.map(
+      (vis) => {
+        if (!vis.assets?.images || vis.assets.images.length === 0) {
+          this._defaultVisitImageFiller(vis);
         }
-      );
+        return VisitMapper.toMuseumVisitForPresentationDTO(vis);
+      }
+    );
   }
 
   static async createMuseum(data) {

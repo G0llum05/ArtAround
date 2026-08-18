@@ -4,7 +4,7 @@ export class MuseumService {
 
   static async getAllHomePresentationMuseums() {
     try {
-      const response = await fetch(`${this.apiUrl}`, {
+      const response = await fetch(`${this.apiUrl}/homePresentation`, {
         method: 'GET',
       });
       if (!response.ok) {
@@ -12,9 +12,10 @@ export class MuseumService {
       }
 
       const data = await response.json();
-      return data;
+      return data || [];
     } catch (error) {
       console.error(error);
+      return [];
     }
   }
 
@@ -28,10 +29,11 @@ export class MuseumService {
       }
 
       const data = await response.json();
-      return data;
+      return data || [];
 
     } catch (error){
       console.error(error);
+      return [];
     }
   }
 

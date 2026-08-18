@@ -356,12 +356,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-001",
-      "items": [
-        "item_poggi_spogliati_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_poggi_spogliati_advanced"
+      ]
     },
     {
       "key": "artwork_poggi_ulisse_tibaldi",
@@ -413,12 +413,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-002",
-      "items": [
-        "item_poggi_ulisse_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_poggi_ulisse_medium"
+      ]
     },
     {
       "key": "artwork_poggi_ceroplastica_morandi",
@@ -472,12 +472,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-003",
-      "items": [
-        "item_poggi_morandi_scientific"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_poggi_morandi_scientific"
+      ]
     },
     {
       "key": "artwork_poggi_navi_marsili",
@@ -529,12 +529,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-004",
-      "items": [
-        "item_poggi_navi_technical"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_poggi_navi_technical"
+      ]
     },
     {
       "key": "artwork_poggi_ostetricia",
@@ -585,12 +585,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-005",
-      "items": [
-        "item_poggi_ostetricia_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_poggi_ostetricia_medium"
+      ]
     },
     {
       "key": "artwork_poggi_aldrovandi_erbario",
@@ -641,12 +641,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-POGGI-BOLO-006",
-      "items": [
-        "item_poggi_aldrovandi_simple"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_poggi_aldrovandi_simple"
+      ]
     }
   ],
   "visits": [
@@ -656,11 +656,6 @@
       "description": "Alla scoperta delle ceroplastiche anatomiche e degli 'Spogliati' in legno del Settecento.",
       "price": 7,
       "creator": "poggi_staff",
-      "artworks": [
-        "artwork_poggi_spogliati",
-        "artwork_poggi_ceroplastica_morandi",
-        "artwork_poggi_ostetricia"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -760,7 +755,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_poggi_spogliati",
+          "items": []
+        },
+        {
+          "artwork": "artwork_poggi_ceroplastica_morandi",
+          "items": []
+        },
+        {
+          "artwork": "artwork_poggi_ostetricia",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_poggi_ulisse",
@@ -768,10 +777,6 @@
       "description": "Gli affreschi mitologici di Pellegrino Tibaldi capolavoro del Manierismo emiliano.",
       "price": 6,
       "creator": "poggi_staff",
-      "artworks": [
-        "artwork_poggi_ulisse_tibaldi",
-        "artwork_poggi_spogliati"
-      ],
       "minDuration": 50,
       "maxDuration": 75,
       "isActive": true,
@@ -859,7 +864,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_poggi_ulisse_tibaldi",
+          "items": []
+        },
+        {
+          "artwork": "artwork_poggi_spogliati",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_poggi_marsili_navi",
@@ -867,10 +882,6 @@
       "description": "I vascelli in scala, la Wunderkammer di Aldrovandi ed i modelli scientifici del Settecento.",
       "price": 0,
       "creator": "poggi_staff",
-      "artworks": [
-        "artwork_poggi_navi_marsili",
-        "artwork_poggi_aldrovandi_erbario"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -958,7 +969,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": false
+      "isVerified": false,
+      "visits": [
+        {
+          "artwork": "artwork_poggi_navi_marsili",
+          "items": []
+        },
+        {
+          "artwork": "artwork_poggi_aldrovandi_erbario",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_poggi_camere_scienze",
@@ -966,11 +987,6 @@
       "description": "Percorso didattico tra la storica scuola di ostetricia e la fisica dell'Università di Bologna.",
       "price": 0,
       "creator": "poggi_staff",
-      "artworks": [
-        "artwork_poggi_ostetricia",
-        "artwork_poggi_ceroplastica_morandi",
-        "artwork_poggi_navi_marsili"
-      ],
       "minDuration": 45,
       "maxDuration": 60,
       "isActive": true,
@@ -1058,7 +1074,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_poggi_ostetricia",
+          "items": []
+        },
+        {
+          "artwork": "artwork_poggi_ceroplastica_morandi",
+          "items": []
+        },
+        {
+          "artwork": "artwork_poggi_navi_marsili",
+          "items": []
+        }
+      ]
     }
   ]
 }

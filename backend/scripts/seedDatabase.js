@@ -174,7 +174,7 @@ async function seed() {
     for (const artworkData of seedData.artworks) {
       if (artworkMap[artworkData.key]) continue;
       const artistIds = (artworkData.artists || []).map(k => artistMap[k]).filter(Boolean);
-      const itemIds = (artworkData.items || []).map(k => itemMap[k]).filter(Boolean);
+      const defaultItemIds = (artworkData.defaultItems || artworkData.items || []).map(k => itemMap[k]).filter(Boolean);
 
       const rawImages = artworkData.assets?.images || artworkData.images || [];
       const formattedImages = rawImages.map(img => typeof img === 'string' ? { url: img, orientation: 'landscape' } : img);
@@ -194,7 +194,7 @@ async function seed() {
         assets: {
           images: formattedImages
         },
-        items: itemIds
+        defaultItems: defaultItemIds
       });
 
       const savedArtwork = await artwork.save();
@@ -206,7 +206,7 @@ async function seed() {
       }
 
       // Update items' artwork field
-      for (const itemId of itemIds) {
+      for (const itemId of defaultItemIds) {
         await Item.findByIdAndUpdate(itemId, { artwork: savedArtwork._id });
       }
     }
@@ -216,8 +216,24 @@ async function seed() {
     console.log('[Seed] Inserting visits...');
     for (const visitData of seedData.visits) {
       if (visitMap[visitData.key]) continue;
-      const artworkIds = (visitData.artworks || []).map(k => artworkMap[k]).filter(Boolean);
       const creatorId = userMap[visitData.creator];
+
+      let visitEntries = [];
+      if (Array.isArray(visitData.visits)) {
+        visitEntries = visitData.visits.map(v => {
+          if (typeof v === 'string') {
+            return { artwork: artworkMap[v], items: [] };
+          }
+          const artId = artworkMap[v.artwork] || v.artwork;
+          const itmIds = (v.items || []).map(k => itemMap[k] || k).filter(Boolean);
+          return { artwork: artId, items: itmIds };
+        }).filter(v => Boolean(v.artwork));
+      } else if (Array.isArray(visitData.artworks)) {
+        visitEntries = visitData.artworks.map(k => ({
+          artwork: artworkMap[k],
+          items: []
+        })).filter(v => Boolean(v.artwork));
+      }
 
       const rawVisitImages = visitData.assets?.images || visitData.images || [];
       const formattedVisitImages = rawVisitImages.map(img => {
@@ -231,7 +247,7 @@ async function seed() {
         price: visitData.price,
         license: visitData.license || 'Licenza Standard',
         creator: creatorId,
-        artworks: artworkIds,
+        visits: visitEntries,
         minDuration: visitData.minDuration,
         maxDuration: visitData.maxDuration,
         isActive: visitData.isActive ?? true,

@@ -366,13 +366,13 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-001",
-      "items": [
-        "item_mulino_medium",
-        "item_mulino_infantile"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_mulino_medium",
+        "item_mulino_infantile"
+      ]
     },
     {
       "key": "artwork_carburatore_weber",
@@ -424,13 +424,13 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-002",
-      "items": [
-        "item_weber_technical",
-        "item_weber_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_weber_technical",
+        "item_weber_medium"
+      ]
     },
     {
       "key": "artwork_condensatore_ducati",
@@ -482,13 +482,13 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-003",
-      "items": [
-        "item_ducati_simple",
-        "item_ducati_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_ducati_simple",
+        "item_ducati_advanced"
+      ]
     },
     {
       "key": "artwork_confezionatrice_gd",
@@ -539,12 +539,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-004",
-      "items": [
-        "item_gd_technical"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_gd_technical"
+      ]
     },
     {
       "key": "artwork_torchio_aldini",
@@ -597,12 +597,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-005",
-      "items": [
-        "item_torchio_scientific"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_torchio_scientific"
+      ]
     },
     {
       "key": "artwork_fornace_galotti",
@@ -653,12 +653,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-MPI-BOLO-006",
-      "items": [
-        "item_fornace_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_fornace_medium"
+      ]
     }
   ],
   "visits": [
@@ -668,10 +668,6 @@
       "description": "Scopri la rete dei canali e la storia di Bologna capitale europea della seta.",
       "price": 0,
       "creator": "staff_user",
-      "artworks": [
-        "artwork_mulino_seta",
-        "artwork_fornace_galotti"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -771,7 +767,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_mulino_seta",
+          "items": []
+        },
+        {
+          "artwork": "artwork_fornace_galotti",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_meccanica_packaging",
@@ -779,12 +785,6 @@
       "description": "L'evoluzione della meccanica e dei motori a Bologna fino alla Packaging Valley.",
       "price": 0,
       "creator": "staff_user",
-      "artworks": [
-        "artwork_carburatore_weber",
-        "artwork_condensatore_ducati",
-        "artwork_confezionatrice_gd",
-        "artwork_torchio_aldini"
-      ],
       "minDuration": 75,
       "maxDuration": 105,
       "isActive": true,
@@ -884,7 +884,25 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_carburatore_weber",
+          "items": []
+        },
+        {
+          "artwork": "artwork_condensatore_ducati",
+          "items": []
+        },
+        {
+          "artwork": "artwork_confezionatrice_gd",
+          "items": []
+        },
+        {
+          "artwork": "artwork_torchio_aldini",
+          "items": []
+        }
+      ]
     }
   ]
 }

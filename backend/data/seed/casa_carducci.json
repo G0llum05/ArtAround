@@ -323,12 +323,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-CARDUCCI-BOLO-001",
-      "items": [
-        "item_carducci_studio_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_carducci_studio_medium"
+      ]
     },
     {
       "key": "artwork_carducci_nobel",
@@ -381,12 +381,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-CARDUCCI-BOLO-002",
-      "items": [
-        "item_carducci_nobel_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_carducci_nobel_advanced"
+      ]
     },
     {
       "key": "artwork_carducci_monumento",
@@ -434,12 +434,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-CARDUCCI-BOLO-003",
-      "items": [
-        "item_carducci_monumento_scientific"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_carducci_monumento_scientific"
+      ]
     },
     {
       "key": "artwork_carducci_biblioteca",
@@ -490,12 +490,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-CARDUCCI-BOLO-004",
-      "items": [
-        "item_carducci_biblioteca_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_carducci_biblioteca_medium"
+      ]
     },
     {
       "key": "artwork_carducci_manoscritto",
@@ -545,12 +545,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-CARDUCCI-BOLO-005",
-      "items": [
-        "item_carducci_manoscritto_advanced"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_carducci_manoscritto_advanced"
+      ]
     },
     {
       "key": "artwork_carducci_ritratto",
@@ -602,12 +602,12 @@
       "isActive": true,
       "isPrivate": false,
       "qrCode": "QR-CARDUCCI-BOLO-006",
-      "items": [
-        "item_carducci_studio_medium"
-      ],
       "assets": {
         "images": []
-      }
+      },
+      "defaultItems": [
+        "item_carducci_studio_medium"
+      ]
     }
   ],
   "visits": [
@@ -617,11 +617,6 @@
       "description": "Esplora la casa, lo studio e la biblioteca personale del primo Premio Nobel italiano.",
       "price": 6,
       "creator": "carducci_staff",
-      "artworks": [
-        "artwork_carducci_studio",
-        "artwork_carducci_nobel",
-        "artwork_carducci_biblioteca"
-      ],
       "minDuration": 50,
       "maxDuration": 75,
       "isActive": true,
@@ -726,7 +721,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_carducci_studio",
+          "items": []
+        },
+        {
+          "artwork": "artwork_carducci_nobel",
+          "items": []
+        },
+        {
+          "artwork": "artwork_carducci_biblioteca",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_carducci_poesia",
@@ -734,11 +743,6 @@
       "description": "Un itinerario letterario tra i manoscritti autografi e la poesia di Carducci.",
       "price": 8,
       "creator": "carducci_staff",
-      "artworks": [
-        "artwork_carducci_manoscritto",
-        "artwork_carducci_ritratto",
-        "artwork_carducci_studio"
-      ],
       "minDuration": 60,
       "maxDuration": 90,
       "isActive": true,
@@ -826,7 +830,21 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_carducci_manoscritto",
+          "items": []
+        },
+        {
+          "artwork": "artwork_carducci_ritratto",
+          "items": []
+        },
+        {
+          "artwork": "artwork_carducci_studio",
+          "items": []
+        }
+      ]
     },
     {
       "key": "visit_carducci_giardino",
@@ -834,10 +852,6 @@
       "description": "Passeggiata nel giardino monumentale tra natura e il monumento simbolista di Bistolfi.",
       "price": 5,
       "creator": "carducci_staff",
-      "artworks": [
-        "artwork_carducci_monumento",
-        "artwork_carducci_ritratto"
-      ],
       "minDuration": 45,
       "maxDuration": 60,
       "isActive": true,
@@ -925,7 +939,17 @@
       "assets": {
         "images": []
       },
-      "isVerified": true
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_carducci_monumento",
+          "items": []
+        },
+        {
+          "artwork": "artwork_carducci_ritratto",
+          "items": []
+        }
+      ]
     }
   ]
 }

@@ -29,10 +29,16 @@ const visitSchema = new mongoose.Schema({
     ref: 'User'
   },
 
-  // Items?
-  artworks: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Artwork'
+  visits: [{
+    artwork: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Artwork'
+    },
+    // se non ci sono items si usano i defaultItems dell'opera, altrimenti si usano questi
+    items: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Item'
+    }]
   }],
 
   // Duration in minutes
@@ -85,13 +91,7 @@ const visitSchema = new mongoose.Schema({
 
   // Categorie tematiche (multiplo)
   categories: [{
-    type: String,
-    enum: [
-      'Rinascimento', 'Arte Moderna', 'Motori', 'Scienza', 'Archeologia',
-      'Musica', 'Didattica', 'Antica Grecia', 'Antica Roma', 'Oriente',
-      'Antico Egitto', 'Medioevo', 'Neoclassicismo', 'Impressionismo',
-      'Realismo', 'Puntinismo', 'Avanguardie'
-    ]
+    type: String
   }],
 
   // Interazioni & Popolarità

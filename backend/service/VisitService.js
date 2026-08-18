@@ -1,4 +1,8 @@
+const mongoose = require('mongoose');
 const Visit = require('../data/model/Visit');
+const Artwork = require('../data/model/Artwork');
+const Item = require('../data/model/Item');
+const Museum = require('../data/model/Museum');
 const Mapper = require('../data/mapper/VisitMapper');
 
 class VisitService {
@@ -7,12 +11,116 @@ class VisitService {
     return await Visit.find(query).populate('creator', 'name surname email').lean();
   }
 
-  static async createVisit(visitRequest) {
-    const visit = Mapper.toVisit(visitRequest);
-    const newVisit = new Visit(visit);
-    const saved = await newVisit.save();
-    return saved.toObject();
+  /*
+    * Crea una nuova visita nel database e ritorna id
+    * @param {Object} request - { museumId, title, description, price, license, duration, isDisabledFriendly, assets = { images: [] }, visit : [ artworkId, itemId, description, tellMeMore, length, language]  }
+    * @returns {Promise<string>} - L'id della visita appena creata.
+    */
+  static async createVisit(request) {
+    if (!request) {
+      throw new Error('Dati richiesta mancanti o non validi');
+    }
+
+    const {
+      museumId,
+      userId,
+      title,
+      description,
+      price,
+      license,
+      duration,
+      isDisableFriendly,
+      assets,
+      visit: visitSteps = []
+    } = request;
+
+    // recupera opere coinvolte per estrarre le correnti artistiche
+    const artworkIds = visitSteps.map(step => step.artworkId).filter(Boolean);
+    const artworks = await Artwork.find({ _id: { $in: artworkIds } }).lean();
+
+    // TODO CHECK forse si può mettere anche altro (tipo dalla composizione dell'opera es scultura, quadro etc)
+    // insieme unione di artisticCurrents per creare le categories
+    const categoriesSet = new Set();
+    artworks.forEach(art => {
+      if (Array.isArray(art.artisticCurrents)) {
+        art.artisticCurrents.forEach(current => categoriesSet.add(current));
+      } else if (art.artisticCurrent) {
+        categoriesSet.add(art.artisticCurrent);
+      }
+    });
+
+    const processedVisits = [];
+
+    for (const step of visitSteps) {
+      const stepItemIds = [];
+
+      // Gestione Item Principale: se non c'è itemId ma c'è description, crealo
+      if (step.itemId) {
+        stepItemIds.push(new mongoose.Types.ObjectId(step.itemId));
+      } else if (step.description) {
+        const mainItem = await Item.create({
+          description: step.description,
+          language: step.language || 'it',
+          tone: 'medium',
+          length: step.length || 60,
+          author: userId,
+          license: license || 'Standard',
+          artwork: step.artworkId,
+        });
+        stepItemIds.push(mainItem._id);
+      }
+
+      // "Dimmi di più" (tellMeMore): se presente, crea sempre un item di approfondimento
+      if (step.tellMeMore) {
+        const tellMeMoreItem = await Item.create({
+          description: step.tellMeMore,
+          language: step.language || 'it',
+          tone: 'medium',
+          length: step.length || 60,
+          author: userId,
+          license: license || 'Standard',
+          artwork: step.artworkId,
+        });
+        stepItemIds.push(tellMeMoreItem._id);
+      }
+
+      processedVisits.push({
+        artwork: step.artworkId,
+        items: stepItemIds
+      });
+    }
+
+    // durata
+    const minDur = 0;
+    const maxDur = duration || 60;
+
+    const newVisit = new Visit({
+      title,
+      description,
+      price: Number(price) || 0,
+      license: license || 'Standard',
+      creator: userId,
+      visits: processedVisits,
+      minDuration: minDur,
+      maxDuration: maxDur,
+      disableFriendly: Boolean(isDisableFriendly),
+      categories: Array.from(categoriesSet),
+      assets: assets || { images: [] },
+      isActive: true,
+      isVerified: false
+    });
+
+    const savedVisit = await newVisit.save();
+
+    if (museumId) {
+      await Museum.findByIdAndUpdate(museumId, {
+        $addToSet: { visits: savedVisit._id }
+      });
+    }
+
+    return savedVisit._id.toString();
   }
+
 
   static async incrementLikes(visitId, delta = 1) {
     return await Visit.findByIdAndUpdate(

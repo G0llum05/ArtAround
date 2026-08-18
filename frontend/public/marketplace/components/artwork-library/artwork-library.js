@@ -1,4 +1,4 @@
-
+import { MuseumService } from '../../services/museum.service.js';
 
 export class MktArtworkLibrary extends HTMLElement {
   constructor() {
@@ -13,7 +13,7 @@ export class MktArtworkLibrary extends HTMLElement {
   }
 
 
-  connectedCallback() {
+  async connectedCallback() {
     this.render();
     this.setupEventListeners();
 
@@ -21,7 +21,6 @@ export class MktArtworkLibrary extends HTMLElement {
     this.state.isLoading = true;
     this.updateListUI(); // Mostra il caricamento
     try {
-      //HTTP
     } catch (error) {
       console.error("Errore nel caricamento della libreria:", error);
       this.state.artworks = [];

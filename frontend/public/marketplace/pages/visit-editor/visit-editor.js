@@ -271,7 +271,7 @@ export class MktVisitEditor extends HTMLElement {
               </svg>
               <span class="mkt-pricing-title">Premium</span>
               <span class="mkt-pricing-subtitle">Aggiunta a pagamento</span>
-          <!-- Input Group elegante per il prezzo -->
+               <!-- Input Group elegante per il prezzo -->
                <div class="mkt-price-input-group ${this.state.pricingType === 'free' ? 'mkt-disabled' : ''}">
                    <span class="mkt-currency-symbol">€</span>
                <input type="number" class="mkt-price-input" id="input-tour-price" step="0.50" value="${this.state.price}" ${this.state.pricingType === 'free' ? 'disabled' : ''} placeholder="0.00">

@@ -75,7 +75,7 @@ class MuseumController {
           return VisitMapper.toMuseumVisitForPresentationDTO(vis); 
         }
       );
-      res.status(200).json(visitDTOs || []);
+      res.status(200).json(visitsDTOs || []);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }

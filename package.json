@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "@responsivevoice/api-client": "^2.0.5",
+    "@uppy/core": "^5.2.0",
+    "@uppy/drag-drop": "^5.1.0",
     "cookie-parser": "^1.4.7",
     "helmet": "^8.3.0",
     "multer": "^2.2.0",

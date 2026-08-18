@@ -1,5 +1,3 @@
-import {dummyMuseums, dummyVisits} from "./dummydata.js";
-
 export function goTo(btn, route, id) {
   btn.addEventListener('click', () => {
     let payload = {

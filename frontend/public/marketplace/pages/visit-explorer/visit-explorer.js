@@ -1,4 +1,5 @@
 import { MuseumService } from "../../services/museum.service.js";
+import { getImageUrl } from '../../services/images.services.js';
 
 export class MktVisitExplorer extends HTMLElement {
   constructor() {
@@ -165,13 +166,12 @@ export class MktVisitExplorer extends HTMLElement {
     }
 
     const cardsHtml = visitsToDisplay.map(visit => {
-      const imageUrl = visit.assets?.images?.find(img => img.orientation === "landscape")?.url || visit.assets?.images?.[0]?.url || "../assets/images/place_holder.jpg";
       return `
         <mkt-visit-card
           data-title="${visit.title}"
           data-desc="${visit.description}"
           data-price="${visit.price}"
-          data-image="${imageUrl}"
+          data-image="${getImageUrl(visit.assets, "landscape")}"
           data-duration="${visit.duration}">
         </mkt-visit-card>
       `;
@@ -252,7 +252,6 @@ export class MktVisitExplorer extends HTMLElement {
             <div class="mkt-chips-group mkt-any-chip-active" id="interessi-group">
               <button type="button" class="mkt-chip mkt-chip-qualsiasi mkt-chip-active" data-value="Qualsiasi">Qualsiasi</button>
             </div>
-            <img class="mkt-image" src="/assets/images/place_holder.jpg">
           </section>
 
           <!-- 4. Durata -->

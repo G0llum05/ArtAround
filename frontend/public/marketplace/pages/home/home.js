@@ -1,5 +1,5 @@
-import { dummyMuseums, dummyVisits } from "../../dummydata.js";
 import {goTo} from "../../router.js";
+import {getImageUrl} from '../../services/images.services.js';
 import {VisitService} from "../../services/visit.service.js";
 import {MuseumService} from "../../services/museum.service.js";
 
@@ -53,11 +53,8 @@ export class MktHome extends HTMLElement {
     }
 
     return filteredMuseums.map(museum => {
-      const images = museum.assets?.images || [];
-      const imageUrl = images.find(img => img.orientation === "landscape")?.url
-        || images[0]?.url
-        || "/assets/images/place_holder.jpg";
-
+      const assets = museum.assets || [];
+      const imageUrl = getImageUrl(assets, "landscape")
       return `
         <mkt-museum-card
           data-title="${museum.name || ''}"
@@ -87,7 +84,7 @@ export class MktHome extends HTMLElement {
     }
 
     return filteredVisits.map(visit => {
-      const imageUrl = visit.assets?.images?.find(img => img.orientation === "landscape")?.url || visit.assets?.images?.[0]?.url || "../assets/images/place_holder.jpg";
+      const imageUrl = getImageUrl(visit.assets, "landscape");
       return `
         <mkt-visit-card
           data-title="${visit.title}"

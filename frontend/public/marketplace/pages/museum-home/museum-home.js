@@ -1,4 +1,5 @@
 import {MuseumService} from "../../services/museum.service.js";
+import {getImageUrl} from '../../services/images.services.js';
 
 const nomiGiorni = [
   "Domenica",
@@ -56,7 +57,7 @@ export class MktMuseumHome extends HTMLElement {
 
   getVisitsHtml() {
     return this.museumVisits.map(visit => {
-      const imageUrl = visit.assets?.images?.find(img => img.orientation === "landscape")?.url || visit.assets?.images?.[0]?.url || "../assets/images/place_holder.jpg";
+      const imageUrl = getImageUrl(visit?.assets, "landscape");
       return `
         <mkt-visit-card
           data-title="${visit.title}"
@@ -106,7 +107,7 @@ export class MktMuseumHome extends HTMLElement {
         <section class="mkt-museum-initial-grid">
           <!-- Hero Image -->
           <div class="mkt-hero-area">
-            <img src="/assets/images/place_holder.jpg" alt="${this.museumData.name}" class="mkt-museum-hero-img">
+            <img src="${getImageUrl(this.museumData.assets, "landscape")}" alt="${this.museumData.name}" class="mkt-museum-hero-img">
           </div>
 
           <!-- 1. Indirizzo -->

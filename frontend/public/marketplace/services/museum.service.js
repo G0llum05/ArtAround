@@ -37,6 +37,23 @@ export class MuseumService {
     }
   }
 
+  static async getAllMuseumArtWorks(id){
+    try{
+      const response = await fetch(`${this.apiUrl}/${id}/artworks`, {
+        method: 'GET',
+      })
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data = await response.json();
+      return data || [];
+
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
   static async getMuseumById(id) {
     try{
       const response = await fetch(`${this.apiUrl}/${id}`, {

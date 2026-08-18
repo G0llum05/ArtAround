@@ -6,7 +6,7 @@ import { PointOfInterest } from "./subModels/pointOfInterest.model";
 import { ImageSchema } from "./subModels/image.model";
 
 export interface MuseumAssets {
-  gallery?: ImageSchema[];
+  images?: ImageSchema[];
 }
 
 export interface MuseumResponse {

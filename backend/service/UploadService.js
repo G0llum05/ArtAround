@@ -76,8 +76,8 @@ class UploadService {
     }
 
     if (artistId) {
-      // assets/museums/:museumId/visit/:visitId/meta
-      return path.join(baseMuseumDir, 'visit', artistId, 'meta');
+      // assets/museums/:museumId/artists/:artistId
+      return path.join(baseMuseumDir, 'artists', artistId);
     }
 
     if (visitId) {
@@ -133,9 +133,12 @@ class UploadService {
   /**
    * Resolves base prefix for filename
    */
-  static getMuseumRelatedFilePrefix({ museumId, visitId, artworkId }) {
+  static getMuseumRelatedFilePrefix({ museumId, visitId, artworkId, artistId }) {
     if (artworkId) {
       return artworkId;
+    }
+    if (artistId) {
+      return artistId;
     }
     if (visitId) {
       return visitId;

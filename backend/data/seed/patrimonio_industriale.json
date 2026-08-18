@@ -192,8 +192,7 @@
         "Protoindustria Tessile XVII sec."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -205,8 +204,7 @@
         "Meccanica di Precisione XX sec."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -219,8 +217,7 @@
         "Industria Elettronica Bolognese"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -233,8 +230,7 @@
         "Didattica Industriale"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -247,8 +243,7 @@
         "Istruzione Tecnica Professionale"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     }
   ],

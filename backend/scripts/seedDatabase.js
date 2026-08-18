@@ -104,16 +104,18 @@ async function seed() {
     console.log('[Seed] Inserting artists...');
     for (const artistData of seedData.artists) {
       if (artistMap[artistData.key]) continue;
+      const rawImages = artistData.assets?.images || artistData.images || (artistData.profilePicture ? [artistData.profilePicture] : []) || [];
+      const formattedImages = rawImages.map(img => {
+        if (typeof img === 'string') return { url: img, orientation: 'portrait' };
+        return { url: img.url || '', orientation: img.orientation || 'portrait' };
+      });
       const artist = new Artist({
         name: artistData.name,
         surname: artistData.surname,
         artisticCurrents: artistData.artisticCurrents || [],
         artworks: [],
-        assets: artistData.assets || {
-          profilePicture: artistData.profilePicture
-            ? (typeof artistData.profilePicture === 'string' ? { url: artistData.profilePicture } : artistData.profilePicture)
-            : null,
-          gallery: (artistData.gallery || []).map(img => typeof img === 'string' ? { url: img } : img)
+        assets: {
+          images: formattedImages
         }
       });
       const savedArtist = await artist.save();

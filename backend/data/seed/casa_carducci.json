@@ -193,8 +193,7 @@
         "Letteratura Italiana XIX sec."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -207,8 +206,7 @@
         "Scultura Monumentale XX sec."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -221,8 +219,7 @@
         "Scuola Bolognese XIX sec."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -235,8 +232,7 @@
         "Museologia Italiana"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     }
   ],

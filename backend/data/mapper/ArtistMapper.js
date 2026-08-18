@@ -10,7 +10,8 @@ class ArtistMapper {
       artistModel.artworks,
       artistModel.artisticCurrents,
       artistModel.followerOf,
-      artistModel.teacherOf
+      artistModel.teacherOf,
+      artistModel.assets || { images: [] }
     );
   }
 
@@ -22,8 +23,24 @@ class ArtistMapper {
       dto.artworks,
       dto.artisticCurrents,
       dto.followerOf,
-      dto.teacherOf
+      dto.teacherOf,
+      dto.assets || { images: [] }
     );
+  }
+
+  static toArtistModel(dto) {
+    if (!dto) return null;
+    const cleanId = (id) => (id && typeof id === 'string' && id.trim() !== "") ? id : (typeof id === 'object' && id?._id ? id._id : id);
+
+    return {
+      name: dto.name,
+      surname: dto.surname,
+      artworks: Array.isArray(dto.artworks) ? dto.artworks.map(cleanId).filter(Boolean) : dto.artworks,
+      artisticCurrents: dto.artisticCurrents || [],
+      followerOf: Array.isArray(dto.followerOf) ? dto.followerOf.map(cleanId).filter(Boolean) : (dto.followerOf ? [cleanId(dto.followerOf)] : []),
+      teacherOf: Array.isArray(dto.teacherOf) ? dto.teacherOf.map(cleanId).filter(Boolean) : (dto.teacherOf ? [cleanId(dto.teacherOf)] : []),
+      assets: dto.assets || { images: [] }
+    };
   }
 }
 

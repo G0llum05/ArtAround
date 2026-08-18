@@ -33,16 +33,16 @@ class MuseumService {
     if (!visits) {
       return [];
     }
-    
+
     return visits.map
-    (
-      (vis) => {
-        if (!vis.assets?.images || vis.assets.images.length === 0) {
-          this._defaultVisitImageFiller(vis);
+      (
+        (vis) => {
+          if (!vis.assets?.images || vis.assets.images.length === 0) {
+            this._defaultVisitImageFiller(vis);
+          }
+          return VisitMapper.toMuseumVisitForPresentationDTO(vis);
         }
-        return VisitMapper.toMuseumVisitForPresentationDTO(vis);
-      }
-    );
+      );
   }
 
   static async createMuseum(data) {
@@ -52,12 +52,12 @@ class MuseumService {
   }
 
   static async updateMuseum(id, data) {
-    const museum = await Museum.findByIdAndUpdate(id, data, { new: true }).lean();  
+    const museum = await Museum.findByIdAndUpdate(id, data, { new: true }).lean();
     return MuseumMapper.toMuseumResponseDTO(museum);
   }
 
   static async deleteMuseum(id) {
-    const museum = await Museum.findByIdAndDelete(id).lean(); 
+    const museum = await Museum.findByIdAndDelete(id).lean();
     return MuseumMapper.toMuseumResponseDTO(museum);
   }
 
@@ -69,16 +69,16 @@ class MuseumService {
 
   static async getMuseumHomePresentation() {
     const museums = await Museum.find({ isActive: true }).lean();
-    
+
     return museums.map
-    (
-      (mus) => {
-        if (!mus.assets?.gallery || mus.assets.gallery.length === 0) {
-          this._defaultMuseumImageFiller(mus);
+      (
+        (mus) => {
+          if (!mus.assets?.images || mus.assets.images.length === 0) {
+            this._defaultMuseumImageFiller(mus);
+          }
+          return MuseumMapper.toMuseumHomePresentationResponseDTO(mus);
         }
-        return MuseumMapper.toMuseumHomePresentationResponseDTO(mus);
-      }
-    );
+      );
   }
 
 
@@ -88,20 +88,20 @@ class MuseumService {
     const DEFAULT_PORTRAIT = "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000";
 
     if (!museum.assets) museum.assets = {};
-    if (!Array.isArray(museum.assets.gallery)) museum.assets.gallery = [];
+    if (!Array.isArray(museum.assets.images)) museum.assets.images = [];
 
 
-    museum.assets.gallery.push({ url: DEFAULT_LANDSCAPE, orientation: 'landscape' });
-    museum.assets.gallery.push({ url: DEFAULT_PORTRAIT, orientation: 'portrait' });
+    museum.assets.images.push({ url: DEFAULT_LANDSCAPE, orientation: 'landscape' });
+    museum.assets.images.push({ url: DEFAULT_PORTRAIT, orientation: 'portrait' });
   }
-  
+
   static async _defaultVisitImageFiller(visit) {
     // Immagini di default per il test (landscape per desktop e portrait per mobile)
     const DEFAULT_LANDSCAPE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000";
     const DEFAULT_PORTRAIT = "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1000";
 
     if (!visit.assets) visit.assets = {};
-    if (!Array.isArray(visit.assets.images)) museum.assets.images = [];
+    if (!Array.isArray(visit.assets.images)) visit.assets.images = [];
 
 
     visit.assets.images.push({ url: DEFAULT_LANDSCAPE, orientation: 'landscape' });

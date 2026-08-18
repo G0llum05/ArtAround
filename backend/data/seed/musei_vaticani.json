@@ -194,8 +194,7 @@
         "Pittura a Fresco e Scultura Monumentale"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -208,8 +207,7 @@
         "Armonia ed Equilibrio Classico"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -222,8 +220,7 @@
         "Pittura Sacra Realista"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -235,8 +232,7 @@
         "Scuola di Rodi I sec. a.C."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -249,8 +245,7 @@
         "Scienza e Arte"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -261,8 +256,7 @@
         "Scultura Greca Classica IV sec. a.C."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     }
   ],

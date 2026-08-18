@@ -183,8 +183,7 @@
         "Accademia degli Incamminati"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -196,8 +195,7 @@
         "Seicento Romano"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -209,8 +207,7 @@
         "Ritrattistica Rinascimentale"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -222,8 +219,7 @@
         "Chiaroscuro Cromatico"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -235,8 +231,7 @@
         "Pittura di Paesaggio Drammatico"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -248,8 +243,7 @@
         "Vincitore di Lepanto 1571"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     }
   ],

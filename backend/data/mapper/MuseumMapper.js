@@ -23,7 +23,7 @@ class MuseumMapper {
       museum.transportInfo,
       museum.eventsAndExibitions || museum.eventsAndExhibitions,
       museum.requirements,
-      museum.assets || { gallery: [] }
+      museum.assets ? { images: museum.assets.images || museum.assets.gallery || [] } : { images: [] }
     );
   }
 
@@ -36,7 +36,7 @@ class MuseumMapper {
       museum.description,
       museum.address ? museum.address.city : null,
       museum.accessibility?.disableFriendly ?? false,
-      museum.assets || { gallery: [] }
+      museum.assets ? { images: museum.assets.images || museum.assets.gallery || [] } : { images: [] }
     );
   }
 
@@ -49,7 +49,7 @@ class MuseumMapper {
       museum.maxCapacity,
       museum.actualCapacity,
       museum.ticketInfo,
-      museum.assets || { gallery: [] }
+      museum.assets ? { images: museum.assets.images || museum.assets.gallery || [] } : { images: [] }
     );
   }
 
@@ -75,7 +75,7 @@ class MuseumMapper {
       transportInfo: museumRequestDTO.transportInfo,
       eventsAndExhibitions: museumRequestDTO.eventsAndExibitions || museumRequestDTO.eventsAndExhibitions,
       requirements: museumRequestDTO.requirements,
-      assets: museumRequestDTO.assets || { gallery: [] }
+      assets: museumRequestDTO.assets ? { images: museumRequestDTO.assets.images || museumRequestDTO.assets.gallery || [] } : { images: [] }
     };
   }
 

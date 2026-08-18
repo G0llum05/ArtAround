@@ -193,8 +193,7 @@
         "Illuminismo Scientifico XVIII sec."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -207,8 +206,7 @@
         "Illuminismo Medico Bolognese"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -220,8 +218,7 @@
         "Ceroplastica Medica XVIII sec."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -234,8 +231,7 @@
         "Scienza Femminile Illuminista"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -248,8 +244,7 @@
         "Architettura"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -262,8 +257,7 @@
         "Wunderkammer XVI sec."
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     }
   ],

@@ -1,5 +1,5 @@
 class MuseumResponseDTO {
-  constructor(id, name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { gallery: [] }) {
+  constructor(id, name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { images: [] }) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -24,7 +24,7 @@ class MuseumResponseDTO {
 }
 
 class MuseumRequestDTO {
-  constructor(name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { gallery: [] }) {
+  constructor(name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { images: [] }) {
     this.name = name;
     this.description = description;
     this.address = address;
@@ -60,7 +60,7 @@ class MuseumVisitPlanResponseDTO {
 }
 
 class MuseumHomePresentationResponseDTO {
-  constructor(id, name, description, city, disableFriendly, assets) {
+  constructor(id, name, description, city, disableFriendly, assets = []) {
     this.id = id
     this.name = name;
     this.description = description;
@@ -73,6 +73,6 @@ class MuseumHomePresentationResponseDTO {
 module.exports = {
   MuseumResponseDTO,
   MuseumRequestDTO,
-  MuseumVisitPlanResponseDTO,
+  // MuseumVisitPlanResponseDTO,
   MuseumHomePresentationResponseDTO
 };

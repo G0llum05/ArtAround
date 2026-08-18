@@ -194,8 +194,7 @@
         "Architettura del Seicento"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -209,8 +208,7 @@
         "Pittura a Luce Radente"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -223,8 +221,7 @@
         "Armonia ed Equilibrio Classico"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -237,8 +234,7 @@
         "Pittura d'Atmosfera"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -251,8 +247,7 @@
         "Bellezza Ideale"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     },
     {
@@ -264,8 +259,7 @@
         "Scuola dei Carracci"
       ],
       "assets": {
-        "profilePicture": null,
-        "gallery": []
+        "images": []
       }
     }
   ],

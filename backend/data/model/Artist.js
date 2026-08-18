@@ -10,8 +10,7 @@ const artistSchema = new mongoose.Schema({
   followerOf: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artist' }],
   teacherOf: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artist' }],
   assets: {
-    profilePicture: ImageSchema,
-    gallery: [ImageSchema]
+    images: [ImageSchema]
   }
 }, { timestamps: true });
 

@@ -22,9 +22,10 @@ export const dummyArtwork: ArtworkResponse = {
       name: "Leonardo",
       surname: "da Vinci",
       artworks: [],
-      artisitcCurrents: ["Rinascimento"],
+      artisticCurrents: ["Rinascimento"],
       followerOf: null as any,
-      teacherOf: null as any
+      teacherOf: null as any,
+      assets: { images: [] }
     }
   ],
   museum: {
@@ -185,9 +186,10 @@ export const DUMMY_ITINERARY_ARTWORKS: ArtworkResponse[] = [
         name: "Leonardo",
         surname: "da Vinci",
         artworks: [],
-        artisitcCurrents: ["Rinascimento"],
+        artisticCurrents: ["Rinascimento"],
         followerOf: null as any,
-        teacherOf: null as any
+        teacherOf: null as any,
+        assets: { images: [] }
       }
     ],
     museum: {} as any,

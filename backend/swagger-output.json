@@ -305,29 +305,6 @@
     "/api/auth/signup": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "surname": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -341,7 +318,7 @@
         ]
       }
     },
-    "/api/auth/login": {
+    "/api/auth/verifyCode": {
       "post": {
         "description": "",
         "parameters": [
@@ -354,7 +331,7 @@
                 "email": {
                   "example": "any"
                 },
-                "password": {
+                "code": {
                   "example": "any"
                 }
               }
@@ -367,9 +344,48 @@
           },
           "400": {
             "description": "Bad Request"
+          }
+        },
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/verifyEmail": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "tags": [
@@ -664,6 +680,22 @@
         ]
       }
     },
+    "/api/museum/homePresentation": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Museum"
+        ]
+      }
+    },
     "/api/museum/": {
       "get": {
         "description": "",
@@ -694,7 +726,7 @@
         ]
       }
     },
-    "/api/museum/{id}/visits": {
+    "/api/museum/{id}": {
       "get": {
         "description": "",
         "parameters": [
@@ -716,9 +748,7 @@
         "tags": [
           "Museum"
         ]
-      }
-    },
-    "/api/museum/{id}": {
+      },
       "patch": {
         "description": "",
         "parameters": [
@@ -784,6 +814,57 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Museum"
+        ]
+      }
+    },
+    "/api/museum/{id}/visits": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Museum"
+        ]
+      }
+    },
+    "/api/museum/{id}/visitPlan": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1048,11 +1129,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "content-type",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -1061,9 +1137,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
         "tags": [
@@ -1071,7 +1144,7 @@
         ]
       }
     },
-    "/api/upload/museum/{museumId}/visits/{visitId}/meta": {
+    "/api/upload/museum/{museumId}/visit/{visitId}/meta": {
       "post": {
         "description": "",
         "parameters": [
@@ -1086,10 +1159,29 @@
             "in": "path",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "tags": [
+          "Upload"
+        ]
+      }
+    },
+    "/api/upload/visit/{visitId}/meta": {
+      "post": {
+        "description": "",
+        "parameters": [
           {
-            "name": "content-type",
-            "in": "header",
+            "name": "visitId",
+            "in": "path",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1099,9 +1191,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
         "tags": [
@@ -1109,7 +1198,7 @@
         ]
       }
     },
-    "/api/upload/museum/{museumId}/artworks/{artworkId}": {
+    "/api/upload/museum/{museumId}/artwork/{artworkId}": {
       "post": {
         "description": "",
         "parameters": [
@@ -1124,10 +1213,29 @@
             "in": "path",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "tags": [
+          "Upload"
+        ]
+      }
+    },
+    "/api/upload/artwork/{artworkId}": {
+      "post": {
+        "description": "",
+        "parameters": [
           {
-            "name": "content-type",
-            "in": "header",
+            "name": "artworkId",
+            "in": "path",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1137,9 +1245,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
         "tags": [
@@ -1147,26 +1252,15 @@
         ]
       }
     },
-    "/api/upload/museum/{museumId}/artists/{artistId}": {
+    "/api/upload/artist/{artistId}": {
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "museumId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "artistId",
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "content-type",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -1175,9 +1269,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
         "tags": [
@@ -1185,7 +1276,7 @@
         ]
       }
     },
-    "/api/upload/users/{userId}/propic": {
+    "/api/upload/user/{userId}/propic": {
       "post": {
         "description": "",
         "parameters": [
@@ -1194,11 +1285,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "content-type",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -1207,9 +1293,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
         "tags": [
@@ -1220,13 +1303,6 @@
     "/api/upload/": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "content-type",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -1557,104 +1633,9 @@
         ]
       }
     },
-    "/api/visit/{id}/artwork-images": {
+    "/api/visit/homePresentation": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "tags": [
-          "Visit"
-        ]
-      }
-    },
-    "/api/visit/{id}/artist-images": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "tags": [
-          "Visit"
-        ]
-      }
-    },
-    "/api/visit/{id}/home-presentation": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "tags": [
-          "Visit"
-        ]
-      }
-    },
-    "/api/visit/museum/{museumId}/visit/{visitId}/home-presentation": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "museumId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "visitId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"

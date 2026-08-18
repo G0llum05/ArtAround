@@ -7,6 +7,8 @@ import { VerifyCodeModal } from '../../components/verify-code-modal/verify-code-
 import { UserRequest } from '../../models/user.model';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
+import { UploadService } from '../../services/upload.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +23,7 @@ export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
+  private uploadService = inject(UploadService);
   readonly authService = inject(AuthService);
 
   isLoginMode = signal<boolean>(true);
@@ -28,6 +31,14 @@ export class Login implements OnInit {
   pendingVerifyEmail = signal<string>('');
 
   isSubmitting = signal<boolean>(false);
+
+  // Profile Picture Upload State
+  showUploadMode = signal<boolean>(false);
+  isUploadingPropic = signal<boolean>(false);
+  isDragging = signal<boolean>(false);
+  selectedFile = signal<File | null>(null);
+  previewUrl = signal<string | null>(null);
+  uploadError = signal<string | null>(null);
 
   authForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -239,5 +250,134 @@ export class Login implements OnInit {
         break;
     }
     return label;
+  }
+
+  // --- GESTIONE FOTO PROFILO ---
+
+  getProfilePictureUrl(): string {
+    const user = this.authService.currentUser();
+    const url = user?.assets?.profilePicture?.url;
+    const defaultPropic = '/assets/users/default/propic/default.jpeg';
+
+    if (!url) {
+      return defaultPropic;
+    }
+
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+      return url;
+    }
+
+    return url;
+  }
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = '/assets/users/default/propic/default.jpeg';
+    }
+  }
+
+  toggleUploadMode(): void {
+    const current = this.showUploadMode();
+    if (current) {
+      this.cancelPropicUpload();
+    } else {
+      this.showUploadMode.set(true);
+      this.uploadError.set(null);
+    }
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.processSelectedFile(input.files[0]);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging.set(true);
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging.set(false);
+  }
+
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging.set(false);
+
+    if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
+      this.processSelectedFile(event.dataTransfer.files[0]);
+    }
+  }
+
+  private processSelectedFile(file: File): void {
+    this.uploadError.set(null);
+
+    if (!file.type.startsWith('image/')) {
+      this.uploadError.set('Il file selezionato non è un\'immagine valida.');
+      return;
+    }
+
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      this.uploadError.set('L\'immagine non può superare i 10MB di dimensione.');
+      return;
+    }
+
+    if (this.previewUrl()) {
+      URL.revokeObjectURL(this.previewUrl()!);
+    }
+
+    const preview = URL.createObjectURL(file);
+    this.selectedFile.set(file);
+    this.previewUrl.set(preview);
+  }
+
+  cancelPropicUpload(): void {
+    if (this.previewUrl()) {
+      URL.revokeObjectURL(this.previewUrl()!);
+    }
+    this.previewUrl.set(null);
+    this.selectedFile.set(null);
+    this.uploadError.set(null);
+    this.showUploadMode.set(false);
+  }
+
+  savePropic(): void {
+    const file = this.selectedFile();
+    const currentUser = this.authService.currentUser();
+    const userId = currentUser?.userId;
+
+    if (!file || !userId) {
+      this.uploadError.set('Nessun file selezionato o sessione non valida.');
+      return;
+    }
+
+    this.isUploadingPropic.set(true);
+    this.uploadError.set(null);
+
+    this.uploadService.uploadUserPropic(userId, file).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (res) => {
+        this.isUploadingPropic.set(false);
+        this.authService.updateUserProfilePicture(res.url);
+        this.alertService.success('Immagine del profilo aggiornata con successo!');
+        this.cancelPropicUpload();
+      },
+      error: (err) => {
+        this.isUploadingPropic.set(false);
+        console.error('Errore caricamento foto profilo:', err);
+        const errMsg = err.error?.message || err.message || 'Errore durante il caricamento dell\'immagine del profilo.';
+        this.uploadError.set(errMsg);
+        this.alertService.error(errMsg);
+      }
+    });
   }
 }

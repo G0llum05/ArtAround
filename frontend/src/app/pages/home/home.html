@@ -22,7 +22,20 @@
           }
         }
       } @else {
-        Pronto a scoprire qualcosa di nuovo? La tua visita personalizzata ti aspetta.
+        @switch (authService.currentUser()?.gender) {
+          @case ('f') {
+            Pronta a scoprire qualcosa di nuovo? La tua visita personalizzata ti aspetta.
+          }
+          @case ('m') {
+            Pronto a scoprire qualcosa di nuovo? La tua visita personalizzata ti aspetta.
+          }
+          @case ('other') {
+            Pront* a scoprire qualcosa di nuovo? La tua visita personalizzata ti aspetta.
+          }
+          @default {
+            Pront* a scoprire qualcosa di nuovo? La tua visita personalizzata ti aspetta.
+          }
+        }
       }
     </p>
   </section>

@@ -1,5 +1,6 @@
 
 import { ArtworkResponse } from '../../models/artwork.model';
+import { ImageSchema } from '../../models/subModels/image.model';
 import {ChatMessage} from '../../models/appModel/chatMessage';
 
 export const dummyItinerary = [
@@ -129,9 +130,11 @@ export const dummyArtwork: ArtworkResponse = {
   isActive: true,
   isPrivate: false,
   qrCode: "QR-ART-MOCK-001",
-  images: [
-    "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800"
-  ]
+  assets: {
+    images: [
+      { url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800", orientation: "landscape" }
+    ]
+  }
 };
 
 
@@ -153,7 +156,11 @@ export const DUMMY_ITINERARY_ARTWORKS: ArtworkResponse[] = [
     isActive: true,
     isPrivate: false,
     qrCode: "QR-001",
-    images: ["https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800"]
+    assets: {
+      images: [
+        { url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800", orientation: "landscape" }
+      ]
+    }
   },
   {
     id: "art-mock-002",
@@ -172,7 +179,11 @@ export const DUMMY_ITINERARY_ARTWORKS: ArtworkResponse[] = [
     isActive: true,
     isPrivate: false,
     qrCode: "QR-002",
-    images: ["https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800"]
+    assets: {
+      images: [
+        { url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800", orientation: "landscape" }
+      ]
+    }
   },
   {
     id: "art-mock-003",
@@ -202,7 +213,11 @@ export const DUMMY_ITINERARY_ARTWORKS: ArtworkResponse[] = [
     isActive: true,
     isPrivate: false,
     qrCode: "QR-ART-MOCK-001",
-    images: ["https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800"]
+    assets: {
+      images: [
+        { url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800", orientation: "landscape" }
+      ]
+    }
   },
   {
     id: "art-mock-004",
@@ -221,7 +236,11 @@ export const DUMMY_ITINERARY_ARTWORKS: ArtworkResponse[] = [
     isActive: true,
     isPrivate: false,
     qrCode: "QR-004",
-    images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800"]
+    assets: {
+      images: [
+        { url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800", orientation: "landscape" }
+      ]
+    }
   },
   {
     id: "art-mock-005",
@@ -240,7 +259,11 @@ export const DUMMY_ITINERARY_ARTWORKS: ArtworkResponse[] = [
     isActive: true,
     isPrivate: false,
     qrCode: "QR-005",
-    images: ["https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800"]
+    assets: {
+      images: [
+        { url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800", orientation: "landscape" }
+      ]
+    }
   }
 ];
 

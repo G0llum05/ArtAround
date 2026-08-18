@@ -1,4 +1,4 @@
-const { ArtworkResponseDTO, ArtworkRequestDTO, ArtworkLLMRequestDTO } = require('../model/dto/ArtworkDTO');
+const { ArtworkResponseDTO, ArtworkForPresentationDTO, ArtworkRequestDTO, ArtworkLLMRequestDTO } = require('../model/dto/ArtworkDTO');
 
 class ArtworkMapper {
   static toArtworkResponseDTO(artworkModel) {
@@ -23,6 +23,17 @@ class ArtworkMapper {
       artworkModel.images,
       artworkModel.items
     );
+  }
+
+  static toArtworkForPresentationDTO(artwork) {
+    if (!artwork) return null;
+    return new ArtworkForPresentationDTO(
+      artwork._id,
+      artwork.title,
+      artwork.description,
+      artwork.artists,
+      artwork.assets
+    )
   }
 
   static toArtworkModel(dto) {

@@ -1,6 +1,6 @@
 // RESPONSES
 class ArtistResponseDTO {
-  constructor(id, name, surname, artworks, artisticCurrents, followerOf, teacherOf, assets) {
+  constructor(id, name, surname, artworks, artisticCurrents, followerOf, teacherOf, assets = { images: [] }) {
     this.id = id;
     this.name = name;
     this.surname = surname;
@@ -14,7 +14,7 @@ class ArtistResponseDTO {
 
 // REQUESTS
 class ArtistRequestDTO {
-  constructor(name, surname, artworks, artisticCurrents, followerOf, teacherOf, assets) {
+  constructor(name, surname, artworks, artisticCurrents, followerOf, teacherOf, assets = { images: [] }) {
     this.name = name;
     this.surname = surname;
     this.artworks = artworks; // Array of IDs

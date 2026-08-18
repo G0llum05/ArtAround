@@ -5,10 +5,6 @@ import { Schedule } from "./subModels/schedule.model";
 import { PointOfInterest } from "./subModels/pointOfInterest.model";
 import { ImageSchema } from "./subModels/image.model";
 
-export interface MuseumAssets {
-  images?: ImageSchema[];
-}
-
 export interface MuseumResponse {
   id: string,
   name: string,
@@ -95,7 +91,9 @@ export interface MuseumResponse {
 
   requirements: string,
 
-  assets?: MuseumAssets
+  assets?: {
+    images: ImageSchema[]
+  }
 }
 
 export interface MuseumRequest {
@@ -183,7 +181,9 @@ export interface MuseumRequest {
 
   requirements: string,
 
-  assets?: MuseumAssets
+  assets: {
+    images: ImageSchema[]
+  }
 }
 
 export interface MuseumVisitPlanResponse {
@@ -209,5 +209,7 @@ export interface MuseumHomePresentationResponse {
   description: string,
   city: string,
   disableFriendly: boolean,
-  assets: MuseumAssets
+  assets: {
+    images: ImageSchema[]
+  }
 }

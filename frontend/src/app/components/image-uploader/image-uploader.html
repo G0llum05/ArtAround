@@ -1,0 +1,81 @@
+<div class="image-uploader-wrapper">
+  <!-- Container where Uppy Drag & Drop plugin will be mounted -->
+  <div
+    #uppyContainer
+    class="uppy-drag-drop-mount"
+    [class.is-dragging]="isDragging()"
+  ></div>
+
+  <!-- Error feedback message -->
+  @if (errorMessage()) {
+    <div class="uploader-error-message" role="alert">
+      <svg class="error-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Uploaded files preview section -->
+  @if (showPreview() && files().length > 0) {
+    <div class="uploaded-files-container">
+      <div class="uploaded-files-header">
+        <span class="files-count-label">
+          File selezionati ({{ files().length }})
+        </span>
+        <button
+          type="button"
+          class="clear-all-button"
+          (click)="clearFiles()"
+          title="Rimuovi tutti i file"
+        >
+          Rimuovi tutti
+        </button>
+      </div>
+
+      <div class="uploaded-files-grid">
+        @for (file of files(); track file.id) {
+          <div class="file-preview-card">
+            <div class="file-thumbnail-wrapper">
+              @if (getFilePreview(file); as previewUrl) {
+                <img
+                  [src]="previewUrl"
+                  [alt]="file.name"
+                  class="file-thumbnail-img"
+                />
+              } @else {
+                <div class="file-thumbnail-placeholder">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                </div>
+              }
+            </div>
+
+            <div class="file-info">
+              <span class="file-name" [title]="file.name">{{ file.name }}</span>
+              <span class="file-size">{{ formatFileSize(file.size) }}</span>
+            </div>
+
+            <button
+              type="button"
+              class="remove-file-button"
+              (click)="removeFile(file.id)"
+              [attr.aria-label]="'Rimuovi ' + file.name"
+              title="Rimuovi file"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -48,14 +48,14 @@ class MuseumRequestDTO {
 }
 
 class MuseumVisitPlanResponseDTO {
-  constructor(id, name, city, maxCapacity, actualCapacity, ticketInfo, imageUrls = []) {
+  constructor(id, name, city, maxCapacity, actualCapacity, ticketInfo, assets = { images: [] }) {
     this.id = id;
     this.name = name;
     this.city = city;
     this.maxCapacity = maxCapacity;
     this.actualCapacity = actualCapacity;
     this.ticketInfo = ticketInfo;
-    this.imageUrls = imageUrls;
+    this.assets = assets;
   }
 }
 

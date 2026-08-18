@@ -72,6 +72,22 @@ export class AuthService {
     );
   }
 
+  updateUserProfilePicture(url: string, orientation: string = 'square'): void {
+    const current = this._currentUser();
+    if (current) {
+      this._currentUser.set({
+        ...current,
+        assets: {
+          ...current.assets,
+          profilePicture: {
+            url,
+            orientation: orientation as any
+          }
+        }
+      });
+    }
+  }
+
   // Matti di seguito ti metto del codice che puoi eliminare ma che ti potrebbe servire per gestire le sessioni
   // un polling ("interrogazione ciclica") ti permette di fare con observables in modo figo quello che in js faresti con setIntervalTimer
   // Lo puoi far partire in seguito a un evento e rimane attivo fin che non lo termini (unsubscribe) o fino alla fine dell'applicazione

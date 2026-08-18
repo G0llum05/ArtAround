@@ -1,6 +1,6 @@
 // RESPONSES
 class ArtworkResponseDTO {
-  constructor(id, title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf, isActive, isPrivate, qrCode, images, items) {
+  constructor(id, title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf, isActive, isPrivate, qrCode, assets = { images: [] }, items) {
     this.id = id;
     this.title = title;
     this.description = description;
@@ -17,14 +17,25 @@ class ArtworkResponseDTO {
     this.isActive = isActive;
     this.isPrivate = isPrivate;
     this.qrCode = qrCode;
-    this.images = images;
+    this.assets = assets;
     this.items = items;
   }
 }
 
+class ArtworkForPresentationDTO {
+	// Allora artisti, immagine, titolo , descrizione e id
+	constructor(id, title, description, artists, assets = { images: [] }) {
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.artists = artists;
+		this.assets = assets;
+	}
+}
+
 // REQUESTS
 class ArtworkRequestDTO {
-  constructor(title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf, isActive, isPrivate, qrCode, images, items) {
+  constructor(title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf, isActive, isPrivate, qrCode, assets = { images: [] }, items) {
     this.title = title;
     this.description = description;
     this.startYear = startYear;
@@ -40,13 +51,13 @@ class ArtworkRequestDTO {
     this.isActive = isActive;
     this.isPrivate = isPrivate;
     this.qrCode = qrCode;
-    this.images = images;
+    this.assets = assets;
     this.items = items; // Array of Item IDs
   }
 }
 
 class ArtworkLLMRequestDTO {
-  constructor(title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf, isActive, isPrivate, qrCode, images, items) {
+  constructor(title, description, startYear, endYear, artists, museum, location, dimensions, artisticCurrents, details, copyOf, falsificationOf, isActive, isPrivate, qrCode, assets = { images: [] }, items) {
     this.title = title;
     this.description = description;
     this.startYear = startYear;
@@ -64,6 +75,7 @@ class ArtworkLLMRequestDTO {
 
 module.exports = {
   ArtworkResponseDTO,
+  ArtworkForPresentationDTO,
   ArtworkRequestDTO,
   ArtworkLLMRequestDTO
 };

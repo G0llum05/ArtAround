@@ -1,6 +1,7 @@
 const MuseumService = require('../../service/MuseumService');
 const MuseumMapper = require('../../data/mapper/MuseumMapper');
 const VisitMapper = require('../../data/mapper/VisitMapper');
+const ArtworkMapper = require('../../data/mapper/ArtworkMapper');
 
 class MuseumController {
   static async getAll(req, res) {
@@ -72,6 +73,24 @@ class MuseumController {
       (
         (vis) => {
           return VisitMapper.toMuseumVisitForPresentationDTO(vis); 
+        }
+      );
+      res.status(200).json(visitDTOs || []);
+    } catch (e) {
+      res.status(500).json({ message: e.message });
+    }
+  }
+  
+  static async getAllMuseumArtworks(req, res) {
+    try {
+      const artworks = await MuseumService.getAllMuseumArtworks(req.params.id);
+      if (!artworks) {
+        res.status(404).json({ message: "Museum not found"});
+      }
+      const artworkDTOs = artworks.map
+      (
+        (art) => {
+          return ArtworkMapper.toArtworkForPresentationDTO(art); 
         }
       );
       res.status(200).json(visitDTOs || []);

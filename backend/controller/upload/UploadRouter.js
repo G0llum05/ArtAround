@@ -7,20 +7,23 @@ const router = express.Router();
 /* #swagger.tags = ['Upload'] */
 
 // Specific routes matching node tree structure:
-// assets/museums/:museumId/meta
-router.post('/museum/:museumId/meta', uploadMiddleware.any(), UploadController.handleUpload);
+// 1. assets/museums/:museumId/meta
+router.post('/museum/:museumId/meta', uploadMiddleware.any(), UploadController.museumImgUpload);
 
-// assets/museums/:museumId/visit/:visitId/meta
+// 2. assets/museums/:museumId/visit/:visitId/meta
 router.post('/museum/:museumId/visit/:visitId/meta', uploadMiddleware.any(), UploadController.visitImgUpload);
+router.post('/visit/:visitId/meta', uploadMiddleware.any(), UploadController.visitImgUpload);
 
-// assets/museums/:museumId/artworks/:artworkId
-router.post('/museum/:museumId/artwork/:artworkId', uploadMiddleware.any(), UploadController.handleUpload);
+// 3. assets/museums/:museumId/artworks/:artworkId
+router.post('/museum/:museumId/artwork/:artworkId', uploadMiddleware.any(), UploadController.artworkImgUpload);
+router.post('/artwork/:artworkId', uploadMiddleware.any(), UploadController.artworkImgUpload);
 
-// assets/museums/:museumId/artists/:artistId
-router.post('/artist/:artistId', uploadMiddleware.any(), UploadController.handleUpload);
+// 4. assets/artists/:artistId (Decentralized artist images)
+router.post('/artist/:artistId', uploadMiddleware.any(), UploadController.artistImgUpload);
 
-// assets/users/:userId/propic/
-router.post('/user/:userId/propic', uploadMiddleware.any(), UploadController.handleUpload)
+// 5. assets/users/:userId/propic/
+router.get('/user/:userId/propic', UploadController.getUserPropic);
+router.post('/user/:userId/propic', uploadMiddleware.any(), UploadController.userPropicUpload);
 
 // Generic upload endpoint
 router.post('/', uploadMiddleware.any(), UploadController.handleUpload);

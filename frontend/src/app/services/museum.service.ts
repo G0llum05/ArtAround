@@ -8,6 +8,7 @@ import {
   MuseumVisitPlanResponse
 } from '../models/museum.model';
 import { VisitHomePresentationResponse, VisitResponse } from '../models/visit.model';
+import { ArtworkForPresentation } from '../models/artwork.model';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,11 @@ export class MuseumService {
   getAllMuseumVisits(id: string): Observable<VisitHomePresentationResponse[]> {
     return this.http.get<VisitHomePresentationResponse[]>(`${this.apiUrl}${id}/visits`);
   }
+  
+  getAllMuseumArtworks(id: string): Observable<ArtworkForPresentation[]> {
+    return this.http.get<ArtworkForPresentation[]>(`${this.apiUrl}${id}/artworks`);
+  }
+  
 
   getVisitPlanInfoById(id: string): Observable<MuseumVisitPlanResponse> {
     return this.http.get<MuseumVisitPlanResponse>(`${this.apiUrl}${id}/visitPlan`);

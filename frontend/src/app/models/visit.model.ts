@@ -3,10 +3,6 @@ import { UserResponse } from "./user.model";
 import { Schedule } from "./subModels/schedule.model";
 import { ImageSchema } from "./subModels/image.model";
 
-export interface VisitAssets {
-  images?: ImageSchema[];
-}
-
 export interface VisitHomePresentationResponse {
   id: string,
   title: string,
@@ -17,7 +13,9 @@ export interface VisitHomePresentationResponse {
   price: number,
   isClosingSoon: boolean,
   isNew: boolean,
-  assets: VisitAssets,
+  assets: {
+    images: ImageSchema[]
+  }
 }
 
 export interface VisitResponse {
@@ -52,7 +50,9 @@ export interface VisitResponse {
   },
   badge: string,
   isVerified?: boolean,
-  assets?: VisitAssets
+  assets?: {
+    images: ImageSchema[]
+  }
 }
 
 export interface VisitRequest {
@@ -86,7 +86,9 @@ export interface VisitRequest {
   },
   badge: string,
   isVerified?: boolean,
-  assets?: VisitAssets
+  assets?: {
+    images: ImageSchema[]
+  }
 }
 
 export interface VisitImageRequest {

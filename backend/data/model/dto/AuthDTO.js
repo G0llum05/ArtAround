@@ -52,6 +52,13 @@ class LoginResponseDTO {
     this.email = user.email;
     this.gender = user.gender || 'other';
     this.role = user.role;
+    const defaultPropicUrl = '/assets/users/default/propic/default.jpeg';
+    this.assets = {
+      profilePicture: {
+        url: user.assets?.profilePicture?.url || defaultPropicUrl,
+        orientation: user.assets?.profilePicture?.orientation || 'square'
+      }
+    };
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
   }

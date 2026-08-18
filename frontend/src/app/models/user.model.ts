@@ -1,3 +1,4 @@
+import { ImageSchema } from "./subModels/image.model";
 export type Gender = 'f' | 'm' | 'other' | string;
 
 export interface UserRequest {
@@ -37,6 +38,9 @@ export interface UserResponse {
   email: string;
   gender?: Gender;
   role: 'guest' | 'student' | 'teacher' | 'museumstaff' | 'admin';
+  assets?: {
+    profilePicture?: ImageSchema;
+  };
   // TODO CHECK devono ritornare anche questi campi
   // roleStatus?: 'approved' | 'pending';
   // requestedRole?: 'teacher' | 'museumstaff' | null;
@@ -52,6 +56,9 @@ export interface AuthResponse {
   email: string;
   gender?: Gender;
   role: 'guest' | 'student' | 'teacher' | 'museumstaff' | 'admin';
+  assets?: {
+    profilePicture?: ImageSchema;
+  };
   accessToken: string;
   refreshToken: string;
   type?: 'success' | 'warning' | 'error';

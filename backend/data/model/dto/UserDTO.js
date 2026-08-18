@@ -1,5 +1,5 @@
 class UserResponseDTO {
-    constructor(id, name, surname, email, role, purchasedVisits, likedVisits, preferences, gender = 'other') {
+    constructor(id, name, surname, email, role, purchasedVisits, likedVisits, preferences, gender = 'other', assets = null) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -9,6 +9,13 @@ class UserResponseDTO {
         this.likedVisits = likedVisits;
         this.preferences = preferences;
         this.gender = gender;
+        const defaultPropicUrl = '/assets/users/default/propic/default.jpeg';
+        this.assets = assets || {
+            profilePicture: {
+                url: defaultPropicUrl,
+                orientation: 'square'
+            }
+        };
     }
 }
 

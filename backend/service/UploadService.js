@@ -9,173 +9,201 @@ const Artist = require('../data/model/Artist');
 const User = require('../data/model/User');
 
 class UploadService {
+  // =========================================================================
+  // HANDLER API DEDICATI PER RISORSA
+  // =========================================================================
 
+  /**
+   * Caricamento immagine copertina/meta del museo
+   */
   static async museumImgUpload(museumId, file, orientation) {
     if (!museumId || !file) {
       throw new Error('museumId e file sono obbligatori per il caricamento dell\'immagine del museo.');
     }
-  }
 
-  static async visitImgUpload(museumId, visitId, file, orientation) {
-    const targetOrientation = orientation || 'landscape';
-    if (!museumId || !visitId || !file) {
-      throw new Error('museumId, visitId e file sono obbligatori per il caricamento dell\'immagine della visita.');
+    if (!await Museum.exists({ _id: museumId })) {
+      throw new Error('Museo non trovato.');
     }
 
-    // Controllo se la visita appartiene al museo
+    const savedFile = await this.saveMuseumRelatedImage(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+      { museumId, isMeta: true, orientation }
+    );
+
+    const targetOrientation = orientation || await this.resolveMetaSuffix(file.buffer, file.originalname, { orientation });
+
+    const updatedMuseum = await Museum.findByIdAndUpdate(museumId,
+      {
+        $push: { 'assets.images': { url: savedFile.url, orientation: targetOrientation } }
+      }, { new: true });
+
+    if (!updatedMuseum) throw new Error('Errore durante l\'aggiornamento del museo.');
+
+    return savedFile.url;
+  }
+
+  /**
+   * Caricamento immagine copertina/meta della visita
+   */
+  static async visitImgUpload(museumIdInput, visitId, file, orientation) {
+    if (!visitId || !file) {
+      throw new Error('visitId e file sono obbligatori per il caricamento dell\'immagine della visita.');
+    }
+
+    let museumId = museumIdInput;
+    if (!museumId) {
+      const museum = await Museum.findOne({ visits: visitId });
+      if (museum) museumId = museum._id.toString();
+    }
+
+    if (!museumId) {
+      throw new Error('museumId non fornito e nessun museo associato a questa visita.');
+    }
+
     if (!await Museum.exists({ _id: museumId, visits: visitId })) {
       throw new Error('Museo non trovato o la visita non appartiene a questo museo.');
     }
 
-    const targetDir = path.join(__dirname, '../assets/museums', museumId, 'visit', visitId, 'meta');
-    const fileName = `visit_${targetOrientation}.webp`;
-    const fullPath = path.join(targetDir, fileName);
+    const savedFile = await this.saveMuseumRelatedImage(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+      { museumId, visitId, isMeta: true, orientation }
+    );
 
-    // crea dir se non esiste
-    await fs.ensureDir(targetDir);
-
-    await this.saveImage(file.buffer, fullPath, file.mimetype);
-
-    const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
-    const publicUrl = `/${relativePath}`; // Risultato: /assets/museums/.../visit_landscape.webp
+    const targetOrientation = orientation || await this.resolveMetaSuffix(file.buffer, file.originalname, { orientation });
 
     const updatedVisit = await Visit.findByIdAndUpdate(visitId,
       {
-        $push: { 'assets.images': { url: publicUrl, orientation: targetOrientation } }
+        $push: { 'assets.images': { url: savedFile.url, orientation: targetOrientation } }
       }, { new: true });
 
     if (!updatedVisit) throw new Error('Visita non trovata.');
 
-    return publicUrl;
+    return savedFile.url;
   }
 
-  static async saveImage(fileBuffer, fullPath, mimeType) {
-    if (Imager.isRaster(mimeType)) {
-      await sharp(fileBuffer)
-        .webp({ quality: 82, effort: 4 })
-        .toFile(fullPath);
-    } else {
-      await fs.writeFile(fullPath, fileBuffer);
+  /**
+   * Caricamento immagine dell'opera d'arte
+   */
+  static async artworkImgUpload(museumIdInput, artworkId, file, orientation) {
+    if (!artworkId || !file) {
+      throw new Error('artworkId e file sono obbligatori per il caricamento dell\'immagine dell\'opera.');
     }
-  }
 
+    const artwork = await Artwork.findById(artworkId);
+    if (!artwork) {
+      throw new Error('Opera non trovata.');
+    }
 
-
-  // TODO CHECK REFACTOR FINO A QUA
-
-  static getMuseumRelatedDir({ museumId, visitId, artworkId, artistId, isMeta }) {
+    let museumId = museumIdInput;
     if (!museumId) {
-      throw new Error('museumId è obbligatorio per definire il percorso di salvataggio.');
-    }
-    const baseMuseumDir = path.join(__dirname, '../assets/museums', museumId);
-
-
-    // Le immagini dell'artwork risiedono in modo centralizzato sotto artworks/:artworkId
-    if (artworkId) {
-      return path.join(baseMuseumDir, 'artworks', artworkId);
+      const museum = await Museum.findOne({ artworks: artworkId });
+      if (museum) museumId = museum._id.toString();
     }
 
-    if (artistId) {
-      // assets/museums/:museumId/artists/:artistId
-      return path.join(baseMuseumDir, 'artists', artistId);
+    if (!museumId) {
+      throw new Error('museumId non fornito e nessun museo associato a questa opera.');
     }
 
-    if (visitId) {
-      // assets/museums/:museumId/visit/:visitId/meta
-      return path.join(baseMuseumDir, 'visit', visitId, 'meta');
-    }
+    const savedFile = await this.saveMuseumRelatedImage(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+      { museumId, artworkId, orientation }
+    );
 
-    // Default: assets/museums/:museumId/meta
-    return path.join(baseMuseumDir, 'meta');
+    const targetOrientation = orientation || await this.resolveMetaSuffix(file.buffer, file.originalname, { orientation });
+
+    const updatedArtwork = await Artwork.findByIdAndUpdate(artworkId,
+      {
+        $push: { 'assets.images': { url: savedFile.url, orientation: targetOrientation } }
+      }, { new: true });
+
+    if (!updatedArtwork) throw new Error('Opera non trovata.');
+
+    return savedFile.url;
   }
 
   /**
-   * Cerca e restituisce tutti i percorsi URL delle immagini presenti su file system per un determinato artworkId.
-   * Cerca nella cartella centralizzata:
+   * Caricamento immagine dell'artista (decentralizzata, senza dipendenza da museumId)
    */
-
-  static async scanDir(dirPath, foundUrls) {
-    if (!(await fs.pathExists(dirPath))) return;
-    try {
-      const files = await fs.readdir(dirPath);
-      for (const file of files) {
-        const fullPath = path.join(dirPath, file);
-        const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
-        foundUrls.push(`/${relativePath}`);
-      }
-    } catch (err) {
-      console.error(`[UploadService] Errore durante la scansione della cartella ${dirPath}:`, err);
+  static async artistImgUpload(artistId, file, orientation) {
+    if (!artistId || !file) {
+      throw new Error('artistId e file sono obbligatori per il caricamento dell\'immagine dell\'artista.');
     }
-  }
 
-  static async getArtworkImages({ museumId, artworkId }) {
-    if (!artworkId || !museumId) return [];
+    const artist = await Artist.findById(artistId);
+    if (!artist) {
+      throw new Error('Artista non trovato.');
+    }
 
-    let artworkUrls = [];
+    const savedFile = await this.saveArtistImage(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+      { artistId, orientation }
+    );
 
-    const targetDir = path.join(__dirname, '../assets/museums', museumId, 'artworks', artworkId);
+    const targetOrientation = orientation || await this.resolveMetaSuffix(file.buffer, file.originalname, { orientation }) || 'portrait';
 
-    await this.scanDir(targetDir, artworkUrls);
-    return Array.from(new Set(artworkUrls));
-  }
+    const updatedArtist = await Artist.findByIdAndUpdate(artistId,
+      {
+        $push: { 'assets.images': { url: savedFile.url, orientation: targetOrientation } }
+      }, { new: true });
 
-  static async getArtistImages({ museumId, artistId }) {
-    if (!artistId || !museumId) return [];
+    if (!updatedArtist) throw new Error('Artista non trovato.');
 
-    let artistUrls = [];
-
-    const targetDir = path.join(__dirname, '../assets/museums', museumId, 'artists', artistId);
-
-    await this.scanDir(targetDir, artistUrls)
-    return Array.from(new Set(artistUrls));
+    return savedFile.url;
   }
 
   /**
-   * Resolves base prefix for filename
+   * Caricamento foto profilo dell'utente (propic)
    */
-  static getMuseumRelatedFilePrefix({ museumId, visitId, artworkId, artistId }) {
-    if (artworkId) {
-      return artworkId;
+  static async userPropicUpload(userId, file, orientation) {
+    if (!userId || !file) {
+      throw new Error('userId e file sono obbligatori per il caricamento della foto profilo.');
     }
-    if (artistId) {
-      return artistId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('Utente non trovato.');
     }
-    if (visitId) {
-      return visitId;
-    }
-    return museumId;
+
+    const savedFile = await this.savePropicImage(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+      { userId }
+    );
+
+    const targetOrientation = orientation || 'square';
+
+    const updatedUser = await User.findByIdAndUpdate(userId,
+      {
+        'assets.profilePicture': { url: savedFile.url, orientation: targetOrientation }
+      }, { new: true });
+
+    if (!updatedUser) throw new Error('Utente non trovato.');
+
+    return savedFile.url;
   }
 
+  // =========================================================================
+  // SISTEMA DI PROCESSAMENTO E SALVATAGGIO IMMAGINI
+  // =========================================================================
 
   /**
-   * Determina il suffisso per i file meta ('landscape' o 'portrait').
-   * Può essere passato in options.orientation / options.suffix, o dedotto da nome/dimensioni sharp.
+   * Processamento e scrittura del file su disco (conversione raster in WebP o salvataggio vettoriale)
    */
-  static async resolveMetaSuffix(fileBuffer, originalName, options = {}) {
-
-
-    if (options.orientation === 'landscape' || options.orientation === 'portrait') {
-      return options.orientation;
-    }
-
-    try {
-      const metadata = await sharp(fileBuffer).metadata();
-      if (metadata && metadata.width && metadata.height) {
-        return metadata.width >= metadata.height ? 'landscape' : 'portrait';
-      }
-    } catch (err) {
-      console.warn('[UploadService] Impossibile rilevare le dimensioni Sharp, fallback a landscape:', err.message);
-    }
-
-    return 'landscape';
-  }
-
-
   static async processAndSaveImage(toSaveFileInfo = {}) {
     let fileName, filePath, finalMimeType;
 
     switch (toSaveFileInfo.tag) {
       case 'MUSEUM':
+      case 'ARTIST':
         if (Imager.isRaster(toSaveFileInfo.mimeType)) {
           fileName = `${toSaveFileInfo.prefix}_${toSaveFileInfo.suffix}.webp`;
           filePath = path.join(toSaveFileInfo.targetDir, fileName);
@@ -192,6 +220,7 @@ class UploadService {
           await fs.writeFile(filePath, toSaveFileInfo.fileBuffer);
         }
         break;
+
       case 'PROPIC':
         if (Imager.isRaster(toSaveFileInfo.mimeType)) {
           fileName = `${toSaveFileInfo.userId}.webp`;
@@ -210,8 +239,9 @@ class UploadService {
           await fs.writeFile(filePath, toSaveFileInfo.fileBuffer);
         }
         break;
+
       default:
-        console.error("Errore: tag errato!");
+        console.error('Errore: tag non valido in processAndSaveImage!');
         return null;
     }
 
@@ -219,20 +249,16 @@ class UploadService {
   }
 
   /**
-   * Process and save file buffer.
-   * Per le cartelle 'meta' (isMeta = true) i suffissi sono unicamente 'landscape' o 'portrait' (al massimo 2 file).
-   * Per le altre cartelle si usano indici numerici sequenziali.
+   * Salvataggio immagini correlate a un museo (meta museo, meta visita, opere d'arte)
    */
   static async saveMuseumRelatedImage(fileBuffer, originalName, mimeType, options = {}) {
     const targetDir = this.getMuseumRelatedDir(options);
 
-    // 1. Assicura l'esistenza della directory di destinazione
     await fs.ensureDir(targetDir);
     const prefix = this.getMuseumRelatedFilePrefix(options);
     const existingFiles = await fs.readdir(targetDir);
     const escapedPrefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
-    // definire in maniera migliore
     const isMeta = options.isMeta || targetDir.endsWith('/meta') || targetDir.endsWith('\\meta');
     let suffix;
 
@@ -240,13 +266,13 @@ class UploadService {
       // Per i meta esistono solo 2 possibili suffissi: 'landscape' e 'portrait'
       suffix = await this.resolveMetaSuffix(fileBuffer, originalName, options);
     } else {
-      // Per risorse non-meta (es. artworks, artists), si usa l'indice numerico sequenziale
+      // Per risorse non-meta (es. artworks), si usa l'indice numerico sequenziale
       const prefixPattern = new RegExp(`^${escapedPrefix}_(\\d+)\\.`, 'i');
       let maxIndex = 0;
       for (const file of existingFiles) {
         const match = file.match(prefixPattern);
         if (match) {
-          const num = parseInt(match[1], 10);
+          const num = parseInt(match[1], 10); // trasforma l'indice in un numero in base 10
           if (num > maxIndex) {
             maxIndex = num;
           }
@@ -257,7 +283,7 @@ class UploadService {
 
     const tag = 'MUSEUM';
 
-    let toSaveFileInfo = {
+    const toSaveFileInfo = {
       prefix,
       suffix,
       targetDir,
@@ -283,40 +309,43 @@ class UploadService {
   }
 
   /**
-   * Salvataggio dell'immagine profilo dell'utente (propic).
-   * Esegue i controlli opportuni su buffer, userId, mimeType.
-   * Rimuove eventuali vecchie propic dell'utente per evitare file orfani.
-   * Converte le immagini raster in formato WebP per ottimizzazione delle prestazioni.
+   * Salvataggio immagini decentralizzate dell'artista
    */
-  static async savePropicImage(fileBuffer, originalName, mimeType, options = {}) {
-    const userId = options.userId;
+  static async saveArtistImage(fileBuffer, originalName, mimeType, options = {}) {
+    const artistId = options.artistId;
+    const targetDir = this.getArtistDir(artistId);
 
-    const basePropicDir = path.join(__dirname, '../assets/users', userId, 'propic');
-    await fs.ensureDir(basePropicDir);
+    await fs.ensureDir(targetDir);
+    const prefix = artistId;
+    const existingFiles = await fs.readdir(targetDir);
+    const escapedPrefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
-    // Removes old propics
-    try {
-      const existingFiles = await fs.readdir(basePropicDir);
-      for (const file of existingFiles) {
-        await fs.remove(path.join(basePropicDir, file));
+    const prefixPattern = new RegExp(`^${escapedPrefix}_(\\d+)\\.`, 'i');
+    let maxIndex = 0;
+    for (const file of existingFiles) {
+      const match = file.match(prefixPattern);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxIndex) {
+          maxIndex = num;
+        }
       }
-    } catch (err) {
-      console.warn(`[UploadService] Avviso durante la pulizia della vecchia propic per l'utente ${userId}:`, err.message);
     }
+    const suffix = maxIndex + 1;
+    const tag = 'ARTIST';
 
-    const tag = 'PROPIC';
-
-    let toSaveFileInfo = {
-      userId,
-      basePropicDir,
+    const toSaveFileInfo = {
+      prefix,
+      suffix,
+      targetDir,
       fileBuffer,
       originalName,
+      mimeType,
       tag
-    }
+    };
 
     const newFileInfo = await this.processAndSaveImage(toSaveFileInfo);
 
-    // 5. Costruzione della risposta con i metadati e la public URL
     const fileStats = await fs.stat(newFileInfo.filePath);
     const relativePathFromBackend = path.relative(path.join(__dirname, '..'), newFileInfo.filePath).replace(/\\/g, '/');
     const publicUrl = `/${relativePathFromBackend}`;
@@ -328,6 +357,203 @@ class UploadService {
       size: fileStats.size,
       mimeType: newFileInfo.finalMimeType
     };
+  }
+
+  /**
+   * Salvataggio dell'immagine profilo dell'utente (propic)
+   */
+  static async savePropicImage(fileBuffer, originalName, mimeType, options = {}) {
+    const userId = options.userId;
+
+    const basePropicDir = path.join(__dirname, '../assets/users', userId, 'propic');
+    await fs.ensureDir(basePropicDir);
+
+    // Pulizia vecchie propic per evitare file orfani
+    try {
+      const existingFiles = await fs.readdir(basePropicDir);
+      for (const file of existingFiles) {
+        await fs.remove(path.join(basePropicDir, file));
+      }
+    } catch (err) {
+      console.warn(`[UploadService] Avviso durante la pulizia della vecchia propic per l'utente ${userId}:`, err.message);
+    }
+
+    const tag = 'PROPIC';
+
+    const toSaveFileInfo = {
+      userId,
+      basePropicDir,
+      fileBuffer,
+      originalName,
+      mimeType,
+      tag
+    };
+
+    const newFileInfo = await this.processAndSaveImage(toSaveFileInfo);
+
+    const fileStats = await fs.stat(newFileInfo.filePath);
+    const relativePathFromBackend = path.relative(path.join(__dirname, '..'), newFileInfo.filePath).replace(/\\/g, '/');
+    const publicUrl = `/${relativePathFromBackend}`;
+
+    return {
+      filename: newFileInfo.fileName,
+      path: newFileInfo.filePath,
+      url: publicUrl,
+      size: fileStats.size,
+      mimeType: newFileInfo.finalMimeType
+    };
+  }
+
+  // =========================================================================
+  // HELPER & UTILITIES DI SUPPORTO
+  // =========================================================================
+
+  /**
+   * Restituisce la directory di destinazione per le risorse collegate al museo
+   */
+  static getMuseumRelatedDir({ museumId, visitId, artworkId }) {
+    if (!museumId) {
+      throw new Error('museumId è obbligatorio per definire il percorso di salvataggio.');
+    }
+    const baseMuseumDir = path.join(__dirname, '../assets/museums', museumId);
+
+    if (artworkId) {
+      return path.join(baseMuseumDir, 'artworks', artworkId);
+    }
+
+    if (visitId) {
+      return path.join(baseMuseumDir, 'visit', visitId, 'meta');
+    }
+
+    return path.join(baseMuseumDir, 'meta');
+  }
+
+  /**
+   * Restituisce la directory di destinazione per gli artisti (decentralizzata)
+   */
+  static getArtistDir(artistId) {
+    if (!artistId) {
+      throw new Error('artistId è obbligatorio per definire il percorso di salvataggio dell\'artista.');
+    }
+    return path.join(__dirname, '../assets/artists', artistId);
+  }
+
+  /**
+   * Risolve il prefisso base per il nome del file
+   */
+  static getMuseumRelatedFilePrefix({ museumId, visitId, artworkId }) {
+    if (artworkId) return artworkId;
+    if (visitId) return visitId;
+    return museumId;
+  }
+
+  /**
+   * Determina l'orientamento/suffisso per i file meta ('landscape' o 'portrait')
+   */
+  static async resolveMetaSuffix(fileBuffer, originalName, options = {}) {
+    if (options.orientation === 'landscape' || options.orientation === 'portrait') {
+      return options.orientation;
+    }
+
+    try {
+      const metadata = await sharp(fileBuffer).metadata();
+      if (metadata && metadata.width && metadata.height) {
+        return metadata.width >= metadata.height ? 'landscape' : 'portrait';
+      }
+    } catch (err) {
+      console.warn('[UploadService] Impossibile rilevare le dimensioni Sharp, fallback a landscape:', err.message);
+    }
+
+    return 'landscape';
+  }
+
+  /**
+   * Scansione dei file presenti in una cartella
+   */
+  static async scanDir(dirPath, foundUrls) {
+    if (!(await fs.pathExists(dirPath))) return;
+    try {
+      const files = await fs.readdir(dirPath);
+      for (const file of files) {
+        const fullPath = path.join(dirPath, file);
+        const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
+        foundUrls.push(`/${relativePath}`);
+      }
+    } catch (err) {
+      console.error(`[UploadService] Errore durante la scansione della cartella ${dirPath}:`, err);
+    }
+  }
+
+  /**
+   * Recupera gli URL delle immagini per un'opera d'arte da filesystem
+   */
+  static async getArtworkImages({ museumId, artworkId }) {
+    if (!artworkId || !museumId) return [];
+
+    const artworkUrls = [];
+    const targetDir = path.join(__dirname, '../assets/museums', museumId, 'artworks', artworkId);
+
+    await this.scanDir(targetDir, artworkUrls);
+    return Array.from(new Set(artworkUrls));
+  }
+
+  /**
+   * Recupera gli URL delle immagini per un artista da filesystem
+   */
+  static async getArtistImages({ artistId, museumId }) {
+    if (!artistId) return [];
+
+    const artistUrls = [];
+    const targetDir = path.join(__dirname, '../assets/artists', artistId);
+    await this.scanDir(targetDir, artistUrls);
+
+    if (museumId) {
+      const legacyTargetDir = path.join(__dirname, '../assets/museums', museumId, 'artists', artistId);
+      await this.scanDir(legacyTargetDir, artistUrls);
+    }
+
+    return Array.from(new Set(artistUrls));
+  }
+
+  static async _getDefaultPropic() {
+    return path.join(__dirname, '../assets/users/default/propic/default.jpeg');
+  }
+
+  static async getDefaultPropicUrl() {
+    const defaultPath = await this._getDefaultPropic();
+    const relativePath = path.relative(path.join(__dirname, '..'), defaultPath).replace(/\\/g, '/');
+    return `/${relativePath}`;
+  }
+
+  /**
+   * Recupera l'URL della foto profilo di un utente, con fallback alla propic di default
+   */
+  static async getUserPropic(userId) {
+    if (!userId) {
+      return await this.getDefaultPropicUrl();
+    }
+
+    try {
+      const user = await User.findById(userId);
+      if (user?.assets?.profilePicture?.url) {
+        return user.assets.profilePicture.url;
+      }
+
+      const basePropicDir = path.join(__dirname, '../assets/users', userId.toString(), 'propic');
+      if (await fs.pathExists(basePropicDir)) {
+        const files = await fs.readdir(basePropicDir);
+        const imgFile = files.find(file => Imager.isImage(file));
+        if (imgFile) {
+          const fullPath = path.join(basePropicDir, imgFile);
+          const relativePath = path.relative(path.join(__dirname, '..'), fullPath).replace(/\\/g, '/');
+          return `/${relativePath}`;
+        }
+      }
+    } catch (err) {
+      console.warn(`[UploadService] Errore durante il recupero propic per userId ${userId}:`, err.message);
+    }
+
+    return await this.getDefaultPropicUrl();
   }
 }
 

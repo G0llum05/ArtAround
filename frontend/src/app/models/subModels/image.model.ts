@@ -1,4 +1,6 @@
+export type ImageOrientation = 'landscape' | 'portrait' | 'square';
+
 export interface ImageSchema {
   url: string;
-  orientation: 'landscape' | 'portrait' | 'square' | string;
+  orientation: ImageOrientation | string;
 }

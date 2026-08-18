@@ -66,9 +66,11 @@ export class MktVisitEditor extends HTMLElement {
         <!-- GRIGLIA A TRE COLONNE -->
         <div class="mkt-three-column-grid">
           <aside class="mkt-column">
-            <mkt-artwork-library></mkt-artwork-library>
+            <mkt-artwork-library data-museum-id="${this.state.museumId}" id="artworksLibrary"></mkt-artwork-library>
           </aside>
+
           <section class="mkt-column" id="sequence-column" style="overflow-y: auto; padding-right: 0.5rem;"></section>
+
           <aside class="mkt-column" id="details-column"></aside>
         </div>
       </main>
@@ -252,7 +254,7 @@ export class MktVisitEditor extends HTMLElement {
             </label>
           </div>
         </div>
-        <div class="mkt-details-section">
+        <divbra class="mkt-details-section">
           <label class="mkt-field-label">Costo</label>
            <div class="mkt-pricing-options">
             <label class="mkt-pricing-card ${this.state.pricingType === 'free' ? 'mkt-selected' : ''}">
@@ -377,16 +379,14 @@ export class MktVisitEditor extends HTMLElement {
     // GESTIONE DEL COMPONENTE RICERCA MUSEO E INVIO ALLA LIBRERIA
     const museumSelector = this.querySelector('#museum-selector');
     if (museumSelector) {
-      museumSelector.addEventListener('museumSelected', (e) => {
-        const newMuseumId = e.detail;
+      // Funzione centralizzata per gestire il cambio museo
+      const handleMuseumChange = (newMuseumId) => {
         if (this.state.museumId === newMuseumId) return;
 
-        // Se l'utente ha già compilato dati, facciamo apparire l'alert
         const hasData = this.state.title || this.state.description || this.state.visit.some(v => v.artworkId !== null);
 
-        if (this.state.museumId && hasData) {
+        if (this.state.museumId && hasData && newMuseumId) {
           const confirmClear = confirm("Attenzione: cambiando museo, tutti i dati inseriti per la visita attuale verranno persi. Vuoi procedere?");
-
           if (!confirmClear) {
             // Se rifiuta, re-iniettiamo il nome nell'input nativo per visualizzazione
             const input = museumSelector.querySelector('#search-input');
@@ -395,26 +395,32 @@ export class MktVisitEditor extends HTMLElement {
           }
         }
 
-        // Accetta il reset -> Resetta stato e aggiorna UI
+        // 1. Aggiorna lo stato del padre
         this.state.museumId = newMuseumId;
         const input = museumSelector.querySelector('#search-input');
         this.state.museumName = input ? input.value : 'Museo Selezionato';
 
         this.resetState();
 
-        // Reset header title
         const headerTitleEl = this.querySelector('#main-title');
         if (headerTitleEl) headerTitleEl.textContent = "Nuova Visita";
 
         this.renderSequence();
         this.renderDetails();
 
-        //Passo il nuovo ID del museo al componente libreria
-        const artworkLibrary = this.querySelector('mkt-artwork-library');
-        if (artworkLibrary) {
-          artworkLibrary.museumId = newMuseumId; // Questo richiamerà automaticamente il setter della libreria
+        const artworksLibrary = this.querySelector('#artworksLibrary');
+        if (artworksLibrary) {
+          // Se newMuseumId è assente/null (es: input cancellato), passiamo 'null' per far svuotare la libreria
+          artworksLibrary.setAttribute('data-museum-id', newMuseumId || 'null');
         }
-      });
+      };
+
+      // In JavaScript non puoi usare l'operatore || dentro i nomi degli eventi.
+      // Devi agganciare i listener separatamente.
+      museumSelector.addEventListener('museumSelected', (e) => handleMuseumChange(e.detail));
+
+      // Se il componente figlio emette un evento 'cleared' quando si svuota l'input:
+      museumSelector.addEventListener('cleared', () => handleMuseumChange(null));
     }
   }
 }

@@ -1,43 +1,25 @@
 import { MuseumService } from '../../services/museum.service.js';
+import { getImageUrl } from '../../services/images.services.js';
 
 export class MktArtworkLibrary extends HTMLElement {
   constructor() {
     super();
     this.state = {
-      museumId: this.getAttribute("data-museumId"),
+      museumId: this.getAttribute('data-museum-id'),
       searchQuery: '',
       activeFilter: 'all',
       artworks: [],
-      isLoading: false
+      isLoading: false,
     };
   }
 
-
-  async connectedCallback() {
-    this.render();
-    this.setupEventListeners();
-
-    //Chiamata Http
-    this.state.isLoading = true;
-    this.updateListUI(); // Mostra il caricamento
-    try {
-    } catch (error) {
-      console.error("Errore nel caricamento della libreria:", error);
-      this.state.artworks = [];
-    } finally {
-      this.state.isLoading = false;
-      this.updateListUI(); // Mostra i risultati o "nessuna opera"
-    }
-  }
-
-  getArtistNames(artistsArray) {
-    if (!artistsArray || artistsArray.length === 0) return "Artista ignoto";
-    return artistsArray.map(a => `${a.name || ''} ${a.surname || ''}`.trim()).join(', ');
+  static get observedAttributes() {
+    return ['data-museum-id'];
   }
 
   get filteredArtworks() {
     const term = this.state.searchQuery.toLowerCase().trim();
-    return this.state.artworks.filter(art => {
+    return this.state.artworks.filter((art) => {
       const matchTitle = art.title && art.title.toLowerCase().includes(term);
       const artistNames = this.getArtistNames(art.artists).toLowerCase();
       const matchArtist = artistNames.includes(term);
@@ -50,6 +32,42 @@ export class MktArtworkLibrary extends HTMLElement {
       }
       return matchesSearch && matchesFilter;
     });
+  }
+
+  async attributeChangedCallback(attribute, oldValue, newValue) {
+    if (attribute === 'data-museum-id' && oldValue !== newValue) {
+      this.state.museumId = newValue;
+      await this.fetchMuseumArtworks();
+    }
+  }
+
+  async connectedCallback() {
+    await this.fetchMuseumArtworks();
+    this.render();
+    this.setupEventListeners();
+  }
+
+  getArtistNames(artistsArray) {
+    if (!artistsArray || artistsArray.length === 0) return 'Artista ignoto';
+    return artistsArray.map((a) => `${a.name || ''} ${a.surname || ''}`.trim()).join(', ');
+  }
+
+  async fetchMuseumArtworks() {
+    //Chiamata Http
+    this.state.isLoading = true;
+    this.updateListUI(); // Mostra il caricamento
+
+    if (this.state.museumId && this.state.museumId === 'null') return;
+
+    try {
+      this.state.artworks = await MuseumService.getAllMuseumArtWorks(this.state.museumId);
+    } catch (error) {
+      console.error('Errore nel caricamento della libreria:', error);
+      this.state.artworks = [];
+    } finally {
+      this.state.isLoading = false;
+      this.updateListUI(); // Mostra i risultati o "nessuna opera"
+    }
   }
 
   render() {
@@ -95,21 +113,26 @@ export class MktArtworkLibrary extends HTMLElement {
     }
 
     //ArtWork
-    listContainer.innerHTML = this.filteredArtworks.map(art => {
-      const artistName = this.getArtistNames(art.artists);
-      const imageSrc = (art.images && art.images.length > 0) ? art.images[0] : null; //TODO Controllare
+    listContainer.innerHTML = this.filteredArtworks
+      .map((art) => {
+        const artistName = this.getArtistNames(art.artists);
+        const imageSrc = getImageUrl(art?.assets, 'portrait');
 
-      return `
+        return `
         <div class="mkt-library-card" draggable="true" data-id="${art.id}">
-          ${imageSrc ? `
+          ${
+            imageSrc
+              ? `
             <img src="${imageSrc}" alt="${art.title}" class="mkt-library-thumb">
-          ` : `
+          `
+              : `
             <div class="mkt-library-doc-icon">
               <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 -960 960 960" width="1.5rem" fill="currentColor">
                 <path xmlns="http://www.w3.org/2000/svg" d="M73-889 889-73l-57 57-104-104H200q-33 0-56.5-23.5T120-200v-528L16-832l57-57Zm287 447L200-282v82h448L544-304l-22 24-162-162ZM200-648v252l126-126-126-126Zm36-192h524q33 0 56.5 23.5T840-760v524l-80-80v-234L650-426l-57-57 167-187v-90H316l-80-80Zm357 357Zm-158 70ZM326-522Zm34 80Zm176-98Z"/>
               </svg>
             </div>
-          `}
+          `
+          }
           <div class="mkt-library-info">
             <h4 class="mkt-library-item-title">${art.title}</h4>
             <p class="mkt-library-item-meta">
@@ -121,22 +144,23 @@ export class MktArtworkLibrary extends HTMLElement {
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join('');
 
     this.attachCardEventListeners();
   }
 
   attachCardEventListeners() {
     const cards = this.querySelectorAll('.mkt-library-card');
-    cards.forEach(card => {
+    cards.forEach((card) => {
       const artId = card.getAttribute('data-id');
-      const artData = this.state.artworks.find(a => a.id === artId);
+      const artData = this.state.artworks.find((a) => a.id === artId);
       //drag and drop
       card.addEventListener('dragstart', (e) => {
         const dragPayload = {
           artworkId: artData.id,
           artworkTitle: artData.title,
-          artworkArtist: this.getArtistNames(artData.artists)
+          artworkArtist: this.getArtistNames(artData.artists),
         };
         e.dataTransfer.setData('application/json', JSON.stringify(dragPayload));
         e.dataTransfer.effectAllowed = 'copy';
@@ -154,9 +178,9 @@ export class MktArtworkLibrary extends HTMLElement {
     }
 
     const chips = this.querySelectorAll('.mkt-chip');
-    chips.forEach(chip => {
+    chips.forEach((chip) => {
       chip.addEventListener('click', (e) => {
-        chips.forEach(c => c.classList.remove('mkt-active'));
+        chips.forEach((c) => c.classList.remove('mkt-active'));
         e.currentTarget.classList.add('mkt-active');
         this.state.activeFilter = e.currentTarget.getAttribute('data-filter');
         this.updateListUI();

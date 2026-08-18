@@ -100,7 +100,7 @@ class MuseumController {
     try {
       const museum = await MuseumService.createMuseum(req.body);
       const museumDTO = MuseumMapper.toMuseumResponseDTO(museum);
-      res.status(201).json(museum);
+      res.status(201).json(museumDTO);
     } catch (e) {
       res.status(400).json({ message: e.message });
     }

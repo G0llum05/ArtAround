@@ -37,7 +37,7 @@ class VisitService {
 
     const feed = [];
 
-    // 1. Interaction & Popularity Categories
+    // Interaction & Popularity Categories
     const mostLiked = [...visits]
       .filter(v => (v.likesCount || 0) > 0)
       .sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0))
@@ -68,7 +68,7 @@ class VisitService {
       feed.push({ category: 'Visite Gratuite', visits: freeVisits });
     }
 
-    // 2. Thematic Categories
+    // Thematic Categories
     const ALLOWED_CATEGORIES = [
       'Motori', 'Scienza', 'Archeologia', 'Didattica', 'Musica',
       'Rinascimento', 'Arte Moderna', 'Antica Grecia', 'Antica Roma',

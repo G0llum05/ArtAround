@@ -26,6 +26,6 @@ router.get('/user/:userId/propic', UploadController.getUserPropic);
 router.post('/user/:userId/propic', uploadMiddleware.any(), UploadController.userPropicUpload);
 
 // Generic upload endpoint
-router.post('/', uploadMiddleware.any(), UploadController.handleUpload);
+// router.post('/', uploadMiddleware.any(), UploadController.handleUpload);
 
 module.exports = router;

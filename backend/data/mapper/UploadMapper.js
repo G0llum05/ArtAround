@@ -42,7 +42,7 @@ class UploadMapper {
   static toUploadUserPropicDTO(req) {
     if (!req) return null;
     return new UploadUserPropicDTO(
-      req.params?.userId,
+      req.params?.userId || req.body?.userId,
       req.file || req.files?.[0],
       req.body?.orientation
     );

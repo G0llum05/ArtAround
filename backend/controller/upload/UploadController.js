@@ -187,6 +187,13 @@ class UploadController {
   }
 
   /**
+   * Alias per userPropicUpload
+   */
+  static async handlePropicUpload(req, res) {
+    return this.userPropicUpload(req, res);
+  }
+
+  /**
    * Recupero immagine del profilo utente (propic o default)
    */
   static async getUserPropic(req, res) {

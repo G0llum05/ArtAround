@@ -191,6 +191,13 @@ class UploadService {
     return savedFile.url;
   }
 
+  /**
+   * Alias per userPropicUpload
+   */
+  static async handlePropicUpload(userId, file, orientation) {
+    return this.userPropicUpload(userId, file, orientation);
+  }
+
   // =========================================================================
   // SISTEMA DI PROCESSAMENTO E SALVATAGGIO IMMAGINI
   // =========================================================================

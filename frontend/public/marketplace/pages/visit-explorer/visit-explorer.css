@@ -113,7 +113,7 @@
   fill: currentColor;
 }
 
-.mkt-role-btn.mkt-active {
+.mkt-role-btn.mkt-chip-active {
   background-color: var(--primary);
   color: var(--on-primary);
   border-color: var(--primary);
@@ -139,29 +139,29 @@
   transition: all 0.2s ease;
 }
 
-.mkt-chip-qualsiasi.mkt-active {
+.mkt-chip-qualsiasi.mkt-chip-active {
   background-color: var(--primary);
   color: var(--on-primary);
   border-color: var(--primary);
 }
 
-.mkt-chips-group.mkt-any-active .mkt-chip:not(.mkt-chip-qualsiasi) {
+.mkt-chips-group.mkt-any-chip-active .mkt-chip:not(.mkt-chip-qualsiasi) {
   opacity: 0.4;
 }
 
-.mkt-chip.mkt-active:not(.mkt-chip-qualsiasi) {
+.mkt-chip.mkt-chip-active:not(.mkt-chip-qualsiasi) {
   background-color: var(--surface-variant);
   border-color: var(--secondary);
   color: var(--secondary);
   font-weight: var(--label-md-weight);
 }
 
-.mkt-chip.mkt-money-chip.mkt-active:not(.mkt-chip-qualsiasi) {
+.mkt-chip.mkt-money-chip.mkt-chip-active:not(.mkt-chip-qualsiasi) {
   border-color: var(--tertiary);
   color: var(--tertiary);
 }
 
-.mkt-chip.mkt-verified-chip.mkt-active:not(.mkt-chip-qualsiasi) {
+.mkt-chip.mkt-verified-chip.mkt-chip-active:not(.mkt-chip-qualsiasi) {
   border-color: var(--primary);
   color: var(--primary);
 }

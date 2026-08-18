@@ -343,7 +343,7 @@ export class MktVisitExplorer extends HTMLElement {
 
         try {
           this.allMuseumVisit = await MuseumService.getAllMuseumVisits(id);
-          this.allInterests = [... new Set(this.allMuseumVisit.flatMap(visit => visit.categories))];
+          this.allInterests = [... new Set(this.allMuseumVisit?.flatMap(visit => visit.categories))];
           this.updateGrid();
         } catch (error) {
           console.error("Errore nel recupero delle visite:", error);

@@ -22,7 +22,7 @@ class MuseumService {
 
   static async getAllMuseumVisits(museumId) {
     // prende visite attive e immagini pure delle visite attive
-    const visits = await Museum.findById(museumId)
+    const museum = await Museum.findById(museumId)
       .populate({
         path: 'visits',
         match: { isActive: { $ne: false } } // Filtra a livello di join Mongo solo le visite attive
@@ -30,11 +30,10 @@ class MuseumService {
       .lean();
     // check immagini con filler
 
-    if (!visits) {
+    if (!museum || !museum.visits) {
       return [];
     }
-    
-    return visits.map
+    return museum.visits?.map
     (
       (vis) => {
         if (!vis.assets?.images || vis.assets.images.length === 0) {

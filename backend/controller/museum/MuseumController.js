@@ -6,6 +6,15 @@ class MuseumController {
   static async getAll(req, res) {
     try {
       const museums = await MuseumService.getAllMuseum();
+      const museumsDTOs = museums.map
+      (
+        (mus) => {
+          if (!mus.assets?.images || mus.assets.images.length === 0) {
+            this._defaultMuseumImageFiller(mus);
+          }
+          return MuseumMapper.toMuseumResponseDTO(mus);
+        }
+      );
       res.status(200).json(museums);
     } catch (e) {
       res.status(500).json({ message: e.message });
@@ -15,7 +24,13 @@ class MuseumController {
   static async getHomePresentation(req, res) {
     try {
       const museums = await MuseumService.getMuseumHomePresentation();
-      res.status(200).json(museums);
+      const museumDTOs = museums.map
+      (
+        (m) => {
+          return MuseumMapper.toMuseumHomePresentationResponseDTO(m);
+        }
+      );
+      res.status(200).json(museumDTOs);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -24,8 +39,9 @@ class MuseumController {
   static async getById(req, res) {
     try {
       const id = req.params.id;
-      const museums = await MuseumService.getMuseumById(id);
-      res.status(200).json(museums);
+      const museum = await MuseumService.getMuseumById(id);
+      const museumDTO = MuseumMapper.toMuseumResponseDTO(museum);
+      res.status(200).json(museumDTO);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -34,7 +50,13 @@ class MuseumController {
   static async searchByName(req, res) {
     try {
       const museums = await MuseumService.searchByName(req.body.str);
-      res.status(200).json(museums);
+      const museumDTOs = museums.map
+      (
+        (m) => {
+          return MuseumMapper.toMuseumResponseDTO(m);
+        }
+      )
+      res.status(200).json(museumDTOs);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -43,7 +65,16 @@ class MuseumController {
   static async getAllMuseumVisits(req, res) {
     try {
       const visits = await MuseumService.getAllMuseumVisits(req.params.id);
-      res.status(200).json(visits || []);
+      if (!visits) {
+        res.status(404).json({ message: "Museum not found"});
+      }
+      const visitsDTOs = visits.map
+      (
+        (vis) => {
+          return VisitMapper.toMuseumVisitForPresentationDTO(vis); 
+        }
+      );
+      res.status(200).json(visitDTOs || []);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
@@ -52,6 +83,7 @@ class MuseumController {
   static async create(req, res) {
     try {
       const museum = await MuseumService.createMuseum(req.body);
+      const museumDTO = MuseumMapper.toMuseumResponseDTO(museum);
       res.status(201).json(museum);
     } catch (e) {
       res.status(400).json({ message: e.message });
@@ -65,7 +97,8 @@ class MuseumController {
       if (!updatedMuseum) {
         return res.status(404).json({ message: 'Museum not found' });
       }
-      res.json(updatedMuseum);
+      const museumDTO = MuseumMapper.toMuseumResponseDTO(updatedMuseum);
+      res.json(museumDTO);
     } catch (e) {
       res.status(400).json({ message: e.message });
     }
@@ -78,6 +111,7 @@ class MuseumController {
       if (!deletedMuseum) {
         return res.status(404).json({ message: 'Museum not found' });
       }
+      const museumDTO = MuseumMapper.toMuseumResponseDTO(deletedMuseum);
       res.json({ message: 'Museum deleted successfully' });
     } catch (e) {
       res.status(500).json({ message: e.message });
@@ -87,7 +121,11 @@ class MuseumController {
   static async getVisitPlan(req, res) {
     try {
       const id = req.params.id;
-      const museumVisitPlanDTO = await MuseumService.getMuseumVisitPlanById(id);
+      const museum = await MuseumService.getMuseumVisitPlanById(id);
+      if (!museum) {
+        res.stauts(404).json({ message: "Museum not found"});
+      }
+      const museumVisitPlanDTO = MuseumMapper.toMuseumVisitPlanResponseDTO(museum);
       res.status(200).json(museumVisitPlanDTO);
     } catch (e) {
       res.status(500).json({ message: e.message });

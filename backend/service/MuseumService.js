@@ -4,13 +4,8 @@ const VisitMapper = require('../data/mapper/VisitMapper');
 
 class MuseumService {
   static async getAllMuseum() {
-    const museums = await Museum.find().lean();
-    return museums.map((mus) => {
-      if (!mus.assets?.images || mus.assets.images.length === 0) {
-        this._defaultMuseumImageFiller(mus);
-      }
-      return MuseumMapper.toMuseumResponseDTO(mus);
-    });
+    return museums = await Museum.find().lean();
+    
   }
 
   static async getMuseumById(id) {
@@ -19,14 +14,14 @@ class MuseumService {
     if (!museum.assets?.images || museum.assets.images.length === 0) {
       this._defaultMuseumImageFiller(museum);
     }
-    return MuseumMapper.toMuseumResponseDTO(museum);
+    return museum;
   }
 
   // Ricerca per inizio del nome
   static async searchByName(str) {
     const regex = new RegExp(`^${str}`, 'i');
     const museum = await Museum.find({ name: regex }).lean();
-    return MuseumMapper.toMuseumResponseDTO(museum);
+    return museum;
   }
 
   static async getAllMuseumVisits(museumId) {
@@ -48,31 +43,29 @@ class MuseumService {
         if (!vis.assets?.images || vis.assets.images.length === 0) {
           this._defaultVisitImageFiller(vis);
         }
-        return VisitMapper.toMuseumVisitForPresentationDTO(vis);
+        return vis;
       }
     );
   }
 
-  static async createMuseum(data) {
-    const museum = new Museum(data);
-    await museum.save();
-    return MuseumMapper.toMuseumResponseDTO(museum);
+  static async createMuseum(museumRequest) {
+    const museum = MuseumMapper.toMuseum(museumRequest);
+    const newMuseum = new Museum(museum);
+    const savedMuseum = await newMuseum.save();
+    return savedMuseum.toObject();
   }
 
   static async updateMuseum(id, data) {
-    const museum = await Museum.findByIdAndUpdate(id, data, { new: true }).lean();
-    return MuseumMapper.toMuseumResponseDTO(museum);
+    return await Museum.findByIdAndUpdate(id, data, { new: true }).lean();
   }
 
   static async deleteMuseum(id) {
-    const museum = await Museum.findByIdAndDelete(id).lean();
-    return MuseumMapper.toMuseumResponseDTO(museum);
+    return await Museum.findByIdAndDelete(id).lean();
   }
 
 
   static async getMuseumVisitPlanById(id) {
-    const museum = await Museum.findById(id).lean();
-    return MuseumMapper.toMuseumVisitPlanResponseDTO(museum);
+    return await Museum.findById(id).lean();
   }
 
   static async getMuseumHomePresentation() {
@@ -84,7 +77,7 @@ class MuseumService {
           if (!mus.assets?.images || mus.assets.images.length === 0) {
             this._defaultMuseumImageFiller(mus);
           }
-          return MuseumMapper.toMuseumHomePresentationResponseDTO(mus);
+          return mus;
         }
       );
   }

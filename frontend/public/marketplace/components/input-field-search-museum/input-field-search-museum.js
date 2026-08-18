@@ -99,6 +99,7 @@ export class MktInputSearchText extends HTMLElement {
       this.selectedMuseumId = null;
       if (!this.searchTerm) {
         this.dispatchEvent(new CustomEvent('cleared', { bubbles: true, composed: true }));
+        this.isDropdownOpen = false;
       }
       this.updateSuggestions(); // Aggiorna solo la tendina senza perdere il focus dall'input!
     });

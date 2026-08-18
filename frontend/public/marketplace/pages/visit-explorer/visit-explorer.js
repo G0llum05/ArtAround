@@ -92,7 +92,7 @@ export class MktVisitExplorer extends HTMLElement {
   updateUI() {
     // Gestione dei bottoni "Chi sei" (Ruoli)
     this.querySelectorAll('.mkt-role-btn').forEach(btn => {
-      btn.classList.toggle('mkt-active', btn.getAttribute('data-role') === this.state.chiSei);
+      btn.classList.toggle('mkt-chip-active', btn.getAttribute('data-role') === this.state.chiSei);
     });
 
     // Gestione della durata
@@ -104,18 +104,18 @@ export class MktVisitExplorer extends HTMLElement {
     const btnGrat = this.querySelector('#btn-gratuito');
     const btnVer = this.querySelector('#btn-verificata');
 
-    if (btnAcc) btnAcc.classList.toggle('mkt-active', this.state.accessibile);
-    if (btnGrat) btnGrat.classList.toggle('mkt-active', this.state.gratuito);
-    if (btnVer) btnVer.classList.toggle('mkt-active', this.state.verificata);
+    if (btnAcc) btnAcc.classList.toggle('mkt-chip-active', this.state.accessibile);
+    if (btnGrat) btnGrat.classList.toggle('mkt-chip-active', this.state.gratuito);
+    if (btnVer) btnVer.classList.toggle('mkt-chip-active', this.state.verificata);
 
     // Gestione dinamica dei chip di Interessi (Generati con le classi corrette)
     const intersetGroup = this.querySelector('#interessi-group');
     if (intersetGroup) {
       const isAnyActive = this.state.interessi.length === 0;
-      intersetGroup.classList.toggle('mkt-any-active', isAnyActive);
+      intersetGroup.classList.toggle('mkt-any-chip-active', isAnyActive);
 
       // Generiamo il bottone "Qualsiasi" con la classe attiva se nessun interesse è selezionato
-      let html = `<button type="button" class="mkt-chip mkt-chip-qualsiasi ${isAnyActive ? 'mkt-active' : ''}" data-value="Qualsiasi">Qualsiasi</button>\n`;
+      let html = `<button type="button" class="mkt-chip mkt-chip-qualsiasi ${isAnyActive ? 'mkt-chip-active' : ''}" data-value="Qualsiasi">Qualsiasi</button>\n`;
 
       // Generiamo gli altri chip applicando le classi active o partial direttamente
       html += this.allInterests.map(int => {
@@ -123,7 +123,7 @@ export class MktVisitExplorer extends HTMLElement {
         const isPartial = this.partialInterestsList.includes(int);
 
         let cssClasses = 'mkt-chip';
-        if (isActive) cssClasses += ' mkt-active';
+        if (isActive) cssClasses += ' mkt-chip-active';
         if (isPartial) cssClasses += ' mkt-partial';
 
         return `<button type="button" class="${cssClasses}" data-value="${int}">${int}</button>`;
@@ -226,7 +226,7 @@ export class MktVisitExplorer extends HTMLElement {
                 </svg>
                 Studente
               </button>
-              <button type="button" class="mkt-role-btn mkt-active" data-role="Adulto">
+              <button type="button" class="mkt-role-btn mkt-chip-active" data-role="Adulto">
                 <svg class="mkt-role-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
                   <path d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
                 </svg>
@@ -249,8 +249,8 @@ export class MktVisitExplorer extends HTMLElement {
                 <span class="mkt-label-muted">Selezione multipla</span>
               </div>
             </header>
-            <div class="mkt-chips-group mkt-any-active" id="interessi-group">
-              <button type="button" class="mkt-chip mkt-chip-qualsiasi mkt-active" data-value="Qualsiasi">Qualsiasi</button>
+            <div class="mkt-chips-group mkt-any-chip-active" id="interessi-group">
+              <button type="button" class="mkt-chip mkt-chip-qualsiasi mkt-chip-active" data-value="Qualsiasi">Qualsiasi</button>
             </div>
             <img class="mkt-image" src="/assets/images/place_holder.jpg">
           </section>

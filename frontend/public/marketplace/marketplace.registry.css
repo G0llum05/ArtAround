@@ -5,9 +5,9 @@
 @import url('./pages/visit-editor/visit-editor.css');
 
 /* Components */
-@import url('./components/item-library/item-library.css');
 @import url('./components/museum-card/museum-card.css');
 @import url('./components/visit-card/visit-card.css');
-@import url('./components/home-input-fields/input-fields.css');
-@import url('./components/input-field-search-visit/input-field-search-visit.css');
+@import url('components/home-input-fields/home-input-fields.css');
+@import url('components/input-field-search-museum/input-field-search-museum.css');
+@import url('components/artwork-library/artwork-library.css');
 @import url('components/skeleton-card-grid/skeleton-card-grid.css');

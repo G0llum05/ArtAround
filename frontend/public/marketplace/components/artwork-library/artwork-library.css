@@ -1,16 +1,31 @@
+mkt-artwork-library {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
 .mkt-library-card-wrapper {
+  flex: 1;
   background-color: var(--surface);
   border: 1px solid var(--outline-variant);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md);
   display: flex;
-  justify-content: start;
   flex-direction: column;
   gap: var(--spacing-md);
   box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-  height: calc(100vh - 10rem);
   box-sizing: border-box;
+  min-height: 0; /* Fondamentale per far funzionare lo scroll interno */
 }
+
+.mkt-column-title,
+.mkt-visit-search-wrapper,
+.mkt-filter-chips {
+  flex: 0 0 auto;
+}
+
 .mkt-column-title {
   font-family: var(--font-serif);
   font-size: var(--headline-md-size);
@@ -18,11 +33,13 @@
   margin: 0;
   color: var(--on-surface);
 }
-.mkt-search-wrapper {
+
+.mkt-visit-search-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 .mkt-search-input {
   width: 100%;
   background-color: var(--background);
@@ -35,11 +52,13 @@
   box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
+
 .mkt-search-input:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 2px var(--surface-variant);
 }
+
 .mkt-search-icon {
   position: absolute;
   left: 0.75rem;
@@ -47,10 +66,13 @@
   height: 1rem;
   color: var(--outline);
 }
+
 .mkt-filter-chips {
   display: flex;
   gap: var(--spacing-xs);
+  flex-wrap: wrap;
 }
+
 .mkt-chip {
   background-color: var(--background);
   border: 1px solid var(--outline-variant);
@@ -61,22 +83,29 @@
   cursor: pointer;
   transition: all 0.2s;
 }
+
 .mkt-chip:hover {
   border-color: var(--primary);
 }
+
 .mkt-chip.mkt-active {
   background-color: var(--secondary);
   color: var(--on-secondary);
   border-color: var(--secondary);
 }
+
+/* La lista assorbe lo spazio e scrolla */
 .mkt-library-items-list {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   gap: var(--spacing-sm);
-  overflow-y: auto;
-  flex: 1;
   padding-right: 0.25rem;
 }
+
 .mkt-library-card {
   background-color: var(--background);
   border: 1px solid var(--outline-variant);
@@ -86,20 +115,29 @@
   align-items: center;
   gap: var(--spacing-md);
   cursor: grab;
-  transition: transform 0.15s ease, border-color 0.2s ease;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  flex: 0 0 auto;
 }
+
+.mkt-library-card:active {
+  cursor: grabbing;
+}
+
 .mkt-library-card:hover {
   border-color: var(--primary);
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
+
 .mkt-library-thumb {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: var(--radius-sm);
   object-fit: cover;
   background-color: var(--surface-variant);
+  flex-shrink: 0;
 }
+
 .mkt-library-doc-icon {
   width: 3.5rem;
   height: 3.5rem;
@@ -109,20 +147,34 @@
   align-items: center;
   justify-content: center;
   color: var(--outline);
+  flex-shrink: 0;
 }
+
 .mkt-library-info {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  overflow: hidden;
 }
+
 .mkt-library-item-title {
   font-weight: 600;
   font-size: var(--body-md-size);
   margin: 0;
   color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 .mkt-library-item-meta {
   font-size: var(--label-md-size);
   color: var(--on-surface-variant);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }

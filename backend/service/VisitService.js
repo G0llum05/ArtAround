@@ -34,6 +34,11 @@ class VisitService {
       visit: visitSteps = []
     } = request;
 
+    const checkMuseumId = await Museum.findById(museumId);
+    if (!checkMuseumId) {
+        throw new Error('Id museo non valido');
+    }
+
     // recupera opere coinvolte per estrarre le correnti artistiche
     const artworkIds = visitSteps.map(step => step.artworkId).filter(Boolean);
     const artworks = await Artwork.find({ _id: { $in: artworkIds } }).lean();

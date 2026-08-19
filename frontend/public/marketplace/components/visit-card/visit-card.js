@@ -50,7 +50,6 @@ export class MktVisitCard extends HTMLElement {
 
   setUpEventListeners() {
     const card =this.querySelector('#visit-card')
-    console.log(this.id)
     if(card){
       if(this.id && this.id!='null' && this.id!='undefined'){
         goTo(card, `/marketplace/visit/search/${this.id}`)

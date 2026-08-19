@@ -9,7 +9,7 @@ export function goTo(btn, route, id) {
     const navEvent = new CustomEvent('angular-navigate', {
       detail: payload,
       bubbles: true,
-      composed: true, //"buca" lo shadowdom
+      composed: true, //"buca" lo shadowDOM
     })
     btn.dispatchEvent(navEvent);
   });
@@ -18,21 +18,25 @@ export function goTo(btn, route, id) {
 
 export class MktRouter extends HTMLElement {
   static get observedAttributes() {
-    return ['route'];
+    return ['route', 'user-id'];
   }
 
   constructor() {
     super();
     this.routes = window.location.pathname;
-    this.userId = this.getAttribute('user-id')
+    this.userId = null;
   }
 
   connectedCallback() {
+    this.userId = this.getAttribute('user-id')
     this.render();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'route' && oldValue !== newValue) {
+      this.render();
+    } else if (name === 'user-id' && oldValue !== newValue) {
+      this.userId = newValue;
       this.render();
     }
   }

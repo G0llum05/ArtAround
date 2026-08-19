@@ -19,8 +19,11 @@ export class VisitService {
 
     static async createVisit(visit) {
       try{
-        const response = await fetch(`${this.apiUrl}/createVisit`, {
+        const response = await fetch(`${this.apiUrl}/`, {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(visit),
         });
         if (!response.ok) {

@@ -118,7 +118,6 @@ class VisitController {
     try {
       const request = VisitMapper.createVisit(req.body.museumId, req.body.userId, req.body);
       const newVisitId = await VisitService.createVisit(request);
-
       res.status(201).json({ visitId: newVisitId });
     } catch (error) {
       res.status(500).json({ message: 'Error creating visit', error: error.message });

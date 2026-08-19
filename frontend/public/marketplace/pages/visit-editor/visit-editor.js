@@ -16,7 +16,7 @@ export class MktVisitEditor extends HTMLElement {
       license: "Standard Copyright",
       visit: []
     };
-    this.userId = this.getAttribute('data-user-id');
+    this.userId = null;
   }
 
   connectedCallback() {
@@ -31,6 +31,8 @@ export class MktVisitEditor extends HTMLElement {
     } else {
       if (this.state.visit.length === 0) this.addEmptyStop();
     }
+
+    this.userId = this.getAttribute('data-user-id');
 
     this.render();
     this.renderSequence();
@@ -442,7 +444,7 @@ export class MktVisitEditor extends HTMLElement {
       btnPublish.addEventListener('click', async () => {
         const finalVisitArray = this.state.visit.filter(v => v.artworkId !== null);
 
-        if(!this.userId && this.userId !== "null"){
+        if(!this.userId || this.userId == "null"){
           alert("Non puoi pubblicare visite se non hai fatto l'accesso");
           localStorage.setItem('mkt-visit-draft', JSON.stringify(this.state));
           const navEvent = new CustomEvent('angular-navigate', {

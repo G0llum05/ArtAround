@@ -16,20 +16,22 @@ class VisitMapper {
       visit.title,
       visit.description,
       visit.price,
-      visit.license || 'Standard',
-      visit.verified,
+      visit.license,
+      visit.creator,
       visit.minDuration,
       visit.maxDuration,
+      visit.isVerified,
       visit.startDate,
       visit.endDate,
-      visit.active,
+      visit.isActive,
       visit.weeklySchedule,
       visit.disableFriendly,
       visit.requirements,
       visit.categories || [],
       visit.likesCount || 0,
       visit.views || { total: 0, weekly: 0 },
-      visit.assets || { images: [] }
+      visit.assets || { images: [] },
+      visit.visits
     );
   }
 

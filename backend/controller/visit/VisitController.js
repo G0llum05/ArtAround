@@ -18,6 +18,7 @@ class VisitController {
     }
   }
 
+  // TODO CHECK la risposta ha un modello aggiornato che va allinato qua perchè i dati probabilmente non lo sono
   static async getMarketplaceFeed(req, res) {
     try {
       const feed = await VisitService.getMarketplaceFeed();
@@ -29,6 +30,20 @@ class VisitController {
       res.status(200).json(formattedFeed);
     } catch (error) {
       res.status(500).json({ message: 'Error retrieving marketplace feed', error: error.message });
+    }
+  }
+
+  static async getVisitById(req, res) {
+    try {
+      const visitId = req.params.id
+      if (!visitId) {
+        return res.status(404).json({ message: 'Manca id visita' });
+      }
+      const visit = await VisitService.getVisitById(visitId);
+      const visitDTO = VisitMapper.toVisitResponseDTO(visit);
+      res.status(200).json(visitDTO);
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving visit', error: error.message });
     }
   }
 

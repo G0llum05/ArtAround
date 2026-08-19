@@ -11,6 +11,14 @@ class VisitService {
     return await Visit.find(query).populate('creator', 'name surname email').lean();
   }
 
+  static async getVisitById(id) {
+    const visit = await Visit.findById(id);
+    if (!visit) {
+      throw new Error('Visit id non valido');
+    }
+    return visit;
+  }
+
   /*
     * Crea una nuova visita nel database e ritorna id
     * @param {Object} request - { museumId, title, description, price, license, duration, isDisabledFriendly, assets = { images: [] }, visit : [ artworkId, itemId, description, tellMeMore, length, language]  }
@@ -36,7 +44,7 @@ class VisitService {
 
     const checkMuseumId = await Museum.findById(museumId);
     if (!checkMuseumId) {
-        throw new Error('Id museo non valido');
+      throw new Error('Id museo non valido');
     }
 
     // recupera opere coinvolte per estrarre le correnti artistiche

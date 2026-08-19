@@ -1,18 +1,20 @@
 class VisitResponseDTO {
-  constructor(id, title, description, price, license = 'Standard', verified, minDuration, maxDuration, startDate, endDate, active, weeklySchedule, disabledFriendly, requirements, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }, assets = { images: [] }) {
+  constructor(id, title, description, price, license, creator, minDuration, maxDuration, isVerified, startDate, endDate, isActive, weeklySchedule, disabledFriendly, requirements, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }, assets = { images: [] }, visits = []) {
     this.id = id;
     this.title = title;
     this.description = description;
     this.price = price;
     this.license = license;
-    this.verified = verified;
+    this.creator = creator;
+    this.visits = visits;
     this.minDuration = minDuration;
     this.maxDuration = maxDuration;
+    this.isActive = isActive;
     this.startDate = startDate;
     this.endDate = endDate;
-    this.active = active;
     this.weeklySchedule = weeklySchedule;
     this.disabledFriendly = disabledFriendly;
+    this.isVerified = isVerified;
     this.requirements = requirements;
     this.categories = categories;
     this.likesCount = likesCount;

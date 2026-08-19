@@ -29,6 +29,7 @@ const visitSchema = new mongoose.Schema({
     ref: 'User'
   },
 
+  // TODO CHECK il nome è forviante, il campo indica da tutte le cose di cui la visita è composta
   visits: [{
     artwork: {
       type: mongoose.Schema.Types.ObjectId,

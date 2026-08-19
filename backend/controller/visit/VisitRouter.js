@@ -13,6 +13,9 @@ router.get('/', VisitController.getAllVisits);
 // Restituisce le sezioni del marketplace raggruppate per categoria (solo quelle non vuote)
 router.get('/feed', VisitController.getMarketplaceFeed);
 
+// GET /homePresentation
+router.get('/homePresentation', VisitController.getVisitHomePresentation);
+
 // GET /:id
 router.get('/:id', VisitController.getVisitById);
 
@@ -21,9 +24,6 @@ router.post('/:id/like', VisitController.likeVisit);
 
 // POST /:id/view
 router.post('/:id/view', VisitController.viewVisit);
-
-// GET /:id/homePresentation
-router.get('/homePresentation', VisitController.getVisitHomePresentation);
 
 // POST /
 // Corrisponde a POST /api/visits/

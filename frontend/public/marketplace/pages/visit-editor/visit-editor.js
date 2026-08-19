@@ -80,9 +80,10 @@ export class MktVisitEditor extends HTMLElement {
           </div>
         </header>
 
+
         <!-- GRIGLIA A TRE COLONNE (2 SU MOBILE) -->
-        <div class="mkt-three-column-grid">
-          <aside class="mkt-column">
+         <div class="mkt-three-column-grid">
+          <aside class="mkt-column sticky" style="p">
             <mkt-artwork-library data-museum-id="${this.state.museumId}" id="artworksLibrary"></mkt-artwork-library>
           </aside>
           <section class="mkt-column" id="sequence-column" style="overflow-y: auto; padding-right: 0.5rem;"></section>
@@ -435,27 +436,27 @@ export class MktVisitEditor extends HTMLElement {
     if (btnDraft) {
       btnDraft.addEventListener('click', () => {
         localStorage.setItem('mkt-visit-draft', JSON.stringify(this.state));
-        alert("Bozza salvata con successo! Potrai riprenderla in qualsiasi momento.");
+        alert('Bozza salvata con successo! Potrai riprenderla in qualsiasi momento.');
       });
     }
 
     const btnPublish = this.querySelector('#btn-publish');
     if (btnPublish) {
       btnPublish.addEventListener('click', async () => {
-        const finalVisitArray = this.state.visit.filter(v => v.artworkId !== null);
+        const finalVisitArray = this.state.visit.filter((v) => v.artworkId !== null);
 
-        if(!this.userId || this.userId == "null"){
+        if (!this.userId || this.userId == 'null') {
           alert("Non puoi pubblicare visite se non hai fatto l'accesso");
           localStorage.setItem('mkt-visit-draft', JSON.stringify(this.state));
           const navEvent = new CustomEvent('angular-navigate', {
-            detail:  {
-              destination: '/login'
+            detail: {
+              destination: '/login',
             },
             bubbles: true,
             composed: true,
-          })
+          });
           this.dispatchEvent(navEvent);
-          return
+          return;
         }
 
         const visit = {
@@ -471,70 +472,84 @@ export class MktVisitEditor extends HTMLElement {
           isDisableFriendly: this.state.isDisableFriendly,
           license: this.state.license,
           duration: this.parseDurationToMinutes(this.state.duration),
-          visit: finalVisitArray.map(v => ({
+          visit: finalVisitArray.map((v) => ({
             artworkId: v.artworkId,
             itemId: v.itemId,
             description: v.description,
             tellMeMore: v.tellMeMore,
             length: v.length,
-            language: v.language
-          }))
-        }
+            language: v.language,
+          })),
+        };
+        try {
+          const response = await VisitService.createVisit(visit);
 
-        console.log("Dati JSON inviati:", visit);
-        const response = await VisitService.createVisit(visit);
-        // RIMOZIONE BOZZA DOPO PUBBLICAZIONE
+          if (response && response.ok) {
+            const data = await response.json();
 
-        if(response.ok){
-          alert('Visita pubblicata! Controlla la console.');
-          localStorage.removeItem('mkt-visit-draft');
-          this.dispatchEvent(new CustomEvent('angular-navigate', {
-            detail:  { destination: '/marketplace' },
-            bubbles: true,
-            composed: true,
-          }));
-        } else{
-          alert('Errore durante il salvataggio')
+            // RIMOZIONE BOZZA DOPO PUBBLICAZIONE
+            localStorage.removeItem('mkt-visit-draft');
+
+            const newVisitId = data.id || data._id || '';
+
+            this.dispatchEvent(
+              new CustomEvent('angular-navigate', {
+                detail: {
+                  destination: `/marketplace/visit/${newVisitId}`,
+                },
+                bubbles: true,
+                composed: true,
+              }),
+            );
+          }
+        } catch (error) {
+          console.error('Eccezione durante il salvataggio:', error);
+          alert(`Si è verificato un errore critico durante la pubblicazione.\n ${error.message})}`);
         }
       });
-    }
 
-    const museumSelector = this.querySelector('#museum-selector');
-    if (museumSelector) {
-      const handleMuseumChange = (newMuseumId) => {
-        if (this.state.museumId === newMuseumId) return;
+      const museumSelector = this.querySelector('#museum-selector');
+      if (museumSelector) {
+        const handleMuseumChange = (newMuseumId) => {
+          if (this.state.museumId === newMuseumId) return;
 
-        const hasData = this.state.title || this.state.description || this.state.visit.some(v => v.artworkId !== null);
+          const hasData =
+            this.state.title ||
+            this.state.description ||
+            this.state.visit.some((v) => v.artworkId !== null);
 
-        if (this.state.museumId && hasData && newMuseumId) {
-          const confirmClear = confirm("Attenzione: cambiando museo, tutti i dati inseriti per la visita attuale verranno persi. Vuoi procedere?");
-          if (!confirmClear) {
-            const input = museumSelector.querySelector('#search-input');
-            if (input) input.value = this.state.museumName || '';
-            return;
+          if (this.state.museumId && hasData && newMuseumId) {
+            const confirmClear = confirm(
+              'Attenzione: cambiando museo, tutti i dati inseriti per la visita attuale verranno persi. Vuoi procedere?',
+            );
+            if (!confirmClear) {
+              const input = museumSelector.querySelector('#search-input');
+              if (input) input.value = this.state.museumName || '';
+              return;
+            }
           }
-        }
 
-        this.state.museumId = newMuseumId;
-        const input = museumSelector.querySelector('#search-input');
-        this.state.museumName = input ? input.value : 'Museo Selezionato';
+          this.state.museumId = newMuseumId;
+          const input = museumSelector.querySelector('#search-input');
+          this.state.museumName = input ? input.value : 'Museo Selezionato';
 
-        this.resetState();
+          this.resetState();
 
-        const headerTitleEl = this.querySelector('#main-title');
-        if (headerTitleEl) headerTitleEl.textContent = "Nuova Visita";
+          const headerTitleEl = this.querySelector('#main-title');
+          if (headerTitleEl) headerTitleEl.textContent = 'Nuova Visita';
 
-        this.renderSequence();
-        this.renderDetails();
+          this.renderSequence();
+          this.renderDetails();
 
-        const artworksLibrary = this.querySelector('#artworksLibrary');
-        if (artworksLibrary) {
-          artworksLibrary.setAttribute('data-museum-id', newMuseumId || 'null');
-        }
-      };
+          const artworksLibrary = this.querySelector('#artworksLibrary');
+          if (artworksLibrary) {
+            artworksLibrary.setAttribute('data-museum-id', newMuseumId || 'null');
+          }
+        };
 
-      museumSelector.addEventListener('museumSelected', (e) => handleMuseumChange(e.detail));
-      museumSelector.addEventListener('cleared', () => handleMuseumChange(null));
+        museumSelector.addEventListener('museumSelected', (e) => handleMuseumChange(e.detail));
+        museumSelector.addEventListener('cleared', () => handleMuseumChange(null));
+      }
     }
   }
 }

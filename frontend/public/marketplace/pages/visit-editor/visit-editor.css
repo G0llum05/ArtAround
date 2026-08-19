@@ -11,11 +11,17 @@
 
 .mkt-three-column-grid {
   display: grid;
-  grid-template-columns: 24rem 1fr 26rem;
+  grid-template-columns: 2fr 3fr 2fr;
   flex: 1;
-  align-items: stretch;
+  align-items: start;
   gap: var(--spacing-lg);
   padding-top: var(--spacing-lg);
+}
+
+.sticky {
+  position: sticky;
+  top: 5rem;
+  max-width: 100%;
 }
 
 .mkt-column {
@@ -41,8 +47,15 @@
   margin-top: var(--spacing-sm);
 }
 
-.mkt-museum-selector-area { width: 22rem; }
-.mkt-editor-actions { display: flex; align-items: center; gap: var(--spacing-md); }
+.mkt-museum-selector-area {
+  width: 30%;
+}
+
+.mkt-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
 
 /* --- TITOLI E TESTI --- */
 .mkt-editor-title {
@@ -60,6 +73,7 @@
   font-size: var(--headline-md-size);
   margin: 0;
   color: var(--on-surface);
+  height: 100%;
 }
 
 .mkt-detail-column-title {
@@ -101,8 +115,13 @@
   font-weight: 600;
 }
 
-.mkt-btn-outline:hover { background-color: var(--surface-variant); }
-.mkt-btn-primary:hover { opacity: 0.9; }
+.mkt-btn-outline:hover {
+  background-color: var(--surface-variant);
+}
+
+.mkt-btn-primary:hover {
+  opacity: 0.9;
+}
 
 .mkt-icon-btn {
   background: none;
@@ -146,11 +165,16 @@
   padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.mkt-editor-card { height: 100%; }
-.mkt-stop-block { gap: var(--spacing-sm); }
+.mkt-editor-card {
+  height: 100%;
+}
+
+.mkt-stop-block {
+  gap: var(--spacing-sm);
+}
 
 /* --- SEQUENZA OPERE (INTESTAZIONE TAPPE) --- */
 .mkt-stop-header {
@@ -168,8 +192,13 @@
   align-items: center;
 }
 
-.mkt-stop-title-group { gap: var(--spacing-sm); }
-.mkt-stop-controls { gap: 0.15rem; }
+.mkt-stop-title-group {
+  gap: var(--spacing-sm);
+}
+
+.mkt-stop-controls {
+  gap: 0.15rem;
+}
 
 .mkt-stop-number {
   width: 1.75rem;
@@ -199,7 +228,9 @@
   padding: 0.4rem var(--spacing-sm);
 }
 
-.mkt-stop-body .mkt-details-section { margin-bottom: 0; }
+.mkt-stop-body .mkt-details-section {
+  margin-bottom: 0;
+}
 
 /* --- DROPZONE E DRAG AND DROP --- */
 .mkt-empty-stop-dropzone {
@@ -225,11 +256,18 @@
   background-color: var(--surface-variant);
 }
 
-.mkt-empty-stop-dropzone.mkt-drag-over { transform: scale(1.02); }
+.mkt-empty-stop-dropzone.mkt-drag-over {
+  transform: scale(1.02);
+}
 
 /* --- MODULI FORM E INPUTS --- */
-.mkt-details-section { margin-bottom: var(--spacing-md); }
-.mkt-details-section:last-child { margin-bottom: 0; }
+.mkt-details-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.mkt-details-section:last-child {
+  margin-bottom: 0;
+}
 
 .mkt-input,
 .mkt-textarea,
@@ -246,8 +284,15 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.mkt-select { cursor: pointer; appearance: auto; }
-.mkt-textarea { min-height: 6rem; resize: vertical; }
+.mkt-select {
+  cursor: pointer;
+  appearance: auto;
+}
+
+.mkt-textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
 
 .mkt-input:focus,
 .mkt-textarea:focus,
@@ -300,8 +345,15 @@
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-.mkt-default-badge.mkt-hidden { opacity: 0; visibility: hidden; }
-.mkt-default-icon { width: 0.9rem; height: 0.9rem; }
+.mkt-default-badge.mkt-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.mkt-default-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
 
 /* --- TOGGLE SWITCH (Accessibilità) --- */
 .mkt-toggle-row {
@@ -311,13 +363,26 @@
   margin-top: var(--spacing-xs);
 }
 
-.mkt-switch { position: relative; display: inline-block; width: 3rem; height: 1.5rem; }
-.mkt-switch input { opacity: 0; width: 0; height: 0; }
+.mkt-switch {
+  position: relative;
+  display: inline-block;
+  width: 3rem;
+  height: 1.5rem;
+}
+
+.mkt-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 
 .mkt-slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: var(--outline-variant);
   transition: .3s;
   border-radius: var(--radius-full);
@@ -335,8 +400,13 @@
   border-radius: 50%;
 }
 
-.mkt-switch input:checked + .mkt-slider { background-color: var(--primary); }
-.mkt-switch input:checked + .mkt-slider:before { transform: translateX(1.5rem); }
+.mkt-switch input:checked + .mkt-slider {
+  background-color: var(--primary);
+}
+
+.mkt-switch input:checked + .mkt-slider:before {
+  transform: translateX(1.5rem);
+}
 
 /* --- PREZZI ED ECONOMIA (RADIO CARDS) --- */
 .mkt-pricing-options {
@@ -384,11 +454,25 @@
   box-shadow: 0 0 0 1px var(--primary);
 }
 
-.mkt-pricing-card.mkt-selected .mkt-pricing-icon { color: var(--primary); }
-.mkt-pricing-icon { color: var(--outline); transition: color 0.2s ease; }
+.mkt-pricing-card.mkt-selected .mkt-pricing-icon {
+  color: var(--primary);
+}
 
-.mkt-pricing-title { font-weight: 600; font-size: var(--body-md-size); color: var(--on-surface); }
-.mkt-pricing-subtitle { font-size: var(--label-md-size); color: var(--on-surface-variant); }
+.mkt-pricing-icon {
+  color: var(--outline);
+  transition: color 0.2s ease;
+}
+
+.mkt-pricing-title {
+  font-weight: 600;
+  font-size: var(--body-md-size);
+  color: var(--on-surface);
+}
+
+.mkt-pricing-subtitle {
+  font-size: var(--label-md-size);
+  color: var(--on-surface-variant);
+}
 
 /* --- PREZZO INPUT GROUP --- */
 .mkt-price-input-group {
@@ -429,28 +513,39 @@
   font-weight: 600;
 }
 
-@media (max-width: 80rem) {
+
+/* --- SMARTPHONE (Schermi piccoli) --- */
+@media (max-width: 70rem) {
   .mkt-three-column-grid {
-    grid-template-columns: 1fr 1fr; /* Display grid a 2 colonne per tablet/mobile */
-    grid-template-rows: auto 1fr;
-    gap: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
   }
 
-  /* 1ª Riga: Dettagli della visita (espanso su due colonne) */
   #details-column {
-    grid-column: 1 / -1; /* Occupa da colonna 1 alla fine */
-    grid-row: 1;
+    order: 1;
+    width: 100%;
   }
 
-  /* 2ª Riga: Libreria a sinistra e Sequenza a destra */
-  .mkt-column:first-child {
-    grid-column: 1;
-    grid-row: 2;
+  .mkt-three-column-grid .mkt-column:first-child {
+    order: 2;
+    position: sticky;
+    top: 5rem; /* Un piccolo margine superiore dallo schermo */
+
+    height: 40vh;
+    width: 100%;
+    max-width: 100%;
+
+    z-index: 40;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    background-color: var(--surface); /* Previene fastidiose trasparenze */
+    border-radius: var(--radius-lg);
   }
 
   #sequence-column {
-    grid-column: 2;
-    grid-row: 2;
+    order: 3;
+    width: 100%;
+    margin-top: var(--spacing-md);
   }
 
   /* Adattamenti Header per Mobile */
@@ -465,6 +560,12 @@
   }
 
   .mkt-editor-actions {
-    justify-content: flex-end;
+    flex-direction: column;
+    justify-content: stretch;
+    width: 100%;
+  }
+
+  .mkt-editor-actions .mkt-btn {
+    width: 100%;
   }
 }

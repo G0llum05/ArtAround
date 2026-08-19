@@ -26,7 +26,7 @@ export class MktMuseumHome extends HTMLElement {
 
   async connectedCallback() {
     try {
-      if (this.id || this.is == 'undefined') throw new Error('id undefined')
+      if (!this.museumId || this.museumId === 'undefined') throw new Error('id undefined')
       this.museumData = await MuseumService.getMuseumById(this.museumId) || [];
       this.museumVisits = await MuseumService.getAllMuseumVisits(this.museumId) || [];
     } catch (error) {

@@ -1,6 +1,10 @@
 .mkt-preview-page {
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
   display: grid;
   grid-template-columns: 2fr 5fr;
+  margin: 0 auto;
 
   /* Costruiamo la mappa delle aree visuali */
   grid-template-areas:
@@ -9,15 +13,10 @@
     "itin   details";
 
   grid-template-rows: auto auto 1fr;
-  gap: var(--spacing-xl);
-  align-items: stretch;
+  gap: var(--spacing-lg);
 
-  background-color: var(--background);
   color: var(--on-surface);
   font-family: var(--font-sans);
-  box-sizing: border-box;
-
-  max-height: 100vh;
 }
 
 /* Essenziale per pareggiare le altezze */
@@ -94,9 +93,6 @@
   display: block;
 }
 
-/* ========================================================
-   DETTAGLI (DESTRA BASSO)
-   ======================================================== */
 .mkt-details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -128,7 +124,7 @@
 }
 
 .mkt-info-card-body {
-  font-size: var(--body-md-size);
+  font-size: var(--body-lg-size);
   color: var(--on-surface-variant);
   line-height: 1.6;
   margin: 0;
@@ -177,7 +173,6 @@
   flex-direction: column;
 
   height: 100%;
-  min-height: 0;
   overflow-y: auto;
 
   scrollbar-width: thin;
@@ -210,6 +205,7 @@
 }
 
 .mkt-timeline {
+  max-height: 70vh;
   display: flex;
   flex-direction: column;
   gap: 0;

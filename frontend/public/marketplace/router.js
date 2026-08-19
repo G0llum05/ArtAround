@@ -25,6 +25,7 @@ export class MktRouter extends HTMLElement {
     super();
     this.routes = window.location.pathname;
     this.userId = null;
+    this.currentRenderedRoute = null;
   }
 
   connectedCallback() {
@@ -33,15 +34,21 @@ export class MktRouter extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'route' && oldValue !== newValue) {
+    if(oldValue === newValue) return;
+    if (name === 'route') {
       this.render();
-    } else if (name === 'user-id' && oldValue !== newValue) {
+    } else if (name === 'user-id') {
       this.userId = newValue;
       this.render();
     }
   }
 
   render() {
+    const currentRoute = this.getAttribute('route') || window.location.pathname;
+    // non rieseguo il render se la rotta è la stessa (previene il doppio caricamento)
+    if (this.currentRenderedRoute === currentRoute && this.innerHTML.trim() !== '') return;
+    this.currentRenderedRoute = currentRoute;
+
     this.routes = this.getAttribute('route') || window.location.pathname;
     this.innerHTML = `<link rel="stylesheet" href="/marketplace/marketplace.registry.css"/>\n`
 

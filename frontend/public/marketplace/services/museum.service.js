@@ -27,9 +27,6 @@ export class MuseumService {
       if (!response.ok) {
         throw new Error(response.statusText);
       }
-
-      console.log(response);
-
       const data = await response.json();
       return data || [];
 

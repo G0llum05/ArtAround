@@ -3,8 +3,7 @@ const {
   VisitRequestDTO,
   VisitImageRequestDTO,
   VisitHomePresentationRequestDTO,
-  TopTenVisitsResponseDTO,
-  MuseumVisitForPresentationDTO,
+  VisitPresentationDTO,
   CreateVisitDTO
 } = require('../model/dto/VisitDTO');
 
@@ -58,9 +57,10 @@ class VisitMapper {
     };
   }
 
-  static toTopTenVisitsResponse(visit) {
+  //TODO ho aggiornato il dto/mapper
+  static toVisitResponsePresentation(visit) {
     if (!visit) return null;
-    return new TopTenVisitsResponseDTO(
+    return new VisitPresentationDTO(
       visit._id ? visit._id.toString() : visit.id,
       visit.title,
       visit.description,
@@ -70,23 +70,6 @@ class VisitMapper {
       visit.price,
       visit.isClosingSoon,
       visit.isNew,
-      visit.assets || { images: [] }
-    );
-  }
-
-  static toMuseumVisitForPresentationDTO(visit) {
-    if (!visit) return null;
-    return new MuseumVisitForPresentationDTO(
-      visit._id ? visit._id.toString() : visit.id,
-      visit.title,
-      visit.description,
-      visit.isVerified,
-      visit.disableFriendly,
-      visit.maxDuration,
-      visit.price,
-      visit.isClosingSoon,
-      visit.isNew,
-      visit.categories || [],
       visit.assets || { images: [] }
     );
   }

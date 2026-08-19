@@ -172,7 +172,8 @@ export class MktVisitExplorer extends HTMLElement {
           data-desc="${visit.description}"
           data-price="${visit.price}"
           data-image="${getImageUrl(visit.assets, "landscape")}"
-          data-duration="${visit.duration}">
+          data-duration="${visit.duration}"
+          data-visit-id="${visit.id}">
         </mkt-visit-card>
       `;
     }).join('\n');

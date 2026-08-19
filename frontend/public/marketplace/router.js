@@ -24,6 +24,7 @@ export class MktRouter extends HTMLElement {
   constructor() {
     super();
     this.routes = window.location.pathname;
+    this.userId = this.getAttribute('user-id')
   }
 
   connectedCallback() {
@@ -41,11 +42,20 @@ export class MktRouter extends HTMLElement {
     this.innerHTML = `<link rel="stylesheet" href="/marketplace/marketplace.registry.css"/>\n`
 
     // Questa RegExp cerca esattamente /marketplace/visit/ seguito da qualsiasi cosa non contenga "/"
-    const visitDetailRegex = /^\/marketplace\/museum\/([^/]+)$/;
-    const match = this.routes.match(visitDetailRegex);
-    if (match) {
-      const visitId = match[1];
+    const museumDetailRegex = /^\/marketplace\/museum\/([^/]+)$/;
+    const matchMuseumId = this.routes.match(museumDetailRegex);
+    if (matchMuseumId) {
+      const visitId = matchMuseumId[1];
       this.innerHTML += `<mkt-museum-home data-visit-id="${visitId}"></mkt-museum-home>`;
+      return;
+    }
+
+    // Questa RegExp cerca esattamente /marketplace/visit/ seguito da qualsiasi cosa non contenga "/"
+    const visitDetailRegex = /^\/marketplace\/visit\/search\/([^/]+)$/;
+    const matchVisitId = this.routes.match(visitDetailRegex);
+    if (matchVisitId) {
+      const visitId = matchVisitId[1];
+      this.innerHTML += `<mkt-visit-preview data-visit-id="${visitId}"></mkt-visit-preview>`;
       return;
     }
 
@@ -54,7 +64,7 @@ export class MktRouter extends HTMLElement {
         this.innerHTML += `<mkt-home> </mkt-home>`;
         break;
       case '/marketplace/visit/create':
-        this.innerHTML += `<mkt-visit-editor> </mkt-visit-editor>`;
+        this.innerHTML += `<mkt-visit-editor data-user-id="${this.userId}"> </mkt-visit-editor>`;
         break;
       case '/marketplace/visit/search':
         this.innerHTML += `<mkt-visit-explorer> </mkt-visit-explorer>`;

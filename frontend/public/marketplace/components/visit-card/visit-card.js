@@ -1,8 +1,15 @@
-// public/marketplace/components/visit-card/visit-card.js
+import { goTo } from '../../router.js';
 
 export class MktVisitCard extends HTMLElement {
+  constructor() {
+    super();
+    this.id = '';
+  }
+
   connectedCallback() {
+    this.id = this.getAttribute('data-visit-id') || '';
     this.render();
+    this.setUpEventListeners();
   }
 
   render() {
@@ -22,7 +29,7 @@ export class MktVisitCard extends HTMLElement {
     }
 
     this.innerHTML = `
-      <article class="mkt-visit-card-container">
+      <article class="mkt-visit-card-container" id="visit-card">
         <div class="mkt-visit-image-wrapper">
           <img alt="${title}" src="${image}" class="mkt-visit-img">
         </div>
@@ -39,5 +46,15 @@ export class MktVisitCard extends HTMLElement {
         </div>
       </article>
     `;
+  }
+
+  setUpEventListeners() {
+    const card =this.querySelector('#visit-card')
+    console.log(this.id)
+    if(card){
+      if(this.id && this.id!='null' && this.id!='undefined'){
+        goTo(card, `/marketplace/visit/search/${this.id}`)
+      }
+    }
   }
 }

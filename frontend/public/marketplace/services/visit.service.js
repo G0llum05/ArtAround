@@ -16,4 +16,19 @@ export class VisitService {
         console.error(error);
       }
     }
+
+    static async createVisit(visit) {
+      try{
+        const response = await fetch(`${this.apiUrl}/createVisit`, {
+          method: "POST",
+          body: JSON.stringify(visit),
+        });
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return await response;
+      } catch (error){
+        console.error(error);
+      }
+    }
 }

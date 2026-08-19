@@ -1,5 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { Router } from '@angular/router'
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-marketplace',
@@ -10,6 +11,7 @@ import { Router } from '@angular/router'
 })
 export class Marketplace {
   router = inject(Router);
+  authService = inject(AuthService);
 
   onAscoltaVanilla(event: Event) {
     const customEvent = event as CustomEvent;

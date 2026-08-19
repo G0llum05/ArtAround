@@ -91,7 +91,8 @@ export class MktHome extends HTMLElement {
           data-desc="${visit.description}"
           data-price="${visit.price}"
           data-image="${imageUrl}"
-          data-duration="${visit.duration}">
+          data-duration="${visit.duration}"
+          data-visit-id="${visit.id}">
         </mkt-visit-card>
       `;
     }).join("\n");
@@ -109,18 +110,32 @@ export class MktHome extends HTMLElement {
         <section class="mkt-main-section">
           <div class="mkt-empty-grid">
             <a class="mkt-card mkt-large-card mkt-create-visit-card" id="mkt-btn-create-visit">
+              <div class="mkt-card-icon-wrapper">
+                <svg class="mkt-top-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="24px" height="24px">
+                    <path xmlns="http://www.w3.org/2000/svg" d="M240-120q-45 0-89-22t-71-58q26 0 53-20.5t27-59.5q0-50 35-85t85-35q50 0 85 35t35 85q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 23-5.5 42T220-202q5 2 10 2h10Zm230-160L360-470l358-358q11-11 27.5-11.5T774-828l54 54q12 12 12 28t-12 28L470-360Zm-190 80Z"/>
+                </svg>
+              </div>
               <div class="mkt-large-card-content">
                 <h2>Crea Visita</h2>
                 <p>Crea una visita su misura per te partendo da zero.</p>
               </div>
-              <svg class="mkt-card-svg mkt-arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
+              <svg class="mkt-card-svg mkt-arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
+              </svg>
             </a>
             <a class="mkt-card mkt-large-card mkt-visit-card" id="mkt-btn-search-visits">
+              <div class="mkt-card-icon-wrapper">
+                <svg class="mkt-top-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="24px" height="24px">
+                  <path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/>
+                </svg>
+              </div>
               <div class="mkt-large-card-content">
                 <h2>Cerca Visite</h2>
                 <p>Cerca tra tutte le nostre visite quella che più ti piace.</p>
               </div>
-              <svg class="mkt-card-svg mkt-arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
+              <svg class="mkt-card-svg mkt-arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
+              </svg>
             </a>
           </div>
         </section>

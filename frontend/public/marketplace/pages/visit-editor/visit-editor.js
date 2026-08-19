@@ -1,7 +1,8 @@
+import { VisitService } from '../../services/visit.service.js';
+
 export class MktVisitEditor extends HTMLElement {
   constructor() {
     super();
-    // Stato mappato fedelmente sul JSON Schema richiesto
     this.state = {
       museumId: null,
       museumName: "",
@@ -9,27 +10,45 @@ export class MktVisitEditor extends HTMLElement {
       description: "",
       image: "",
       price: 0,
-      pricingType: "free", // Solo per logica UI
+      pricingType: "free",
       duration: "",
       isDisableFriendly: false,
       license: "Standard Copyright",
       visit: []
     };
+    this.userId = this.getAttribute('data-user-id');
   }
 
   connectedCallback() {
-    // Inizializza con una tappa vuota di partenza
-    if (this.state.visit.length === 0) {
-      this.addEmptyStop();
+    const draft = localStorage.getItem('mkt-visit-draft');
+    if (draft) {
+      if (confirm("Hai una bozza salvata per una visita. Vuoi riprenderla?")) {
+        this.state = JSON.parse(draft);
+      } else {
+        localStorage.removeItem('mkt-visit-draft');
+        if (this.state.visit.length === 0) this.addEmptyStop();
+      }
+    } else {
+      if (this.state.visit.length === 0) this.addEmptyStop();
     }
 
     this.render();
     this.renderSequence();
     this.renderDetails();
     this.setupGlobalListeners();
+
+    // 2. RIPRISTINO VISIVO DELLA BOZZA (Se presente)
+    if (this.state.museumId) {
+      setTimeout(() => {
+        const museumSelector = this.querySelector('#museum-selector');
+        if (museumSelector) {
+          const input = museumSelector.querySelector('#search-input');
+          if (input) input.value = this.state.museumName;
+        }
+      }, 100);
+    }
   }
 
-  // Metodo helper per aggiungere una tappa vuota in coda
   addEmptyStop() {
     this.state.visit.push({
       artworkId: null,
@@ -47,37 +66,30 @@ export class MktVisitEditor extends HTMLElement {
       <main class="mkt-editor-page">
         <!-- HEADER SUPERIORE -->
         <header class="mkt-editor-header">
-          <h1 class="mkt-editor-title" id="main-title">Nuova Visita</h1>
+          <h1 class="mkt-editor-title" id="main-title">${this.state.title || 'Nuova Visita'}</h1>
           <div class="mkt-editor-header-sub">
             <div class="mkt-museum-selector-area">
               <mkt-input-search-visit id="museum-selector"></mkt-input-search-visit>
             </div>
             <div class="mkt-editor-actions">
-              <div class="mkt-status-indicator">
-                <span class="mkt-status-dot"></span>
-                <span>Bozza</span>
-              </div>
-              <button type="button" class="mkt-btn mkt-btn-outline">Anteprima</button>
+              <button type="button" class="mkt-btn mkt-btn-outline" id="btn-draft">Salva Bozza e Riprendi più tardi</button>
               <button type="button" class="mkt-btn mkt-btn-primary" id="btn-publish">Salva & Pubblica</button>
             </div>
           </div>
         </header>
 
-        <!-- GRIGLIA A TRE COLONNE -->
+        <!-- GRIGLIA A TRE COLONNE (2 SU MOBILE) -->
         <div class="mkt-three-column-grid">
           <aside class="mkt-column">
             <mkt-artwork-library data-museum-id="${this.state.museumId}" id="artworksLibrary"></mkt-artwork-library>
           </aside>
-
           <section class="mkt-column" id="sequence-column" style="overflow-y: auto; padding-right: 0.5rem;"></section>
-
           <aside class="mkt-column" id="details-column"></aside>
         </div>
       </main>
     `;
   }
 
-  // Permette di resettare il form se si sceglie un altro museo in corso d'opera
   resetState() {
     this.state.title = "";
     this.state.description = "";
@@ -91,47 +103,61 @@ export class MktVisitEditor extends HTMLElement {
     this.addEmptyStop();
   }
 
-  // Gestisce la colonna centrale indipendentemente
   renderSequence() {
     const sequenceContainer = this.querySelector('#sequence-column');
-    if (!sequenceContainer) return; // BUG FIX: Ora è "!sequenceContainer"
+    if (!sequenceContainer) return;
 
     const sequenceHtml = this.state.visit.map((stop, index) => {
       let itemContentHtml = '';
 
-      // Se l'opera è stata trascinata e ha un ID
       if (stop.artworkId) {
-        itemContentHtml = `
-          <div class="mkt-track-item">
-            <div class="mkt-track-left">
-              <span class="mkt-track-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" height="1.2rem" viewBox="0 -960 960 960" width="1.2rem" fill="currentColor"><path d="M400-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T480-414v-386h240v240H560v320q0 66-47 113T400-120Zm0-80q33 0 56.5-23.5T480-280q0-33-23.5-56.5T400-360q-33 0-56.5 23.5T320-280q0 33 23.5 56.5T400-200Zm240-360h80v-80h-80v80Z"/></svg>
-              </span>
-              <div>
-                <h5 class="mkt-track-title">${stop.description || 'Traccia generica collegata'}</h5>
-                <p class="mkt-track-type">${stop.length ? stop.length + ' min' : 'In attesa di contenuti'} ${stop.language ? '• ' + stop.language : ''}</p>
-              </div>
-            </div>
-          </div>
-        `;
+        const isFirst = index === 0;
+        const isLastPopulated = index >= this.state.visit.length - 2;
+        const hasCustomDesc = stop.description && stop.description.trim() !== '';
 
-        return `
-          <div class="mkt-stop-block">
-            <div class="mkt-stop-header">
-              <div class="mkt-stop-title-group">
-                <span class="mkt-stop-number">${index + 1}</span>
-                <h3 class="mkt-stop-heading">${stop.artworkTitle}</h3>
-              </div>
+        itemContentHtml = `
+          <div class="mkt-stop-header">
+            <div class="mkt-stop-title-group">
+              <span class="mkt-stop-number">${index + 1}</span>
+              <h3 class="mkt-stop-heading">${stop.artworkTitle}</h3>
+            </div>
+
+            <div class="mkt-stop-controls">
+              <button type="button" class="mkt-icon-btn mkt-move-up" data-index="${index}" title="Sposta su" ${isFirst ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}>
+                <svg xmlns="http://www.w3.org/2000/svg" height="1.25rem" viewBox="0 -960 960 960" width="1.25rem" fill="currentColor"><path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z"/></svg>
+              </button>
+
+              <button type="button" class="mkt-icon-btn mkt-move-down" data-index="${index}" title="Sposta giù" ${isLastPopulated ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}>
+                <svg xmlns="http://www.w3.org/2000/svg" height="1.25rem" viewBox="0 -960 960 960" width="1.25rem" fill="currentColor"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>
+              </button>
+
               <button type="button" class="mkt-icon-btn mkt-remove-stop" data-index="${index}" title="Rimuovi Opera">
                 <svg xmlns="http://www.w3.org/2000/svg" height="1.25rem" viewBox="0 -960 960 960" width="1.25rem" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
               </button>
             </div>
-            ${itemContentHtml}
+          </div>
+
+          <div class="mkt-stop-body">
+            <div class="mkt-details-section">
+              <label class="mkt-field-label">Descrizione Audio / Tappa</label>
+              <textarea class="mkt-textarea mkt-stop-input-desc" data-index="${index}" placeholder="Scrivi qui per sovrascrivere l'audio predefinito dell'opera...">${stop.description || ''}</textarea>
+              <div class="mkt-default-badge-wrapper">
+                <div class="mkt-default-badge ${hasCustomDesc ? 'mkt-hidden' : ''}" id="badge-desc-${index}">
+                  <svg class="mkt-default-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+                  Descrizione di default attiva
+                </div>
+              </div>
+            </div>
+
+            <div class="mkt-details-section">
+              <label class="mkt-field-label">Approfondimento (Dimmi di più)</label>
+              <textarea class="mkt-textarea mkt-stop-input-more" data-index="${index}" placeholder="Opzionale: Inserisci ulteriori dettagli storici...">${stop.tellMeMore || ''}</textarea>
+            </div>
           </div>
         `;
-      }
-      // Se è una tappa vuota in attesa di Drop
-      else {
+
+        return `<div class="mkt-stop-block">${itemContentHtml}</div>`;
+      } else {
         return `
           <div class="mkt-stop-block">
             <div class="mkt-stop-header">
@@ -156,44 +182,35 @@ export class MktVisitEditor extends HTMLElement {
       ${sequenceHtml}
     `;
 
-    //Bisogna re-inizializzare il Drag & Drop a ogni render della sequenza
-    this.setupSequenceDragAndDropListeners();
+    this.setupSequenceListeners();
   }
 
-  // BUG FIX: Funzione ripristinata per permettere il rilascio delle opere
-  setupSequenceDragAndDropListeners() {
+  setupSequenceListeners() {
     const dropzones = this.querySelectorAll('.mkt-empty-stop-dropzone');
-
     dropzones.forEach(zone => {
       zone.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'copy';
         zone.classList.add('mkt-drag-over');
       });
-
       zone.addEventListener('dragleave', () => {
         zone.classList.remove('mkt-drag-over');
       });
-
       zone.addEventListener('drop', (e) => {
         e.preventDefault();
         zone.classList.remove('mkt-drag-over');
-
         try {
           const rawData = e.dataTransfer.getData('application/json');
           if (!rawData) return;
-
           const artworkData = JSON.parse(rawData);
           const index = parseInt(zone.getAttribute('data-index'));
 
           this.state.visit[index].artworkId = artworkData.artworkId;
           this.state.visit[index].artworkTitle = artworkData.artworkTitle;
 
-          // Se popoliamo l'ultima tappa, ne creiamo una nuova in fondo
           if (index === this.state.visit.length - 1) {
             this.addEmptyStop();
           }
-
           this.renderSequence();
         } catch (error) {
           console.error("Errore durante il parsing dell'opera trascinata:", error);
@@ -210,20 +227,71 @@ export class MktVisitEditor extends HTMLElement {
         this.renderSequence();
       });
     });
+
+    const upBtns = this.querySelectorAll('.mkt-move-up');
+    upBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+        if (idx > 0) {
+          const temp = this.state.visit[idx];
+          this.state.visit[idx] = this.state.visit[idx - 1];
+          this.state.visit[idx - 1] = temp;
+          this.renderSequence();
+        }
+      });
+    });
+
+    const downBtns = this.querySelectorAll('.mkt-move-down');
+    downBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+        if (idx < this.state.visit.length - 2) {
+          const temp = this.state.visit[idx];
+          this.state.visit[idx] = this.state.visit[idx + 1];
+          this.state.visit[idx + 1] = temp;
+          this.renderSequence();
+        }
+      });
+    });
+
+    const descInputs = this.querySelectorAll('.mkt-stop-input-desc');
+    descInputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.getAttribute('data-index'));
+        const val = e.target.value;
+        this.state.visit[idx].description = val;
+
+        const badge = this.querySelector(`#badge-desc-${idx}`);
+        if (badge) {
+          if (val.trim() === '') {
+            badge.classList.remove('mkt-hidden');
+          } else {
+            badge.classList.add('mkt-hidden');
+          }
+        }
+      });
+    });
+
+    const moreInputs = this.querySelectorAll('.mkt-stop-input-more');
+    moreInputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.getAttribute('data-index'));
+        this.state.visit[idx].tellMeMore = e.target.value;
+      });
+    });
   }
 
-  // Gestisce la colonna dei dettagli indipendentemente
   renderDetails() {
     const detailsContainer = this.querySelector('#details-column');
     detailsContainer.innerHTML = `
       <div class="mkt-editor-card">
-      <h2 class="mkt-detail-column-title">Dettagli della Visita</h2>
+        <h2 class="mkt-detail-column-title">Dettagli della Visita</h2>
         <div class="mkt-details-section">
           <label class="mkt-field-label" for="input-tour-title">Titolo</label>
           <input type="text" class="mkt-input" id="input-tour-title" value="${this.state.title}" placeholder="Es. I Segreti del Museo">
         </div>
         <div class="mkt-details-section">
-          <label class="mkt-field-label" for="input-tour-desc">Descrizione</label>
+          <label class="mkt-field-label" for="input-tour-desc">Descrizione Generale</label>
           <textarea class="mkt-textarea" id="input-tour-desc" placeholder="Inserisci una breve panoramica...">${this.state.description}</textarea>
         </div>
         <div class="mkt-details-section">
@@ -254,7 +322,7 @@ export class MktVisitEditor extends HTMLElement {
             </label>
           </div>
         </div>
-        <divbra class="mkt-details-section">
+        <div class="mkt-details-section">
           <label class="mkt-field-label">Costo</label>
            <div class="mkt-pricing-options">
             <label class="mkt-pricing-card ${this.state.pricingType === 'free' ? 'mkt-selected' : ''}">
@@ -265,7 +333,6 @@ export class MktVisitEditor extends HTMLElement {
               <span class="mkt-pricing-title">Gratuito</span>
               <span class="mkt-pricing-subtitle">Incluso nel biglietto</span>
             </label>
-
             <label class="mkt-pricing-card ${this.state.pricingType === 'premium' ? 'mkt-selected' : ''}">
               <input type="radio" name="pricing" value="premium" class="mkt-sr-only" ${this.state.pricingType === 'premium' ? 'checked' : ''}>
               <svg class="mkt-pricing-icon" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 -960 960 960" width="1.5rem" fill="currentColor">
@@ -273,21 +340,18 @@ export class MktVisitEditor extends HTMLElement {
               </svg>
               <span class="mkt-pricing-title">Premium</span>
               <span class="mkt-pricing-subtitle">Aggiunta a pagamento</span>
-               <!-- Input Group elegante per il prezzo -->
                <div class="mkt-price-input-group ${this.state.pricingType === 'free' ? 'mkt-disabled' : ''}">
                    <span class="mkt-currency-symbol">€</span>
                <input type="number" class="mkt-price-input" id="input-tour-price" step="0.50" value="${this.state.price}" ${this.state.pricingType === 'free' ? 'disabled' : ''} placeholder="0.00">
                </div>
             </label>
           </div>
-
         </div>
       </div>
     `;
     this.setupDetailsListeners();
   }
 
-  // Listener separati per non sovrascrivere l'intero DOM a ogni lettera
   setupDetailsListeners() {
     const titleInput = this.querySelector('#input-tour-title');
     const headerTitleEl = this.querySelector('#main-title');
@@ -310,8 +374,6 @@ export class MktVisitEditor extends HTMLElement {
     const toggleAcc = this.querySelector('#toggle-accessible');
     if (toggleAcc) toggleAcc.addEventListener('change', (e) => this.state.isDisableFriendly = e.target.checked);
 
-
-    //Gestione prezzo dinamica
     const radios = this.querySelectorAll('input[name="pricing"]');
     const priceInput = this.querySelector('#input-tour-price');
     const priceGroup = this.querySelector('.mkt-price-input-group');
@@ -320,11 +382,9 @@ export class MktVisitEditor extends HTMLElement {
     radios.forEach(radio => {
       radio.addEventListener('change', (e) => {
         this.state.pricingType = e.target.value;
-
         pricingCards.forEach(card => card.classList.remove('mkt-selected'));
         e.target.closest('.mkt-pricing-card').classList.add('mkt-selected');
 
-        // 2. Abilita/Disabilita l'input visivamente e funzionalmente
         if (priceInput && priceGroup) {
           if (this.state.pricingType === 'free') {
             priceInput.disabled = true;
@@ -334,7 +394,7 @@ export class MktVisitEditor extends HTMLElement {
           } else {
             priceInput.disabled = false;
             priceGroup.classList.remove('mkt-disabled');
-            priceInput.focus(); // Autofocus
+            priceInput.focus();
           }
         }
       });
@@ -345,23 +405,70 @@ export class MktVisitEditor extends HTMLElement {
     }
   }
 
+  parseDurationToMinutes(durationStr) {
+    if (!durationStr) return 0;
+
+    const str = durationStr.toLowerCase().trim();
+
+    const hoursMatch = str.match(/(\d+)\s*(h|ora|ore)/);
+    const hours = hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
+
+    // Cerchiamo i numeri seguiti da m, min, minuto o minuti
+    const minutesMatch = str.match(/(\d+)\s*(m|min|minut[oi])/);
+    const minutes = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
+
+    let totalMinutes = (hours * 60) + minutes;
+
+    // Fallback: se l'utente ha scritto solo un numero puro (es. "90") assumiamo siano minuti
+    if (totalMinutes === 0 && /^\d+$/.test(str)) {
+      totalMinutes = parseInt(str, 10);
+    }
+
+    return totalMinutes;
+  }
+
   setupGlobalListeners() {
-    // Intercettazione salvataggio
+    // 3. LOGICA PULSANTE SALVA BOZZA
+    const btnDraft = this.querySelector('#btn-draft');
+    if (btnDraft) {
+      btnDraft.addEventListener('click', () => {
+        localStorage.setItem('mkt-visit-draft', JSON.stringify(this.state));
+        alert("Bozza salvata con successo! Potrai riprenderla in qualsiasi momento.");
+      });
+    }
+
     const btnPublish = this.querySelector('#btn-publish');
     if (btnPublish) {
-      btnPublish.addEventListener('click', () => {
-        // Pulizia: non inviare tappe vuote
+      btnPublish.addEventListener('click', async () => {
         const finalVisitArray = this.state.visit.filter(v => v.artworkId !== null);
 
-        // Costruzione del Payload conforme alle regole JSON
-        const payload = {
+        if(!this.userId && this.userId !== "null"){
+          alert("Non puoi pubblicare visite se non hai fatto l'accesso");
+          localStorage.setItem('mkt-visit-draft', JSON.stringify(this.state));
+          const navEvent = new CustomEvent('angular-navigate', {
+            detail:  {
+              destination: '/login'
+            },
+            bubbles: true,
+            composed: true,
+          })
+          this.dispatchEvent(navEvent);
+          return
+        }
+
+        const visit = {
+          museumId: this.state.museumId,
+          userId: this.userId,
           title: this.state.title,
           description: this.state.description,
-          image: this.state.image,
+          assets: {
+            orientation: 'portrait',
+            url: this.state.image.url,
+          },
           price: this.state.price,
-          duration: this.state.duration,
           isDisableFriendly: this.state.isDisableFriendly,
           license: this.state.license,
+          duration: this.parseDurationToMinutes(this.state.duration),
           visit: finalVisitArray.map(v => ({
             artworkId: v.artworkId,
             itemId: v.itemId,
@@ -370,16 +477,28 @@ export class MktVisitEditor extends HTMLElement {
             length: v.length,
             language: v.language
           }))
-        };
-        console.log("Dati JSON inviati:", payload);
-        alert("Visita pubblicata! Controlla la console.");
+        }
+
+        console.log("Dati JSON inviati:", visit);
+        const response = await VisitService.createVisit(visit);
+        // RIMOZIONE BOZZA DOPO PUBBLICAZIONE
+
+        if(response.ok){
+          alert('Visita pubblicata! Controlla la console.');
+          localStorage.removeItem('mkt-visit-draft');
+          this.dispatchEvent(new CustomEvent('angular-navigate', {
+            detail:  { destination: '/marketplace' },
+            bubbles: true,
+            composed: true,
+          }));
+        } else{
+          alert('Errore durante il salvataggio')
+        }
       });
     }
 
-    // GESTIONE DEL COMPONENTE RICERCA MUSEO E INVIO ALLA LIBRERIA
     const museumSelector = this.querySelector('#museum-selector');
     if (museumSelector) {
-      // Funzione centralizzata per gestire il cambio museo
       const handleMuseumChange = (newMuseumId) => {
         if (this.state.museumId === newMuseumId) return;
 
@@ -388,14 +507,12 @@ export class MktVisitEditor extends HTMLElement {
         if (this.state.museumId && hasData && newMuseumId) {
           const confirmClear = confirm("Attenzione: cambiando museo, tutti i dati inseriti per la visita attuale verranno persi. Vuoi procedere?");
           if (!confirmClear) {
-            // Se rifiuta, re-iniettiamo il nome nell'input nativo per visualizzazione
             const input = museumSelector.querySelector('#search-input');
             if (input) input.value = this.state.museumName || '';
             return;
           }
         }
 
-        // 1. Aggiorna lo stato del padre
         this.state.museumId = newMuseumId;
         const input = museumSelector.querySelector('#search-input');
         this.state.museumName = input ? input.value : 'Museo Selezionato';
@@ -410,16 +527,11 @@ export class MktVisitEditor extends HTMLElement {
 
         const artworksLibrary = this.querySelector('#artworksLibrary');
         if (artworksLibrary) {
-          // Se newMuseumId è assente/null (es: input cancellato), passiamo 'null' per far svuotare la libreria
           artworksLibrary.setAttribute('data-museum-id', newMuseumId || 'null');
         }
       };
 
-      // In JavaScript non puoi usare l'operatore || dentro i nomi degli eventi.
-      // Devi agganciare i listener separatamente.
       museumSelector.addEventListener('museumSelected', (e) => handleMuseumChange(e.detail));
-
-      // Se il componente figlio emette un evento 'cleared' quando si svuota l'input:
       museumSelector.addEventListener('cleared', () => handleMuseumChange(null));
     }
   }

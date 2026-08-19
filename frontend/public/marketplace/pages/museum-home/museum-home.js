@@ -64,7 +64,8 @@ export class MktMuseumHome extends HTMLElement {
           data-desc="${visit.description}"
           data-price="${visit.price}"
           data-image="${imageUrl}"
-          data-duration="${visit.duration}">
+          data-duration="${visit.duration}"
+          data-visit-id="${visit.id}">
         </mkt-visit-card>
       `;
     }).join("\n");

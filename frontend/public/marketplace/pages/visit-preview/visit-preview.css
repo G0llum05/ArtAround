@@ -1,0 +1,340 @@
+/* ========================================================
+   LAYOUT BASE & GRIGLIA (DESKTOP FIRST)
+   ======================================================== */
+.mkt-preview-page {
+  display: grid;
+  grid-template-columns: 2fr 5fr;
+
+  /* Costruiamo la mappa delle aree visuali */
+  grid-template-areas:
+    "header header"
+    "itin   image";
+    "itin   image"
+    "itin   details";
+
+  /* Riga 1 (Header), Riga 2 (resto Immagine), Riga 3 (Dettagli) */
+  grid-template-rows: auto auto 1fr;
+  gap: var(--spacing-xl);
+  align-items: stretch; /* Essenziale per pareggiare le altezze */
+
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+  padding: var(--spacing-xl) var(--spacing-xl);
+  min-height: 100vh;
+}
+
+/* --- ASSEGNAZIONE DELLE AREE ALLA GRIGLIA --- */
+.mkt-preview-header   { grid-area: header; }
+.mkt-sidebar-col      { grid-area: itin; }
+.mkt-preview-hero-img { grid-area: image; }
+.mkt-details-grid     { grid-area: details; }
+
+/* ========================================================
+   HEADER (ALTO A SINISTRA)
+   ======================================================== */
+.mkt-preview-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 0.0625rem solid var(--outline-variant);
+}
+
+.mkt-preview-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-lg-size, 2.5rem);
+  font-weight: 700;
+  margin: 0;
+  color: var(--on-surface);
+}
+
+.mkt-badge-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.mkt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: var(--label-md-size);
+  font-weight: 600;
+}
+
+.mkt-badge-museum {
+  background-color: var(--surface-variant);
+  color: var(--on-surface);
+  border: 0.0625rem solid var(--outline-variant);
+}
+
+.mkt-badge-accessibility {
+  background-color: #3b5b6d;
+  color: #ffffff;
+}
+
+.mkt-badge svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ========================================================
+   IMMAGINE (DESTRA ALTO)
+   ======================================================== */
+.mkt-preview-hero-img {
+  width: 100%;
+  height: 31.25rem; /* 500px */
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.08);
+}
+
+.mkt-preview-hero-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ========================================================
+   DETTAGLI (DESTRA BASSO)
+   ======================================================== */
+.mkt-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-top: -0.5rem;
+}
+
+.mkt-info-card {
+  background-color: var(--surface, #ffffff);
+  border: 0.0625rem solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0.0625rem 0.1875rem rgba(0,0,0,0.02);
+}
+
+.mkt-desc-card {
+  grid-column: 1 / -1;
+}
+
+.mkt-info-card-title {
+  font-family: var(--font-serif);
+  font-size: var(--headline-md-size, 1.25rem);
+  font-weight: 600;
+  color: var(--primary, #9a3b26);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.mkt-info-card-body {
+  font-size: var(--body-md-size);
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+  margin: 0;
+  padding-top: var(--spacing-sm);
+  border-top: 0.0625rem solid var(--outline-variant);
+}
+
+.mkt-price-card {
+  background-color: var(--primary, #9a3b26);
+  color: var(--on-primary, #ffffff);
+  border: none;
+}
+
+.mkt-price-card .mkt-info-card-title {
+  color: var(--on-primary, #ffffff);
+  margin: 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  opacity: 0.9;
+}
+
+.mkt-price-card .mkt-second-title {
+  margin-top: 1.25rem;
+}
+
+.mkt-price-card .mkt-info-card-body {
+  color: rgba(255, 255, 255, 0.95);
+  border-top: 0.0625rem dotted rgba(255, 255, 255, 0.3);
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.mkt-price-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* ========================================================
+   ITINERARIO E TIMELINE (SINISTRA BASSO SCORREVOLE)
+   ======================================================== */
+.mkt-sidebar-col {
+  display: flex;
+  flex-direction: column;
+
+  /* Cruciale per consentire lo scroll dentro la griglia */
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--outline-variant) transparent;
+
+  background-color: var(--surface, #ffffff);
+  border: 0.0625rem solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  box-shadow: 0 0.0625rem 0.1875rem rgba(0,0,0,0.02);
+}
+
+.mkt-sidebar-col::-webkit-scrollbar {
+  width: 0.375rem;
+}
+
+.mkt-sidebar-col::-webkit-scrollbar-thumb {
+  background-color: var(--outline-variant);
+  border-radius: 0.625rem;
+}
+
+.mkt-itinerary-header {
+  position: sticky;
+  top: -1.5rem;
+  background-color: var(--surface);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  border-bottom: 0.0625rem solid var(--outline-variant);
+  z-index: 10;
+}
+
+.mkt-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.mkt-timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  position: relative;
+}
+
+.mkt-timeline-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mkt-timeline-circle {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-variant, #e0e0e0);
+  border: 0.125rem solid var(--outline-variant, #ccc);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.mkt-timeline-item:first-child .mkt-timeline-circle {
+  background-color: var(--surface);
+  border-color: var(--primary, #9a3b26);
+  box-shadow: inset 0 0 0 0.25rem var(--surface), inset 0 0 0 0.625rem var(--primary, #9a3b26);
+}
+
+.mkt-timeline-line {
+  width: 0.1875rem;
+  flex-grow: 1;
+  min-height: 4.5rem;
+  background-color: var(--outline-variant, #e0e0e0);
+  margin: 0.25rem 0;
+}
+
+.mkt-timeline-item:last-child .mkt-timeline-line {
+  display: none;
+}
+
+.mkt-timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.25rem;
+  padding-bottom: var(--spacing-lg);
+}
+
+.mkt-stop-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--body-lg-size, 1.1rem);
+  margin: 0;
+  color: var(--on-surface);
+}
+
+.mkt-stop-meta {
+  font-size: var(--label-sm-size, 0.75rem);
+  color: var(--on-surface-variant);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mkt-stop-desc {
+  font-size: var(--body-sm-size, 0.875rem);
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+  margin: 0;
+  padding-top: 0.25rem;
+}
+
+/* ========================================================
+   MEDIA QUERIES (MOBILE E TABLET)
+   ======================================================== */
+@media (max-width: 64rem) {
+  .mkt-preview-page {
+    padding: var(--spacing-lg) var(--spacing-md);
+    grid-template-columns: 1fr;
+    /* Riorganizza le aree in un'unica colonna dall'alto in basso */
+    grid-template-areas:
+      "header"
+      "image"
+      "details"
+      "itin";
+  }
+
+  .mkt-sidebar-col {
+    height: auto;
+    overflow-y: visible;
+  }
+
+  .mkt-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mkt-preview-hero-img {
+    height: 18.75rem;
+  }
+
+  .mkt-itinerary-header {
+    position: static;
+  }
+}

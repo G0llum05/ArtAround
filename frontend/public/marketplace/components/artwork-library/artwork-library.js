@@ -4,10 +4,10 @@ import { getImageUrl } from '../../services/images.services.js';
 export class MktArtworkLibrary extends HTMLElement {
   constructor() {
     super();
+    this.isInitialized = false;
     this.state = {
       museumId: this.getAttribute('data-museum-id'),
       searchQuery: '',
-      activeFilter: 'all',
       artworks: [],
       isLoading: false,
     };
@@ -17,34 +17,20 @@ export class MktArtworkLibrary extends HTMLElement {
     return ['data-museum-id'];
   }
 
-  get filteredArtworks() {
-    const term = this.state.searchQuery.toLowerCase().trim();
-    return this.state.artworks.filter((art) => {
-      const matchTitle = art.title && art.title.toLowerCase().includes(term);
-      const artistNames = this.getArtistNames(art.artists).toLowerCase();
-      const matchArtist = artistNames.includes(term);
-      const matchesSearch = matchTitle || matchArtist;
-
-      let matchesFilter = true;
-      if (this.state.activeFilter !== 'all') {
-        const type = art.details?.objectType?.toLowerCase() || '';
-        matchesFilter = type === this.state.activeFilter;
-      }
-      return matchesSearch && matchesFilter;
-    });
-  }
-
   async attributeChangedCallback(attribute, oldValue, newValue) {
     if (attribute === 'data-museum-id' && oldValue !== newValue) {
       this.state.museumId = newValue;
-      await this.fetchMuseumArtworks();
+      if (this.isInitialized) {
+        await this.fetchMuseumArtworks();
+      }
     }
   }
 
   async connectedCallback() {
-    await this.fetchMuseumArtworks();
     this.render();
     this.setupEventListeners();
+    this.isInitialized = true;
+    await this.fetchMuseumArtworks();
   }
 
   getArtistNames(artistsArray) {
@@ -52,21 +38,37 @@ export class MktArtworkLibrary extends HTMLElement {
     return artistsArray.map((a) => `${a.name || ''} ${a.surname || ''}`.trim()).join(', ');
   }
 
-  async fetchMuseumArtworks() {
-    //Chiamata Http
-    this.state.isLoading = true;
-    this.updateListUI(); // Mostra il caricamento
+  get filteredArtworks() {
+    const term = this.state.searchQuery.toLowerCase().trim();
+    if (!term) return this.state.artworks;
 
-    if (this.state.museumId && this.state.museumId === 'null') return;
+    return this.state.artworks.filter((art) => {
+      const matchTitle = art.title && art.title.toLowerCase().includes(term);
+      const artistNames = this.getArtistNames(art.artists).toLowerCase();
+      const matchArtist = artistNames.includes(term);
+      return matchTitle || matchArtist;
+    });
+  }
+
+  async fetchMuseumArtworks() {
+    if (!this.state.museumId || this.state.museumId === 'null') {
+      this.state.artworks = [];
+      this.state.isLoading = false;
+      this.updateListUI();
+      return;
+    }
+
+    this.state.isLoading = true;
+    this.updateListUI();
 
     try {
       this.state.artworks = await MuseumService.getAllMuseumArtWorks(this.state.museumId);
     } catch (error) {
-      console.error('Errore nel caricamento della libreria:', error);
+      console.error('Errore nel caricamento della libreria opere:', error);
       this.state.artworks = [];
     } finally {
       this.state.isLoading = false;
-      this.updateListUI(); // Mostra i risultati o "nessuna opera"
+      this.updateListUI();
     }
   }
 
@@ -80,11 +82,6 @@ export class MktArtworkLibrary extends HTMLElement {
           </svg>
           <input type="text" class="mkt-search-input" id="library-search" placeholder="Cerca opera o artista..." value="${this.state.searchQuery}">
         </div>
-        <div class="mkt-filter-chips">
-          <button type="button" class="mkt-chip mkt-active" data-filter="all">Tutte</button>
-          <button type="button" class="mkt-chip" data-filter="pittura">Pittura</button>
-          <button type="button" class="mkt-chip" data-filter="scultura">Scultura</button>
-        </div>
         <div class="mkt-library-items-list" id="library-list-container"></div>
       </div>
     `;
@@ -95,14 +92,27 @@ export class MktArtworkLibrary extends HTMLElement {
     const listContainer = this.querySelector('#library-list-container');
     if (!listContainer) return;
 
-    if (!this.state.museumId) {
+    if (!this.state.museumId || this.state.museumId === 'null') {
       listContainer.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--on-surface-variant); opacity: 0.7;">
           <svg xmlns="http://www.w3.org/2000/svg" height="3rem" viewBox="0 -960 960 960" width="3rem" fill="currentColor" style="margin-bottom: 0.5rem;">
-            <path xmlns="http://www.w3.org/2000/svg" d="M160-80q-33 0-56.5-23.5T80-160v-480q0-33 23.5-56.5T160-720h160l160-160 160 160h160q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H160Zm0-80h640v-480H160v480Zm80-80h480L570-440 450-280l-90-120-120 160Zm502.5-217.5Q760-475 760-500t-17.5-42.5Q725-560 700-560t-42.5 17.5Q640-525 640-500t17.5 42.5Q675-440 700-440t42.5-17.5ZM404-720h152l-76-76-76 76ZM160-160v-480 480Z"/>
+            <path d="M160-80q-33 0-56.5-23.5T80-160v-480q0-33 23.5-56.5T160-720h160l160-160 160 160h160q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H160Zm0-80h640v-480H160v480Zm80-80h480L570-440 450-280l-90-120-120 160Zm502.5-217.5Q760-475 760-500t-17.5-42.5Q725-560 700-560t-42.5 17.5Q640-525 640-500t17.5 42.5Q675-440 700-440t42.5-17.5ZM404-720h152l-76-76-76 76ZM160-160v-480 480Z"/>
           </svg>
           <p style="font-size: var(--body-md-size); text-align: center; margin: 0;">Selezionare prima un museo<br>per visualizzare le opere.</p>
         </div>
+      `;
+      return;
+    }
+
+    if (this.state.isLoading) {
+      listContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--primary);">
+          <svg xmlns="http://www.w3.org/2000/svg" height="2.5rem" viewBox="0 -960 960 960" width="2.5rem" fill="currentColor" style="animation: spin 1.5s linear infinite; margin-bottom: 0.5rem;">
+            <path d="M480-80q-84 0-157-31.5T196-196q-54-54-85.5-127T80-480q0-84 31.5-157T196-764q54-54 127-85.5T480-880q17 0 28.5 11.5T520-840q0 17-11.5 28.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-17 11.5-28.5T840-520q17 0 28.5 11.5T880-480q0 84-31.5 157T764-196q-54 54-127 85.5T480-80Z"/>
+          </svg>
+          <p style="font-size: var(--body-md-size); text-align: center; margin: 0;">Caricamento opere...</p>
+        </div>
+        <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
       `;
       return;
     }
@@ -112,27 +122,21 @@ export class MktArtworkLibrary extends HTMLElement {
       return;
     }
 
-    //ArtWork
-    listContainer.innerHTML = this.filteredArtworks
-      .map((art) => {
-        const artistName = this.getArtistNames(art.artists);
-        const imageSrc = getImageUrl(art?.assets, 'portrait');
+    listContainer.innerHTML = this.filteredArtworks.map((art) => {
+      const artistName = this.getArtistNames(art.artists);
+      const imageSrc = getImageUrl(art?.assets, 'portrait');
 
-        return `
+      return `
         <div class="mkt-library-card" draggable="true" data-id="${art.id}">
-          ${
-            imageSrc
-              ? `
+          ${imageSrc ? `
             <img src="${imageSrc}" alt="${art.title}" class="mkt-library-thumb">
-          `
-              : `
+          ` : `
             <div class="mkt-library-doc-icon">
               <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 -960 960 960" width="1.5rem" fill="currentColor">
-                <path xmlns="http://www.w3.org/2000/svg" d="M73-889 889-73l-57 57-104-104H200q-33 0-56.5-23.5T120-200v-528L16-832l57-57Zm287 447L200-282v82h448L544-304l-22 24-162-162ZM200-648v252l126-126-126-126Zm36-192h524q33 0 56.5 23.5T840-760v524l-80-80v-234L650-426l-57-57 167-187v-90H316l-80-80Zm357 357Zm-158 70ZM326-522Zm34 80Zm176-98Z"/>
+                <path d="M73-889 889-73l-57 57-104-104H200q-33 0-56.5-23.5T120-200v-528L16-832l57-57Zm287 447L200-282v82h448L544-304l-22 24-162-162ZM200-648v252l126-126-126-126Zm36-192h524q33 0 56.5 23.5T840-760v524l-80-80v-234L650-426l-57-57 167-187v-90H316l-80-80Zm357 357Zm-158 70ZM326-522Zm34 80Zm176-98Z"/>
               </svg>
             </div>
-          `
-          }
+          `}
           <div class="mkt-library-info">
             <h4 class="mkt-library-item-title">${art.title}</h4>
             <p class="mkt-library-item-meta">
@@ -144,8 +148,7 @@ export class MktArtworkLibrary extends HTMLElement {
           </div>
         </div>
       `;
-      })
-      .join('');
+    }).join('');
 
     this.attachCardEventListeners();
   }
@@ -155,7 +158,7 @@ export class MktArtworkLibrary extends HTMLElement {
     cards.forEach((card) => {
       const artId = card.getAttribute('data-id');
       const artData = this.state.artworks.find((a) => a.id === artId);
-      //drag and drop
+
       card.addEventListener('dragstart', (e) => {
         const dragPayload = {
           artworkId: artData.id,
@@ -176,15 +179,5 @@ export class MktArtworkLibrary extends HTMLElement {
         this.updateListUI();
       });
     }
-
-    const chips = this.querySelectorAll('.mkt-chip');
-    chips.forEach((chip) => {
-      chip.addEventListener('click', (e) => {
-        chips.forEach((c) => c.classList.remove('mkt-active'));
-        e.currentTarget.classList.add('mkt-active');
-        this.state.activeFilter = e.currentTarget.getAttribute('data-filter');
-        this.updateListUI();
-      });
-    });
   }
 }

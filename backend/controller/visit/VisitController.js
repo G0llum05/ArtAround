@@ -11,14 +11,14 @@ class VisitController {
     try {
       const { category } = req.query;
       const visits = await VisitService.getAllVisits(category);
-      const visitDTOs = visits.map(visit => VisitMapper.toMuseumVisitForPresentationDTO(visit));
+      const visitDTOs = visits.map(visit => VisitMapper.toVisitResponsePresentation(visit));
       res.status(200).json(visitDTOs);
     } catch (error) {
       res.status(500).json({ message: 'Error retrieving visits', error: error.message });
     }
   }
 
-  // TODO CHECK la risposta ha un modello aggiornato che va allinato qua perchè i dati probabilmente non lo sono
+  // TODO CHECK la risposta ha un modello aggiornato che va allinato qua perchè i dati probabilmente non lo sono e le immagini anche che in getALL non sono implementate
   static async getMarketplaceFeed(req, res) {
     try {
       const feed = await VisitService.getMarketplaceFeed();
@@ -122,7 +122,7 @@ class VisitController {
       // Mapper.toVisitHomePresentationList(topVisits);
 
       // TODO CHECK isVerivied è verified da fixare
-      res.status(200).json(result.map(visit => VisitMapper.toTopTenVisitsResponse(visit)));
+      res.status(200).json(result.map(visit => VisitMapper.toVisitResponsePresentation(visit)));
     } catch (error) {
       res.status(500).json({ message: 'Errore durante la generazione della presentazione home per la visita', error: error.message });
     }

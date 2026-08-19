@@ -69,7 +69,7 @@ class MuseumController {
       const visitsDTOs = visits.map
       (
         (vis) => {
-          return VisitMapper.toMuseumVisitForPresentationDTO(vis); 
+          return VisitMapper.toVisitResponsePresentation(vis);
         }
       );
       res.status(200).json(visitsDTOs || []);

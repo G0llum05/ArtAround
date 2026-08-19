@@ -118,6 +118,21 @@ export class MktInputSearchText extends HTMLElement {
         this.selectMuseum(results[0]);
       }
     });
+
+    document.addEventListener('click', (event) => {
+      // Se il click avviene fuori da questo intero elemento (this)
+      if (!this.contains(event.target)) {
+        if (this.isDropdownOpen) {
+          this.isDropdownOpen = false;
+          this.updateSuggestions();
+        }
+        if (this.selectedMuseumId === null && input.value.trim() !== '') {
+          this.searchTerm = '';
+          input.value = '';
+          this.dispatchEvent(new CustomEvent('cleared', { bubbles: true, composed: true }));
+        }
+      }
+    });
   }
 
   selectMuseum(museum) {

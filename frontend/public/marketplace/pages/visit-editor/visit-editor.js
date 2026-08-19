@@ -5,16 +5,16 @@ export class MktVisitEditor extends HTMLElement {
     super();
     this.state = {
       museumId: null,
-      museumName: "",
-      title: "",
-      description: "",
-      image: "",
+      museumName: '',
+      title: '',
+      description: '',
+      image: '',
       price: 0,
-      pricingType: "free",
-      duration: "",
+      pricingType: 'free',
+      duration: '',
       isDisableFriendly: false,
-      license: "Standard Copyright",
-      visit: []
+      license: 'Standard Copyright',
+      visit: [],
     };
     this.userId = null;
   }
@@ -22,7 +22,7 @@ export class MktVisitEditor extends HTMLElement {
   connectedCallback() {
     const draft = localStorage.getItem('mkt-visit-draft');
     if (draft) {
-      if (confirm("Hai una bozza salvata per una visita. Vuoi riprenderla?")) {
+      if (confirm('Hai una bozza salvata per una visita. Vuoi riprenderla?')) {
         this.state = JSON.parse(draft);
       } else {
         localStorage.removeItem('mkt-visit-draft');
@@ -59,7 +59,7 @@ export class MktVisitEditor extends HTMLElement {
       description: null,
       tellMeMore: null,
       length: null,
-      language: null
+      language: null,
     });
   }
 
@@ -94,14 +94,14 @@ export class MktVisitEditor extends HTMLElement {
   }
 
   resetState() {
-    this.state.title = "";
-    this.state.description = "";
-    this.state.image = "";
+    this.state.title = '';
+    this.state.description = '';
+    this.state.image = '';
     this.state.price = 0;
-    this.state.pricingType = "free";
-    this.state.duration = "";
+    this.state.pricingType = 'free';
+    this.state.duration = '';
     this.state.isDisableFriendly = false;
-    this.state.license = "Standard Copyright";
+    this.state.license = 'Standard Copyright';
     this.state.visit = [];
     this.addEmptyStop();
   }
@@ -110,15 +110,16 @@ export class MktVisitEditor extends HTMLElement {
     const sequenceContainer = this.querySelector('#sequence-column');
     if (!sequenceContainer) return;
 
-    const sequenceHtml = this.state.visit.map((stop, index) => {
-      let itemContentHtml = '';
+    const sequenceHtml = this.state.visit
+      .map((stop, index) => {
+        let itemContentHtml = '';
 
-      if (stop.artworkId) {
-        const isFirst = index === 0;
-        const isLastPopulated = index >= this.state.visit.length - 2;
-        const hasCustomDesc = stop.description && stop.description.trim() !== '';
+        if (stop.artworkId) {
+          const isFirst = index === 0;
+          const isLastPopulated = index >= this.state.visit.length - 2;
+          const hasCustomDesc = stop.description && stop.description.trim() !== '';
 
-        itemContentHtml = `
+          itemContentHtml = `
           <div class="mkt-stop-header">
             <div class="mkt-stop-title-group">
               <span class="mkt-stop-number">${index + 1}</span>
@@ -159,9 +160,9 @@ export class MktVisitEditor extends HTMLElement {
           </div>
         `;
 
-        return `<div class="mkt-stop-block">${itemContentHtml}</div>`;
-      } else {
-        return `
+          return `<div class="mkt-stop-block">${itemContentHtml}</div>`;
+        } else {
+          return `
           <div class="mkt-stop-block">
             <div class="mkt-stop-header">
               <div class="mkt-stop-title-group">
@@ -177,8 +178,9 @@ export class MktVisitEditor extends HTMLElement {
             </div>
           </div>
         `;
-      }
-    }).join('');
+        }
+      })
+      .join('');
 
     sequenceContainer.innerHTML = `
       <h2 class="mkt-column-title">Sequenza Opere</h2>
@@ -190,7 +192,7 @@ export class MktVisitEditor extends HTMLElement {
 
   setupSequenceListeners() {
     const dropzones = this.querySelectorAll('.mkt-empty-stop-dropzone');
-    dropzones.forEach(zone => {
+    dropzones.forEach((zone) => {
       zone.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'copy';
@@ -222,7 +224,7 @@ export class MktVisitEditor extends HTMLElement {
     });
 
     const removeBtns = this.querySelectorAll('.mkt-remove-stop');
-    removeBtns.forEach(btn => {
+    removeBtns.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const index = parseInt(e.currentTarget.getAttribute('data-index'));
         this.state.visit.splice(index, 1);
@@ -232,7 +234,7 @@ export class MktVisitEditor extends HTMLElement {
     });
 
     const upBtns = this.querySelectorAll('.mkt-move-up');
-    upBtns.forEach(btn => {
+    upBtns.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const idx = parseInt(e.currentTarget.getAttribute('data-index'));
         if (idx > 0) {
@@ -245,7 +247,7 @@ export class MktVisitEditor extends HTMLElement {
     });
 
     const downBtns = this.querySelectorAll('.mkt-move-down');
-    downBtns.forEach(btn => {
+    downBtns.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const idx = parseInt(e.currentTarget.getAttribute('data-index'));
         if (idx < this.state.visit.length - 2) {
@@ -258,7 +260,7 @@ export class MktVisitEditor extends HTMLElement {
     });
 
     const descInputs = this.querySelectorAll('.mkt-stop-input-desc');
-    descInputs.forEach(input => {
+    descInputs.forEach((input) => {
       input.addEventListener('input', (e) => {
         const idx = parseInt(e.target.getAttribute('data-index'));
         const val = e.target.value;
@@ -276,7 +278,7 @@ export class MktVisitEditor extends HTMLElement {
     });
 
     const moreInputs = this.querySelectorAll('.mkt-stop-input-more');
-    moreInputs.forEach(input => {
+    moreInputs.forEach((input) => {
       input.addEventListener('input', (e) => {
         const idx = parseInt(e.target.getAttribute('data-index'));
         this.state.visit[idx].tellMeMore = e.target.value;
@@ -360,32 +362,39 @@ export class MktVisitEditor extends HTMLElement {
     const headerTitleEl = this.querySelector('#main-title');
     if (titleInput && headerTitleEl) {
       titleInput.addEventListener('input', (e) => {
-        this.state.title = e.target.value.replace(/\b\w/g, char => char.toUpperCase());
-        headerTitleEl.textContent = this.state.title || "Nuova Visita";
+        this.state.title = e.target.value.replace(/\b\w/g, (char) => char.toUpperCase());
+        headerTitleEl.textContent = this.state.title || 'Nuova Visita';
       });
     }
 
     const descInput = this.querySelector('#input-tour-desc');
-    if (descInput) descInput.addEventListener('input', (e) => this.state.description = e.target.value);
+    if (descInput)
+      descInput.addEventListener('input', (e) => (this.state.description = e.target.value));
 
     const durationInput = this.querySelector('#input-tour-duration');
-    if (durationInput) durationInput.addEventListener('input', (e) => this.state.duration = e.target.value);
+    if (durationInput)
+      durationInput.addEventListener('input', (e) => (this.state.duration = e.target.value));
 
     const licenseSelect = this.querySelector('#input-tour-license');
-    if (licenseSelect) licenseSelect.addEventListener('change', (e) => this.state.license = e.target.value);
+    if (licenseSelect)
+      licenseSelect.addEventListener('change', (e) => (this.state.license = e.target.value));
 
     const toggleAcc = this.querySelector('#toggle-accessible');
-    if (toggleAcc) toggleAcc.addEventListener('change', (e) => this.state.isDisableFriendly = e.target.checked);
+    if (toggleAcc)
+      toggleAcc.addEventListener(
+        'change',
+        (e) => (this.state.isDisableFriendly = e.target.checked),
+      );
 
     const radios = this.querySelectorAll('input[name="pricing"]');
     const priceInput = this.querySelector('#input-tour-price');
     const priceGroup = this.querySelector('.mkt-price-input-group');
     const pricingCards = this.querySelectorAll('.mkt-pricing-card');
 
-    radios.forEach(radio => {
+    radios.forEach((radio) => {
       radio.addEventListener('change', (e) => {
         this.state.pricingType = e.target.value;
-        pricingCards.forEach(card => card.classList.remove('mkt-selected'));
+        pricingCards.forEach((card) => card.classList.remove('mkt-selected'));
         e.target.closest('.mkt-pricing-card').classList.add('mkt-selected');
 
         if (priceInput && priceGroup) {
@@ -393,7 +402,7 @@ export class MktVisitEditor extends HTMLElement {
             priceInput.disabled = true;
             priceGroup.classList.add('mkt-disabled');
             this.state.price = 0;
-            priceInput.value = "0.00";
+            priceInput.value = '0.00';
           } else {
             priceInput.disabled = false;
             priceGroup.classList.remove('mkt-disabled');
@@ -404,7 +413,10 @@ export class MktVisitEditor extends HTMLElement {
     });
 
     if (priceInput) {
-      priceInput.addEventListener('input', (e) => this.state.price = parseFloat(e.target.value) || 0);
+      priceInput.addEventListener(
+        'input',
+        (e) => (this.state.price = parseFloat(e.target.value) || 0),
+      );
     }
   }
 
@@ -420,7 +432,7 @@ export class MktVisitEditor extends HTMLElement {
     const minutesMatch = str.match(/(\d+)\s*(m|min|minut[oi])/);
     const minutes = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
 
-    let totalMinutes = (hours * 60) + minutes;
+    let totalMinutes = hours * 60 + minutes;
 
     // Fallback: se l'utente ha scritto solo un numero puro (es. "90") assumiamo siano minuti
     if (totalMinutes === 0 && /^\d+$/.test(str)) {
@@ -466,7 +478,7 @@ export class MktVisitEditor extends HTMLElement {
           description: this.state.description,
           assets: {
             orientation: 'portrait',
-            url: this.state.image.url,
+            url: this.state?.image?.url,
           },
           price: this.state.price,
           isDisableFriendly: this.state.isDisableFriendly,
@@ -490,66 +502,76 @@ export class MktVisitEditor extends HTMLElement {
             // RIMOZIONE BOZZA DOPO PUBBLICAZIONE
             localStorage.removeItem('mkt-visit-draft');
 
-            const newVisitId = data.id || data._id || '';
+            const newVisitId = data.visitId || data._id;
 
             this.dispatchEvent(
               new CustomEvent('angular-navigate', {
                 detail: {
-                  destination: `/marketplace/visit/${newVisitId}`,
+                  destination: `/marketplace/visit/search/${newVisitId}`,
                 },
                 bubbles: true,
                 composed: true,
               }),
             );
+          } else {
+            throw Error('errore durante il salvataggio');
           }
         } catch (error) {
-          console.error('Eccezione durante il salvataggio:', error);
-          alert(`Si è verificato un errore critico durante la pubblicazione.\n ${error.message})}`);
+          console.error('Eccezione durante il salvataggio:');
+          alert(`Si è verificato un errore critico durante la pubblicazione.`);
         }
       });
+    }
 
-      const museumSelector = this.querySelector('#museum-selector');
-      if (museumSelector) {
-        const handleMuseumChange = (newMuseumId) => {
-          if (this.state.museumId === newMuseumId) return;
+    const museumSelector = this.querySelector('#museum-selector');
+    if (museumSelector) {
+      const handleMuseumChange = (newMuseumId) => {
+        if (this.state.museumId === newMuseumId) return;
 
-          const hasData =
-            this.state.title ||
-            this.state.description ||
-            this.state.visit.some((v) => v.artworkId !== null);
+        if (this.state.museumId !== null) {
+          const confirmClear = confirm(
+            'Attenzione: cambiando o rimuovendo il museo, tutti i dati inseriti per la visita attuale verranno persi. Vuoi procedere?'
+          );
 
-          if (this.state.museumId && hasData && newMuseumId) {
-            const confirmClear = confirm(
-              'Attenzione: cambiando museo, tutti i dati inseriti per la visita attuale verranno persi. Vuoi procedere?',
-            );
-            if (!confirmClear) {
-              const input = museumSelector.querySelector('#search-input');
-              if (input) input.value = this.state.museumName || '';
-              return;
-            }
+          if (!confirmClear) {
+            // L'UTENTE HA ANNULLATO: Ripristiniamo la barra di ricerca com'era prima
+            const input = museumSelector.querySelector('#search-input');
+            if (input) input.value = this.state.museumName || '';
+
+            // Ripristiniamo anche le variabili interne del tuo web component figlio!
+            museumSelector.searchTerm = this.state.museumName || '';
+            museumSelector.selectedMuseumId = this.state.museumId;
+            return; // Blocchiamo la funzione qui, non cancelliamo nulla
           }
+        }
 
-          this.state.museumId = newMuseumId;
-          const input = museumSelector.querySelector('#search-input');
-          this.state.museumName = input ? input.value : 'Museo Selezionato';
+        // Salviamo una flag per sapere se era la primissima volta che l'utente seleziona un museo
+        const isFirstSelection = !this.state.museumId;
 
+        // Aggiorniamo i dati del museo nello stato
+        this.state.museumId = newMuseumId;
+        const input = museumSelector.querySelector('#search-input');
+        // Se c'è un ID salviamo il nome, altrimenti (se ha fatto clear) stringa vuota
+        this.state.museumName = newMuseumId && input ? input.value : '';
+
+        // Se è la sua prima selezione assoluta, manteniamo i titoli/dati che ha già scritto!
+        if (!isFirstSelection) {
           this.resetState();
-
           const headerTitleEl = this.querySelector('#main-title');
           if (headerTitleEl) headerTitleEl.textContent = 'Nuova Visita';
-
           this.renderSequence();
           this.renderDetails();
+        }
 
-          const artworksLibrary = this.querySelector('#artworksLibrary');
-          if (artworksLibrary) {
-            artworksLibrary.setAttribute('data-museum-id', newMuseumId || 'null');
-          }
-        };
+        // Aggiorniamo sempre il componente della libreria opere con il nuovo ID
+        const artworksLibrary = this.querySelector('#artworksLibrary');
+        if (artworksLibrary) {
+          artworksLibrary.setAttribute('data-museum-id', newMuseumId || 'null');
+        }
+      };
 
-        museumSelector.addEventListener('museumSelected', (e) => handleMuseumChange(e.detail));
-        museumSelector.addEventListener('cleared', () => handleMuseumChange(null));
-      }
+      museumSelector.addEventListener('museumSelected', (e) => handleMuseumChange(e.detail));
+      museumSelector.addEventListener('cleared', () => handleMuseumChange(null));
     }
   }
 }

@@ -11,7 +11,7 @@ class VisitController {
     try {
       const { category } = req.query;
       const visits = await VisitService.getAllVisits(category);
-      const visitDTOs = visits.map(visit => VisitMapper.toVisitResponseDTO(visit));
+      const visitDTOs = visits.map(visit => VisitMapper.toMuseumVisitForPresentationDTO(visit));
       res.status(200).json(visitDTOs);
     } catch (error) {
       res.status(500).json({ message: 'Error retrieving visits', error: error.message });

@@ -34,4 +34,20 @@ export class VisitService {
         console.error(error);
       }
     }
+
+    static async getAllVisits() {
+      try {
+        const response = await fetch(`${this.apiUrl}`, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (error){
+        console.error(error);
+      }
+    }
 }

@@ -14,18 +14,24 @@ export class MktVisitCard extends HTMLElement {
 
   render() {
     const title = this.getAttribute('data-title') || 'Visita Guidata';
-    const price = this.getAttribute('data-price')==0 ? `Gratis` : `€ ${this.getAttribute('data-price')}`;
-    const desc = this.getAttribute('data-desc') || '';
-    const image = this.getAttribute('data-image') || '/assets/images/place_holder.jpg';
-    const duration = `${this.getAttribute('data-duration')  || ''} m`;
+    const price = this.getAttribute('data-price')==="0" ? `Gratis` : `€ ${this.getAttribute('data-price')}`;
+    const desc = this.getAttribute('data-desc');
+    const image = this.getAttribute('data-image') === "undefined" ? '/assets/images/place_holder.jpg' : this.getAttribute('data-image');
+    const duration = `${this.getAttribute('data-duration')  || ''} `;
 
-    let tagsHtml = '';
-    if (duration) {
-      tagsHtml = `
-        <footer class="mkt-visit-tags">
-          <span class="mkt-tag mkt-accent">${duration}</span>
-        </footer>
-      `;
+    function formattedDuration(input) {
+      // Estrae il numero dall'input, ignorando lettere come "m"
+      const minutiTotali = parseInt(input, 10);
+      if (isNaN(minutiTotali)) {
+        return "Sconosciuta";
+      }
+      const ore = Math.floor(minutiTotali / 60);
+      const minutiRimanenti = minutiTotali % 60;
+
+      if (ore === 0) return `${minutiRimanenti}m`;
+      if (minutiRimanenti === 0) return `${ore}h`;
+
+      return `${ore}h ${minutiRimanenti}m`;
     }
 
     this.innerHTML = `
@@ -42,7 +48,9 @@ export class MktVisitCard extends HTMLElement {
 
           <p class="mkt-visit-desc">${desc}</p>
 
-          ${tagsHtml}
+          <footer class="mkt-visit-tags">
+            <span class="mkt-tag mkt-accent">${formattedDuration(duration)}</span>
+          </footer>
         </div>
       </article>
     `;

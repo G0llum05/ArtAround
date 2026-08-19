@@ -11,6 +11,7 @@ export class MktHome extends HTMLElement {
     this.routes = window.location.pathname;
 
     this.allTop10Visits = [];
+    this.allVisits = [];
     this.allMuseums = [];
   }
 
@@ -18,12 +19,20 @@ export class MktHome extends HTMLElement {
     this.render();
     const museumsTrack = this.querySelector('#mkt-museums-track');
     const top10VisitsTrack = this.querySelector('#mkt-top10-visits-track');
+    const allVisitsTrack = this.querySelector('#mkt-all-visits-track');
 
     try{
       this.allTop10Visits = await VisitService.getTop10VisitPresentation() || [];
-      top10VisitsTrack.innerHTML = this.getFilteredVisitsHtml();
+      top10VisitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allTop10Visits);
     } catch(error) {
-      console.error("Errore nel recupero dei musei:", error);
+      console.error("Errore nel recupero della top 10", error);
+    }
+
+    try{
+      this.allVisits = await VisitService.getAllVisits() || [];
+      allVisitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allVisits);
+    } catch(error) {
+      console.error("Errore nel recupero delle visite", error);
     }
 
     try{
@@ -32,6 +41,7 @@ export class MktHome extends HTMLElement {
     } catch(error) {
       console.error("Errore nel recupero dei musei:", error);
     }
+
     this.render();
     this.setupEventListeners();
   }
@@ -67,10 +77,10 @@ export class MktHome extends HTMLElement {
     }).join("\n");
   }
 
-  getFilteredVisitsHtml() {
-    let filteredVisits = this.allTop10Visits;
+  getFilteredVisitsHtml(allVisits) {
+    let filteredVisits = [...allVisits];
     if (!this.activeFilter.includes('all')) {
-      filteredVisits = this.allTop10Visits.filter(visit => {
+      filteredVisits = filteredVisits.filter(visit => {
         return this.activeFilter.every(filter => {
           if (filter === 'new') return visit.isNew;
           if (filter === 'free') return visit.price == 0;
@@ -155,7 +165,15 @@ export class MktHome extends HTMLElement {
         <section class="mkt-category-section">
           <h2 class="mkt-category-title">Visite in Evidenza</h2>
           <div class="mkt-horizontal-track" id="mkt-top10-visits-track">
-            ${this.getFilteredVisitsHtml()}
+            ${this.getFilteredVisitsHtml(this.allTop10Visits)}
+          </div>
+        </section>
+
+        <!-- TUTTE LE VISITE -->
+        <section class="mkt-category-section">
+          <h2 class="mkt-category-title">Visite in Evidenza</h2>
+          <div class="mkt-horizontal-track" id="mkt-all-visits-track">
+            ${this.getFilteredVisitsHtml(this.allVisits)}
           </div>
         </section>
       </div>
@@ -165,7 +183,8 @@ export class MktHome extends HTMLElement {
   setupEventListeners() {
     const controls = this.querySelector('#mkt-controls');
     const museumsTrack = this.querySelector('#mkt-museums-track');
-    const visitsTrack = this.querySelector('#mkt-top10-visits-track');
+    const top10visitsTrack = this.querySelector('#mkt-top10-visits-track');
+    const allVisitsTrack = this.querySelector('#mkt-all-visits-track');
 
     if (controls) {
       // Ascolta il cambiamento nella barra di ricerca
@@ -177,7 +196,8 @@ export class MktHome extends HTMLElement {
       // Ascolta il cambiamento nei filtri a pillola
       controls.addEventListener('filter-change', (e) => {
         this.activeFilter = e.detail.activeFilter;
-        if (visitsTrack) visitsTrack.innerHTML = this.getFilteredVisitsHtml();
+        if (top10visitsTrack) top10visitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allTop10Visits);
+        if (allVisitsTrack) allVisitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allVisits);
       });
     }
 

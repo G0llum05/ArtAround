@@ -31,11 +31,15 @@
   <div class="navbar-actions">
    <app-theme-toggle-button></app-theme-toggle-button>
 
-    <a routerLink="/login" class="nav-icon-btn" title="Login">
+    <a routerLink="/login" class="nav-icon-btn" [title]="authService.isLoggedIn() ? 'Profilo' : 'Login'">
+      @if (profilePictureUrl()) {
+        <img [src]="profilePictureUrl()" (error)="onImageError()" alt="Foto profilo" class="nav-avatar" />
+      } @else {        
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
         <circle cx="12" cy="7" r="4"></circle>
       </svg>
+      }
     </a>
   </div>
 </nav>

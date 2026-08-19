@@ -52,6 +52,14 @@
   height: 1.4rem;
 }
 
+.nav-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  display: block;
+}
+
 .desktop-only {
   display: none;
 }

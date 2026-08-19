@@ -42,42 +42,42 @@
     fadeOut 0.3s ease forwards 5s;
 }
 
-/* Varianti di stato (Error, Warning, Success) */
+/* Varianti di stato (Error, Warning, Success) con background chiaro opaco al 100% */
 .toast.error {
-  background-color: rgba(186, 26, 26, 0.1);
+  background-color: #fdf2f2;
   color: var(--error, #ba1a1a);
-  border-color: rgba(186, 26, 26, 0.3);
+  border-color: #f8b4b4;
 }
 
 .toast.warning {
-  background-color: rgba(181, 139, 57, 0.12);
+  background-color: #fffbeb;
   color: #92400e;
-  border-color: rgba(181, 139, 57, 0.35);
+  border-color: #fde68a;
 }
 
 .toast.success {
-  background-color: rgba(46, 125, 50, 0.1);
+  background-color: #f0fdf4;
   color: #2e7d32;
-  border-color: rgba(46, 125, 50, 0.35);
+  border-color: #bbf7d0;
 }
 
-/* Supporto Dark Theme */
+/* Supporto Dark Theme con background opaco al 100% */
 [data-theme="dark"] .toast.error {
-  background-color: rgba(255, 84, 73, 0.15);
+  background-color: #362221;
   color: #ff857d;
-  border-color: rgba(255, 84, 73, 0.35);
+  border-color: #5c2c29;
 }
 
 [data-theme="dark"] .toast.warning {
-  background-color: rgba(209, 167, 81, 0.15);
+  background-color: #362e1d;
   color: #ffd67a;
-  border-color: rgba(209, 167, 81, 0.35);
+  border-color: #5c4a24;
 }
 
 [data-theme="dark"] .toast.success {
-  background-color: rgba(76, 175, 80, 0.15);
+  background-color: #1e3323;
   color: #81c784;
-  border-color: rgba(129, 199, 132, 0.35);
+  border-color: #2a5232;
 }
 
 /* Icona opzionale */

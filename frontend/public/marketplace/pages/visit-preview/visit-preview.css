@@ -1,6 +1,3 @@
-/* ========================================================
-   LAYOUT BASE & GRIGLIA (DESKTOP FIRST)
-   ======================================================== */
 .mkt-preview-page {
   display: grid;
   grid-template-columns: 2fr 5fr;
@@ -8,32 +5,29 @@
   /* Costruiamo la mappa delle aree visuali */
   grid-template-areas:
     "header header"
-    "itin   image";
     "itin   image"
     "itin   details";
 
-  /* Riga 1 (Header), Riga 2 (resto Immagine), Riga 3 (Dettagli) */
   grid-template-rows: auto auto 1fr;
   gap: var(--spacing-xl);
-  align-items: stretch; /* Essenziale per pareggiare le altezze */
+  align-items: stretch;
 
   background-color: var(--background);
   color: var(--on-surface);
   font-family: var(--font-sans);
   box-sizing: border-box;
-  padding: var(--spacing-xl) var(--spacing-xl);
-  min-height: 100vh;
+
+  max-height: 100vh;
 }
 
-/* --- ASSEGNAZIONE DELLE AREE ALLA GRIGLIA --- */
-.mkt-preview-header   { grid-area: header; }
+/* Essenziale per pareggiare le altezze */
+.mkt-preview-header   { grid-area: header;}
 .mkt-sidebar-col      { grid-area: itin; }
 .mkt-preview-hero-img { grid-area: image; }
 .mkt-details-grid     { grid-area: details; }
 
-/* ========================================================
-   HEADER (ALTO A SINISTRA)
-   ======================================================== */
+/*  HEADER (ALTO A SINISTRA) */
+
 .mkt-preview-header {
   display: flex;
   flex-direction: column;
@@ -70,9 +64,8 @@
 }
 
 .mkt-badge-museum {
-  background-color: var(--surface-variant);
-  color: var(--on-surface);
-  border: 0.0625rem solid var(--outline-variant);
+  background-color: var(--primary);
+  color: var(--on-primary);
 }
 
 .mkt-badge-accessibility {
@@ -85,9 +78,7 @@
   height: 1rem;
 }
 
-/* ========================================================
-   IMMAGINE (DESTRA ALTO)
-   ======================================================== */
+/* Immagine */
 .mkt-preview-hero-img {
   width: 100%;
   height: 31.25rem; /* 500px */
@@ -121,6 +112,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 0.0625rem 0.1875rem rgba(0,0,0,0.02);
+  justify-content: start;
 }
 
 .mkt-desc-card {
@@ -129,8 +121,8 @@
 
 .mkt-info-card-title {
   font-family: var(--font-serif);
-  font-size: var(--headline-md-size, 1.25rem);
-  font-weight: 600;
+  font-size: var(--body-lg-size);
+  font-weight: 90;
   color: var(--primary, #9a3b26);
   margin: 0 0 var(--spacing-sm) 0;
 }
@@ -179,14 +171,11 @@
   font-weight: 700;
 }
 
-/* ========================================================
-   ITINERARIO E TIMELINE (SINISTRA BASSO SCORREVOLE)
-   ======================================================== */
+/* ITINERARIO E TIMELINE (SINISTRA BASSO SCORREVOLE) */
 .mkt-sidebar-col {
   display: flex;
   flex-direction: column;
 
-  /* Cruciale per consentire lo scroll dentro la griglia */
   height: 100%;
   min-height: 0;
   overflow-y: auto;
@@ -197,6 +186,7 @@
   background-color: var(--surface, #ffffff);
   border: 0.0625rem solid var(--outline-variant);
   border-radius: var(--radius-md);
+  box-sizing: border-box;
   padding: var(--spacing-lg);
   box-shadow: 0 0.0625rem 0.1875rem rgba(0,0,0,0.02);
 }
@@ -212,7 +202,6 @@
 
 .mkt-itinerary-header {
   position: sticky;
-  top: -1.5rem;
   background-color: var(--surface);
   padding-bottom: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
@@ -256,8 +245,7 @@
 }
 
 .mkt-timeline-item:first-child .mkt-timeline-circle {
-  background-color: var(--surface);
-  border-color: var(--primary, #9a3b26);
+  background-color: var(--primary);
   box-shadow: inset 0 0 0 0.25rem var(--surface), inset 0 0 0 0.625rem var(--primary, #9a3b26);
 }
 
@@ -290,7 +278,7 @@
 }
 
 .mkt-stop-meta {
-  font-size: var(--label-sm-size, 0.75rem);
+  font-size: var(--label-md-size, 0.75rem);
   color: var(--on-surface-variant);
   font-weight: 500;
   display: flex;
@@ -299,7 +287,7 @@
 }
 
 .mkt-stop-desc {
-  font-size: var(--body-sm-size, 0.875rem);
+  font-size: var(--body-md-size, 0.875rem);
   color: var(--on-surface-variant);
   line-height: 1.5;
   margin: 0;

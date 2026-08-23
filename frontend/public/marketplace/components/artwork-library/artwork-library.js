@@ -7,6 +7,7 @@ export class MktArtworkLibrary extends HTMLElement {
     this.isInitialized = false;
     this.state = {
       museumId: this.getAttribute('data-museum-id'),
+      excludedIds: [],
       searchQuery: '',
       artworks: [],
       isLoading: false,
@@ -14,19 +15,41 @@ export class MktArtworkLibrary extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['data-museum-id'];
+    return ['data-museum-id', 'data-excluded-ids'];
   }
 
   async attributeChangedCallback(attribute, oldValue, newValue) {
-    if (attribute === 'data-museum-id' && oldValue !== newValue) {
+    if (oldValue === newValue) return;
+
+    if (attribute === 'data-museum-id') {
       this.state.museumId = newValue;
       if (this.isInitialized) {
         await this.fetchMuseumArtworks();
       }
+    } else if (attribute === 'data-excluded-ids') {
+      try {
+        this.state.excludedIds = newValue ? JSON.parse(newValue) : [];
+      } catch {
+        this.state.excludedIds = newValue ? newValue.split(',').map((s) => s.trim()) : [];
+      }
+      this.updateListUI();
     }
   }
 
+  setExcludedIds(ids) {
+    this.state.excludedIds = Array.isArray(ids) ? ids.map((id) => String(id)) : [];
+    this.updateListUI();
+  }
+
   async connectedCallback() {
+    if (this.hasAttribute('data-excluded-ids')) {
+      const attrVal = this.getAttribute('data-excluded-ids');
+      try {
+        this.state.excludedIds = attrVal ? JSON.parse(attrVal) : [];
+      } catch {
+        this.state.excludedIds = attrVal ? attrVal.split(',').map((s) => s.trim()) : [];
+      }
+    }
     this.render();
     this.setupEventListeners();
     this.isInitialized = true;
@@ -40,9 +63,16 @@ export class MktArtworkLibrary extends HTMLElement {
 
   get filteredArtworks() {
     const term = this.state.searchQuery.toLowerCase().trim();
-    if (!term) return this.state.artworks;
+    const excluded = new Set((this.state.excludedIds || []).map((id) => String(id)));
 
     return this.state.artworks.filter((art) => {
+      const artId = String(art.id || art._id);
+      if (excluded.has(artId)) {
+        return false;
+      }
+
+      if (!term) return true;
+
       const matchTitle = art.title && art.title.toLowerCase().includes(term);
       const artistNames = this.getArtistNames(art.artists).toLowerCase();
       const matchArtist = artistNames.includes(term);

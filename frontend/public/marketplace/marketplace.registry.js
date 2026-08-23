@@ -17,6 +17,9 @@ customElements.define('mkt-skeleton-card-grid', MktCardGrid);
 import {MktArtworkLibrary} from "./components/artwork-library/artwork-library.js";
 customElements.define('mkt-artwork-library', MktArtworkLibrary);
 
+import {MktImageUploader} from "./components/image-uploader/image-uploader.js";
+customElements.define('mkt-image-uploader', MktImageUploader);
+
 //pages
 import {MktVisitExplorer} from "./pages/visit-explorer/visit-explorer.js";
 customElements.define('mkt-visit-explorer', MktVisitExplorer);

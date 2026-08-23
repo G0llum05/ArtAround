@@ -29,17 +29,25 @@ export class MktRouter extends HTMLElement {
   }
 
   connectedCallback() {
-    this.userId = this.getAttribute('user-id')
+    const rawUserId = this.getAttribute('user-id');
+    this.userId = (rawUserId && rawUserId !== 'null' && rawUserId !== 'undefined') ? rawUserId : null;
     this.render();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if(oldValue === newValue) return;
+    if (oldValue === newValue) return;
     if (name === 'route') {
       this.render();
     } else if (name === 'user-id') {
-      this.userId = newValue;
-      this.render();
+      this.userId = (newValue && newValue !== 'null' && newValue !== 'undefined') ? newValue : null;
+      const visitEditor = this.querySelector('mkt-visit-editor');
+      if (visitEditor) {
+        if (this.userId) {
+          visitEditor.setAttribute('data-user-id', this.userId);
+        } else {
+          visitEditor.removeAttribute('data-user-id');
+        }
+      }
     }
   }
 
@@ -75,7 +83,7 @@ export class MktRouter extends HTMLElement {
         this.innerHTML += `<mkt-home> </mkt-home>`;
         break;
       case '/marketplace/visit/create':
-        this.innerHTML += `<mkt-visit-editor data-user-id="${this.userId}"> </mkt-visit-editor>`;
+        this.innerHTML += `<mkt-visit-editor ${this.userId ? `data-user-id="${this.userId}"` : ''}> </mkt-visit-editor>`;
         break;
       case '/marketplace/visit/search':
         this.innerHTML += `<mkt-visit-explorer> </mkt-visit-explorer>`;

@@ -1,4 +1,5 @@
 import { VisitService } from '../../services/visit.service.js';
+import { UploadService } from '../../services/upload.service.js';
 
 export class MktVisitEditor extends HTMLElement {
   constructor() {
@@ -19,6 +20,17 @@ export class MktVisitEditor extends HTMLElement {
     this.userId = null;
   }
 
+  static get observedAttributes() {
+    return ['data-user-id'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    if (name === 'data-user-id') {
+      this.userId = (newValue && newValue !== 'null' && newValue !== 'undefined') ? newValue : null;
+    }
+  }
+
   connectedCallback() {
     const draft = localStorage.getItem('mkt-visit-draft');
     if (draft) {
@@ -32,7 +44,8 @@ export class MktVisitEditor extends HTMLElement {
       if (this.state.visit.length === 0) this.addEmptyStop();
     }
 
-    this.userId = this.getAttribute('data-user-id');
+    const attrUserId = this.getAttribute('data-user-id');
+    this.userId = (attrUserId && attrUserId !== 'null' && attrUserId !== 'undefined') ? attrUserId : null;
 
     this.render();
     this.renderSequence();
@@ -63,7 +76,12 @@ export class MktVisitEditor extends HTMLElement {
     });
   }
 
+  // TODO: va messo un upload apposito per portrait e uno apposito per landscape
   render() {
+    const initialExcluded = JSON.stringify(
+      this.state.visit.map((step) => step.artworkId).filter((id) => id !== null && id !== undefined)
+    );
+
     this.innerHTML = `
       <main class="mkt-editor-page">
         <!-- HEADER SUPERIORE -->
@@ -84,7 +102,7 @@ export class MktVisitEditor extends HTMLElement {
         <!-- GRIGLIA A TRE COLONNE (2 SU MOBILE) -->
          <div class="mkt-three-column-grid">
           <aside class="mkt-column sticky" style="p">
-            <mkt-artwork-library data-museum-id="${this.state.museumId}" id="artworksLibrary"></mkt-artwork-library>
+            <mkt-artwork-library data-museum-id="${this.state.museumId}" data-excluded-ids='${initialExcluded}' id="artworksLibrary"></mkt-artwork-library>
           </aside>
           <section class="mkt-column" id="sequence-column" style="overflow-y: auto; padding-right: 0.5rem;"></section>
           <aside class="mkt-column" id="details-column"></aside>
@@ -104,13 +122,30 @@ export class MktVisitEditor extends HTMLElement {
     this.state.license = 'Standard Copyright';
     this.state.visit = [];
     this.addEmptyStop();
+    this.updateArtworksLibraryExcluded();
+  }
+
+  updateArtworksLibraryExcluded() {
+    const artworksLibrary = this.querySelector('#artworksLibrary');
+    if (!artworksLibrary) return;
+
+    const addedIds = this.state.visit
+      .map((step) => step.artworkId)
+      .filter((id) => id !== null && id !== undefined);
+
+    if (typeof artworksLibrary.setExcludedIds === 'function') {
+      artworksLibrary.setExcludedIds(addedIds);
+    } else {
+      artworksLibrary.setAttribute('data-excluded-ids', JSON.stringify(addedIds));
+    }
   }
 
   renderSequence() {
     const sequenceContainer = this.querySelector('#sequence-column');
     if (!sequenceContainer) return;
+    let artworks = this.state.visit;
 
-    const sequenceHtml = this.state.visit
+    const sequenceHtml = artworks
       .map((stop, index) => {
         let itemContentHtml = '';
 
@@ -188,6 +223,7 @@ export class MktVisitEditor extends HTMLElement {
     `;
 
     this.setupSequenceListeners();
+    this.updateArtworksLibraryExcluded();
   }
 
   setupSequenceListeners() {
@@ -301,7 +337,17 @@ export class MktVisitEditor extends HTMLElement {
         </div>
         <div class="mkt-details-section">
           <label class="mkt-field-label">Immagine di Copertina</label>
-          <app-image-uploader></app-image-uploader>
+          <mkt-image-uploader
+            id="visit-cover-uploader"
+            allowed-file-types="image/*"
+            max-file-size="10485760"
+            max-number-of-files="1"
+            allow-multiple-files="false"
+            show-preview="true"
+            drop-here-or="Trascina qui l'immagine o %{browse}"
+            browse="sfoglia"
+            note="PNG, JPG, WEBP fino a 10MB"
+          ></mkt-image-uploader> <!-- Uppy Upload-->
         </div>
         <div class="mkt-details-section">
           <label class="mkt-field-label" for="input-tour-duration">Durata Stimata</label>
@@ -415,6 +461,19 @@ export class MktVisitEditor extends HTMLElement {
         (e) => (this.state.price = parseFloat(e.target.value) || 0),
       );
     }
+
+    const coverUploader = this.querySelector('#visit-cover-uploader');
+    if (coverUploader) {
+      coverUploader.addEventListener('filesChange', (e) => {
+        const files = e.detail;
+        if (files && files.length > 0) {
+          const uppyFile = files[0];
+          this.state.coverImageFile = uppyFile.data;
+        } else {
+          this.state.coverImageFile = null;
+        }
+      });
+    }
   }
 
   parseDurationToMinutes(durationStr) {
@@ -439,6 +498,30 @@ export class MktVisitEditor extends HTMLElement {
     return totalMinutes;
   }
 
+  getEffectiveUserId() {
+    if (this.userId && this.userId !== 'null' && this.userId !== 'undefined') {
+      return this.userId;
+    }
+    const attr = this.getAttribute('data-user-id');
+    if (attr && attr !== 'null' && attr !== 'undefined') {
+      return attr;
+    }
+    const routerUserId = this.closest('mkt-router')?.getAttribute('user-id');
+    if (routerUserId && routerUserId !== 'null' && routerUserId !== 'undefined') {
+      return routerUserId;
+    }
+    try {
+      const token = localStorage.getItem('artaround_accessToken');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload?.id || payload?.userId) return payload.id || payload.userId;
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  }
+
   setupGlobalListeners() {
     // 3. LOGICA PULSANTE SALVA BOZZA
     const btnDraft = this.querySelector('#btn-draft');
@@ -453,8 +536,9 @@ export class MktVisitEditor extends HTMLElement {
     if (btnPublish) {
       btnPublish.addEventListener('click', async () => {
         const finalVisitArray = this.state.visit.filter((v) => v.artworkId !== null);
+        const activeUserId = this.getEffectiveUserId();
 
-        if (!this.userId || this.userId == 'null') {
+        if (!activeUserId) {
           alert("Non puoi pubblicare visite se non hai fatto l'accesso");
           localStorage.setItem('mkt-visit-draft', JSON.stringify(this.state));
           const navEvent = new CustomEvent('angular-navigate', {
@@ -470,7 +554,7 @@ export class MktVisitEditor extends HTMLElement {
 
         const visit = {
           museumId: this.state.museumId,
-          userId: this.userId,
+          userId: activeUserId,
           title: this.state.title,
           description: this.state.description,
           assets: {
@@ -495,11 +579,25 @@ export class MktVisitEditor extends HTMLElement {
 
           if (response && response.ok) {
             const data = await response.json();
+            const newVisitId = data.visitId || data._id;
+
+            // Se l'utente ha selezionato un'immagine di copertina, caricala tramite UploadService
+            if (this.state.coverImageFile) {
+              try {
+                await UploadService.uploadVisitMetaImage(
+                  this.state.museumId,
+                  newVisitId,
+                  this.state.coverImageFile,
+                  'landscape'
+                );
+              } catch (uploadError) {
+                console.error("Errore durante il caricamento dell'immagine di copertina:", uploadError);
+                alert("Visita creata con successo, ma si è verificato un problema durante il salvataggio dell'immagine di copertina.");
+              }
+            }
 
             // RIMOZIONE BOZZA DOPO PUBBLICAZIONE
             localStorage.removeItem('mkt-visit-draft');
-
-            const newVisitId = data.visitId || data._id;
 
             this.dispatchEvent(
               new CustomEvent('angular-navigate', {
@@ -514,7 +612,7 @@ export class MktVisitEditor extends HTMLElement {
             throw Error('errore durante il salvataggio');
           }
         } catch (error) {
-          console.error('Eccezione durante il salvataggio:');
+          console.error('Eccezione durante il salvataggio:', error);
           alert(`Si è verificato un errore critico durante la pubblicazione.`);
         }
       });

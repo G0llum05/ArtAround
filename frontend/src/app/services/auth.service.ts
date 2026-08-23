@@ -18,11 +18,44 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   private readonly _currentUser = signal<AuthResponse | null>(null);
+  private readonly _accessToken = signal<string | null> (localStorage.getItem(this.ACCESS_TOKEN_KEY));
   private readonly _currentVisit = signal<VisitHomePresentationResponse | null>(null);
 
   readonly currentUser = this._currentUser.asReadonly();
-  readonly isLoggedIn = computed(() => this.currentUser() != null);
+  readonly accessToken = this._accessToken.asReadonly();
   readonly currentVisit = this._currentVisit.asReadonly();
+
+  // Computed Signals
+  readonly isLoggedIn = computed(() => this.currentUser() != null);
+  readonly userRole = computed(() => this.currentUser()?.role || 'guest');
+  // readonly isPendingApproval = computed(() => this.currentUser()?.roleStatus === 'pending');
+
+  readonly userDisplayName = computed(() => {
+    const user = this.currentUser();
+    if (!user) return '';
+    if (user.name) {
+      return user.surname ? `${user.name} ${user.surname}` : user.name;
+    }
+    return user.email || 'Utente';
+  });
+
+  constructor() {
+    // Inizializzazione gestita all'avvio da provideAppInitializer in app.config.ts
+  }
+
+  private setSession(authData: AuthResponse): void {
+    this._currentUser.set(authData);
+    this._accessToken.set(authData.accessToken);
+    localStorage.setItem(this.ACCESS_TOKEN_KEY, authData.accessToken);
+    console.log("[Auth Service] sessione inizializzata con successo!")
+  }
+
+  private clearSession(): void {
+    this._currentUser.set(null);
+    this._accessToken.set(null);
+    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    console.log("[Auth Service] sessione terminata con successo!")
+  }
 
   register(userData: UserRequest): Observable<{ message?: string; type?: 'success' | 'warning' | 'error' | string }> {
     return this.http.post<{ message?: string; type?: 'success' | 'warning' | 'error' | string }>(`${this.apiUrl}/signup`, userData);
@@ -31,27 +64,27 @@ export class AuthService {
   verifyCode(email: string, code: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/verifyCode`, { email, code }, { withCredentials: true }).pipe(
       tap(response => {
-        this._currentUser.set(response);
-        localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
+        this.setSession(response);
       })
     );
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
       tap(response => {
-        this._currentUser.set(response);
-        localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
+        this.setSession(response);
       })
     );
   }
 
   logout(): Observable<{ message?: string; type?: 'success' | 'warning' | 'error' | string }> {
     return this.http.post<{ message?: string; type?: 'success' | 'warning' | 'error' | string }>(`${this.apiUrl}/logout`, {}).pipe(
-      tap(() => {
-        this._currentUser.set(null);
-        localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-      }));
+      tap(() => this.clearSession()),
+      catchError((err) => {
+        this.clearSession();
+        return throwError(() => err);
+      })
+    );
   }
 
   googleLogin(): void {
@@ -61,15 +94,17 @@ export class AuthService {
   refreshToken(): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe( // withCredentials: true per inviare i cookie che contenono il refresh token
       tap(response => {
-        this._currentUser.set(response);
-        localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
+        this.setSession(response);
       }),
       catchError(err => {
-        this._currentUser.set(null);
-        localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+        this.clearSession();
         return throwError(() => err);
       })
     );
+  }
+
+  getAccessToken(): string | null {
+    return this.accessToken();
   }
 
   updateUserProfilePicture(url: string, orientation: string = 'square'): void {
@@ -86,6 +121,13 @@ export class AuthService {
         }
       });
     }
+  }
+
+  // ---- Roles
+
+  hasRole(...allowedRoles: string[]): boolean {
+    const role = this.userRole();
+    return allowedRoles.includes(role);
   }
 
   // Matti di seguito ti metto del codice che puoi eliminare ma che ti potrebbe servire per gestire le sessioni

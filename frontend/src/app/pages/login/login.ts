@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, viewChild, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; //per la disiscrizione dagli observable
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { UserRequest } from '../../models/user.model';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { UploadService } from '../../services/upload.service';
-import { ImageUploader } from '../../components/image-uploader/image-uploader';
+import { ImageUploader, AppUppyFile } from '../../components/image-uploader/image-uploader';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -34,11 +34,10 @@ export class Login implements OnInit {
   isSubmitting = signal<boolean>(false);
 
   // Profile Picture Upload State
+  readonly imageUploader = viewChild<ImageUploader>(ImageUploader);
   showUploadMode = signal<boolean>(false);
   isUploadingPropic = signal<boolean>(false);
-  isDragging = signal<boolean>(false);
   selectedFile = signal<File | null>(null);
-  previewUrl = signal<string | null>(null);
   uploadError = signal<string | null>(null);
 
   authForm: FormGroup = this.fb.group({
@@ -277,7 +276,6 @@ export class Login implements OnInit {
       target.src = '/assets/users/default/propic/default.jpeg';
     }
   }
-
   toggleUploadMode(): void {
     const current = this.showUploadMode();
     if (current) {
@@ -288,63 +286,27 @@ export class Login implements OnInit {
     }
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.processSelectedFile(input.files[0]);
-    }
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging.set(true);
-  }
-
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging.set(false);
-  }
-
-  onFileDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging.set(false);
-
-    if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
-      this.processSelectedFile(event.dataTransfer.files[0]);
-    }
-  }
-
-  private processSelectedFile(file: File): void {
+  onUppyFilesChange(files: AppUppyFile[]): void {
     this.uploadError.set(null);
-
-    if (!file.type.startsWith('image/')) {
-      this.uploadError.set('Il file selezionato non è un\'immagine valida.');
-      return;
+    if (files && files.length > 0) {
+      const uppyFile = files[0];
+      if (uppyFile.data instanceof File) {
+        this.selectedFile.set(uppyFile.data);
+      } else if (uppyFile.data instanceof Blob) {
+        const file = new File([uppyFile.data], uppyFile.name, { type: uppyFile.type });
+        this.selectedFile.set(file);
+      }
+    } else {
+      this.selectedFile.set(null);
     }
+  }
 
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
-      this.uploadError.set('L\'immagine non può superare i 10MB di dimensione.');
-      return;
-    }
-
-    if (this.previewUrl()) {
-      URL.revokeObjectURL(this.previewUrl()!);
-    }
-
-    const preview = URL.createObjectURL(file);
-    this.selectedFile.set(file);
-    this.previewUrl.set(preview);
+  onUppyRestrictionFailed(event: { file?: AppUppyFile; error: Error }): void {
+    this.uploadError.set(event.error.message || 'Restrizione file non rispettata.');
   }
 
   cancelPropicUpload(): void {
-    if (this.previewUrl()) {
-      URL.revokeObjectURL(this.previewUrl()!);
-    }
-    this.previewUrl.set(null);
+    this.imageUploader()?.clearFiles();
     this.selectedFile.set(null);
     this.uploadError.set(null);
     this.showUploadMode.set(false);

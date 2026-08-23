@@ -8,12 +8,13 @@ import { UserRequest } from '../../models/user.model';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { UploadService } from '../../services/upload.service';
+import { ImageUploader } from '../../components/image-uploader/image-uploader';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, VerifyCodeModal],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, VerifyCodeModal, ImageUploader],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

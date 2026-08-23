@@ -8,8 +8,28 @@ const {
 } = require('../model/dto/VisitDTO');
 
 class VisitMapper {
-  static toVisitResponseDTO(visit) {
+  static toVisitResponseDTO(visit, museum = null) {
     if (!visit) return null;
+
+    const rawVisits = visit.visits || [];
+
+    const mappedVisits = rawVisits.map(v => {
+      const isPopulated = v.artwork && typeof v.artwork === 'object';
+      const artworkId = isPopulated ? (v.artwork._id ? v.artwork._id.toString() : v.artwork.id) : (v.artwork ? v.artwork.toString() : null);
+      const artworkTitle = isPopulated ? (v.artwork.title || 'Opera') : (typeof v.artwork === 'string' ? v.artwork : 'Opera');
+
+      return {
+        _id: v._id ? v._id.toString() : undefined,
+        artworkId: artworkId,
+        artworkTitle: artworkTitle,
+        artwork: artworkTitle, // Permette l'accesso sia con .artwork sia con .artworkTitle
+        items: v.items || []
+      };
+    });
+
+    const artworkNames = mappedVisits.map(v => v.artworkTitle).filter(Boolean);
+    const museumName = museum ? (museum.name || museum) : (visit.museumName || null);
+
     return new VisitResponseDTO(
       visit._id ? visit._id.toString() : visit.id,
       visit.title,
@@ -30,7 +50,9 @@ class VisitMapper {
       visit.likesCount || 0,
       visit.views || { total: 0, weekly: 0 },
       visit.assets || { images: [] },
-      visit.visits
+      artworkNames,
+      mappedVisits,
+      museumName
     );
   }
 

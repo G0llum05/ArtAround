@@ -12,10 +12,21 @@ class VisitService {
   }
 
   static async getVisitById(id) {
-    const visit = await Visit.findById(id);
+    const visit = await Visit.findById(id)
+      .populate({
+        path: 'visits.artwork',
+        select: 'title author artists startYear endYear assets'
+      })
+      .populate('creator', 'name surname email')
+      .lean();
+
     if (!visit) {
       throw new Error('Visit id non valido');
     }
+
+    const museum = await Museum.findOne({ visits: id }).select('name address').lean();
+    visit.museumName = museum ? museum.name : null;
+
     return visit;
   }
 

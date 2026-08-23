@@ -49,9 +49,11 @@ export class MktVisitPreview extends HTMLElement {
       return;
     }
 
-    // Usa direttamente l'array 'visits' del backend
+    // Usa l'array 'visits' (o 'artworkNames') del backend per l'itinerario
     const itineraryHtml = this.state.visits && this.state.visits.length > 0
-      ? this.state.visits.map(stop => `
+      ? this.state.visits.map(stop => {
+        const title = stop.artworkTitle || (typeof stop.artwork === 'object' ? stop.artwork?.title : stop.artwork) || 'Opera';
+        return `
         <div class="mkt-timeline-item">
           <div class="mkt-timeline-indicator">
             <div class="mkt-timeline-circle"></div>
@@ -59,10 +61,11 @@ export class MktVisitPreview extends HTMLElement {
           </div>
 
           <div class="mkt-timeline-content">
-            <h4 class="mkt-stop-title"> ${stop.artwork}</h4>
+            <h4 class="mkt-stop-title">${title}</h4>
           </div>
         </div>
-      `).join('')
+      `;
+      }).join('')
       : '<p>Nessuna tappa disponibile per questa visita.</p>';
 
     // Gestione immagine di fallback se l'array assets.images è vuoto
@@ -79,7 +82,7 @@ export class MktVisitPreview extends HTMLElement {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
                 <path d="M80-80v-80h80v-360H80v-80l400-280 400 280v80h-80v360h80v80H80Zm160-80h480-480Zm80-80h80v-160l80 120 80-120v160h80v-280h-80l-80 120-80-120h-80v280Zm400 80v-454L480-782 240-614v454h480Z"/>
               </svg>
-              ${this.state.museumId}
+              ${this.state.museumName || this.state.museumId || 'Museo'}
             </div>
 
             ${this.state.disabledFriendly ? `

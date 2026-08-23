@@ -1,6 +1,6 @@
-import { Component, input, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'
+import { Component, computed, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { VisitHomePresentationResponse } from '../../models/visit.model';
 import { BadgesList } from '../badges-list/badges-list';
 
@@ -44,7 +44,7 @@ export class Carousel implements OnInit, OnDestroy {
   }
 
   learnMore(visitId: string): void {
-    this.router.navigate(['/marketplace/marketplace.html/visit', visitId]);
+    this.router.navigate(['/marketplace/visit/search', visitId]);
   }
 
   startAutoPlay(): void {

@@ -53,7 +53,7 @@ export class VisitService {
 
     static async getVisit(visitId) {
       try{
-        const response = await fetch(`${this.apiUrl}/visit/${visitId}`, {
+        const response = await fetch(`${this.apiUrl}/${visitId}`, {
             method: "GET",
         })
         if (!response.ok) {

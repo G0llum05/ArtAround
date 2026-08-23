@@ -17,7 +17,7 @@ router.get('/feed', VisitController.getMarketplaceFeed);
 router.get('/homePresentation', VisitController.getVisitHomePresentation);
 
 // GET /:id
-router.get('/visit/:id', VisitController.getVisitById);
+router.get('/:id', VisitController.getVisitById);
 
 // POST /:id/like
 router.post('/:id/like', VisitController.likeVisit);

@@ -35,8 +35,9 @@ export class Home {
   private museumService = inject(MuseumService);
   isLoadingMuseums = signal<boolean>(true);
   //finalize si attiva sempre anche quando fallisce
-  allMuseums = toSignal(this.museumService.getMuseumHomePresentation().pipe(
-      finalize( () => this.isLoadingMuseums.set(false))
-    )
-    , { initialValue: [] });
+  allMuseums = toSignal(this.museumService.getMuseumHomePresentation()
+  .pipe(
+    finalize( () => this.isLoadingMuseums.set(false) )
+  ),
+  { initialValue: [] });
 }

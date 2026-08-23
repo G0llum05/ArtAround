@@ -1555,6 +1555,52 @@
         ]
       }
     },
+    "/api/visit/homePresentation": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Visit"
+        ]
+      }
+    },
+    "/api/visit/visit/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Visit"
+        ]
+      }
+    },
     "/api/visit/{id}/like": {
       "post": {
         "description": "",
@@ -1605,25 +1651,6 @@
             "type": "string"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "tags": [
-          "Visit"
-        ]
-      }
-    },
-    "/api/visit/homePresentation": {
-      "get": {
-        "description": "",
         "responses": {
           "200": {
             "description": "OK"

@@ -7,6 +7,7 @@ import { tap, catchError } from 'rxjs/operators';
 import { UserResponse, AuthResponse, LoginRequest, UserRequest } from '../models/user.model';
 import { environment } from '../../environments/environment';
 import { VisitHomePresentationResponse, VisitResponse } from '../models/visit.model';
+import { ImageOrientation } from '../models/subModels/image.model';
 
 
 @Injectable({
@@ -107,16 +108,18 @@ export class AuthService {
     return this.accessToken();
   }
 
-  updateUserProfilePicture(url: string, orientation: string = 'square'): void {
+  updateUserProfilePicture(url: string, orientation: ImageOrientation = 'square'): void {
     const current = this._currentUser();
     if (current) {
+      const cleanUrl = url.split('?')[0];
+      const cacheBustedUrl = `${cleanUrl}?t=${Date.now()}`;
       this._currentUser.set({
         ...current,
         assets: {
           ...current.assets,
           profilePicture: {
-            url,
-            orientation: orientation as any
+            url: cacheBustedUrl,
+            orientation: orientation
           }
         }
       });

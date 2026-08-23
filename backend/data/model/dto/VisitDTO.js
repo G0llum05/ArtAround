@@ -1,5 +1,5 @@
 class VisitResponseDTO {
-  constructor(id, title, description, price, license, creator, minDuration, maxDuration, isVerified, startDate, endDate, isActive, weeklySchedule, disabledFriendly, requirements, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }, assets = { images: [] }, visits = []) {
+  constructor(id, title, description, price, license, creator, minDuration, maxDuration, isVerified, startDate, endDate, isActive, weeklySchedule, disabledFriendly, requirements, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }, assets = { images: [] }, artworkNames = [], visits = [], museumName = null) {
     this.id = id;
     this.title = title;
     this.description = description;
@@ -19,7 +19,10 @@ class VisitResponseDTO {
     this.categories = categories;
     this.likesCount = likesCount;
     this.views = views;
+    this.artworkNames = artworkNames;
     this.assets = assets;
+    this.museumName = museumName;
+    this.museumId = museumName;
   }
 }
 

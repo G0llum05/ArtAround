@@ -18,7 +18,7 @@ export class MuseumCard {
   router = inject(Router);
 
   onCardClick(): void {
-    this.router.navigate(['/marketplace/marketplace.html/museum', this.museum().id]);
+    this.router.navigate(['/marketplace/museum', this.museum().id]);
   }
 
   getImageUrl(item: MuseumHomePresentationResponse): string {

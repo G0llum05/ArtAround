@@ -24,10 +24,14 @@ export class Marketplace {
     const navigation = event as CustomEvent;
     const dest = navigation.detail.destination as string;
     const id = navigation.detail.id as string;
+    const queryParams = navigation.detail.queryParams;
     console.log(dest);
     if(dest) {
       if(id === dest) {
         this.router.navigate(['marketplace', id]);
+      }
+      else if(queryParams) {
+        this.router.navigate([dest], { queryParams });
       }
       else {
         this.router.navigate([dest]);

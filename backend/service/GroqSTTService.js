@@ -1,5 +1,5 @@
 const { Groq, toFile } = require('groq-sdk');
-const { Sanitizer } = require("../utils/Sanitizer")
+const Sanitizer = require("../utils/Sanitizer")
 
 /**
  * GroqSTTService - Integration with Groq API Speech-To-Text using official `groq-sdk`.

@@ -14,8 +14,14 @@ class VisitService {
   static async getVisitById(id) {
     const visit = await Visit.findById(id)
       .populate({
-        path: 'visits.artwork',
-        select: 'title author artists startYear endYear assets'
+        path: 'steps.artwork',
+        select: 'title author artists startYear endYear assets location'
+      })
+      .populate({
+        path: 'steps.items'
+      })
+      .populate({
+        path: 'steps.tellMeMore'
       })
       .populate('creator', 'name surname email')
       .lean();
@@ -26,6 +32,7 @@ class VisitService {
 
     const museum = await Museum.findOne({ visits: id }).select('name address').lean();
     visit.museumName = museum ? museum.name : null;
+    visit.museumId = museum ? museum._id.toString() : null;
 
     return visit;
   }
@@ -50,7 +57,7 @@ class VisitService {
       duration,
       isDisableFriendly,
       assets,
-      visit: visitSteps = []
+      steps = []
     } = request;
 
     const checkMuseumId = await Museum.findById(museumId);
@@ -59,7 +66,7 @@ class VisitService {
     }
 
     // recupera opere coinvolte per estrarre le correnti artistiche
-    const artworkIds = visitSteps.map(step => step.artworkId).filter(Boolean);
+    const artworkIds = steps.map(step => step.artworkId).filter(Boolean);
     const artworks = await Artwork.find({ _id: { $in: artworkIds } }).lean();
 
     // TODO CHECK forse si può mettere anche altro (tipo dalla composizione dell'opera es scultura, quadro etc)
@@ -73,10 +80,11 @@ class VisitService {
       }
     });
 
-    const processedVisits = [];
+    const processedSteps = [];
 
-    for (const step of visitSteps) {
+    for (const step of steps) {
       const stepItemIds = [];
+      let tellMeMoreItemId = null;
 
       // Gestione Item Principale: se non c'è itemId ma c'è description, crealo
       if (step.itemId) {
@@ -94,7 +102,7 @@ class VisitService {
         stepItemIds.push(mainItem._id);
       }
 
-      // "Dimmi di più" (tellMeMore): se presente, crea sempre un item di approfondimento
+      // "Dimmi di più" (tellMeMore): se presente, crea un item di approfondimento e salvalo in tellMeMore
       if (step.tellMeMore) {
         const tellMeMoreItem = await Item.create({
           description: step.tellMeMore,
@@ -105,12 +113,13 @@ class VisitService {
           license: license || 'Standard',
           artwork: step.artworkId,
         });
-        stepItemIds.push(tellMeMoreItem._id);
+        tellMeMoreItemId = tellMeMoreItem._id;
       }
 
-      processedVisits.push({
+      processedSteps.push({
         artwork: step.artworkId,
-        items: stepItemIds
+        items: stepItemIds,
+        tellMeMore: tellMeMoreItemId
       });
     }
 
@@ -118,18 +127,30 @@ class VisitService {
     const minDur = 0;
     const maxDur = duration || 60;
 
+    let formattedAssets = { images: [] };
+    if (assets) {
+      if (Array.isArray(assets.images)) {
+        formattedAssets.images = assets.images.filter(img => img && img.url);
+      } else if (assets.url) {
+        formattedAssets.images = [{
+          url: assets.url,
+          orientation: assets.orientation || 'landscape'
+        }];
+      }
+    }
+
     const newVisit = new Visit({
       title,
       description,
       price: Number(price) || 0,
       license: license || 'Standard',
       creator: userId,
-      visits: processedVisits,
+      steps: processedSteps,
       minDuration: minDur,
       maxDuration: maxDur,
       disableFriendly: Boolean(isDisableFriendly),
       categories: Array.from(categoriesSet),
-      assets: assets || { images: [] },
+      assets: formattedAssets,
       isActive: true,
       isVerified: false
     });

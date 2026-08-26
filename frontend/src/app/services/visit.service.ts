@@ -41,6 +41,10 @@ export class VisitService {
     return this.http.get<VisitHomePresentationResponse[]>(`${this.apiUrl}/homePresentation`);
   }
 
+  getById(id: string): Observable<VisitResponse> {
+    return this.http.get<VisitResponse>(`${this.apiUrl}/${id}`);
+  }
+
   create(visit: VisitRequest) {
     return this.http.post<MuseumResponse>(`${this.apiUrl}`, visit);
   }

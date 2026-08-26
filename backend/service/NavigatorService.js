@@ -8,12 +8,13 @@ const NLParser = require('./NLParser');
 const ItemMapper = require('../data/mapper/ItemMapper');
 const ArtworkMapper = require('../data/mapper/ArtworkMapper');
 const Sanitizer = require('../utils/Sanitizer');
+const GroqSTTService = require('./GroqSTTService');
 
 
 class NavigatorService {
 
   static async navigatorHandler(requestDTO) {
-    const {
+    let {
       language,
       length,
       tone,
@@ -27,6 +28,13 @@ class NavigatorService {
       targetArtist,
       onTranscription
     } = requestDTO;
+
+    if (!museumId && visitId) {
+      const museum = await Museum.findOne({ visits: visitId }).lean();
+      if (museum) {
+        museumId = museum._id.toString();
+      }
+    }
 
     switch (actionType) {
       case 'AUDIO_ACTION':
@@ -45,7 +53,7 @@ class NavigatorService {
       throw new Error('File audio mancante o non valido.');
     }
 
-    const transcriptionResult = await LLMService.transcribeAudio(audioFile.buffer, {
+    const transcriptionResult = await GroqSTTService.transcribe(audioFile.buffer, {
       filename: audioFile.originalname,
       mimeType: audioFile.mimetype,
       language: language
@@ -112,10 +120,10 @@ class NavigatorService {
   */
   static async parseIntentHandler(transcribedText, language) {
     try {
-      const nlpResult = await NLParser.parseIntentNL(transcribedText, language);
-      if (nlpResult) {
-        return nlpResult;
-      }
+      // const nlpResult = await NLParser.parseIntentNL(transcribedText, language);
+      // if (nlpResult) {
+      //   return nlpResult;
+      // }
       const llmResult = await LLMService.parseIntentLLM(transcribedText, language);
       if (llmResult) {
         return llmResult;
@@ -133,8 +141,11 @@ class NavigatorService {
    * - Se non esiste cerca item simili e genera un nuovo item con dati esistenti
    * - Se non esiste proprio niente non da linee guida all'llm e lo genera con conoscenze generali
    */
+  // TODO CHECK aggiungere il tellMeMore perchè ora c'è un item tell me more che prima non c'era
   static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language) {
     let targetIndex = currentArtworkIndex;
+
+    let tellMeMore = false;
 
     switch (itemAction) {
       case 'NEXT_ITEM':
@@ -154,14 +165,15 @@ class NavigatorService {
 
       default:
         throw new Error(`Azione item non riconosciuta: "${itemAction}".`);
+
+      case 'TELL_ME_MORE':
+        targetIndex = currentArtworkIndex;
+        tellMeMore = true;
+        break;
     }
 
-    const targetArtworkId = await this.getArtworkId(visitId, targetIndex);
-    if (!targetArtworkId) {
-      throw new Error(`Nessuna opera trovata per la visita "${visitId}" all'indice "${targetIndex}".`);
-    }
 
-    const item = await this.getOrGenerateItem(targetArtworkId, tone, length, language);
+    const item = await this.getOrGenerateItem(visitId, targetIndex, tone, length, language, tellMeMore);
 
     console.log('\n\x1b[36m🔍 [DEBUG SERVICE] Contenuto della descrizione:\x1b[0m');
     console.log(`   • Tipo dato: ${typeof item}`);
@@ -171,18 +183,48 @@ class NavigatorService {
   }
 
 
-  static async getOrGenerateItem(artworkId, tone, length, language) {
+  // TODO CHECK è possibile che ci sia bisogno di fixare gli item e come vengono presi
+  static async getOrGenerateItem(visitId, targetIndex, tone, length, language, tellMeMore) {
+    const steps = await this.getVisitSteps(visitId);
 
-    const artwork = await Artwork.findById(artworkId).populate('items').populate('artists').exec();
-    if (!artwork) {
-      throw new Error(`Opera con ID "${artworkId}" non trovata.`);
+    if (targetIndex < 0 || targetIndex >= steps.length) {
+      throw new Error(`Indice dell'opera ${targetIndex} fuori dai limiti per la visita "${visitId}". Fuori dai limiti: 0 - ${steps.length - 1}.`);
     }
 
-    // Item esistente
-    const matchingItem = await this.getItem(artwork, tone, language, length);
-    if (matchingItem) {
-      console.log(`\n\x1b[32m✅ [DEBUG SERVICE] Item trovato nel DB per opera "${artwork.title}" con tono "${tone}", lingua "${language}" e lunghezza "${length}".\x1b[0m\n`);
-      return matchingItem;
+    const step = steps[targetIndex];
+    if (!step || !step.artwork) {
+      throw new Error(`Nessun step valido trovato per l'indice ${targetIndex} nella visita "${visitId}".`);
+    }
+    console.log(`\n\x1b[34m🎨 [DEBUG SERVICE] Opera corrente: "${step}"\x1b[0m\n`);
+
+    const artwork = await Artwork.findById(step.artwork).populate('defaultItems').exec();
+    if (!artwork) {
+      throw new Error(`Opera con ID "${step.artwork}" non trovata.`);
+    }
+
+    // TODO CHECK c'è anche da fare il tellMeMore che è un item a parte, se c'è si prende quello, altrimenti si genera con l'llm
+    if (tellMeMore && step.tellMeMore) {
+      const tellMeMoreItem = await Item.findById(step.tellMeMore).exec();
+      if (tellMeMoreItem) {
+        console.log(`\n\x1b[32m✅ [DEBUG SERVICE] Item "Tell Me More" trovato nel DB per opera "${step.artwork}" con tono "${tone}", lingua "${language}" e lunghezza "${length}".\x1b[0m\n`);
+        return tellMeMoreItem;
+      }
+    } else {
+      for (const stepItemId of step.items) {
+        // controllo se c'è item giusto già ritoranto nella struttura
+        const stepItem = await Item.findById(stepItemId).exec();
+        console.log(`\n\x1b[34m🔍 [DEBUG SERVICE] Item trovato: ID: "${stepItemId}", Tono: "${stepItem?.tone}", Lingua: "${stepItem?.language}", Lunghezza: "${stepItem?.length}"\x1b[0m\n`);
+        if (stepItem && stepItem.tone === tone && stepItem.language === language && stepItem.length === length) {
+          console.log(`\n\x1b[32m✅ [DEBUG SERVICE] Item trovato nel DB per opera "${step.artwork}" con tono "${tone}", lingua "${language}" e lunghezza "${length}".\x1b[0m\n`);
+          return stepItem;
+        }
+      }
+      // controllo per item non messi da esterni nella visita
+      const matchingItem = await this.getItem(artwork, tone, language, length);
+      if (matchingItem) {
+        console.log(`\n\x1b[32m✅ [DEBUG SERVICE] Item trovato nel DB per opera "${artwork.title}" con tono "${tone}", lingua "${language}" e lunghezza "${length}".\x1b[0m\n`);
+        return matchingItem;
+      }
     }
 
     // Se item non trovato ricicliamo il testo esistente di item sinonimi
@@ -192,7 +234,7 @@ class NavigatorService {
 
     const artworkContext = ArtworkMapper.toArtworkLLMRequestDTO(artwork);
 
-    const generatedText = await LLMService.generateItem(tone, length, language, existingSimilarItem, artworkContext);
+    const generatedText = await LLMService.generateItem(tone, length, language, existingSimilarItem, artworkContext, tellMeMore);
 
     const newItem = new Item({
       description: generatedText,
@@ -204,8 +246,9 @@ class NavigatorService {
       artwork: artwork._id
     });
     const savedItem = await newItem.save();
-    artwork.items.push(savedItem._id);
-    await artwork.save();
+    // salva l'item nella visita allo step corrente
+    step.items.push(savedItem._id);
+    await Visit.findByIdAndUpdate(visitId, { $set: { [`steps.${targetIndex}`]: step } }).exec();
 
     return savedItem;
   }
@@ -229,7 +272,7 @@ class NavigatorService {
     } else if (targetArtist) { // Artist Info
 
       const currentArtworkId = await this.getArtworkId(visitId, currentArtworkIndex);
-      const artwork = await Artwork.findById(currentArtworkId).populate('items').populate('artists').exec();
+      const artwork = await Artwork.findById(currentArtworkId).populate('defaultItems').populate('artists').exec();
       if (!artwork) {
         throw new Error(`Opera con ID "${currentArtworkId}" non trovata.`);
       }
@@ -248,28 +291,42 @@ class NavigatorService {
     }
   }
 
+  static async getVisitSteps(visitId) {
+    if (!visitId || !mongoose.Types.ObjectId.isValid(visitId)) {
+      throw new Error(`ID visita non valido: "${visitId}". Dev'essere un ObjectId MongoDB di 24 caratteri.`);
+    }
+    const steps = await Visit.findById(visitId).populate('steps').exec();
+    if (!steps) {
+      throw new Error(`Visita con ID "${visitId}" non trovata.`);
+    }
+    return steps.steps || [];
+  }
+
+  static async getArtworkAndItemsByIndex(visitId, currentArtworkIndex) {
+    const steps = await this.getVisitSteps(visitId);
+    if (currentArtworkIndex < 0 || currentArtworkIndex >= steps.length) {
+      throw new Error(`Indice dell'opera "${currentArtworkIndex}" fuori dai limiti per la visita "${visitId}".`);
+    }
+
+    // se non ci sono items nella visita associati all'artwork si usano i defaultItems dell'opera, altrimenti si usano questi
+
+  }
 
   static async getArtworkId(visitId, currentArtworkIndex) {
     if (!visitId || !mongoose.Types.ObjectId.isValid(visitId)) {
       throw new Error(`ID visita non valido: "${visitId}". Dev'essere un ObjectId MongoDB di 24 caratteri.`);
     }
-    const visit = await Visit.findById(visitId).populate('artworks').exec();
-    if (!visit) {
+    const steps = await Visit.findById(visitId).populate('steps').exec();
+    if (!steps) {
       throw new Error(`Visita con ID "${visitId}" non trovata.`);
     }
-
-    const artworks = visit.artworks || [];
-    if (currentArtworkIndex < 0 || currentArtworkIndex >= artworks.length) {
-      throw new Error(`Indice dell'opera "${currentArtworkIndex}" fuori dai limiti per la visita "${visitId}".`);
-    }
-
-    return artworks[currentArtworkIndex]._id;
+    return steps.steps[currentArtworkIndex]?.artwork || null;
   }
 
 
   static async getItem(artwork, tone, language, length) {
 
-    const items = artwork.items || [];
+    const items = artwork.defaultItems || [];
     const targetLanguage = (language || 'it').toLowerCase();
     const targetLength = parseInt(length, 10);
 
@@ -281,7 +338,7 @@ class NavigatorService {
   // TODO CHECK
   // !!! PRESTARE ATTENZIONE !!! La scelta dei valori è ben precisa, 13, 10, 5, 1. Se tot - 10 c'è lunghezza. Se tot (o rimanente) - 5 c'è tono. Se tot (o rimanente) - 3 c'è lunghezza giusta. Se tot (o rimanente) - 1 c'è lingua giusta. In questo modo si può dire nel prompt che cosa è stato trovato e cosa no e allo stesso tempo lunghezza maggiore + lingua vince su lunghezza giusta (e anche + lingua giusta)
   static getAvailableContentIfExists(artwork, tone, language, length) {
-    const items = artwork?.items || [];
+    const items = artwork?.defaultItems || [];
     if (items.length === 0) return null;
 
     const targetLanguage = (language || 'it').toLowerCase();
@@ -319,79 +376,6 @@ class NavigatorService {
 
     return scoredItems[0]?.item || null;
   }
-
-
-  // CHECK
-
-
-
-
-
-
-
-
-
-
-
-  // CHECK COMPLETO
-  //   /**
-  //    * Recupera i dettagli completi di una visita con opere, item ed il relativo museo
-  //    */
-  static async getVisitWithDetails(visitId) {
-    const visit = await Visit.findById(visitId)
-      .populate({
-        path: 'artworks',
-        populate: [
-          { path: 'items' },
-          { path: 'artists' }
-        ]
-      })
-      .exec();
-
-    if (!visit) {
-      throw new Error(`Visita con ID "${visitId}" non trovata.`);
-    }
-
-    // Trova il museo collegato a questa visita
-    const museum = await Museum.findOne({ visits: visitId })
-      .populate('pointsOfInterest')
-      .exec();
-
-    return { visit, museum };
-  }
-
-
-
-
-
-
-  //     // Risposta parlata completa per la sintesi TTS
-  //     let spokenResponse = actionMessage;
-  //     if (logisticalDirections) {
-  //       spokenResponse = `${actionMessage ? actionMessage + ' ' : ''}${logisticalDirections}`;
-  //     } else if (itemOutput && itemOutput.description) {
-  //       spokenResponse = itemOutput.description;
-  //     }
-  //
-  //     return {
-  //       nlpResult,
-  //       actionMessage,
-  //       spokenResponse,
-  //       currentArtworkIndex: newIndex,
-  //       activeTone: validTone,
-  //       activeLanguage: newLanguage,
-  //       activeArtwork: activeArtwork ? {
-  //         id: activeArtwork._id,
-  //         title: activeArtwork.title,
-  //         location: activeArtwork.location,
-  //         qrCode: activeArtwork.qrCode,
-  //         artists: activeArtwork.artists
-  //       } : null,
-  //       item: itemOutput,
-  //       activeProviderName: LLMService.getActiveProviderName(),
-  //       logisticalDirections
-  //     };
-  //   }
 }
 
 module.exports = NavigatorService;

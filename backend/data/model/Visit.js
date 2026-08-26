@@ -29,8 +29,7 @@ const visitSchema = new mongoose.Schema({
     ref: 'User'
   },
 
-  // TODO CHECK il nome è forviante, il campo indica da tutte le cose di cui la visita è composta
-  visits: [{
+  steps: [{
     artwork: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Artwork'
@@ -39,7 +38,11 @@ const visitSchema = new mongoose.Schema({
     items: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Item'
-    }]
+    }],
+    tellMeMore: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Item'
+    }
   }],
 
   // Duration in minutes

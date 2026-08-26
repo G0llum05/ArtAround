@@ -11,9 +11,9 @@ class VisitMapper {
   static toVisitResponseDTO(visit, museum = null) {
     if (!visit) return null;
 
-    const rawVisits = visit.visits || [];
+    const rawSteps = visit.steps || visit.visits || [];
 
-    const mappedVisits = rawVisits.map(v => {
+    const mappedSteps = rawSteps.map(v => {
       const isPopulated = v.artwork && typeof v.artwork === 'object';
       const artworkId = isPopulated ? (v.artwork._id ? v.artwork._id.toString() : v.artwork.id) : (v.artwork ? v.artwork.toString() : null);
       const artworkTitle = isPopulated ? (v.artwork.title || 'Opera') : (typeof v.artwork === 'string' ? v.artwork : 'Opera');
@@ -23,12 +23,14 @@ class VisitMapper {
         artworkId: artworkId,
         artworkTitle: artworkTitle,
         artwork: artworkTitle, // Permette l'accesso sia con .artwork sia con .artworkTitle
-        items: v.items || []
+        items: v.items || [],
+        tellMeMore: v.tellMeMore || null
       };
     });
 
-    const artworkNames = mappedVisits.map(v => v.artworkTitle).filter(Boolean);
+    const artworkNames = mappedSteps.map(v => v.artworkTitle).filter(Boolean);
     const museumName = museum ? (museum.name || museum) : (visit.museumName || null);
+    const museumId = museum ? (museum._id ? museum._id.toString() : museum.id) : (visit.museumId || null);
 
     return new VisitResponseDTO(
       visit._id ? visit._id.toString() : visit.id,
@@ -51,8 +53,9 @@ class VisitMapper {
       visit.views || { total: 0, weekly: 0 },
       visit.assets || { images: [] },
       artworkNames,
-      mappedVisits,
-      museumName
+      mappedSteps,
+      museumName,
+      museumId
     );
   }
 
@@ -97,8 +100,8 @@ class VisitMapper {
   }
 
   static createVisit(museumId, userId, visit) {
-    if (!museumId || !userId || !visit) return null;
-    return new CreateVisitDTO(museumId, userId, visit)
+    if (!museumId || !visit) return null;
+    return new CreateVisitDTO(museumId, userId, visit);
   }
 }
 

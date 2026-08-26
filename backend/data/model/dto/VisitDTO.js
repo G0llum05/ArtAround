@@ -1,5 +1,5 @@
 class VisitResponseDTO {
-  constructor(id, title, description, price, license, creator, minDuration, maxDuration, isVerified, startDate, endDate, isActive, weeklySchedule, disabledFriendly, requirements, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }, assets = { images: [] }, artworkNames = [], visits = [], museumName = null) {
+  constructor(id, title, description, price, license, creator, minDuration, maxDuration, isVerified, startDate, endDate, isActive, weeklySchedule, disabledFriendly, requirements, categories = [], likesCount = 0, views = { total: 0, weekly: 0 }, assets = { images: [] }, artworkNames = [], visits = [], museumName = null, museumId = null) {
     this.id = id;
     this.title = title;
     this.description = description;
@@ -22,7 +22,7 @@ class VisitResponseDTO {
     this.artworkNames = artworkNames;
     this.assets = assets;
     this.museumName = museumName;
-    this.museumId = museumName;
+    this.museumId = museumId;
   }
 }
 
@@ -98,8 +98,8 @@ class CreateVisitDTO {
     this.price = visit.price
     this.isDisableFriendly = visit.isDisableFriendly
     this.license = visit.license
-    this.duration = visit.duration
-    this.visit = visit.visit.map(step => new SingleStepNewVisitRequestDTO(step.artworkId, step.itemId, step.description, step.tellMeMore, step.length, step.language))
+    const rawSteps = visit.steps || visit.visit || [];
+    this.steps = rawSteps.map(step => new SingleStepNewVisitRequestDTO(step.artworkId, step.itemId, step.description, step.tellMeMore, step.length, step.language));
   }
 }
 

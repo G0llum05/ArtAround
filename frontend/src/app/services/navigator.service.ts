@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { NavigatorRequest, TONE_MAPPING } from '../models/navigator.model';
+import { ToneType } from '../models/appModel/userNavigatorSettings';
 
 export interface StreamChunk {
-  // check backend codes
   type: 'TRANSCRIPTION' | 'FINAL_RESPONSE' | 'ERROR';
   success: boolean;
   text?: string;
-  data?: { text?: string;[key: string]: any };
+  data?: { text?: string; reply?: string; [key: string]: any };
   error?: string;
 }
 
@@ -15,6 +16,47 @@ export interface StreamChunk {
 })
 export class NavigatorService {
   private readonly apiUrl = `${environment.apiUrl}/navigator`;
+
+  createFormData(request: NavigatorRequest, audioBlob?: Blob): FormData {
+    const formData = new FormData();
+    formData.append('language', request.language);
+    formData.append('length', request.length.toString());
+    const toneVal = TONE_MAPPING[request.tone as ToneType] || request.tone;
+    formData.append('tone', toneVal);
+    formData.append('museumId', request.museumId);
+    formData.append('visitId', request.visitId);
+    formData.append('currentArtworkIndex', request.currentArtworkIndex.toString());
+
+    if (request.itemAction) {
+      formData.append('itemAction', request.itemAction);
+    }
+    if (request.targetPoiType) {
+      formData.append('targetPoiType', request.targetPoiType);
+    }
+    if (request.targetArtist) {
+      formData.append('targetArtist', request.targetArtist);
+    }
+    if (audioBlob) {
+      const mimeType = audioBlob.type || 'audio/webm';
+      const ext = mimeType.includes('ogg') ? 'ogg' : mimeType.includes('mp4') ? 'mp4' : 'webm';
+      formData.append('audio', audioBlob, `recording.${ext}`);
+    }
+
+    return formData;
+  }
+
+  async sendCommand(
+    request: NavigatorRequest,
+    audioBlob?: Blob,
+    onChunk?: (chunk: StreamChunk) => void
+  ): Promise<void> {
+    const formData = this.createFormData(request, audioBlob);
+    await this.sendNavigatorCommandStream(formData, onChunk || (() => {}));
+  }
+
+  getTTSAudioUrl(text: string, lang: string = 'it'): string {
+    return `${this.apiUrl}/tts?text=${encodeURIComponent(text)}&lang=${encodeURIComponent(lang)}`;
+  }
 
   async sendNavigatorCommandStream(
     formData: FormData,
@@ -59,3 +101,4 @@ export class NavigatorService {
     }
   }
 }
+

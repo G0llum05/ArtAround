@@ -45,6 +45,10 @@ function promptHandler(key, replacements = {}) {
       template = promptsConfig?.existingSimilarItem;
       break;
 
+    case 'tellMeMore':
+      template = promptsConfig?.tellMeMore;
+      break;
+
     case 'artistInfo':
       template = promptsConfig?.artistInfo;
       break;
@@ -68,7 +72,7 @@ function promptHandler(key, replacements = {}) {
 
 class LLMService {
 
-  static async generateItem(tone, length, language, existingSimilarItem, artworkContext) {
+  static async generateItem(tone, length, language, existingSimilarItem, artworkContext, tellMeMore) {
 
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
       // TODO
@@ -77,6 +81,9 @@ class LLMService {
 
     try {
       let prompt = promptHandler('generalContext', { museum: artworkContext.museum, language });
+      if (tellMeMore) {
+        prompt += promptHandler('tellMeMore');
+      }
       if (existingSimilarItem) {
         prompt += promptHandler('existingSimilarItem', {
           tone,
@@ -170,6 +177,7 @@ class LLMService {
       // response: actionType, itemAction/targetPoiType/targetArtist, lingua se cambia, lunghezza se cambia, tono se cambia
       const response = await this._callLLMHandler(prompt);
       const parsed = this._cleanAndParseJSON(response);
+      console.log(`\x1b[36m[DEBUG AI] Prompt parsing intento:\x1b[0m`, parsed);
       if (parsed) {
         return parsed;
       }
@@ -283,14 +291,14 @@ class LLMService {
   //   };
   // }
   //
-  // static _cleanAndParseJSON(text) {
-  //   try {
-  //     const jsonMatch = text.match(/\{[\s\S]*\}/);
-  //     return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-  //   } catch (e) {
-  //     return null;
-  //   }
-  // }
+  static _cleanAndParseJSON(text) {
+    try {
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+    } catch (e) {
+      return null;
+    }
+  }
 
   // =========================================================================
   // IMPLEMENTAZIONE FALLBACK MOCK OFFLINE

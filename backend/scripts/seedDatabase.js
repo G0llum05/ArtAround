@@ -247,7 +247,7 @@ async function seed() {
         price: visitData.price,
         license: visitData.license || 'Licenza Standard',
         creator: creatorId,
-        visits: visitEntries,
+        steps: visitEntries,
         minDuration: visitData.minDuration,
         maxDuration: visitData.maxDuration,
         isActive: visitData.isActive ?? true,

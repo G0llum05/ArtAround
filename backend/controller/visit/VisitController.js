@@ -138,8 +138,6 @@ class VisitController {
       res.status(500).json({ message: 'Error creating visit', error: error.message });
     }
   }
-
-
 }
 
 module.exports = VisitController;

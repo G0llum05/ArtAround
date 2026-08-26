@@ -1,12 +1,11 @@
-import { Component, input, output, computed, signal} from '@angular/core';
+import { Component, input, output, ElementRef, viewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './chat.html',
   styleUrl: './chat.css'
 })
@@ -15,20 +14,26 @@ export class Chat {
   messages = input<ChatMessage[]>([]);
   isDictating = input<boolean>(false);
 
-  chatText = signal<string>('');
-
-  // Output verso il padre per gestire il click sul microfono o l'invio
+  // Output verso il padre per gestire il click sul microfono
   toggleDictation = output<void>();
-  sendText = output<string>();
 
-  onActionButtonClick(): void {
-    const text = this.chatText().trim();
-    if (text.length > 0) {
-      this.sendText.emit(text);
-    } else {
-      this.toggleDictation.emit();
-    }
+  scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
+
+  constructor() {
+    effect(() => {
+      // Reagisce a ogni aggiornamento di messages()
+      this.messages();
+      setTimeout(() => this.scrollToBottom(), 50);
+    });
   }
 
-  remainingChars = computed(() => 200 - (this.chatText()?.length || 0));
+  private scrollToBottom(): void {
+    const el = this.scrollContainer()?.nativeElement;
+    if (el) {
+      el.scrollTo({
+        top: el.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }
 }

@@ -36,12 +36,48 @@
   border-bottom: 0.0625rem solid var(--outline-variant);
 }
 
+.mkt-header-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
 .mkt-preview-title {
   font-family: var(--font-serif);
   font-size: var(--headline-lg-size, 2.5rem);
   font-weight: 700;
   margin: 0;
   color: var(--on-surface);
+}
+
+.mkt-btn-start-visit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  background-color: var(--primary, #9a3b26);
+  color: var(--on-primary, #ffffff);
+  border: none;
+  border-radius: var(--radius-full, 9999px);
+  font-size: var(--body-md-size, 1rem);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.mkt-btn-start-visit:hover {
+  background-color: var(--primary-hover, #7e2f1e);
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.2);
+}
+
+.mkt-btn-start-visit:active {
+  transform: translateY(0);
 }
 
 .mkt-badge-group {

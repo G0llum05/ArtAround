@@ -19,14 +19,13 @@ class NavigatorRequestDTO {
     }
 
     // museo, visita e opera
-    this.museumId = body.museumId && typeof body.museumId === 'string' ? body.museumId.trim() : null;
-    if (!this.museumId || !mongoose.Types.ObjectId.isValid(this.museumId)) {
-      throw new Error(`Parametro 'museumId' non valido: "${body.museumId}". Deve essere un ObjectId MongoDB di 24 caratteri.`);
-    }
     this.visitId = body.visitId && typeof body.visitId === 'string' ? body.visitId.trim() : null;
     if (!this.visitId || !mongoose.Types.ObjectId.isValid(this.visitId)) {
       throw new Error(`Parametro 'visitId' non valido: "${body.visitId}". Deve essere un ObjectId MongoDB di 24 caratteri.`);
     }
+
+    const trimmedMuseumId = body.museumId && typeof body.museumId === 'string' ? body.museumId.trim() : null;
+    this.museumId = trimmedMuseumId && mongoose.Types.ObjectId.isValid(trimmedMuseumId) ? trimmedMuseumId : null;
 
     const parsedIdx = parseInt(body.currentArtworkIndex, 10);
     this.currentArtworkIndex = !isNaN(parsedIdx) && parsedIdx >= 0 ? parsedIdx : null;

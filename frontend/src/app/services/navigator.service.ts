@@ -7,7 +7,7 @@ export interface StreamChunk {
   type: 'TRANSCRIPTION' | 'FINAL_RESPONSE' | 'ERROR';
   success: boolean;
   text?: string;
-  data?: { text?: string; reply?: string; [key: string]: any };
+  data?: { text?: string; reply?: string; audio?: string; [key: string]: any };
   error?: string;
 }
 

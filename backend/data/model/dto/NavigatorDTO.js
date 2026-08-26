@@ -67,8 +67,9 @@ class NavigatorRequestDTO {
 }
 
 class NavigatorResponseDTO {
-  constructor(description = '', error = null) {
-    this.text = description;
+  constructor(description = '', audio = null, error = null) {
+    this.text = typeof description === 'string' ? description : (description?.description || description?.text || '');
+    this.audio = audio;
     if (error) {
       this.error = error;
     }

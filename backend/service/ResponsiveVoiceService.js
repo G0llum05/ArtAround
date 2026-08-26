@@ -1,5 +1,5 @@
 const { ResponsiveVoiceAPIClient } = require('@responsivevoice/api-client');
-const { Sanitizer } = require('../utils/Sanitizer');
+const Sanitizer = require('../utils/Sanitizer');
 class ResponsiveVoiceService {
   constructor() {
     this.client = null;
@@ -33,8 +33,7 @@ class ResponsiveVoiceService {
    * AVAILABLE_VOICES = ['it', 'en', 'fr', 'es', 'de', 'cn', 'ru'] (Sanitizer)
    */
   getVoiceForLanguage(lang = 'it') {
-    const sanitizedLang = Sanitizer.sanitizedLang(lang);
-    const voice = 'Italian Female';
+    const sanitizedLang = Sanitizer.sanitizeLanguage(lang);
     switch (sanitizedLang) {
       case 'it':
         voice = 'Italian Female';
@@ -57,41 +56,155 @@ class ResponsiveVoiceService {
       case 'ru':
         voice = 'Russian Female';
         break;
-      return voice;
+      default:
+        voice = 'Italian Female';
     }
+    return voice;
   }
 
   /**
-   * Genera la sintesi vocale audio wav in backend tramite ResponsiveVoiceAPIClient.
-   * Ritorna il Buffer audio per lo streaming HTTP al client.
+   * Sintesi vocale tramite Google TTS (Fallback gratuito e senza API Key)
+   */
+  async synthesizeGoogleTTS(text, lang = 'it') {
+    let cleanLang = (lang || 'it').toLowerCase();
+    if (cleanLang.includes('en') || cleanLang.includes('us')) cleanLang = 'en';
+    else if (cleanLang.includes('fr') || cleanLang.includes('fra')) cleanLang = 'fr';
+    else if (cleanLang.includes('sp') || cleanLang.includes('es')) cleanLang = 'es';
+    else if (cleanLang.includes('de')) cleanLang = 'de';
+    else if (cleanLang.includes('cn') || cleanLang.includes('zh')) cleanLang = 'zh-CN';
+    else if (cleanLang.includes('ru') || cleanLang.includes('rus')) cleanLang = 'ru';
+    else cleanLang = 'it';
+
+    // Rimuove markdown, a capo e caratteri speciali
+    const cleanText = (text || '')
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/[*#_~`«»]+/g, '')
+      .trim();
+
+    if (!cleanText) return Buffer.alloc(0);
+
+    // Suddivide il testo in frasi/chunk di massimo 150 caratteri (limite API Google)
+    const rawSentences = cleanText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanText];
+    const chunks = [];
+
+    let currentChunk = '';
+    for (const sentence of rawSentences) {
+      const trimmedSentence = sentence.trim();
+      if (!trimmedSentence) continue;
+
+      if ((currentChunk + ' ' + trimmedSentence).trim().length <= 150) {
+        currentChunk = (currentChunk + ' ' + trimmedSentence).trim();
+      } else {
+        if (currentChunk) chunks.push(currentChunk);
+        if (trimmedSentence.length > 150) {
+          const words = trimmedSentence.split(' ');
+          let subChunk = '';
+          for (const w of words) {
+            if ((subChunk + ' ' + w).trim().length <= 150) {
+              subChunk = (subChunk + ' ' + w).trim();
+            } else {
+              if (subChunk) chunks.push(subChunk);
+              subChunk = w;
+            }
+          }
+          currentChunk = subChunk;
+        } else {
+          currentChunk = trimmedSentence;
+        }
+      }
+    }
+    if (currentChunk) chunks.push(currentChunk);
+
+    const limitedChunks = chunks.slice(0, 6);
+
+    const audioBuffers = await Promise.all(
+      limitedChunks.map(async (chunk) => {
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${cleanLang}&q=${encodeURIComponent(chunk)}&textlen=${chunk.length}`;
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer': 'https://translate.google.com/'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Google TTS Error: status ${response.status}`);
+        }
+
+        const audioArrayBuffer = await response.arrayBuffer();
+        return Buffer.from(audioArrayBuffer);
+      })
+    );
+
+    return Buffer.concat(audioBuffers);
+  }
+
+  /**
+   * Genera la sintesi vocale audio wav/mp3 in backend.
+   * Ritorna il Buffer audio.
    */
   async synthesizeAudioBuffer(text, lang = 'it') {
-    if (!this.client) {
-      throw new Error('ResponsiveVoiceAPIClient non inizializzato nel backend (verificare API_KEY e Secret).');
+    if (this.client) {
+      try {
+        const voiceName = this.getVoiceForLanguage(lang);
+        const trimmedText = text.trim().substring(0, 500);
+
+        const synthetizedAudio = await this.client.synthesize({
+          text: trimmedText,
+          voice: voiceName,
+          format: 'wav'
+        });
+
+        if (synthetizedAudio) {
+          const buffer = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
+          if (buffer && buffer.length > 0) return buffer;
+        }
+      } catch (err) {
+        console.warn('[ResponsiveVoiceService] ResponsiveVoice non riuscito, provo fallback Google TTS:', err.message);
+      }
     }
 
-    const voiceName = this.getVoiceForLanguage(lang);
-    const trimmedText = text.trim().substring(0, 500);
+    return await this.synthesizeGoogleTTS(text, lang);
+  }
 
-    const synthetizedAudio = await this.client.synthesize({
-      text: trimmedText,
-      voice: voiceName,
-      format: 'wav'
-      // format: 'mp3'
-    });
+  /**
+   * Genera la sintesi vocale e la ritorna come Base64 Data URL (data:audio/wav;base64,... o data:audio/mp3;base64,...).
+   */
+  async synthesizeAudioBase64(text, lang = 'it') {
+    if (!text || !text.trim()) return null;
 
-    if (!synthetizedAudio) {
-      throw new Error('Nessun dato audio restituito da ResponsiveVoice');
+    if (this.client) {
+      try {
+        const voiceName = this.getVoiceForLanguage(lang);
+        const trimmedText = text.trim().substring(0, 500);
+
+        const synthetizedAudio = await this.client.synthesize({
+          text: trimmedText,
+          voice: voiceName,
+          format: 'wav'
+        });
+
+        if (synthetizedAudio) {
+          const buffer = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
+          if (buffer && buffer.length > 0) {
+            return `data:audio/wav;base64,${buffer.toString('base64')}`;
+          }
+        }
+      } catch (err) {
+        console.warn('[ResponsiveVoiceService] Errore ResponsiveVoice, provo fallback Google TTS:', err.message);
+      }
     }
 
-    // creo un buffer partendo dalla struttura binaria grezza (blob)
-    let buffer = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
-
-    if (!buffer) {
-      throw new Error('Impossibile estrarre il buffer audio dalla risposta di ResponsiveVoice');
+    try {
+      const googleBuffer = await this.synthesizeGoogleTTS(text, lang);
+      if (googleBuffer && googleBuffer.length > 0) {
+        return `data:audio/mp3;base64,${googleBuffer.toString('base64')}`;
+      }
+    } catch (gErr) {
+      console.warn('[ResponsiveVoiceService] Errore fallback Google TTS:', gErr.message);
     }
 
-    return buffer;
+    return null;
   }
 
   /**

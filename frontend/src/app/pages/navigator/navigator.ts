@@ -57,6 +57,19 @@ export class Navigator {
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private currentAudio: HTMLAudioElement | null = null;
+  audioCurrentTime = signal<number>(0);
+  audioDuration = signal<number>(0);
+
+  audioProgressPercent = computed<number>(() => {
+    const dur = this.audioDuration();
+    return dur > 0 ? Math.min(100, (this.audioCurrentTime() / dur) * 100) : 0;
+  });
+
+  formattedTime = computed<string>(() => {
+    const cur = this.formatTime(this.audioCurrentTime());
+    const dur = this.formatTime(this.audioDuration());
+    return `${cur} / ${dur}`;
+  });
 
   //effect sempre nel costruttore per injection contest
   constructor() {
@@ -146,6 +159,8 @@ export class Navigator {
     return list[idx] || list[0] || null;
   });
 
+  private lastAudioUrl: string | null = null;
+
   async executeCommand(extraParams: Partial<NavigatorRequest> = {}, audioBlob?: Blob): Promise<void> {
     const settings = this.currentSettings();
     const request: NavigatorRequest = {
@@ -179,8 +194,11 @@ export class Navigator {
           this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
           this.currentSubtitle.set(reply);
 
-          if (this.isPlaying()) {
-            this.playAudioForText(reply, this.currentSettings().language);
+          const audioData = chunk.data?.audio;
+          if (audioData) {
+            this.lastAudioUrl = audioData;
+            this.isPlaying.set(true);
+            this.playAudioSource(audioData);
           }
         } else if (chunk.type === 'ERROR') {
           this.isLoading.set(false);
@@ -197,31 +215,86 @@ export class Navigator {
 
   togglePlay(): void {
     const willPlay = !this.isPlaying();
-    this.isPlaying.update(v => !v);
+    this.isPlaying.set(willPlay);
 
     if (willPlay) {
-      this.playAudioForText(this.currentSubtitle(), this.currentSettings().language);
+      if (this.currentAudio) {
+        this.currentAudio.play().catch(err => {
+          console.warn('Playback audio non consentito dal browser:', err);
+          this.isPlaying.set(false);
+        });
+      } else if (this.lastAudioUrl) {
+        this.playAudioSource(this.lastAudioUrl);
+      }
     } else {
       if (this.currentAudio) {
         this.currentAudio.pause();
-        this.currentAudio = null;
       }
     }
   }
 
-  private playAudioForText(text: string, lang: string): void {
+  formatTime(seconds: number): string {
+    if (isNaN(seconds) || seconds <= 0) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  seekAudio(event: MouseEvent): void {
+    const target = event.currentTarget as HTMLElement;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const width = rect.width;
+    if (width <= 0) return;
+
+    const percent = Math.max(0, Math.min(1, clickX / width));
+
+    if (!this.currentAudio && this.lastAudioUrl) {
+      this.initAudioElement(this.lastAudioUrl);
+    }
+
+    if (this.currentAudio) {
+      const dur = this.currentAudio.duration || this.audioDuration() || 0;
+      if (dur > 0) {
+        const newTime = percent * dur;
+        this.currentAudio.currentTime = newTime;
+        this.audioCurrentTime.set(newTime);
+      }
+    }
+  }
+
+  private initAudioElement(src: string): void {
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio = null;
     }
-    const url = this.navigatorService.getTTSAudioUrl(text, lang);
-    this.currentAudio = new Audio(url);
-    this.currentAudio.onended = () => this.isPlaying.set(false);
-    this.currentAudio.onerror = () => this.isPlaying.set(false);
-    this.currentAudio.play().catch(err => {
-      console.warn('Playback audio automatico non consentito dal browser o errore TTS:', err);
+    this.currentAudio = new Audio(src);
+    this.currentAudio.ontimeupdate = () => {
+      if (this.currentAudio) {
+        this.audioCurrentTime.set(this.currentAudio.currentTime);
+      }
+    };
+    this.currentAudio.onloadedmetadata = () => {
+      if (this.currentAudio) {
+        this.audioDuration.set(this.currentAudio.duration || 0);
+      }
+    };
+    this.currentAudio.onended = () => {
       this.isPlaying.set(false);
-    });
+      this.audioCurrentTime.set(0);
+    };
+    this.currentAudio.onerror = () => this.isPlaying.set(false);
+  }
+
+  private playAudioSource(src: string): void {
+    this.initAudioElement(src);
+    if (this.currentAudio) {
+      this.currentAudio.play().catch(err => {
+        console.warn('Playback audio non consentito dal browser:', err);
+        this.isPlaying.set(false);
+      });
+    }
   }
 
   toggleSubtitles(): void {

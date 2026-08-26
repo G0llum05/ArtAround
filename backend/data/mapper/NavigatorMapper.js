@@ -9,10 +9,11 @@ class NavigatorMapper {
     );
   }
 
-  static toNavigatorResponseDTO(navigatorModel) {
+  static toNavigatorResponseDTO(navigatorModel, audio = null) {
     if (!navigatorModel) return null;
     return new NavigatorResponseDTO(
       navigatorModel,
+      audio
     );
   }
 }

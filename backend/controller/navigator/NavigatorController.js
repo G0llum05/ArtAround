@@ -34,7 +34,17 @@ class NavigatorController {
         onTranscription
       });
 
-      const responseDTO = NavigatorMapper.toNavigatorResponseDTO(result);
+      let audioBase64 = null;
+      const textToSpeak = typeof result === 'string' ? result : (result?.text || result?.description || '');
+      if (textToSpeak) {
+        try {
+          audioBase64 = await ResponsiveVoiceService.synthesizeAudioBase64(textToSpeak, requestDTO?.language || 'it');
+        } catch (ttsErr) {
+          console.warn('[NavigatorController] Errore generazione audio TTS:', ttsErr.message);
+        }
+      }
+
+      const responseDTO = NavigatorMapper.toNavigatorResponseDTO(result, audioBase64);
 
       res.write(JSON.stringify({
         type: 'FINAL_RESPONSE',

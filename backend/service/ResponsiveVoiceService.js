@@ -7,6 +7,8 @@ class ResponsiveVoiceService {
   }
 
   initClient() {
+    if (this.client) return this.client;
+
     const rvApiKey = process.env.RESPONSIVEVOICE_API_KEY;
     const rvSecret = process.env.NODE_ENV === 'production'
       ? process.env.RESPONSIVEVOICE_API_SECRET
@@ -22,9 +24,15 @@ class ResponsiveVoiceService {
       } catch (err) {
         console.warn('[ResponsiveVoiceService] Impossibile inizializzare ResponsiveVoiceAPIClient:', err.message);
       }
-    } else {
-      console.warn('[ResponsiveVoiceService] Credenziali ResponsiveVoice non trovate in process.env.');
     }
+    return this.client;
+  }
+
+  getClient() {
+    if (!this.client) {
+      this.initClient();
+    }
+    return this.client;
   }
 
   /**
@@ -145,60 +153,93 @@ class ResponsiveVoiceService {
    * Ritorna il Buffer audio.
    */
   async synthesizeAudioBuffer(text, lang = 'it') {
-    if (this.client) {
+    const client = this.getClient();
+    if (client) {
       try {
         const voiceName = this.getVoiceForLanguage(lang);
         const trimmedText = text.trim().substring(0, 500);
 
-        const synthetizedAudio = await this.client.synthesize({
+        console.log(`[ResponsiveVoiceService] Avvio sintesi TTS: voice="${voiceName}", lang="${lang}", testo (${trimmedText.length} chars): "${trimmedText.substring(0, 60)}..."`);
+
+        const synthetizedAudio = await client.synthesize({
           text: trimmedText,
           voice: voiceName,
-          format: 'wav'
+          format: 'mp3'
         });
 
         if (synthetizedAudio) {
           const buffer = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
-          if (buffer && buffer.length > 0) return buffer;
+          if (buffer && buffer.length > 0) {
+            console.log(`[ResponsiveVoiceService] Sintesi completata con successo (${buffer.length} bytes, formato=${synthetizedAudio.format || 'mp3'})`);
+            return buffer;
+          }
         }
       } catch (err) {
-        console.warn('[ResponsiveVoiceService] ResponsiveVoice non riuscito, provo fallback Google TTS:', err.message);
+        console.warn('[ResponsiveVoiceService] Errore ResponsiveVoice:', {
+          message: err.message,
+          name: err.name,
+          status: err.status,
+          statusText: err.statusText,
+          errors: err.errors,
+          body: err.body
+        });
+        console.warn('[ResponsiveVoiceService] Provo fallback Google TTS...');
       }
+    } else {
+      console.warn('[ResponsiveVoiceService] Client non inizializzato (mancano API_KEY o SECRET), uso fallback Google TTS.');
     }
 
     return await this.synthesizeGoogleTTS(text, lang);
   }
 
   /**
-   * Genera la sintesi vocale e la ritorna come Base64 Data URL (data:audio/wav;base64,... o data:audio/mp3;base64,...).
+   * Genera la sintesi vocale e la ritorna come Base64 Data URL (data:audio/mp3;base64,... o data:audio/wav;base64,...).
    */
   async synthesizeAudioBase64(text, lang = 'it') {
     if (!text || !text.trim()) return null;
 
-    if (this.client) {
+    const client = this.getClient();
+    if (client) {
       try {
         const voiceName = this.getVoiceForLanguage(lang);
         const trimmedText = text.trim().substring(0, 500);
 
-        const synthetizedAudio = await this.client.synthesize({
+        console.log(`[ResponsiveVoiceService] Avvio sintesi Base64: voice="${voiceName}", lang="${lang}", testo (${trimmedText.length} chars): "${trimmedText.substring(0, 60)}..."`);
+
+        const synthetizedAudio = await client.synthesize({
           text: trimmedText,
           voice: voiceName,
-          format: 'wav'
+          format: 'mp3'
         });
 
         if (synthetizedAudio) {
           const buffer = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
           if (buffer && buffer.length > 0) {
-            return `data:audio/wav;base64,${buffer.toString('base64')}`;
+            const format = synthetizedAudio.format || 'mp3';
+            const mime = format === 'wav' ? 'audio/wav' : format === 'ogg' ? 'audio/ogg' : 'audio/mp3';
+            console.log(`[ResponsiveVoiceService] Sintesi Base64 completata con successo (${buffer.length} bytes, mime=${mime})`);
+            return `data:${mime};base64,${buffer.toString('base64')}`;
           }
         }
       } catch (err) {
-        console.warn('[ResponsiveVoiceService] Errore ResponsiveVoice, provo fallback Google TTS:', err.message);
+        console.warn('[ResponsiveVoiceService] Errore ResponsiveVoice Base64:', {
+          message: err.message,
+          name: err.name,
+          status: err.status,
+          statusText: err.statusText,
+          errors: err.errors,
+          body: err.body
+        });
+        console.warn('[ResponsiveVoiceService] Provo fallback Google TTS...');
       }
+    } else {
+      console.warn('[ResponsiveVoiceService] Client non inizializzato (mancano API_KEY o SECRET), uso fallback Google TTS.');
     }
 
     try {
       const googleBuffer = await this.synthesizeGoogleTTS(text, lang);
       if (googleBuffer && googleBuffer.length > 0) {
+        console.log(`[ResponsiveVoiceService] Fallback Google TTS completato con successo (${googleBuffer.length} bytes)`);
         return `data:audio/mp3;base64,${googleBuffer.toString('base64')}`;
       }
     } catch (gErr) {
@@ -212,10 +253,11 @@ class ResponsiveVoiceService {
    * Ottiene la lista di voci disponibili da ResponsiveVoice in backend.
    */
   async getVoices(filters = {}) {
-    if (!this.client) {
+    const client = this.getClient();
+    if (!client) {
       return { voices: [] };
     }
-    return await this.client.getVoices(filters);
+    return await client.getVoices(filters);
   }
 }
 

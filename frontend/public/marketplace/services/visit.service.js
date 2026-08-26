@@ -1,5 +1,5 @@
 export class VisitService {
-    static apiUrl = "http://localhost:8000/api/visit";
+    static apiUrl = "/api/visit";
 
     static async getTop10VisitPresentation() {
       try {

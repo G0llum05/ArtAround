@@ -34,6 +34,7 @@ class ResponsiveVoiceService {
    */
   getVoiceForLanguage(lang = 'it') {
     const sanitizedLang = Sanitizer.sanitizeLanguage(lang);
+    let voice = 'Italian Female';
     switch (sanitizedLang) {
       case 'it':
         voice = 'Italian Female';

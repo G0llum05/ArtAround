@@ -111,7 +111,7 @@ class NavigatorService {
       targetArtist: response.targetArtist || null
     });
 
-    return { transcribedText, ...finalResult };
+    return finalResult;
   }
 
 

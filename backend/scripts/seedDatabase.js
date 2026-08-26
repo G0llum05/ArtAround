@@ -100,6 +100,24 @@ async function seed() {
     const artworkMap = {};
     const visitMap = {};
 
+    // 2. Insert Users
+    console.log('[Seed] Inserting users...');
+    for (const userData of seedData.users) {
+      if (userMap[userData.key]) continue;
+      const hashedPassword = await bcrypt.hash(userData.password || 'Password123!', 10);
+      const user = new User({
+        name: userData.name,
+        surname: userData.surname,
+        email: userData.email,
+        password: hashedPassword,
+        role: userData.role || 'guest',
+        roleStatus: userData.roleStatus || 'approved'
+      });
+      const savedUser = await user.save();
+      userMap[userData.key] = savedUser._id;
+    }
+    console.log(`[Seed] Inserted ${Object.keys(userMap).length} user(s).`);
+
     // 3. Insert Artists
     console.log('[Seed] Inserting artists...');
     for (const artistData of seedData.artists) {
@@ -219,19 +237,22 @@ async function seed() {
       const creatorId = userMap[visitData.creator];
 
       let visitEntries = [];
-      if (Array.isArray(visitData.visits)) {
-        visitEntries = visitData.visits.map(v => {
+      const rawSteps = visitData.steps || visitData.visits || [];
+      if (Array.isArray(rawSteps)) {
+        visitEntries = rawSteps.map(v => {
           if (typeof v === 'string') {
-            return { artwork: artworkMap[v], items: [] };
+            return { artwork: artworkMap[v], items: [], tellMeMore: null };
           }
           const artId = artworkMap[v.artwork] || v.artwork;
           const itmIds = (v.items || []).map(k => itemMap[k] || k).filter(Boolean);
-          return { artwork: artId, items: itmIds };
+          const tellMeMoreId = v.tellMeMore ? (itemMap[v.tellMeMore] || v.tellMeMore) : null;
+          return { artwork: artId, items: itmIds, tellMeMore: tellMeMoreId };
         }).filter(v => Boolean(v.artwork));
       } else if (Array.isArray(visitData.artworks)) {
         visitEntries = visitData.artworks.map(k => ({
           artwork: artworkMap[k],
-          items: []
+          items: [],
+          tellMeMore: null
         })).filter(v => Boolean(v.artwork));
       }
 

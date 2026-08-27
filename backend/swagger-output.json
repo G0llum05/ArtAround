@@ -553,6 +553,390 @@
         ]
       }
     },
+    "/api/groupvisit/": {
+      "post": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Crea una nuova sessione di visita di gruppo per una classe",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "visitId": {
+                  "example": "any"
+                },
+                "title": {
+                  "example": "any"
+                },
+                "settings": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/my-teaching": {
+      "get": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Lista delle sessioni di visita gestite dal docente loggato",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/my-participations": {
+      "get": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Lista delle sessioni a cui lo studente loggato ha preso parte",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/code/{code}": {
+      "get": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Cerca una sessione attiva tramite codice PIN",
+        "description": "",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/join": {
+      "post": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Ingresso di uno studente in una sessione di gruppo tramite PIN",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sessionCode": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/{id}": {
+      "get": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Recupera i dettagli di una sessione di visita per ID",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/{id}/progress": {
+      "patch": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Aggiorna la tappa corrente e i parametri della visita (Docente)",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/{id}/questions": {
+      "post": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Invia una domanda al docente durante la visita",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "example": "any"
+                },
+                "stepIndex": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/{id}/questions/{questionId}": {
+      "patch": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Aggiorna lo stato di una domanda (Docente)",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "questionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/groupvisit/{id}/end": {
+      "post": {
+        "tags": [
+          "Group Visit"
+        ],
+        "summary": "Conclude la sessione di visita di gruppo",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
     "/api/item/": {
       "get": {
         "description": "",
@@ -913,8 +1297,14 @@
           "application/x-ndjson"
         ],
         "responses": {
-          "default": {
+          "4": {
             "description": ""
+          },
+          "6": {
+            "description": ""
+          },
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -930,8 +1320,14 @@
           "application/x-ndjson"
         ],
         "responses": {
-          "default": {
+          "4": {
             "description": ""
+          },
+          "6": {
+            "description": ""
+          },
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -1574,7 +1970,7 @@
         ]
       }
     },
-    "/api/visit/visit/{id}": {
+    "/api/visit/{id}": {
       "get": {
         "description": "",
         "parameters": [

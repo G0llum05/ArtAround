@@ -10,6 +10,7 @@ const setupSwagger = require('./config/swaggerLoader');
 const setupStaticAssets = require('./config/staticLoader');
 const errorHandler = require('./config/errorHandler');
 const { loadRoutes } = require('./config/routerLoader');
+const { initGroupVisitSocket } = require('./socket/GroupVisitSocket');
 
 const app = express();
 // CHECK PORT VAR
@@ -36,6 +37,9 @@ async function startServer() {
   server = app.listen(PORT, () => {
     console.log(`[Server] Running on port ${PORT} in ${nodeEnv} mode`);
   });
+
+  // Inizializza WebSocket / Socket.IO per visite guidate in tempo reale
+  initGroupVisitSocket(server);
 }
 
 startServer();

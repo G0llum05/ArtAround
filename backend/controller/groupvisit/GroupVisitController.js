@@ -106,6 +106,31 @@ class GroupVisitController {
   }
 
   /**
+   * POST /api/groupvisit/leave
+   * Uno studente lascia la sessione di visita
+   */
+  static async leaveSession(req, res) {
+    /* #swagger.tags = ['Group Visit']
+       #swagger.summary = 'Uscita di uno studente dalla sessione di gruppo'
+    */
+    try {
+      const { sessionCode } = req.body;
+      if (sessionCode) {
+        await GroupVisitService.setParticipantOnlineStatus(sessionCode, req.user.id, false);
+      }
+      res.status(200).json({
+        type: 'success',
+        message: 'Uscita dalla sessione completata.'
+      });
+    } catch (error) {
+      res.status(400).json({
+        type: 'error',
+        message: error.message
+      });
+    }
+  }
+
+  /**
    * GET /api/groupvisit/my-teaching
    * Restituisce la lista di sessioni create dal docente loggato
    */

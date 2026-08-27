@@ -1,0 +1,181 @@
+<main class="room-container">
+
+  <!-- STATO CARICAMENTO -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner-lg"></div>
+      <p class="loading-text">Preparazione della stanza di gruppo...</p>
+    </div>
+  }
+
+  <!-- STATO ERRORE -->
+  @else if (errorMessage()) {
+    <div class="room-card error-card">
+      <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h2 class="error-title">Errore nella Stanza</h2>
+      <p class="error-desc">{{ errorMessage() }}</p>
+      <a [routerLink]="['/groups']" class="btn btn-primary">Torna alla Sezione Gruppi</a>
+    </div>
+  }
+
+  <!-- STANZA CARICATA CON SUCCESSO -->
+  @else if (session()) {
+    
+    <!-- INTESTAZIONE VISITA -->
+    <header class="room-header">
+      <div class="room-badge-row">
+        <span class="room-badge">
+          <span class="pulse-dot"></span>
+          Sala d'Attesa Live
+        </span>
+        @if (isTeacher()) {
+          <span class="host-badge">Sei l'Insegnante</span>
+        }
+      </div>
+
+      <h1 class="visit-title">{{ session()?.visit?.title || session()?.title || 'Visita Guidata' }}</h1>
+      
+      @if (session()?.visit?.museum?.name || session()?.museumName) {
+        <p class="museum-name">
+          🏛️ {{ session()?.visit?.museum?.name || session()?.museumName }}
+        </p>
+      }
+    </header>
+
+    <!-- BOX PIN CONDIVISIONE (MOBILE FIRST & HIGHLIGHTED) -->
+    <section class="pin-showcase-card">
+      <span class="pin-label">Codice PIN della Stanza</span>
+      
+      <div class="pin-display-row">
+        <span class="pin-code">{{ session()?.sessionCode }}</span>
+        
+        <button type="button" class="btn-copy-pin" (click)="copyPin()" [class.copied]="copied()" title="Copia PIN">
+          @if (copied()) {
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Copiato!</span>
+          } @else {
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copia PIN</span>
+          }
+        </button>
+      </div>
+
+      <p class="pin-instructions">
+        Condividi questo codice con gli studenti per farli collegare dalla pagina <strong>Gruppi</strong>.
+      </p>
+    </section>
+
+    <!-- LISTA PARTECIPANTI CONNESSI IN TEMPO REALE -->
+    <section class="participants-section">
+      <div class="participants-header">
+        <h2 class="participants-title">
+          <span>Partecipanti Collegati</span>
+          <span class="count-pill">{{ onlineCount() }}</span>
+        </h2>
+        
+        @if (socketService.isConnected()) {
+          <span class="live-status-badge">
+            <span class="status-indicator online"></span>
+            Live
+          </span>
+        }
+      </div>
+
+      <div class="participants-list">
+        
+        <!-- DOCENTE / HOST -->
+        @if (session()?.teacher) {
+          <div class="participant-item host-item">
+            <div class="participant-avatar host-avatar">
+              🎓
+            </div>
+            <div class="participant-info">
+              <span class="participant-name">
+                {{ session()?.teacher?.name ? (session()?.teacher?.name + ' ' + (session()?.teacher?.surname || '')) : session()?.teacher?.email }}
+              </span>
+              <span class="participant-role-tag">Docente (Host)</span>
+            </div>
+            <span class="status-indicator online" title="Online"></span>
+          </div>
+        }
+
+        <!-- STUDENTI COLLEGATI -->
+        @for (p of studentParticipants(); track p.userId || p.id || p.email) {
+          <div class="participant-item" [class.offline]="p.isOnline === false">
+            <div class="participant-avatar">
+              {{ (p.name || p.email || 'S').charAt(0).toUpperCase() }}
+            </div>
+            <div class="participant-info">
+              <span class="participant-name">{{ p.name || p.email }}</span>
+              <span class="participant-role-tag" [class.offline]="p.isOnline === false">
+                {{ p.isOnline === false ? 'Uscito' : 'Studente' }}
+              </span>
+            </div>
+            <span
+              class="status-indicator"
+              [class.online]="p.isOnline !== false"
+              [class.offline]="p.isOnline === false"
+              [title]="p.isOnline !== false ? 'Online' : 'Uscito / Non attivo'"
+            ></span>
+          </div>
+        }
+
+        <!-- STATO VUOTO (NESSUNO STUDENTE ANCORA) -->
+        @if (studentParticipants().length === 0) {
+          <div class="empty-participants">
+            <div class="waiting-icon-wrap">
+              <svg class="waiting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <p class="empty-text">In attesa che gli studenti inseriscano il PIN per unirsi...</p>
+          </div>
+        }
+
+      </div>
+    </section>
+
+    <!-- BARRA AZIONI IN BASSO -->
+    <footer class="room-footer">
+      @if (isTeacher()) {
+        <div class="teacher-actions">
+          <button type="button" class="btn btn-primary btn-start-tour" disabled title="In arrivo al prossimo passo">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Inizia Visita di Gruppo</span>
+          </button>
+          
+          <button type="button" class="btn btn-outline" (click)="leaveRoom()">
+            Esci dalla Stanza
+          </button>
+        </div>
+      } @else {
+        <div class="student-actions">
+          <div class="student-waiting-box">
+            <div class="pulse-spinner"></div>
+            <span>Tutto pronto! In attesa che l'insegnante avvii il tour...</span>
+          </div>
+
+          <button type="button" class="btn btn-outline" (click)="leaveRoom()">
+            Esci dalla Stanza
+          </button>
+        </div>
+      }
+    </footer>
+
+  }
+
+</main>

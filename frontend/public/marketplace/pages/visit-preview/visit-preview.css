@@ -53,11 +53,18 @@
   color: var(--on-surface);
 }
 
+.mkt-header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .mkt-btn-start-visit {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.65rem 1.5rem;
+  padding: 0.65rem 1.35rem;
   background-color: var(--primary, #9a3b26);
   color: var(--on-primary, #ffffff);
   border: none;
@@ -77,6 +84,33 @@
 }
 
 .mkt-btn-start-visit:active {
+  transform: translateY(0);
+}
+
+.mkt-btn-start-group-visit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.35rem;
+  background-color: var(--secondary, #345a76);
+  color: var(--on-secondary, #ffffff);
+  border: none;
+  border-radius: var(--radius-full, 9999px);
+  font-size: var(--body-md-size, 1rem);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.mkt-btn-start-group-visit:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.2);
+}
+
+.mkt-btn-start-group-visit:active {
   transform: translateY(0);
 }
 

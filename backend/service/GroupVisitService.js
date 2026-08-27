@@ -193,6 +193,7 @@ class GroupVisitService {
       });
     }
 
+    session.markModified('participants');
     await session.save();
     return await this.getSessionById(session._id);
   }
@@ -337,14 +338,37 @@ class GroupVisitService {
    * Notifica l'uscita o disconnessione di un partecipante
    */
   static async setParticipantOnlineStatus(sessionCode, userId, isOnline) {
-    const session = await GroupVisit.findOne({ sessionCode: sessionCode.toUpperCase().trim() });
+    if (!sessionCode || !userId) return;
+
+    const cleanCode = sessionCode.toUpperCase().trim();
+    const session = await GroupVisit.findOne({ sessionCode: cleanCode });
     if (!session) return;
+
+    // Se è il docente titolare, non occorre registrarlo come studente partecipante
+    if (session.teacher && session.teacher.toString() === userId.toString()) {
+      return;
+    }
 
     const participant = session.participants.find(p => p.user && p.user.toString() === userId.toString());
     if (participant) {
-      participant.isOnline = isOnline;
+      participant.isOnline = Boolean(isOnline);
       participant.lastSeen = new Date();
+      session.markModified('participants');
       await session.save();
+    } else if (isOnline) {
+      const user = await User.findById(userId);
+      if (user) {
+        session.participants.push({
+          user: userId,
+          name: `${user.name || ''} ${user.surname || ''}`.trim() || user.email,
+          email: user.email,
+          joinedAt: new Date(),
+          isOnline: true,
+          lastSeen: new Date()
+        });
+        session.markModified('participants');
+        await session.save();
+      }
     }
   }
 }

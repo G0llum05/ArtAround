@@ -22,6 +22,13 @@ router.post(
   GroupVisitController.joinSession
 );
 
+// esce da una sessione
+router.post(
+  '/leave',
+  authenticateJWT,
+  GroupVisitController.leaveSession
+);
+
 
 // dettagli completi sessione per ID
 router.get(

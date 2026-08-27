@@ -12,7 +12,7 @@ function initGroupVisitSocket(httpServer) {
     const socketIO = require('socket.io');
     io = new socketIO.Server(httpServer, {
       cors: {
-        origin: '*', // O configurato con il frontend URL
+        origin: true, // Riflette l'origin del client per supportare credentials: true senza errori CORS
         methods: ['GET', 'POST'],
         credentials: true
       },
@@ -24,13 +24,27 @@ function initGroupVisitSocket(httpServer) {
     // Middleware di autenticazione per Handshake Socket
     io.use((socket, next) => {
       try {
-        const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.replace('Bearer ', '');
+        const token = socket.handshake.auth?.token ||
+                      socket.handshake.headers?.authorization?.replace('Bearer ', '') ||
+                      socket.handshake.query?.token;
         if (!token) {
+          console.warn('[Socket.IO] Connessione rifiutata: token assente');
           return next(new Error('Autenticazione richiesta per la connessione WebSocket.'));
         }
 
         const decoded = TokenService.verifyAccessToken(token);
-        socket.user = decoded; // { id, email, role, ... }
+        if (decoded instanceof Error || !decoded || (!decoded.id && !decoded._id)) {
+          console.warn('[Socket.IO] Handshake auth fallito: token non valido o scaduto');
+          return next(new Error('Token non valido o scaduto.'));
+        }
+
+        socket.user = {
+          id: (decoded.id || decoded._id).toString(),
+          email: decoded.email,
+          role: decoded.role,
+          name: decoded.name,
+          surname: decoded.surname
+        };
         next();
       } catch (err) {
         console.warn('[Socket.IO] Handshake auth fallito:', err.message);
@@ -60,6 +74,11 @@ function initGroupVisitSocket(httpServer) {
           await GroupVisitService.setParticipantOnlineStatus(sessionCode, user.id, true);
           const updatedSession = await GroupVisitService.getSessionByCode(sessionCode);
 
+          // Broadcast lista completa aggiornata a tutta la stanza
+          if (updatedSession?.participants) {
+            io.to(room).emit('participants:updated', updatedSession.participants);
+          }
+
           // Notifica gli altri nella stanza
           socket.to(room).emit('participant:joined', {
             userId: user.id,
@@ -77,6 +96,35 @@ function initGroupVisitSocket(httpServer) {
           }
         } catch (err) {
           console.error('[Socket.IO] Errore in session:join:', err.message);
+          if (typeof callback === 'function') callback({ success: false, error: err.message });
+        }
+      });
+
+      /**
+       * Uscita esplicita dalla stanza di visita
+       */
+      socket.on('session:leave', async ({ sessionCode }, callback) => {
+        try {
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (code) {
+            const room = `session:${code}`;
+            await GroupVisitService.setParticipantOnlineStatus(code, user.id, false);
+            socket.leave(room);
+            socket.sessionCode = null;
+
+            const updatedSession = await GroupVisitService.getSessionByCode(code);
+            if (updatedSession?.participants) {
+              io.to(room).emit('participants:updated', updatedSession.participants);
+            }
+
+            socket.to(room).emit('participant:left', {
+              userId: user.id,
+              email: user.email
+            });
+          }
+          if (typeof callback === 'function') callback({ success: true });
+        } catch (err) {
+          console.error('[Socket.IO] Errore in session:leave:', err.message);
           if (typeof callback === 'function') callback({ success: false, error: err.message });
         }
       });
@@ -211,6 +259,13 @@ function initGroupVisitSocket(httpServer) {
         if (socket.sessionCode) {
           const room = `session:${socket.sessionCode}`;
           await GroupVisitService.setParticipantOnlineStatus(socket.sessionCode, user.id, false);
+          try {
+            const updatedSession = await GroupVisitService.getSessionByCode(socket.sessionCode);
+            if (updatedSession?.participants) {
+              io.to(room).emit('participants:updated', updatedSession.participants);
+            }
+          } catch (e) {}
+
           socket.to(room).emit('participant:left', {
             userId: user.id,
             email: user.email

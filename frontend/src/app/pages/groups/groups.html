@@ -1,0 +1,149 @@
+<main class="groups-container">
+  <!-- INTESTAZIONE PAGINA -->
+  <header class="groups-header">
+    <h1 class="groups-title">Gruppi</h1>
+    <p class="groups-subtitle">Partecipa a una visita guidata in tempo reale o avvia una nuova sessione.</p>
+  </header>
+
+  <!-- BANNER NOTIFICA ERRORE -->
+  @if (errorMessage()) {
+    <div class="alert-box alert-error" role="alert">
+      <div class="alert-content">
+        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="alert-text">
+          <span>{{ errorMessage() }}</span>
+          @if (!authService.isLoggedIn()) {
+            <a [routerLink]="['/login']" [queryParams]="{ returnUrl: '/groups' }" class="alert-login-link">
+              Accedi subito →
+            </a>
+          }
+        </div>
+      </div>
+      <button type="button" class="btn-close-alert" (click)="clearError()" aria-label="Chiudi avviso">✕</button>
+    </div>
+  }
+
+  <!-- BANNER NOTIFICA SUCCESSO -->
+  @if (successMessage()) {
+    <div class="alert-box alert-success" role="status">
+      <div class="alert-content">
+        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>{{ successMessage() }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- SEZIONE CARD (MOBILE FIRST) -->
+  <div class="groups-grid">
+    
+    <!-- CARD 1: UNISCITI AL GRUPPO (JOIN) -->
+    <article class="group-card join-card" [class.card-has-error]="errorMessage()">
+      <div class="card-top">
+        <div class="card-icon-wrap join-icon">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+        </div>
+        <div class="card-header-text">
+          <h2 class="card-title">Unisciti al Gruppo</h2>
+          <p class="card-desc">Inserisci il codice PIN fornito dal docente per seguire la visita.</p>
+        </div>
+      </div>
+
+      <!-- AVVISO LOGIN RICHIESTO (SE NON AUTENTICATO) -->
+      @if (!authService.isLoggedIn()) {
+        <div class="login-required-banner">
+          <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <div class="banner-text">
+            <strong>Accesso richiesto</strong>
+            <p>È necessario effettuare il login per unirti a una visita guidata.</p>
+          </div>
+          <a [routerLink]="['/login']" [queryParams]="{ returnUrl: '/groups' }" class="btn btn-login-compact">
+            Accedi
+          </a>
+        </div>
+      }
+
+      <form class="join-form" (ngSubmit)="onJoinGroup()">
+        <div class="input-action-row">
+          <input
+            type="text"
+            class="pin-input"
+            [class.input-error]="errorMessage()"
+            placeholder="Codice PIN (es. ART492)"
+            [ngModel]="pinCode()"
+            (ngModelChange)="pinCode.set($event); errorMessage.set(null)"
+            name="pinCode"
+            maxlength="8"
+            autocomplete="off"
+            aria-label="Codice PIN del gruppo"
+          />
+          <button type="submit" class="btn btn-primary" [disabled]="isLoading() || (authService.isLoggedIn() && !pinCode().trim())">
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              <span>Connessione...</span>
+            } @else if (!authService.isLoggedIn()) {
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>Accedi e Connettiti</span>
+            } @else {
+              <span>Connettiti</span>
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            }
+          </button>
+        </div>
+      </form>
+    </article>
+
+    <!-- CARD 2: CREA UN GRUPPO (SOLO PER DOCENTI E ADMIN) -->
+    @if (canCreateGroup()) {
+      <article class="group-card create-card">
+        <div class="card-top">
+          <div class="card-icon-wrap create-icon">
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <line x1="19" y1="8" x2="19" y2="14"></line>
+              <line x1="16" y1="11" x2="22" y2="11"></line>
+            </svg>
+          </div>
+          <div class="card-header-text">
+            <div class="title-badge-row">
+              <h2 class="card-title">Crea un Gruppo</h2>
+              <span class="role-badge">Docente</span>
+            </div>
+            <p class="card-desc">Avvia una stanza virtuale e guida i tuoi studenti attraverso le opere.</p>
+          </div>
+        </div>
+
+        <div class="create-action-wrap">
+          <button type="button" class="btn btn-secondary w-full" (click)="onCreateGroup()">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Crea Nuovo Gruppo</span>
+          </button>
+        </div>
+      </article>
+    }
+
+  </div>
+</main>

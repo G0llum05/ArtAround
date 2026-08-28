@@ -30,8 +30,8 @@ docker-compose.override.yml.backup
 
 # Immagini assets
 backend/assets/museums/
-backend/assets/visits/
 backend/assets/users/
+backend/assets/artists/
 
 # Fondamentale: ignora le credenziali
 .env

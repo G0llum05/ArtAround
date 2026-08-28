@@ -198,7 +198,7 @@
       }
     },
     {
-      "key": "artist_raffaello_vaticano",
+      "key": "artist_raffaello",
       "name": "Raffaello",
       "surname": "Sanzio",
       "artisticCurrents": [
@@ -211,7 +211,7 @@
       }
     },
     {
-      "key": "artist_caravaggio_vaticano",
+      "key": "artist_caravaggio",
       "name": "Michelangelo",
       "surname": "Merisi da Caravaggio",
       "artisticCurrents": [
@@ -370,7 +370,7 @@
       "startYear": 1509,
       "endYear": 1511,
       "artists": [
-        "artist_raffaello_vaticano"
+        "artist_raffaello"
       ],
       "location": {
         "room": "Stanza della Segnatura",
@@ -532,7 +532,7 @@
       "startYear": 1516,
       "endYear": 1520,
       "artists": [
-        "artist_raffaello_vaticano"
+        "artist_raffaello"
       ],
       "location": {
         "room": "Sala VIII - Sala di Raffaello",
@@ -588,7 +588,7 @@
       "startYear": 1602,
       "endYear": 1604,
       "artists": [
-        "artist_caravaggio_vaticano"
+        "artist_caravaggio"
       ],
       "location": {
         "room": "Sala XII - Sala di Caravaggio",

@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const fsExtra = require('fs-extra');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -11,6 +12,8 @@ const Item = require('../data/model/Item');
 const Artwork = require('../data/model/Artwork');
 const Visit = require('../data/model/Visit');
 const Museum = require('../data/model/Museum');
+const UploadService = require('../service/UploadService');
+const Imager = require('../utils/Imager');
 
 // Build connection URI flexibly for host / docker environments
 function getMongoUri() {
@@ -72,6 +75,158 @@ function loadAllSeedData() {
   return aggregated;
 }
 
+/**
+ * Processa e carica le immagini da assets/seed tramite UploadService
+ */
+async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap }) {
+  console.log('\n[Seed Assets] Starting image upload and processing via UploadService...');
+
+  const assetsMuseumsDir = path.join(__dirname, '../assets/museums');
+  const assetsArtistsDir = path.join(__dirname, '../assets/artists');
+
+  // Pulizia e preparazione directory operative
+  await fsExtra.ensureDir(assetsMuseumsDir);
+  await fsExtra.ensureDir(assetsArtistsDir);
+  await fsExtra.emptyDir(assetsMuseumsDir);
+  await fsExtra.emptyDir(assetsArtistsDir);
+
+  // Caricamento Immagini Artisti (Decentralizzati)
+  const seedArtistsDir = path.join(__dirname, '../assets/seed/artists');
+  if (fs.existsSync(seedArtistsDir)) {
+    console.log('[Seed Assets] Processing decentralized artist images...');
+    const artistFolders = fs.readdirSync(seedArtistsDir);
+    for (const artistKey of artistFolders) {
+      const artistDirPath = path.join(seedArtistsDir, artistKey);
+      if (!fs.statSync(artistDirPath).isDirectory()) continue;
+
+      const artistId = artistMap[artistKey];
+      if (!artistId) {
+        console.warn(`[Seed Assets] Warning: Artist key "${artistKey}" not found in database mappings.`);
+        continue;
+      }
+
+      const files = fs.readdirSync(artistDirPath).filter(file => Imager.isImage(file));
+      for (const file of files) {
+        const filePath = path.join(artistDirPath, file);
+        const payload = {
+          buffer: fs.readFileSync(filePath),
+          originalname: file,
+          mimetype: Imager.getMimeType(file)
+        };
+        try {
+          const url = await UploadService.artistImgUpload(artistId.toString(), payload);
+          console.log(`[Seed Assets] Loaded artist image for "${artistKey}" -> ${url}`);
+        } catch (err) {
+          console.error(`[Seed Assets] Error uploading artist image "${file}" for "${artistKey}":`, err.message);
+        }
+      }
+    }
+  }
+
+  // Caricamento Immagini Musei, Visite e Opere d'Arte
+  const seedMuseumsDir = path.join(__dirname, '../assets/seed/museums');
+  if (fs.existsSync(seedMuseumsDir)) {
+    console.log('[Seed Assets] Processing museum, visit, and artwork images...');
+    const museumFolders = fs.readdirSync(seedMuseumsDir);
+    for (const museumKey of museumFolders) {
+      const museumDirPath = path.join(seedMuseumsDir, museumKey);
+      if (!fs.statSync(museumDirPath).isDirectory()) continue;
+
+      const museumId = museumMap[museumKey];
+      if (!museumId) {
+        console.warn(`[Seed Assets] Warning: Museum key "${museumKey}" not found in database mappings.`);
+        continue;
+      }
+
+      // Meta / Cover Museo
+      const metaDir = path.join(museumDirPath, 'meta');
+      if (fs.existsSync(metaDir) && fs.statSync(metaDir).isDirectory()) {
+        const metaFiles = fs.readdirSync(metaDir).filter(file => Imager.isImage(file));
+        for (const file of metaFiles) {
+          const filePath = path.join(metaDir, file);
+          const payload = {
+            buffer: fs.readFileSync(filePath),
+            originalname: file,
+            mimetype: Imager.getMimeType(file)
+          };
+          try {
+            const url = await UploadService.museumImgUpload(museumId.toString(), payload);
+            console.log(`[Seed Assets] Loaded museum cover for "${museumKey}" -> ${url}`);
+          } catch (err) {
+            console.error(`[Seed Assets] Error uploading museum cover "${file}" for "${museumKey}":`, err.message);
+          }
+        }
+      }
+
+      // Visite
+      const visitsDir = path.join(museumDirPath, 'visits');
+      if (fs.existsSync(visitsDir) && fs.statSync(visitsDir).isDirectory()) {
+        const visitFolders = fs.readdirSync(visitsDir);
+        for (const visitKey of visitFolders) {
+          const visitDirPath = path.join(visitsDir, visitKey);
+          if (!fs.statSync(visitDirPath).isDirectory()) continue;
+
+          const visitId = visitMap[visitKey];
+          if (!visitId) {
+            console.warn(`[Seed Assets] Warning: Visit key "${visitKey}" not found in database mappings.`);
+            continue;
+          }
+
+          const visitFiles = fs.readdirSync(visitDirPath).filter(file => Imager.isImage(file));
+          for (const file of visitFiles) {
+            const filePath = path.join(visitDirPath, file);
+            const payload = {
+              buffer: fs.readFileSync(filePath),
+              originalname: file,
+              mimetype: Imager.getMimeType(file)
+            };
+            try {
+              const url = await UploadService.visitImgUpload(museumId.toString(), visitId.toString(), payload);
+              console.log(`[Seed Assets] Loaded visit image for "${visitKey}" in "${museumKey}" -> ${url}`);
+            } catch (err) {
+              console.error(`[Seed Assets] Error uploading visit image "${file}" for "${visitKey}":`, err.message);
+            }
+          }
+        }
+      }
+
+      // Opere d'Arte
+      const artworksDir = path.join(museumDirPath, 'artworks');
+      if (fs.existsSync(artworksDir) && fs.statSync(artworksDir).isDirectory()) {
+        const artworkFolders = fs.readdirSync(artworksDir);
+        for (const artworkKey of artworkFolders) {
+          const artworkDirPath = path.join(artworksDir, artworkKey);
+          if (!fs.statSync(artworkDirPath).isDirectory()) continue;
+
+          const artworkId = artworkMap[artworkKey];
+          if (!artworkId) {
+            console.warn(`[Seed Assets] Warning: Artwork key "${artworkKey}" not found in database mappings.`);
+            continue;
+          }
+
+          const artworkFiles = fs.readdirSync(artworkDirPath).filter(file => Imager.isImage(file));
+          for (const file of artworkFiles) {
+            const filePath = path.join(artworkDirPath, file);
+            const payload = {
+              buffer: fs.readFileSync(filePath),
+              originalname: file,
+              mimetype: Imager.getMimeType(file)
+            };
+            try {
+              const url = await UploadService.artworkImgUpload(museumId.toString(), artworkId.toString(), payload);
+              console.log(`[Seed Assets] Loaded artwork image for "${artworkKey}" in "${museumKey}" -> ${url}`);
+            } catch (err) {
+              console.error(`[Seed Assets] Error uploading artwork image "${file}" for "${artworkKey}":`, err.message);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  console.log('[Seed Assets] All seed images processed and attached successfully.');
+}
+
 async function seed() {
   console.log('[Seed] Connecting to MongoDB at:', MONGO_URI);
 
@@ -85,8 +240,9 @@ async function seed() {
 
     const seedData = loadAllSeedData();
 
-    // 1. Clear existing dataset
+    // Clear existing dataset
     console.log('[Seed] Cleaning old collection data...');
+    await User.deleteMany({});
     await Item.deleteMany({});
     await Artist.deleteMany({});
     await Artwork.deleteMany({});
@@ -99,11 +255,17 @@ async function seed() {
     const itemMap = {};
     const artworkMap = {};
     const visitMap = {};
+    const museumMap = {};
 
-    // 2. Insert Users
+    // Insert Users
     console.log('[Seed] Inserting users...');
     for (const userData of seedData.users) {
       if (userMap[userData.key]) continue;
+      const existingUser = await User.findOne({ email: userData.email });
+      if (existingUser) {
+        userMap[userData.key] = existingUser._id;
+        continue;
+      }
       const hashedPassword = await bcrypt.hash(userData.password || 'Password123!', 10);
       const user = new User({
         name: userData.name,
@@ -118,7 +280,7 @@ async function seed() {
     }
     console.log(`[Seed] Inserted ${Object.keys(userMap).length} user(s).`);
 
-    // 3. Insert Artists
+    // Insert Artists
     console.log('[Seed] Inserting artists...');
     for (const artistData of seedData.artists) {
       if (artistMap[artistData.key]) continue;
@@ -141,7 +303,7 @@ async function seed() {
     }
     console.log(`[Seed] Inserted ${Object.keys(artistMap).length} artist(s).`);
 
-    // 4. Insert Items
+    // Insert Items
     console.log('[Seed] Inserting items...');
     const ALLOWED_LANGS = ['it', 'en', 'fr', 'es', 'de', 'cn', 'ru'];
     const ALLOWED_TONES = ['infantile', 'simple', 'medium', 'technical'];
@@ -187,7 +349,7 @@ async function seed() {
     }
     console.log(`[Seed] Inserted ${Object.keys(itemMap).length} item(s).`);
 
-    // 5. Insert Artworks
+    // Insert Artworks
     console.log('[Seed] Inserting artworks...');
     for (const artworkData of seedData.artworks) {
       if (artworkMap[artworkData.key]) continue;
@@ -230,7 +392,7 @@ async function seed() {
     }
     console.log(`[Seed] Inserted ${Object.keys(artworkMap).length} artwork(s).`);
 
-    // 6. Insert Visits
+    // Insert Visits
     console.log('[Seed] Inserting visits...');
     for (const visitData of seedData.visits) {
       if (visitMap[visitData.key]) continue;
@@ -353,10 +515,14 @@ async function seed() {
       });
 
       const savedMuseum = await museum.save();
+      museumMap[museumData.key] = savedMuseum._id;
       console.log(`[Seed] Successfully inserted museum: "${savedMuseum.name}" (${savedMuseum._id})`);
     }
 
-    console.log('[Seed] Complete! Database populated cleanly from all seed files.');
+    // 8. Process and Upload Seed Assets
+    await uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap });
+
+    console.log('[Seed] Complete! Database populated cleanly with all entities and assets.');
   } catch (err) {
     console.error('[Seed] Error populating database:', err);
   } finally {

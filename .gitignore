@@ -29,9 +29,10 @@ package-lock.json
 docker-compose.override.yml.backup
 
 # Immagini assets
-# backend/assets/
+backend/assets/museums/
+backend/assets/visits/
+backend/assets/users/
 
-# --- SICUREZZA & AMBIENTE ---
 # Fondamentale: ignora le credenziali
 .env
 .env.local

@@ -10,6 +10,9 @@ export interface NavigatorRequest {
   itemAction?: string;
   targetPoiType?: string;
   targetArtist?: string;
+  isGroup?: boolean;
+  isTeacher?: boolean;
+  sessionCode?: string;
 }
 
 export const TONE_MAPPING: Record<ToneType, string> = {

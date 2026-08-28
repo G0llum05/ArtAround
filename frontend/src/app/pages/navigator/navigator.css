@@ -522,3 +522,37 @@
 .btn-secondary .card-svg{
   color: var(--on-secondary);
 }
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.itinerary-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.guided-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1976d2;
+  background-color: rgba(33, 150, 243, 0.12);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+}
+
+.control-lock-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--on-surface-variant);
+  opacity: 0.5;
+}
+

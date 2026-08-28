@@ -35,7 +35,6 @@
   flex-shrink: 0;
 }
 
-/* Il cerchio principale */
 .step-circle {
   width: 32px;
   height: 32px;
@@ -50,6 +49,11 @@
   z-index: 2;
   transition: all 0.3s ease;
   border: 2px solid var(--outline-variant, #ccc);
+  cursor: pointer;
+}
+
+.itinerary-container.readonly-mode .step-circle {
+  cursor: default;
 }
 
 /* La linea verticale che collega i pallini */

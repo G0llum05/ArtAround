@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const TokenService = require('../service/TokenService');
 const GroupVisitService = require('../service/GroupVisitService');
 const GroupVisit = require('../data/model/GroupVisit');
@@ -200,19 +201,33 @@ function initGroupVisitSocket(httpServer) {
             throw new Error('Solo il docente può cambiare tappa.');
           }
 
-          const room = `session:${sessionCode.toUpperCase().trim()}`;
-          const updated = await GroupVisitService.updateProgress(sessionId, user.id, {
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) {
+            throw new Error('Codice sessione mancante.');
+          }
+          const room = `session:${code}`;
+
+          let querySessionId = sessionId;
+          if (!querySessionId || !mongoose.Types.ObjectId.isValid(querySessionId)) {
+            const found = await GroupVisit.findOne({ sessionCode: code });
+            if (!found) throw new Error('Sessione non trovata per il codice fornito.');
+            querySessionId = found._id.toString();
+          }
+
+          const updated = await GroupVisitService.updateProgress(querySessionId, user.id, {
             currentStepIndex: stepIndex,
             activeItem: activeItem
           });
 
+          console.log(`[Socket.IO] Broadcast cambio tappa a stanza ${room}: nuovo step ${updated?.currentStepIndex ?? stepIndex}`);
+
           // Broadcast dello step aggiornato a tutti gli studenti nella stanza
           io.to(room).emit('session:step-changed', {
-            stepIndex: updated.currentStepIndex,
-            activeItem: updated.activeItem
+            stepIndex: updated ? updated.currentStepIndex : stepIndex,
+            activeItem: updated?.activeItem || activeItem
           });
 
-          if (typeof callback === 'function') callback({ success: true, stepIndex: updated.currentStepIndex });
+          if (typeof callback === 'function') callback({ success: true, stepIndex: updated ? updated.currentStepIndex : stepIndex });
         } catch (err) {
           console.error('[Socket.IO] Errore in teacher:step-change:', err.message);
           if (typeof callback === 'function') callback({ success: false, error: err.message });
@@ -228,8 +243,19 @@ function initGroupVisitSocket(httpServer) {
             throw new Error('Solo il docente può modificare i permessi di navigazione.');
           }
 
-          const room = `session:${sessionCode.toUpperCase().trim()}`;
-          await GroupVisitService.updateProgress(sessionId, user.id, { isLocked });
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) throw new Error('Codice sessione mancante.');
+          const room = `session:${code}`;
+
+          let querySessionId = sessionId;
+          if (!querySessionId || !mongoose.Types.ObjectId.isValid(querySessionId)) {
+            const found = await GroupVisit.findOne({ sessionCode: code });
+            if (found) querySessionId = found._id.toString();
+          }
+
+          if (querySessionId) {
+            await GroupVisitService.updateProgress(querySessionId, user.id, { isLocked });
+          }
 
           io.to(room).emit('session:lock-toggled', { isLocked });
           if (typeof callback === 'function') callback({ success: true, isLocked });
@@ -310,8 +336,19 @@ function initGroupVisitSocket(httpServer) {
       socket.on('teacher:end-session', async ({ sessionCode, sessionId }, callback) => {
         try {
           if (user.role !== 'teacher' && user.role !== 'admin') return;
-          const room = `session:${sessionCode.toUpperCase().trim()}`;
-          await GroupVisitService.endSession(sessionId, user.id);
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) return;
+          const room = `session:${code}`;
+
+          let querySessionId = sessionId;
+          if (!querySessionId || !mongoose.Types.ObjectId.isValid(querySessionId)) {
+            const found = await GroupVisit.findOne({ sessionCode: code });
+            if (found) querySessionId = found._id.toString();
+          }
+
+          if (querySessionId) {
+            await GroupVisitService.endSession(querySessionId, user.id);
+          }
 
           io.to(room).emit('session:ended', {
             message: 'La visita guidata è stata terminata dal docente.'

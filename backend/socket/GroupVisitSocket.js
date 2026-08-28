@@ -1,5 +1,6 @@
 const TokenService = require('../service/TokenService');
 const GroupVisitService = require('../service/GroupVisitService');
+const GroupVisit = require('../data/model/GroupVisit');
 
 let io = null;
 
@@ -130,6 +131,67 @@ function initGroupVisitSocket(httpServer) {
       });
 
       /**
+       * Docente avvia la visita di gruppo
+       */
+      socket.on('teacher:start-session', async ({ sessionCode, sessionId }, callback) => {
+        try {
+          if (user.role !== 'teacher' && user.role !== 'admin') {
+            throw new Error('Solo il docente o un amministratore può avviare la visita.');
+          }
+
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) {
+            throw new Error('Codice sessione mancante.');
+          }
+
+          const room = `session:${code}`;
+
+          // Aggiorna lo stato della sessione a in_progress
+          const query = sessionId ? { _id: sessionId } : { sessionCode: code };
+          const updated = await GroupVisit.findOneAndUpdate(
+            query,
+            {
+              $set: {
+                status: 'in_progress',
+                startedAt: new Date()
+              }
+            },
+            { new: true }
+          ).populate('visit');
+
+          if (!updated) {
+            throw new Error('Sessione non trovata.');
+          }
+
+          const visitId = updated.visit?._id ? updated.visit._id.toString() : (updated.visit ? updated.visit.toString() : null);
+
+          console.log(`[Socket.IO] Visita avviata per stanza ${code} (Visita ID: ${visitId})`);
+
+          // Broadcast session:started a TUTTI i partecipanti collegati nella stanza (compresi studenti)
+          io.to(room).emit('session:started', {
+            sessionCode: code,
+            sessionId: updated._id.toString(),
+            visitId: visitId,
+            currentStepIndex: updated.currentStepIndex || 0,
+            isLocked: updated.settings?.isLocked ?? true,
+            allowQuestions: updated.settings?.allowQuestions ?? true
+          });
+
+          if (typeof callback === 'function') {
+            callback({
+              success: true,
+              visitId: visitId,
+              sessionCode: code,
+              sessionId: updated._id.toString()
+            });
+          }
+        } catch (err) {
+          console.error('[Socket.IO] Errore in teacher:start-session:', err.message);
+          if (typeof callback === 'function') callback({ success: false, error: err.message });
+        }
+      });
+
+      /**
        * Docente cambia tappa dell'itinerario
        */
       socket.on('teacher:step-change', async ({ sessionCode, sessionId, stepIndex, activeItem }, callback) => {
@@ -180,25 +242,35 @@ function initGroupVisitSocket(httpServer) {
        * Docente invia una trasmissione audio / testo TTS condiviso
        */
       socket.on('teacher:broadcast-audio', ({ sessionCode, text, language, audioUrl }) => {
-        if (user.role !== 'teacher' && user.role !== 'admin') return;
-        const room = `session:${sessionCode.toUpperCase().trim()}`;
-        io.to(room).emit('session:audio-play', {
-          text,
-          language,
-          audioUrl
-        });
+        try {
+          if (user.role !== 'teacher' && user.role !== 'admin') return;
+          if (!sessionCode) return;
+          const room = `session:${sessionCode.toUpperCase().trim()}`;
+          io.to(room).emit('session:audio-play', {
+            text,
+            language,
+            audioUrl
+          });
+        } catch (err) {
+          console.error('[Socket.IO] Errore in teacher:broadcast-audio:', err.message);
+        }
       });
 
       /**
        * Studente alza la mano
        */
       socket.on('student:raise-hand', ({ sessionCode }) => {
-        const room = `session:${sessionCode.toUpperCase().trim()}`;
-        const studentName = `${user.name || ''} ${user.surname || ''}`.trim() || user.email;
-        io.to(room).emit('session:hand-raised', {
-          studentId: user.id,
-          studentName: studentName
-        });
+        try {
+          if (!sessionCode) return;
+          const room = `session:${sessionCode.toUpperCase().trim()}`;
+          const studentName = `${user.name || ''} ${user.surname || ''}`.trim() || user.email;
+          io.to(room).emit('session:hand-raised', {
+            studentId: user.id,
+            studentName: studentName
+          });
+        } catch (err) {
+          console.error('[Socket.IO] Errore in student:raise-hand:', err.message);
+        }
       });
 
       /**
@@ -255,21 +327,25 @@ function initGroupVisitSocket(httpServer) {
        * Disconnessione
        */
       socket.on('disconnect', async () => {
-        console.log(`[Socket.IO] Disconnessione utente: ${user.email}`);
-        if (socket.sessionCode) {
-          const room = `session:${socket.sessionCode}`;
-          await GroupVisitService.setParticipantOnlineStatus(socket.sessionCode, user.id, false);
-          try {
-            const updatedSession = await GroupVisitService.getSessionByCode(socket.sessionCode);
-            if (updatedSession?.participants) {
-              io.to(room).emit('participants:updated', updatedSession.participants);
-            }
-          } catch (e) {}
+        try {
+          console.log(`[Socket.IO] Disconnessione utente: ${user.email}`);
+          if (socket.sessionCode) {
+            const room = `session:${socket.sessionCode}`;
+            await GroupVisitService.setParticipantOnlineStatus(socket.sessionCode, user.id, false);
+            try {
+              const updatedSession = await GroupVisitService.getSessionByCode(socket.sessionCode);
+              if (updatedSession?.participants) {
+                io.to(room).emit('participants:updated', updatedSession.participants);
+              }
+            } catch (e) {}
 
-          socket.to(room).emit('participant:left', {
-            userId: user.id,
-            email: user.email
-          });
+            socket.to(room).emit('participant:left', {
+              userId: user.id,
+              email: user.email
+            });
+          }
+        } catch (err) {
+          console.error('[Socket.IO] Errore gestito in disconnect:', err.message);
         }
       });
     });

@@ -48,6 +48,8 @@ export class GroupRoom implements OnInit, OnDestroy {
     return this.studentParticipants().filter(p => p.isOnline === true).length;
   });
 
+  isStarting = signal<boolean>(false);
+  private unregisterSessionStarted: (() => void) | null = null;
   private pollInterval: any = null;
 
   ngOnInit(): void {
@@ -57,6 +59,14 @@ export class GroupRoom implements OnInit, OnDestroy {
       });
       return;
     }
+
+    // Ascolta l'evento WebSocket quando il docente avvia la visita
+    this.unregisterSessionStarted = this.socketService.onSessionStarted((data: any) => {
+      console.log('[GroupRoom] La visita è stata avviata dal docente:', data);
+      const visitId = data?.visitId || this.session()?.visit?.id || this.session()?.visit?._id || this.session()?.visit;
+      const code = data?.sessionCode || this.sessionCode() || this.session()?.sessionCode;
+      this.navigateToNavigator(code, visitId);
+    });
 
     this.route.paramMap.subscribe(params => {
       const code = params.get('code');
@@ -79,18 +89,26 @@ export class GroupRoom implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.unregisterSessionStarted) {
+      this.unregisterSessionStarted();
+      this.unregisterSessionStarted = null;
+    }
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
       this.pollInterval = null;
     }
-    const code = this.sessionCode() || this.session()?.sessionCode;
-    if (code && !this.isTeacher()) {
-      this.groupService.leaveSession(code).subscribe({
-        next: () => {},
-        error: () => {}
-      });
-    }
-    this.socketService.leaveRoom(code);
+  }
+
+  private navigateToNavigator(code: string, visitId: string): void {
+    if (!code || !visitId) return;
+    this.router.navigate(['/navigator'], {
+      queryParams: {
+        visitId: visitId,
+        sessionCode: code.toUpperCase().trim(),
+        isGroup: 'true',
+        isTeacher: this.isTeacher() ? 'true' : 'false'
+      }
+    });
   }
 
   private startBackgroundPolling(code: string): void {
@@ -101,6 +119,11 @@ export class GroupRoom implements OnInit, OnDestroy {
       this.groupService.getSessionByCode(code).subscribe({
         next: (res) => {
           const sessionData = res.data || res;
+          if (sessionData?.status === 'in_progress') {
+            const visitId = sessionData.visit?.id || sessionData.visit?._id || sessionData.visit;
+            this.navigateToNavigator(code, visitId);
+            return;
+          }
           if (sessionData?.participants) {
             this.socketService.participants.set(sessionData.participants);
           }
@@ -120,6 +143,14 @@ export class GroupRoom implements OnInit, OnDestroy {
         this.isLoading.set(false);
         const sessionData = res.data || res;
         this.session.set(sessionData);
+
+        // Se la sessione è già stata avviata, reindirizza direttamente al navigatore
+        if (sessionData.status === 'in_progress') {
+          const visitId = sessionData.visit?.id || sessionData.visit?._id || sessionData.visit;
+          this.navigateToNavigator(code, visitId);
+          return;
+        }
+
         if (sessionData.participants) {
           this.socketService.participants.set(sessionData.participants);
         }
@@ -133,6 +164,25 @@ export class GroupRoom implements OnInit, OnDestroy {
         this.errorMessage.set(err.error?.message || `Impossibile trovare la stanza "${code}".`);
       }
     });
+  }
+
+  startGroupVisit(): void {
+    const code = this.sessionCode() || this.session()?.sessionCode;
+    const sessionId = this.session()?.id || this.session()?._id;
+    if (!code) return;
+
+    this.isStarting.set(true);
+    this.errorMessage.set(null);
+
+    this.socketService.startSession(code, sessionId)
+      .then((res: any) => {
+        const visitId = res?.visitId || this.session()?.visit?.id || this.session()?.visit?._id || this.session()?.visit;
+        this.navigateToNavigator(code, visitId);
+      })
+      .catch((err: any) => {
+        this.isStarting.set(false);
+        this.errorMessage.set(err?.message || 'Errore durante l\'avvio della visita guidata.');
+      });
   }
 
   createNewSession(visitId: string, title?: string): void {

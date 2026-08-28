@@ -151,11 +151,21 @@
     <footer class="room-footer">
       @if (isTeacher()) {
         <div class="teacher-actions">
-          <button type="button" class="btn btn-primary btn-start-tour" disabled title="In arrivo al prossimo passo">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-            <span>Inizia Visita di Gruppo</span>
+          <button
+            type="button"
+            class="btn btn-primary btn-start-tour"
+            (click)="startGroupVisit()"
+            [disabled]="isStarting()"
+          >
+            @if (isStarting()) {
+              <div class="spinner-sm"></div>
+              <span>Avvio in corso...</span>
+            } @else {
+              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Inizia Visita di Gruppo</span>
+            }
           </button>
           
           <button type="button" class="btn btn-outline" (click)="leaveRoom()">

@@ -52,10 +52,11 @@ class LoginResponseDTO {
     this.email = user.email;
     this.gender = user.gender || 'other';
     this.role = user.role;
-    const defaultPropicUrl = '/assets/users/default/propic/default.jpeg';
+    const propicUrl = user.assets?.profilePicture?.url;
+    const validUrl = propicUrl && !propicUrl.includes('default.jpeg') ? propicUrl : null;
     this.assets = {
       profilePicture: {
-        url: user.assets?.profilePicture?.url || defaultPropicUrl,
+        url: validUrl,
         orientation: user.assets?.profilePicture?.orientation || 'square'
       }
     };

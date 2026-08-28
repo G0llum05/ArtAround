@@ -22,7 +22,7 @@ class VisitMapper {
         _id: v._id ? v._id.toString() : undefined,
         artworkId: artworkId,
         artworkTitle: artworkTitle,
-        artwork: artworkTitle, // Permette l'accesso sia con .artwork sia con .artworkTitle
+        artwork: isPopulated ? v.artwork : artworkTitle, // Permette l'accesso sia con .artwork sia con .artworkTitle
         items: v.items || [],
         tellMeMore: v.tellMeMore || null
       };

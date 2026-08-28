@@ -18,6 +18,14 @@ export class GroupSocketService {
   // Reattivi
   isConnected = signal<boolean>(false);
   participants = signal<any[]>([]);
+  currentStepIndex = signal<number>(0);
+  isLocked = signal<boolean>(true);
+
+  // Callbacks per eventi
+  private sessionStartedCallbacks: Array<(data: any) => void> = [];
+  private stepChangedCallbacks: Array<(data: { stepIndex: number; activeItem?: any }) => void> = [];
+  private lockToggledCallbacks: Array<(data: { isLocked: boolean }) => void> = [];
+  private sessionEndedCallbacks: Array<(data: { message?: string }) => void> = [];
 
   private getBackendUrl(): string {
     if (typeof window !== 'undefined') {
@@ -59,6 +67,12 @@ export class GroupSocketService {
   }
 
   async connect(sessionCode: string): Promise<void> {
+    if (this.socket && this.isConnected()) {
+      // Già connesso, unisciti alla stanza se necessario
+      this.socket.emit('session:join', { sessionCode: sessionCode.toUpperCase().trim() });
+      return;
+    }
+
     if (this.socket) {
       this.disconnect();
     }
@@ -77,8 +91,8 @@ export class GroupSocketService {
         withCredentials: true,
         transports: ['polling', 'websocket'],
         reconnection: true,
-        reconnectionAttempts: 3,
-        reconnectionDelay: 5000,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 3000,
         timeout: 5000
       });
 
@@ -92,6 +106,9 @@ export class GroupSocketService {
             console.log('[GroupSocket] Entrato nella stanza con successo:', res.session);
             if (res.session.participants) {
               this.participants.set(res.session.participants);
+            }
+            if (typeof res.session.currentStepIndex === 'number') {
+              this.currentStepIndex.set(res.session.currentStepIndex);
             }
           }
         });
@@ -139,6 +156,45 @@ export class GroupSocketService {
         );
       });
 
+      // La visita è stata avviata dal docente
+      this.socket.on('session:started', (data: any) => {
+        console.log('[GroupSocket] Ricevuto evento session:started:', data);
+        if (typeof data?.currentStepIndex === 'number') {
+          this.currentStepIndex.set(data.currentStepIndex);
+        }
+        this.sessionStartedCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
+      // Cambio tappa da parte del docente
+      this.socket.on('session:step-changed', (data: { stepIndex: number; activeItem?: any }) => {
+        console.log('[GroupSocket] Ricevuto evento session:step-changed:', data);
+        if (typeof data.stepIndex === 'number') {
+          this.currentStepIndex.set(data.stepIndex);
+        }
+        this.stepChangedCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
+      // Blocco / sblocco navigazione libera
+      this.socket.on('session:lock-toggled', (data: { isLocked: boolean }) => {
+        console.log('[GroupSocket] Ricevuto evento session:lock-toggled:', data);
+        this.isLocked.set(data.isLocked);
+        this.lockToggledCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
+      // Conclusione definitiva sessione
+      this.socket.on('session:ended', (data: { message?: string }) => {
+        console.log('[GroupSocket] Ricevuto evento session:ended:', data);
+        this.sessionEndedCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
       this.socket.on('disconnect', () => {
         console.log('[GroupSocket] Disconnesso dal server WebSocket');
         this.isConnected.set(false);
@@ -151,6 +207,96 @@ export class GroupSocketService {
     } catch (error) {
       console.warn('[GroupSocket] Impossibile caricare o connettere il WebSocket:', error);
     }
+  }
+
+  // Listener registrations
+  onSessionStarted(callback: (data: any) => void): () => void {
+    this.sessionStartedCallbacks.push(callback);
+    return () => {
+      this.sessionStartedCallbacks = this.sessionStartedCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onStepChanged(callback: (data: { stepIndex: number; activeItem?: any }) => void): () => void {
+    this.stepChangedCallbacks.push(callback);
+    return () => {
+      this.stepChangedCallbacks = this.stepChangedCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onLockToggled(callback: (data: { isLocked: boolean }) => void): () => void {
+    this.lockToggledCallbacks.push(callback);
+    return () => {
+      this.lockToggledCallbacks = this.lockToggledCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onSessionEnded(callback: (data: { message?: string }) => void): () => void {
+    this.sessionEndedCallbacks.push(callback);
+    return () => {
+      this.sessionEndedCallbacks = this.sessionEndedCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  // Emitters
+  startSession(sessionCode: string, sessionId?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        return reject(new Error('WebSocket non connesso.'));
+      }
+      this.socket.emit('teacher:start-session', { sessionCode, sessionId }, (res: any) => {
+        if (res?.success) {
+          resolve(res);
+        } else {
+          reject(new Error(res?.error || 'Impossibile avviare la visita.'));
+        }
+      });
+    });
+  }
+
+  changeStep(sessionCode: string, sessionId: string, stepIndex: number, activeItem?: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        return reject(new Error('WebSocket non connesso.'));
+      }
+      this.socket.emit('teacher:step-change', { sessionCode, sessionId, stepIndex, activeItem }, (res: any) => {
+        if (res?.success) {
+          resolve(res);
+        } else {
+          reject(new Error(res?.error || 'Errore durante il cambio tappa.'));
+        }
+      });
+    });
+  }
+
+  toggleLock(sessionCode: string, sessionId: string, isLocked: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        return reject(new Error('WebSocket non connesso.'));
+      }
+      this.socket.emit('teacher:toggle-lock', { sessionCode, sessionId, isLocked }, (res: any) => {
+        if (res?.success) {
+          resolve(res);
+        } else {
+          reject(new Error(res?.error || 'Errore modifica blocco navigazione.'));
+        }
+      });
+    });
+  }
+
+  endSession(sessionCode: string, sessionId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        return reject(new Error('WebSocket non connesso.'));
+      }
+      this.socket.emit('teacher:end-session', { sessionCode, sessionId }, (res: any) => {
+        if (res?.success) {
+          resolve(res);
+        } else {
+          reject(new Error(res?.error || 'Errore conclusione sessione.'));
+        }
+      });
+    });
   }
 
   leaveRoom(sessionCode?: string): void {
@@ -168,3 +314,4 @@ export class GroupSocketService {
     this.isConnected.set(false);
   }
 }
+

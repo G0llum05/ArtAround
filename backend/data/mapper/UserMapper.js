@@ -3,10 +3,11 @@ const { UserResponseDTO, UserRequestDTO, TransporterRequestDTO } = require('../m
 class UserMapper {
     static toUserResponseDTO(userModel) {
         if (!userModel) return null;
-        const defaultPropicUrl = '/assets/users/default/propic/default.jpeg';
+        const propicUrl = userModel.assets?.profilePicture?.url;
+        const validUrl = propicUrl && !propicUrl.includes('default.jpeg') ? propicUrl : null;
         const assets = {
             profilePicture: {
-                url: userModel.assets?.profilePicture?.url || defaultPropicUrl,
+                url: validUrl,
                 orientation: userModel.assets?.profilePicture?.orientation || 'square'
             }
         };

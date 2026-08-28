@@ -32,6 +32,7 @@ export class Login implements OnInit {
   pendingVerifyEmail = signal<string>('');
 
   isSubmitting = signal<boolean>(false);
+  returnUrl = signal<string>('/');
 
   // Profile Picture Upload State
   readonly imageUploader = viewChild<ImageUploader>(ImageUploader);
@@ -50,6 +51,18 @@ export class Login implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
+      if (params['returnUrl']) {
+        this.returnUrl.set(params['returnUrl']);
+        try {
+          localStorage.setItem('artaround_returnUrl', params['returnUrl']);
+        } catch (e) {}
+      } else {
+        const saved = localStorage.getItem('artaround_returnUrl');
+        if (saved && !saved.startsWith('/login')) {
+          this.returnUrl.set(saved);
+        }
+      }
+
       if (params['status'] === 'success') {
         // L'utente torna da Google: chiediamo i dati al backend inviando il cookie
         this.authService.refreshToken().subscribe({
@@ -58,7 +71,7 @@ export class Login implements OnInit {
             if (res?.message) {
               this.alertService.show(res.message, res.type);
             }
-            this.router.navigate(['/']);
+            this.navigateAfterAuth();
           },
           error: (err) => {
             console.error('Errore durante il recupero dei dati di Google:', err);
@@ -73,6 +86,18 @@ export class Login implements OnInit {
         this.alertService.error('Errore durante la procedura di autenticazione con Google.');
       }
     });
+  }
+
+  private navigateAfterAuth(): void {
+    let target = this.returnUrl() || localStorage.getItem('artaround_returnUrl') || '/';
+    try {
+      localStorage.removeItem('artaround_returnUrl');
+    } catch (e) {}
+
+    if (!target || target === '/login' || target.startsWith('/login?')) {
+      target = '/';
+    }
+    this.router.navigateByUrl(target);
   }
 
   formDataToUserModel(user: any): UserRequest {
@@ -178,6 +203,7 @@ export class Login implements OnInit {
             if (response?.message) {
               this.alertService.show(response.message, response.type);
             }
+            this.navigateAfterAuth();
           },
           error: (error) => {
             this.isSubmitting.set(false);
@@ -219,6 +245,12 @@ export class Login implements OnInit {
   }
 
   googleLogin(): void {
+    const returnTarget = this.returnUrl();
+    if (returnTarget && !returnTarget.startsWith('/login')) {
+      try {
+        localStorage.setItem('artaround_returnUrl', returnTarget);
+      } catch (e) {}
+    }
     this.authService.googleLogin();
   }
 
@@ -228,7 +260,7 @@ export class Login implements OnInit {
     if (res?.message) {
       this.alertService.show(res.message, res.type);
     }
-    this.router.navigate(['/']);
+    this.navigateAfterAuth();
   }
 
   onVerifyCancelled(): void {
@@ -253,29 +285,24 @@ export class Login implements OnInit {
   }
 
   // --- GESTIONE FOTO PROFILO ---
+  hasImageError = signal<boolean>(false);
 
-  getProfilePictureUrl(): string {
+  profilePictureUrl = computed(() => {
+    if (this.hasImageError()) {
+      return null;
+    }
     const user = this.authService.currentUser();
     const url = user?.assets?.profilePicture?.url;
-    const defaultPropic = '/assets/users/default/propic/default.jpeg';
-
-    if (!url) {
-      return defaultPropic;
+    if (!url || url.includes('default.jpeg')) {
+      return null;
     }
-
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-      return url;
-    }
-
     return url;
+  });
+
+  onImageError(): void {
+    this.hasImageError.set(true);
   }
 
-  onImageError(event: Event): void {
-    const target = event.target as HTMLImageElement;
-    if (target) {
-      target.src = '/assets/users/default/propic/default.jpeg';
-    }
-  }
   toggleUploadMode(): void {
     const current = this.showUploadMode();
     if (current) {
@@ -330,6 +357,7 @@ export class Login implements OnInit {
     ).subscribe({
       next: (res) => {
         this.isUploadingPropic.set(false);
+        this.hasImageError.set(false);
         this.authService.updateUserProfilePicture(res.url);
         this.alertService.success('Immagine del profilo aggiornata con successo!');
         this.cancelPropicUpload();

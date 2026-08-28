@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const GroupVisit = require('../data/model/GroupVisit');
 const Visit = require('../data/model/Visit');
 const User = require('../data/model/User');
@@ -130,30 +131,6 @@ class GroupVisitService {
   }
 
   /**
-   * Lista delle sessioni create dal docente
-   */
-  static async getTeacherSessions(teacherId) {
-    const sessions = await GroupVisit.find({ teacher: teacherId })
-      .populate('visit', 'title')
-      .populate('teacher', 'name surname email')
-      .sort({ createdAt: -1 });
-
-    return sessions.map(s => GroupVisitMapper.toGroupVisitSummaryDTO(s));
-  }
-
-  /**
-   * Lista delle sessioni a cui uno studente ha preso parte
-   */
-  static async getStudentSessions(studentId) {
-    const sessions = await GroupVisit.find({ 'participants.user': studentId })
-      .populate('visit', 'title')
-      .populate('teacher', 'name surname email')
-      .sort({ createdAt: -1 });
-
-    return sessions.map(s => GroupVisitMapper.toGroupVisitSummaryDTO(s));
-  }
-
-  /**
    * Registra o aggiorna l'ingresso di uno studente nella sessione
    */
   static async joinSession(sessionCode, studentId) {
@@ -174,27 +151,38 @@ class GroupVisitService {
     }
 
     const fullName = `${student.name || ''} ${student.surname || ''}`.trim() || student.email;
+    const now = new Date();
 
-    const existingIndex = session.participants.findIndex(
-      p => p.user && p.user.toString() === studentId.toString()
+    const updateExisting = await GroupVisit.updateOne(
+      { _id: session._id, 'participants.user': studentId },
+      {
+        $set: {
+          'participants.$.isOnline': true,
+          'participants.$.lastSeen': now,
+          'participants.$.name': fullName,
+          'participants.$.email': student.email
+        }
+      }
     );
 
-    if (existingIndex >= 0) {
-      session.participants[existingIndex].isOnline = true;
-      session.participants[existingIndex].lastSeen = new Date();
-    } else {
-      session.participants.push({
-        user: studentId,
-        name: fullName,
-        email: student.email,
-        joinedAt: new Date(),
-        isOnline: true,
-        lastSeen: new Date()
-      });
+    if (updateExisting.matchedCount === 0) {
+      await GroupVisit.updateOne(
+        { _id: session._id },
+        {
+          $push: {
+            participants: {
+              user: studentId,
+              name: fullName,
+              email: student.email,
+              joinedAt: now,
+              isOnline: true,
+              lastSeen: now
+            }
+          }
+        }
+      );
     }
 
-    session.markModified('participants');
-    await session.save();
     return await this.getSessionById(session._id);
   }
 
@@ -211,33 +199,38 @@ class GroupVisitService {
       throw new Error('Non sei autorizzato a modificare questa sessione (solo il docente creatore può farlo).');
     }
 
+    const updateFields = {};
+
     if (typeof currentStepIndex === 'number' && currentStepIndex >= 0) {
-      session.currentStepIndex = currentStepIndex;
+      updateFields.currentStepIndex = currentStepIndex;
     }
 
     if (activeItem !== undefined) {
-      session.activeItem = activeItem || null;
+      updateFields.activeItem = activeItem || null;
     }
 
     if (typeof isLocked === 'boolean') {
-      session.settings.isLocked = isLocked;
+      updateFields['settings.isLocked'] = isLocked;
     }
 
     if (typeof allowQuestions === 'boolean') {
-      session.settings.allowQuestions = allowQuestions;
+      updateFields['settings.allowQuestions'] = allowQuestions;
     }
 
     if (status && ['waiting', 'in_progress', 'paused', 'completed', 'cancelled'].includes(status)) {
-      session.status = status;
+      updateFields.status = status;
       if (status === 'in_progress' && !session.startedAt) {
-        session.startedAt = new Date();
+        updateFields.startedAt = new Date();
       } else if (status === 'completed' && !session.endedAt) {
-        session.endedAt = new Date();
+        updateFields.endedAt = new Date();
       }
     }
 
-    await session.save();
-    return await this.getSessionById(session._id);
+    if (Object.keys(updateFields).length > 0) {
+      await GroupVisit.findByIdAndUpdate(sessionId, { $set: updateFields });
+    }
+
+    return await this.getSessionById(sessionId);
   }
 
   /**
@@ -261,25 +254,29 @@ class GroupVisitService {
     const studentName = student ? `${student.name || ''} ${student.surname || ''}`.trim() || student.email : 'Studente';
 
     const newQuestion = {
+      _id: new mongoose.Types.ObjectId(),
       student: studentId,
       studentName: studentName,
       text: text.trim(),
       stepIndex: typeof stepIndex === 'number' ? stepIndex : session.currentStepIndex,
-      status: 'pending'
+      status: 'pending',
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
 
-    session.questions.push(newQuestion);
-    await session.save();
+    await GroupVisit.findByIdAndUpdate(
+      sessionId,
+      { $push: { questions: newQuestion } }
+    );
 
-    const createdQuestion = session.questions[session.questions.length - 1];
     return {
-      id: createdQuestion._id.toString(),
+      id: newQuestion._id.toString(),
       studentId: studentId.toString(),
       studentName: studentName,
-      text: createdQuestion.text,
-      stepIndex: createdQuestion.stepIndex,
-      status: createdQuestion.status,
-      createdAt: createdQuestion.createdAt
+      text: newQuestion.text,
+      stepIndex: newQuestion.stepIndex,
+      status: newQuestion.status,
+      createdAt: newQuestion.createdAt
     };
   }
 
@@ -291,7 +288,7 @@ class GroupVisitService {
       throw new Error('Stato domanda non valido.');
     }
 
-    const session = await GroupVisit.findById(sessionId);
+    const session = await GroupVisit.findById(sessionId, 'teacher questions');
     if (!session) {
       throw new Error('Sessione non trovata.');
     }
@@ -300,17 +297,19 @@ class GroupVisitService {
       throw new Error('Solo il docente titolare della sessione può gestire le domande.');
     }
 
-    const question = session.questions.id(questionId);
-    if (!question) {
+    const updated = await GroupVisit.findOneAndUpdate(
+      { _id: sessionId, 'questions._id': questionId },
+      { $set: { 'questions.$.status': status } },
+      { new: true }
+    );
+
+    if (!updated) {
       throw new Error('Domanda non trovata.');
     }
 
-    question.status = status;
-    await session.save();
-
     return {
-      id: question._id.toString(),
-      status: question.status
+      id: questionId.toString(),
+      status: status
     };
   }
 
@@ -318,7 +317,7 @@ class GroupVisitService {
    * Conclude definitivamente una sessione
    */
   static async endSession(sessionId, teacherId) {
-    const session = await GroupVisit.findById(sessionId);
+    const session = await GroupVisit.findById(sessionId, 'teacher');
     if (!session) {
       throw new Error('Sessione non trovata.');
     }
@@ -327,9 +326,12 @@ class GroupVisitService {
       throw new Error('Solo il docente creatore può terminare la sessione.');
     }
 
-    session.status = 'completed';
-    session.endedAt = new Date();
-    await session.save();
+    await GroupVisit.findByIdAndUpdate(sessionId, {
+      $set: {
+        status: 'completed',
+        endedAt: new Date()
+      }
+    });
 
     return await this.getSessionById(sessionId);
   }
@@ -341,7 +343,7 @@ class GroupVisitService {
     if (!sessionCode || !userId) return;
 
     const cleanCode = sessionCode.toUpperCase().trim();
-    const session = await GroupVisit.findOne({ sessionCode: cleanCode });
+    const session = await GroupVisit.findOne({ sessionCode: cleanCode }, 'teacher');
     if (!session) return;
 
     // Se è il docente titolare, non occorre registrarlo come studente partecipante
@@ -349,25 +351,36 @@ class GroupVisitService {
       return;
     }
 
-    const participant = session.participants.find(p => p.user && p.user.toString() === userId.toString());
-    if (participant) {
-      participant.isOnline = Boolean(isOnline);
-      participant.lastSeen = new Date();
-      session.markModified('participants');
-      await session.save();
-    } else if (isOnline) {
+    const now = new Date();
+
+    const updateResult = await GroupVisit.updateOne(
+      { sessionCode: cleanCode, 'participants.user': userId },
+      {
+        $set: {
+          'participants.$.isOnline': Boolean(isOnline),
+          'participants.$.lastSeen': now
+        }
+      }
+    );
+
+    if (updateResult.matchedCount === 0 && isOnline) {
       const user = await User.findById(userId);
       if (user) {
-        session.participants.push({
-          user: userId,
-          name: `${user.name || ''} ${user.surname || ''}`.trim() || user.email,
-          email: user.email,
-          joinedAt: new Date(),
-          isOnline: true,
-          lastSeen: new Date()
-        });
-        session.markModified('participants');
-        await session.save();
+        await GroupVisit.updateOne(
+          { sessionCode: cleanCode },
+          {
+            $push: {
+              participants: {
+                user: userId,
+                name: `${user.name || ''} ${user.surname || ''}`.trim() || user.email,
+                email: user.email,
+                joinedAt: now,
+                isOnline: true,
+                lastSeen: now
+              }
+            }
+          }
+        );
       }
     }
   }

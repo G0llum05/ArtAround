@@ -40,11 +40,5 @@ export class GroupService {
     const cleanCode = code.toUpperCase().trim();
     return this.http.get<any>(`${this.apiUrl}/code/${cleanCode}`);
   }
-
-  /**
-   * Recupera i dettagli di una sessione tramite ID
-   */
-  getSessionById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`);
-  }
 }
+

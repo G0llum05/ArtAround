@@ -1,5 +1,5 @@
-import { VisitService } from '../../services/visit.service.js';
 import { UploadService } from '../../services/upload.service.js';
+import { VisitService } from '../../services/visit.service.js';
 
 export class MktVisitEditor extends HTMLElement {
   constructor() {
@@ -16,6 +16,7 @@ export class MktVisitEditor extends HTMLElement {
       isDisableFriendly: false,
       license: 'Standard Copyright',
       visit: [],
+      selectedArtwork: null,
     };
     this.userId = null;
   }
@@ -86,14 +87,13 @@ export class MktVisitEditor extends HTMLElement {
       <main class="mkt-editor-page">
         <!-- HEADER SUPERIORE -->
         <header class="mkt-editor-header">
-          <h1 class="mkt-editor-title" id="main-title">${this.state.title || 'Nuova Visita'}</h1>
-          <div class="mkt-editor-header-sub">
-            <div class="mkt-museum-selector-area">
-              <mkt-input-search-visit id="museum-selector"></mkt-input-search-visit>
-            </div>
-            <div class="mkt-editor-actions">
-              <button type="button" class="mkt-btn mkt-btn-outline" id="btn-draft">Salva Bozza e Riprendi più tardi</button>
-              <button type="button" class="mkt-btn mkt-btn-primary" id="btn-publish">Salva & Pubblica</button>
+        <h1 class="mkt-editor-title" id="main-title">${this.state.title || 'Nuova Visita'}</h1>
+          <div class="mkt-editor-card">
+            <h2 class="mkt-detail-column-title">Seleziona un museo</h2>
+            <div class="mkt-editor-header-sub">
+              <div class="mkt-museum-selector-area">
+                <mkt-input-search-visit id="museum-selector"></mkt-input-search-visit>
+              </div>    
             </div>
           </div>
         </header>
@@ -108,6 +108,13 @@ export class MktVisitEditor extends HTMLElement {
           <aside class="mkt-column" id="details-column"></aside>
         </div>
       </main>
+
+      <footer class="mkt-editor-footer">
+        <div class="mkt-editor-actions">
+          <button type="button" class="mkt-btn mkt-btn-outline" id="btn-draft">Salva Bozza e Riprendi più tardi</button>
+          <button type="button" class="mkt-btn mkt-btn-primary" id="btn-publish">Salva & Pubblica</button>
+        </div>
+      </footer>
     `;
   }
 
@@ -120,9 +127,14 @@ export class MktVisitEditor extends HTMLElement {
     this.state.duration = '';
     this.state.isDisableFriendly = false;
     this.state.license = 'Standard Copyright';
+    this.state.selectedArtwork = null;
     this.state.visit = [];
     this.addEmptyStop();
     this.updateArtworksLibraryExcluded();
+    const artworksLibrary = this.querySelector('#artworksLibrary');
+    if (artworksLibrary && typeof artworksLibrary.clearSelection === 'function') {
+      artworksLibrary.clearSelection();
+    }
   }
 
   updateArtworksLibraryExcluded() {
@@ -197,6 +209,11 @@ export class MktVisitEditor extends HTMLElement {
 
           return `<div class="mkt-stop-block">${itemContentHtml}</div>`;
         } else {
+          const isReady = !!this.state.selectedArtwork;
+          const dropText = isReady
+            ? `Clicca qui per inserire "${this.state.selectedArtwork.artworkTitle}"`
+            : "Trascina o clicca qui per inserire l'opera";
+
           return `
           <div class="mkt-stop-block">
             <div class="mkt-stop-header">
@@ -205,11 +222,11 @@ export class MktVisitEditor extends HTMLElement {
                 <h3 class="mkt-stop-heading" style="color: var(--outline);">Tappa Vuota</h3>
               </div>
             </div>
-            <div class="mkt-empty-stop-dropzone" data-index="${index}">
+            <div class="mkt-empty-stop-dropzone ${isReady ? 'mkt-ready-to-place' : ''}" data-index="${index}">
               <svg xmlns="http://www.w3.org/2000/svg" height="1.75rem" viewBox="0 -960 960 960" width="1.75rem" fill="currentColor">
                 <path xmlns="http://www.w3.org/2000/svg" d="M800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h400v80H160v480h640v-280h80v280q0 33-23.5 56.5T800-160ZM240-320h280v-120H240v120Zm0-200h280v-120H240v120Zm360 200h120v-200H600v200Zm-440 80v-480 480Zm560-360v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z"/>
               </svg>
-              <span>Trascina qui l'opera dalla libreria</span>
+              <span>${dropText}</span>
             </div>
           </div>
         `;
@@ -224,6 +241,24 @@ export class MktVisitEditor extends HTMLElement {
 
     this.setupSequenceListeners();
     this.updateArtworksLibraryExcluded();
+  }
+
+  updateDropzonesSelectionState() {
+    const dropzones = this.querySelectorAll('.mkt-empty-stop-dropzone');
+    dropzones.forEach((zone) => {
+      const label = zone.querySelector('span');
+      if (this.state.selectedArtwork) {
+        zone.classList.add('mkt-ready-to-place');
+        if (label) {
+          label.textContent = `Clicca qui per inserire "${this.state.selectedArtwork.artworkTitle}"`;
+        }
+      } else {
+        zone.classList.remove('mkt-ready-to-place');
+        if (label) {
+          label.textContent = "Trascina o clicca qui per inserire l'opera";
+        }
+      }
+    });
   }
 
   setupSequenceListeners() {
@@ -244,10 +279,16 @@ export class MktVisitEditor extends HTMLElement {
           const rawData = e.dataTransfer.getData('application/json');
           if (!rawData) return;
           const artworkData = JSON.parse(rawData);
-          const index = parseInt(zone.getAttribute('data-index'));
+          const index = parseInt(zone.getAttribute('data-index'), 10);
 
           this.state.visit[index].artworkId = artworkData.artworkId;
           this.state.visit[index].artworkTitle = artworkData.artworkTitle;
+
+          this.state.selectedArtwork = null;
+          const artworksLibrary = this.querySelector('#artworksLibrary');
+          if (artworksLibrary && typeof artworksLibrary.clearSelection === 'function') {
+            artworksLibrary.clearSelection();
+          }
 
           if (index === this.state.visit.length - 1) {
             this.addEmptyStop();
@@ -256,6 +297,27 @@ export class MktVisitEditor extends HTMLElement {
         } catch (error) {
           console.error("Errore durante il parsing dell'opera trascinata:", error);
         }
+      });
+
+      // Click sul dropzone con opera precedentemente selezionata
+      zone.addEventListener('click', () => {
+        if (!this.state.selectedArtwork) return;
+        const index = parseInt(zone.getAttribute('data-index'), 10);
+        const selectedArt = this.state.selectedArtwork;
+
+        this.state.visit[index].artworkId = selectedArt.artworkId;
+        this.state.visit[index].artworkTitle = selectedArt.artworkTitle;
+
+        this.state.selectedArtwork = null;
+        const artworksLibrary = this.querySelector('#artworksLibrary');
+        if (artworksLibrary && typeof artworksLibrary.clearSelection === 'function') {
+          artworksLibrary.clearSelection();
+        }
+
+        if (index === this.state.visit.length - 1) {
+          this.addEmptyStop();
+        }
+        this.renderSequence();
       });
     });
 
@@ -363,7 +425,7 @@ export class MktVisitEditor extends HTMLElement {
         </div>
         <div class="mkt-details-section">
           <div class="mkt-toggle-row">
-            <span class="mkt-field-label">Accessibile (Senza Barriere)</span>
+            <span class="mkt-field-label">Accessibile ai Disabili</span>
             <label class="mkt-switch">
               <input type="checkbox" id="toggle-accessible" ${this.state.isDisableFriendly ? 'checked' : ''}>
               <span class="mkt-slider"></span>
@@ -668,5 +730,10 @@ export class MktVisitEditor extends HTMLElement {
       museumSelector.addEventListener('museumSelected', (e) => handleMuseumChange(e.detail));
       museumSelector.addEventListener('cleared', () => handleMuseumChange(null));
     }
+
+    this.addEventListener('artwork-selected', (e) => {
+      this.state.selectedArtwork = e.detail;
+      this.updateDropzonesSelectionState();
+    });
   }
 }

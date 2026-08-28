@@ -1,4 +1,4 @@
-import {MuseumService} from "../../services/museum.service.js";
+import { MuseumService } from "../../services/museum.service.js";
 
 export class MktInputSearchText extends HTMLElement {
   constructor() {
@@ -54,7 +54,7 @@ export class MktInputSearchText extends HTMLElement {
         <input
           type="text"
           class="mkt-custom-select"
-          placeholder="Cerca e seleziona un museo..."
+          placeholder="Cerca..."
           value="${this.displayValue}"
           id="search-input"
         />

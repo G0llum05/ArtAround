@@ -1,5 +1,5 @@
-import { MuseumService } from '../../services/museum.service.js';
 import { getImageUrl } from '../../services/images.services.js';
+import { MuseumService } from '../../services/museum.service.js';
 
 export class MktArtworkLibrary extends HTMLElement {
   constructor() {
@@ -11,6 +11,7 @@ export class MktArtworkLibrary extends HTMLElement {
       searchQuery: '',
       artworks: [],
       isLoading: false,
+      selectedArtworkId: null,
     };
   }
 
@@ -23,6 +24,7 @@ export class MktArtworkLibrary extends HTMLElement {
 
     if (attribute === 'data-museum-id') {
       this.state.museumId = newValue;
+      this.state.selectedArtworkId = null;
       if (this.isInitialized) {
         await this.fetchMuseumArtworks();
       }
@@ -32,12 +34,18 @@ export class MktArtworkLibrary extends HTMLElement {
       } catch {
         this.state.excludedIds = newValue ? newValue.split(',').map((s) => s.trim()) : [];
       }
+      if (this.state.selectedArtworkId && this.state.excludedIds.includes(this.state.selectedArtworkId)) {
+        this.state.selectedArtworkId = null;
+      }
       this.updateListUI();
     }
   }
 
   setExcludedIds(ids) {
     this.state.excludedIds = Array.isArray(ids) ? ids.map((id) => String(id)) : [];
+    if (this.state.selectedArtworkId && this.state.excludedIds.includes(this.state.selectedArtworkId)) {
+      this.state.selectedArtworkId = null;
+    }
     this.updateListUI();
   }
 
@@ -153,11 +161,13 @@ export class MktArtworkLibrary extends HTMLElement {
     }
 
     listContainer.innerHTML = this.filteredArtworks.map((art) => {
+      const artId = String(art.id || art._id);
+      const isSelected = this.state.selectedArtworkId && this.state.selectedArtworkId === artId;
       const artistName = this.getArtistNames(art.artists);
       const imageSrc = getImageUrl(art?.assets, 'portrait');
 
       return `
-        <div class="mkt-library-card" draggable="true" data-id="${art.id}">
+        <div class="mkt-library-card ${isSelected ? 'mkt-card-selected' : ''}" draggable="true" data-id="${artId}">
           ${imageSrc ? `
             <img src="${imageSrc}" alt="${art.title}" class="mkt-library-thumb">
           ` : `
@@ -187,18 +197,62 @@ export class MktArtworkLibrary extends HTMLElement {
     const cards = this.querySelectorAll('.mkt-library-card');
     cards.forEach((card) => {
       const artId = card.getAttribute('data-id');
-      const artData = this.state.artworks.find((a) => a.id === artId);
+      const artData = this.state.artworks.find((a) => String(a.id) === artId);
+      if (!artData) return;
 
       card.addEventListener('dragstart', (e) => {
         const dragPayload = {
-          artworkId: artData.id,
+          artworkId: String(artData.id || artData._id),
           artworkTitle: artData.title,
           artworkArtist: this.getArtistNames(artData.artists),
         };
         e.dataTransfer.setData('application/json', JSON.stringify(dragPayload));
         e.dataTransfer.effectAllowed = 'copy';
       });
+
+      card.addEventListener('click', () => {
+        const isCurrentlySelected = this.state.selectedArtworkId === artId;
+        this.setSelectedArtwork(isCurrentlySelected ? null : artId);
+      });
     });
+  }
+
+  setSelectedArtwork(artId) {
+    this.state.selectedArtworkId = artId ? String(artId) : null;
+
+    const cards = this.querySelectorAll('.mkt-library-card');
+    cards.forEach((c) => {
+      const cId = c.getAttribute('data-id');
+      if (this.state.selectedArtworkId && cId === this.state.selectedArtworkId) {
+        c.classList.add('mkt-card-selected');
+      } else {
+        c.classList.remove('mkt-card-selected');
+      }
+    });
+
+    const selectedArt = this.state.selectedArtworkId
+      ? this.state.artworks.find((a) => String(a.id) === this.state.selectedArtworkId)
+      : null;
+
+    const detail = selectedArt
+      ? {
+          artworkId: String(selectedArt.id || selectedArt._id),
+          artworkTitle: selectedArt.title,
+          artworkArtist: this.getArtistNames(selectedArt.artists),
+        }
+      : null;
+
+    this.dispatchEvent(
+      new CustomEvent('artwork-selected', {
+        detail,
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  clearSelection() {
+    this.setSelectedArtwork(null);
   }
 
   setupEventListeners() {

@@ -111,6 +111,13 @@ mkt-artwork-library {
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
+.mkt-library-card.mkt-card-selected {
+  border-color: var(--primary);
+  background-color: var(--surface-variant);
+  box-shadow: 0 0 0 2px var(--primary);
+  transform: translateY(-2px);
+}
+
 .mkt-library-thumb {
   width: 3.5rem;
   height: 3.5rem;

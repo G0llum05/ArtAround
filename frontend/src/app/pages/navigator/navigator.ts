@@ -16,7 +16,7 @@ import { Map } from '../../components/map/map';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 import { ArtworkResponse } from '../../models/artwork.model';
 
-import { dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS, messagesDummy } from './dummy'
+import { dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS } from './dummy'
 
 const settingsKey = 'navigatorSettings'
 
@@ -58,7 +58,9 @@ export class Navigator {
   });
 
   // Chat e Dettatura
-  messages = signal<ChatMessage[]>(messagesDummy);
+  messages = signal<ChatMessage[]>([
+    { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale. Come posso aiutarti oggi?' }
+  ]);
   isDictating = signal<boolean>(false);
 
   // Audio recording e playback
@@ -141,6 +143,19 @@ export class Navigator {
   //TODO chiamate api facili inziali come per prendere l'itinerario e tutta la visita si usa to signal
 
   private loadVisitData(vId: string): void {
+    // Svuota la chat e reimposta lo stato audio per la nuova visita
+    this.messages.set([
+      { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale per questa visita. Come posso aiutarti?' }
+    ]);
+    this.currentItineraryStepIndex.set(0);
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isPlaying.set(false);
+    this.audioCurrentTime.set(0);
+    this.audioDuration.set(0);
+
     this.visitService.getById(vId).pipe(takeUntilDestroyed()).subscribe({
       next: (visitData: any) => {
         const rawSteps = visitData?.steps || visitData?.visits || [];

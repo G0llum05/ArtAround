@@ -8,9 +8,9 @@
         <div class="group-live-pill" [class.teacher-pill]="isTeacher()">
           <span class="live-indicator"></span>
           @if (isTeacher()) {
-            <span>🎓 Docente • PIN: <strong>{{ sessionCode() }}</strong></span>
+            <span>Docente • PIN: <strong>{{ sessionCode() }}</strong></span>
           } @else {
-            <span>👥 Visita Guidata (Docente al comando)</span>
+            <span>Visita Guidata (Docente al comando)</span>
           }
         </div>
       }
@@ -97,6 +97,56 @@
             </span>
           }
         </div>
+
+        <!-- MONITORAGGIO ASCOLTO STUDENTI (Solo Docente in Visita di Gruppo) -->
+        @if (isGroup() && isTeacher()) {
+          <div class="teacher-monitoring-box">
+            <div class="monitoring-header">
+              <div class="monitoring-title-wrap">
+                <span class="monitoring-dot" [class.all-done]="(audioSummary()?.totalStudents || 0) > 0 && audioSummary()?.completedCount === audioSummary()?.totalStudents"></span>
+                <span class="monitoring-title">Ascolto Studenti</span>
+              </div>
+              <span class="monitoring-badge" [class.badge-ready]="(audioSummary()?.totalStudents || 0) > 0 && audioSummary()?.completedCount === audioSummary()?.totalStudents">
+                @if ((audioSummary()?.totalStudents || 0) === 0) {
+                  In attesa di studenti...
+                } @else if (audioSummary()?.completedCount === audioSummary()?.totalStudents) {
+                  Tutti pronti
+                } @else {
+                  {{ audioSummary()?.completedCount || 0 }}/{{ audioSummary()?.totalStudents || 0 }} completati
+                }
+              </span>
+            </div>
+
+            @if ((audioSummary()?.totalStudents || 0) > 0) {
+              <div class="monitoring-bar-track">
+                <div class="monitoring-bar-fill fill-done"
+                     [style.width.%]="((audioSummary()?.completedCount || 0) / (audioSummary()?.totalStudents || 1)) * 100"
+                     title="Hanno completato l'ascolto">
+                </div>
+                <div class="monitoring-bar-fill fill-active"
+                     [style.width.%]="((audioSummary()?.listeningCount || 0) / (audioSummary()?.totalStudents || 1)) * 100"
+                     title="Stanno ascoltando">
+                </div>
+              </div>
+            }
+
+            <div class="monitoring-stats-row">
+              <span class="stat-pill stat-done">
+                <svg class="stat-mini-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <strong>{{ audioSummary()?.completedCount || 0 }}</strong> hanno finito
+              </span>
+              <span class="stat-pill stat-active">
+                <svg class="stat-mini-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                <strong>{{ audioSummary()?.listeningCount || 0 }}</strong> in ascolto
+              </span>
+              @if ((audioSummary()?.pausedCount || 0) > 0) {
+                <span class="stat-pill stat-paused">
+                  <strong>{{ audioSummary()?.pausedCount || 0 }}</strong> in pausa
+                </span>
+              }
+            </div>
+          </div>
+        }
       </div>
     </section>
 
@@ -157,7 +207,7 @@
           <h3 class="card-title">Itinerario Completo</h3>
           @if (isGroup() && !isTeacher()) {
             <span class="guided-pill" title="La navigazione tra le tappe è gestita dal docente">
-              🔒 Guidata
+              Guidata
             </span>
           }
         </div>

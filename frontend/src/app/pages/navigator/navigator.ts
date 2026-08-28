@@ -49,6 +49,7 @@ export class Navigator {
   sessionCode = signal<string | null>(null);
   isGroup = signal<boolean>(false);
   isTeacher = signal<boolean>(false);
+  audioSummary = computed(() => this.socketService.studentsAudioSummary());
 
   //Setting
   currentSettings = signal<UserNavigatorSettings>({
@@ -294,7 +295,11 @@ export class Navigator {
 
     if (willPlay) {
       if (this.currentAudio) {
-        this.currentAudio.play().catch(err => {
+        this.currentAudio.play().then(() => {
+          if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+            this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
+          }
+        }).catch(err => {
           console.warn('Playback audio non consentito dal browser:', err);
           this.isPlaying.set(false);
         });
@@ -304,6 +309,9 @@ export class Navigator {
     } else {
       if (this.currentAudio) {
         this.currentAudio.pause();
+        if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+          this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'paused');
+        }
       }
     }
   }
@@ -358,6 +366,23 @@ export class Navigator {
     this.currentAudio.onended = () => {
       this.isPlaying.set(false);
       this.audioCurrentTime.set(0);
+      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+        this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'completed');
+      }
+    };
+    this.currentAudio.onpause = () => {
+      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+        const dur = this.audioDuration();
+        const cur = this.audioCurrentTime();
+        if (cur > 0 && cur < dur - 0.5) {
+          this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'paused');
+        }
+      }
+    };
+    this.currentAudio.onplay = () => {
+      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+        this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
+      }
     };
     this.currentAudio.onerror = () => this.isPlaying.set(false);
   }
@@ -365,7 +390,11 @@ export class Navigator {
   private playAudioSource(src: string): void {
     this.initAudioElement(src);
     if (this.currentAudio) {
-      this.currentAudio.play().catch(err => {
+      this.currentAudio.play().then(() => {
+        if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+          this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
+        }
+      }).catch(err => {
         console.warn('Playback audio non consentito dal browser:', err);
         this.isPlaying.set(false);
       });
@@ -434,6 +463,25 @@ export class Navigator {
     if (this.isGroup() && !this.isTeacher()) {
       console.warn('[Navigator] Navigazione non consentita: la visita è guidata dal docente.');
       return;
+    }
+
+    if (index === this.currentItineraryStepIndex()) {
+      return;
+    }
+
+    // Se è il docente in una visita di gruppo e alcuni studenti non hanno finito, mostra un avviso ma permette di procedere
+    if (this.isGroup() && this.isTeacher()) {
+      const summary = this.audioSummary();
+      if (summary && summary.totalStudents > 0 && summary.completedCount < summary.totalStudents) {
+        const notDone = summary.totalStudents - summary.completedCount;
+        const msg = notDone === 1
+          ? `Attenzione: 1 studente non ha ancora completato l'ascolto di questa tappa.\n\nVuoi procedere comunque per tutto il gruppo?`
+          : `Attenzione: ${notDone} studenti non hanno ancora completato l'ascolto di questa tappa.\n\nVuoi procedere comunque per tutto il gruppo?`;
+        const proceed = window.confirm(msg);
+        if (!proceed) {
+          return;
+        }
+      }
     }
 
     this.currentItineraryStepIndex.set(index);

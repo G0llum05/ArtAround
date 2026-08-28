@@ -8,6 +8,24 @@ declare global {
   }
 }
 
+export interface StudentAudioProgress {
+  userId: string;
+  name: string;
+  status: 'listening' | 'completed' | 'paused' | 'not_started';
+  stepIndex?: number;
+  updatedAt?: string;
+}
+
+export interface StudentsAudioSummary {
+  stepIndex: number;
+  totalStudents: number;
+  completedCount: number;
+  listeningCount: number;
+  pausedCount: number;
+  notStartedCount: number;
+  students: StudentAudioProgress[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,12 +38,14 @@ export class GroupSocketService {
   participants = signal<any[]>([]);
   currentStepIndex = signal<number>(0);
   isLocked = signal<boolean>(true);
+  studentsAudioSummary = signal<StudentsAudioSummary | null>(null);
 
   // Callbacks per eventi
   private sessionStartedCallbacks: Array<(data: any) => void> = [];
   private stepChangedCallbacks: Array<(data: { stepIndex: number; activeItem?: any }) => void> = [];
   private lockToggledCallbacks: Array<(data: { isLocked: boolean }) => void> = [];
   private sessionEndedCallbacks: Array<(data: { message?: string }) => void> = [];
+  private studentsAudioStatusCallbacks: Array<(summary: StudentsAudioSummary) => void> = [];
 
   private getBackendUrl(): string {
     if (typeof window !== 'undefined') {
@@ -195,6 +215,15 @@ export class GroupSocketService {
         });
       });
 
+      // Monitoraggio ascolto audio studenti
+      this.socket.on('session:students-audio-status', (summary: StudentsAudioSummary) => {
+        console.log('[GroupSocket] Ricevuto aggiornamento stato ascolto studenti:', summary);
+        this.studentsAudioSummary.set(summary);
+        this.studentsAudioStatusCallbacks.forEach(cb => {
+          try { cb(summary); } catch (e) { console.error(e); }
+        });
+      });
+
       this.socket.on('disconnect', () => {
         console.log('[GroupSocket] Disconnesso dal server WebSocket');
         this.isConnected.set(false);
@@ -238,7 +267,20 @@ export class GroupSocketService {
     };
   }
 
+  onStudentsAudioStatus(callback: (summary: StudentsAudioSummary) => void): () => void {
+    this.studentsAudioStatusCallbacks.push(callback);
+    return () => {
+      this.studentsAudioStatusCallbacks = this.studentsAudioStatusCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
   // Emitters
+  sendAudioStatus(sessionCode: string, stepIndex: number, status: 'listening' | 'completed' | 'paused' | 'not_started'): void {
+    if (this.socket) {
+      this.socket.emit('student:audio-status', { sessionCode, stepIndex, status });
+    }
+  }
+
   startSession(sessionCode: string, sessionId?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!this.socket) {

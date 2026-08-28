@@ -5,6 +5,32 @@ const GroupVisit = require('../data/model/GroupVisit');
 
 let io = null;
 
+// Mappa in-memory per tracciare l'ascolto audio degli studenti: sessionCode -> Map<userId, { userId, name, status, stepIndex, updatedAt }>
+const sessionAudioProgress = new Map();
+
+function getSessionAudioSummary(sessionCode, currentStepIndex = 0) {
+  const code = sessionCode?.toUpperCase().trim();
+  const sessionMap = sessionAudioProgress.get(code) || new Map();
+  const allEntries = Array.from(sessionMap.values());
+  const students = allEntries.filter(s => s.stepIndex === currentStepIndex);
+
+  const completedCount = students.filter(s => s.status === 'completed').length;
+  const listeningCount = students.filter(s => s.status === 'listening').length;
+  const pausedCount = students.filter(s => s.status === 'paused').length;
+  const notStartedCount = students.filter(s => s.status === 'not_started').length;
+  const totalStudents = students.length;
+
+  return {
+    stepIndex: currentStepIndex,
+    totalStudents,
+    completedCount,
+    listeningCount,
+    pausedCount,
+    notStartedCount,
+    students
+  };
+}
+
 /**
  * Inizializza il layer Socket.IO per le visite guidate di gruppo
  * @param {import('http').Server} httpServer 
@@ -89,6 +115,32 @@ function initGroupVisitSocket(httpServer) {
             role: user.role
           });
 
+          // Gestione monitoraggio ascolto audio
+          const currentStep = updatedSession?.currentStepIndex || 0;
+          if (user.role !== 'teacher' && user.role !== 'admin') {
+            let sessionMap = sessionAudioProgress.get(sessionCode.toUpperCase().trim());
+            if (!sessionMap) {
+              sessionMap = new Map();
+              sessionAudioProgress.set(sessionCode.toUpperCase().trim(), sessionMap);
+            }
+            const studentName = `${user.name || ''} ${user.surname || ''}`.trim() || user.email;
+            if (!sessionMap.has(user.id)) {
+              sessionMap.set(user.id, {
+                userId: user.id,
+                name: studentName,
+                status: 'not_started',
+                stepIndex: currentStep,
+                updatedAt: new Date()
+              });
+            }
+            const summary = getSessionAudioSummary(sessionCode, currentStep);
+            io.to(room).emit('session:students-audio-status', summary);
+          } else {
+            // Se è il docente che entra, invia subito il riepilogo corrente dello stato audio
+            const summary = getSessionAudioSummary(sessionCode, currentStep);
+            socket.emit('session:students-audio-status', summary);
+          }
+
           // Invia stato corrente al client che si è appena collegato
           if (typeof callback === 'function') {
             callback({
@@ -117,6 +169,13 @@ function initGroupVisitSocket(httpServer) {
             const updatedSession = await GroupVisitService.getSessionByCode(code);
             if (updatedSession?.participants) {
               io.to(room).emit('participants:updated', updatedSession.participants);
+            }
+
+            let sessionMap = sessionAudioProgress.get(code);
+            if (sessionMap && sessionMap.has(user.id)) {
+              sessionMap.delete(user.id);
+              const summary = getSessionAudioSummary(code, updatedSession?.currentStepIndex || 0);
+              io.to(room).emit('session:students-audio-status', summary);
             }
 
             socket.to(room).emit('participant:left', {
@@ -219,18 +278,70 @@ function initGroupVisitSocket(httpServer) {
             activeItem: activeItem
           });
 
-          console.log(`[Socket.IO] Broadcast cambio tappa a stanza ${room}: nuovo step ${updated?.currentStepIndex ?? stepIndex}`);
+          const newStepIndex = updated ? updated.currentStepIndex : stepIndex;
+
+          // Reimposta lo stato di ascolto di tutti gli studenti per la nuova tappa
+          const sessionMap = sessionAudioProgress.get(code);
+          if (sessionMap) {
+            for (const [sId, progress] of sessionMap.entries()) {
+              sessionMap.set(sId, {
+                ...progress,
+                status: 'not_started',
+                stepIndex: newStepIndex,
+                updatedAt: new Date()
+              });
+            }
+          }
+          const audioSummary = getSessionAudioSummary(code, newStepIndex);
+
+          console.log(`[Socket.IO] Broadcast cambio tappa a stanza ${room}: nuovo step ${newStepIndex}`);
 
           // Broadcast dello step aggiornato a tutti gli studenti nella stanza
           io.to(room).emit('session:step-changed', {
-            stepIndex: updated ? updated.currentStepIndex : stepIndex,
+            stepIndex: newStepIndex,
             activeItem: updated?.activeItem || activeItem
           });
 
-          if (typeof callback === 'function') callback({ success: true, stepIndex: updated ? updated.currentStepIndex : stepIndex });
+          // Broadcast immediato del nuovo riepilogo audio al docente
+          io.to(room).emit('session:students-audio-status', audioSummary);
+
+          if (typeof callback === 'function') callback({ success: true, stepIndex: newStepIndex });
         } catch (err) {
           console.error('[Socket.IO] Errore in teacher:step-change:', err.message);
           if (typeof callback === 'function') callback({ success: false, error: err.message });
+        }
+      });
+
+      /**
+       * Studente aggiorna il proprio stato di ascolto audio (listening | completed | paused | not_started)
+       */
+      socket.on('student:audio-status', ({ sessionCode, stepIndex, status }) => {
+        try {
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) return;
+          const room = `session:${code}`;
+
+          let sessionMap = sessionAudioProgress.get(code);
+          if (!sessionMap) {
+            sessionMap = new Map();
+            sessionAudioProgress.set(code, sessionMap);
+          }
+
+          const studentName = `${user.name || ''} ${user.surname || ''}`.trim() || user.email;
+          const step = typeof stepIndex === 'number' ? stepIndex : 0;
+          sessionMap.set(user.id, {
+            userId: user.id,
+            name: studentName,
+            status: status || 'listening',
+            stepIndex: step,
+            updatedAt: new Date()
+          });
+
+          const summary = getSessionAudioSummary(code, step);
+          console.log(`[Socket.IO] Aggiornato audio status per stanza ${code} (step ${step}): ${summary.completedCount}/${summary.totalStudents} hanno finito`);
+          io.to(room).emit('session:students-audio-status', summary);
+        } catch (err) {
+          console.error('[Socket.IO] Errore in student:audio-status:', err.message);
         }
       });
 

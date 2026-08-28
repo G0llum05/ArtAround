@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeToggleComponent } from '../themeToggle/themeToggleButton';
 import { AuthService } from '../../services/auth.service';
@@ -22,6 +22,7 @@ interface Entry{
 })
 export class Navbar {
   protected authService = inject(AuthService);
+  protected router = inject(Router);
 
   isMenuOpen = signal<boolean>(false);
   hasImageError = signal<boolean>(false);
@@ -31,7 +32,11 @@ export class Navbar {
       return null;
     }
     const user = this.authService.currentUser();
-    return user?.assets?.profilePicture?.url || null;
+    const url = user?.assets?.profilePicture?.url;
+    if (!url || url.includes('default.jpeg')) {
+      return null;
+    }
+    return url;
   });
 
   constructor() {
@@ -52,6 +57,7 @@ export class Navbar {
   navItems: Entry[] = [
     { name: 'Home', path: '/'},
     { name: 'Visite', path: '/marketplace/visit/search'},
+    { name: 'Gruppi', path: '/groups'},
     { name: 'Marketplace', path: '/marketplace'},
     { name: 'Contatti', path: '/contacts'},
     { name: 'Navigator', path: '/navigator'},

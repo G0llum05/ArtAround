@@ -105,7 +105,7 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return this.accessToken();
+    return this.accessToken() || localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }
 
   updateUserProfilePicture(url: string, orientation: ImageOrientation = 'square'): void {

@@ -3,6 +3,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const express = require('express');
+const http = require('http');
 // Attenzione al path dei config/
 const { connectDB, closeDB } = require('./config/db');
 const setupMiddlewares = require('./config/middleware');
@@ -10,8 +11,14 @@ const setupSwagger = require('./config/swaggerLoader');
 const setupStaticAssets = require('./config/staticLoader');
 const errorHandler = require('./config/errorHandler');
 const { loadRoutes } = require('./config/routerLoader');
+const { initGroupVisitSocket } = require('./socket/GroupVisitSocket');
 
 const app = express();
+const server = http.createServer(app);
+
+// Inizializza WebSocket / Socket.IO per visite guidate in tempo reale
+initGroupVisitSocket(server);
+
 // CHECK PORT VAR
 const PORT = process.env.PORT || 8000;
 const nodeEnv = process.env.NODE_ENV || 'production';
@@ -28,12 +35,11 @@ setupStaticAssets(app);
 
 app.use(errorHandler);
 
-let server;
 async function startServer() {
   // aspetta connessione al db
   await connectDB();
 
-  server = app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`[Server] Running on port ${PORT} in ${nodeEnv} mode`);
   });
 }
@@ -56,3 +62,12 @@ const gracefulShutdown = async (signal) => {
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Server] Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[Server] Uncaught Exception thrown:', err);
+});
+

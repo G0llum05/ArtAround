@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "node --watch server.js",
     "swagger": "node config/swagger.js",
     "generate:module": "node scripts/generate-module.js",
     "create:module": "node scripts/generate-module.js",
@@ -37,6 +37,7 @@
     "passport-local": "^1.0.0",
     "resend": "^6.19.0",
     "sharp": "^0.33.5",
+    "socket.io": "^4.8.1",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1"
   }

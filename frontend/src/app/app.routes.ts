@@ -5,12 +5,26 @@ import { Visit } from './pages/visit/visit';
 import { Contacts } from './pages/contacts/contacts';
 import { Login } from './pages/login/login';
 import { Navigator } from './pages/navigator/navigator';
-import {Marketplace} from './pages/marketplace/marketplace';
+import { Marketplace } from './pages/marketplace/marketplace';
+import { Groups } from './pages/groups/groups';
+import { GroupRoom } from './pages/groups/group-room/group-room';
 
 export const routes: Routes = [
   {
     path: '',
     component: Home
+  },
+  {
+    path: 'groups',
+    component: Groups
+  },
+  {
+    path: 'groups/room/:code',
+    component: GroupRoom
+  },
+  {
+    path: 'groups/room',
+    component: GroupRoom
   },
   {
     path: 'marketplace',

@@ -1,11 +1,12 @@
 import { Component, signal, inject, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Itinerary } from '../../components/itinerary/itinerary';
 import { Chat } from '../../components/chat/chat';
 import { NavigatorService, StreamChunk } from '../../services/navigator.service';
 import { VisitService } from '../../services/visit.service';
+import { GroupSocketService } from '../../services/group-socket.service';
 import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
 import { ToneType, UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
 import { NavigatorRequest } from '../../models/navigator.model';
@@ -15,7 +16,7 @@ import { Map } from '../../components/map/map';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 import { ArtworkResponse } from '../../models/artwork.model';
 
-import { dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS, messagesDummy } from './dummy'
+import { dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS } from './dummy'
 
 const settingsKey = 'navigatorSettings'
 
@@ -29,6 +30,8 @@ const settingsKey = 'navigatorSettings'
 export class Navigator {
   private navigatorService = inject(NavigatorService);
   private visitService = inject(VisitService);
+  private socketService = inject(GroupSocketService);
+  private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   // Stati UI
@@ -42,6 +45,11 @@ export class Navigator {
   museumId = signal<string>('650c1f1e1c9d440000a1b2c3');
   visitId = signal<string>('650c1f1e1c9d440000a1b2c4');
 
+  // Visite di gruppo
+  sessionCode = signal<string | null>(null);
+  isGroup = signal<boolean>(false);
+  isTeacher = signal<boolean>(false);
+
   //Setting
   currentSettings = signal<UserNavigatorSettings>({
     tone: 'adulto',
@@ -50,7 +58,9 @@ export class Navigator {
   });
 
   // Chat e Dettatura
-  messages = signal<ChatMessage[]>(messagesDummy);
+  messages = signal<ChatMessage[]>([
+    { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale. Come posso aiutarti oggi?' }
+  ]);
   isDictating = signal<boolean>(false);
 
   // Audio recording e playback
@@ -102,6 +112,30 @@ export class Navigator {
         this.visitId.set(params['visitId']);
         this.loadVisitData(params['visitId']);
       }
+      if (params['sessionCode']) {
+        const code = params['sessionCode'].toUpperCase().trim();
+        this.sessionCode.set(code);
+        this.isGroup.set(true);
+        this.isTeacher.set(params['isTeacher'] === 'true');
+
+        // Connetti WebSocket se non già connesso
+        this.socketService.connect(code);
+
+        // Se lo studente riceve il cambio tappa dal docente, si sincronizza automaticamente
+        this.socketService.onStepChanged((data) => {
+          if (!this.isTeacher() && typeof data?.stepIndex === 'number') {
+            console.log('[Navigator] Step sincronizzato dal docente:', data.stepIndex);
+            this.currentItineraryStepIndex.set(data.stepIndex);
+            this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: data.stepIndex });
+          }
+        });
+
+        // Se la sessione viene conclusa dal docente
+        this.socketService.onSessionEnded((data) => {
+          alert(data?.message || 'La visita di gruppo è stata conclusa dal docente.');
+          this.router.navigate(['/groups']);
+        });
+      }
     });
   }
 
@@ -109,10 +143,24 @@ export class Navigator {
   //TODO chiamate api facili inziali come per prendere l'itinerario e tutta la visita si usa to signal
 
   private loadVisitData(vId: string): void {
+    // Svuota la chat e reimposta lo stato audio per la nuova visita
+    this.messages.set([
+      { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale per questa visita. Come posso aiutarti?' }
+    ]);
+    this.currentItineraryStepIndex.set(0);
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isPlaying.set(false);
+    this.audioCurrentTime.set(0);
+    this.audioDuration.set(0);
+
     this.visitService.getById(vId).pipe(takeUntilDestroyed()).subscribe({
       next: (visitData: any) => {
-        if (visitData?.visits && visitData.visits.length > 0) {
-          const artworks: ArtworkResponse[] = visitData.visits.map((v: any, index: number) => {
+        const rawSteps = visitData?.steps || visitData?.visits || [];
+        if (rawSteps && rawSteps.length > 0) {
+          const artworks: ArtworkResponse[] = rawSteps.map((v: any, index: number) => {
             const art = v.artwork && typeof v.artwork === 'object' ? v.artwork : null;
             return {
               id: art?._id || art?.id || v.artworkId || `art-${index}`,
@@ -358,6 +406,13 @@ export class Navigator {
   changeItineraryStep(index: number): void {
     this.currentItineraryStepIndex.set(index);
     this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: index });
+
+    // Se è il docente in una visita di gruppo, sincronizza tutti gli studenti
+    if (this.isGroup() && this.isTeacher() && this.sessionCode()) {
+      this.socketService.changeStep(this.sessionCode()!, '', index).catch(err => {
+        console.warn('Errore broadcast step change:', err);
+      });
+    }
   }
 
   nextArtwork(): void {

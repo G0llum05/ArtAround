@@ -522,27 +522,21 @@ class UploadService {
     return Array.from(new Set(artistUrls));
   }
 
-  static async _getDefaultPropic() {
-    return path.join(__dirname, '../assets/users/default/propic/default.jpeg');
-  }
-
   static async getDefaultPropicUrl() {
-    const defaultPath = await this._getDefaultPropic();
-    const relativePath = path.relative(path.join(__dirname, '..'), defaultPath).replace(/\\/g, '/');
-    return `/${relativePath}`;
+    return null;
   }
 
   /**
-   * Recupera l'URL della foto profilo di un utente, con fallback alla propic di default
+   * Recupera l'URL della foto profilo di un utente, con fallback a null se non presente
    */
   static async getUserPropic(userId) {
     if (!userId) {
-      return await this.getDefaultPropicUrl();
+      return null;
     }
 
     try {
       const user = await User.findById(userId);
-      if (user?.assets?.profilePicture?.url) {
+      if (user?.assets?.profilePicture?.url && !user.assets.profilePicture.url.includes('default.jpeg')) {
         return user.assets.profilePicture.url;
       }
 
@@ -560,7 +554,7 @@ class UploadService {
       console.warn(`[UploadService] Errore durante il recupero propic per userId ${userId}:`, err.message);
     }
 
-    return await this.getDefaultPropicUrl();
+    return null;
   }
 }
 

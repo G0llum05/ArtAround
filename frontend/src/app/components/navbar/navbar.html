@@ -31,7 +31,12 @@
   <div class="navbar-actions">
    <app-theme-toggle-button></app-theme-toggle-button>
 
-    <a routerLink="/login" class="nav-icon-btn" [title]="authService.isLoggedIn() ? 'Profilo' : 'Login'">
+    <a
+      [routerLink]="['/login']"
+      [queryParams]="authService.isLoggedIn() || router.url.startsWith('/login') ? null : { returnUrl: router.url }"
+      class="nav-icon-btn"
+      [title]="authService.isLoggedIn() ? 'Profilo' : 'Login'"
+    >
       @if (profilePictureUrl()) {
         <img [src]="profilePictureUrl()" (error)="onImageError()" alt="Foto profilo" class="nav-avatar" />
       } @else {        

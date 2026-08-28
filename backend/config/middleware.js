@@ -9,8 +9,11 @@ function setupMiddlewares(app) {
   // per Nginx del lab, serve per https
   app.set('trust proxy', 1);
 
-  // header di sicurezza con helmet, escluso CSP per non avere problemi con angular e fonts
-  app.use(helmet({ contentSecurityPolicy: false }));
+  // header di sicurezza con helmet, escluso CSP e CORP per non bloccare asset cross-origin e socket
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: false
+  }));
 
   // CORS
   const allowedOrigins = [

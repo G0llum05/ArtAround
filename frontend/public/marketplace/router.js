@@ -18,19 +18,24 @@ export function goTo(btn, route, id) {
 
 export class MktRouter extends HTMLElement {
   static get observedAttributes() {
-    return ['route', 'user-id'];
+    return ['route', 'user-id', 'user-role'];
   }
 
   constructor() {
     super();
     this.routes = window.location.pathname;
     this.userId = null;
+    this.userRole = null;
     this.currentRenderedRoute = null;
   }
 
   connectedCallback() {
     const rawUserId = this.getAttribute('user-id');
     this.userId = (rawUserId && rawUserId !== 'null' && rawUserId !== 'undefined') ? rawUserId : null;
+
+    const rawUserRole = this.getAttribute('user-role');
+    this.userRole = (rawUserRole && rawUserRole !== 'null' && rawUserRole !== 'undefined') ? rawUserRole : null;
+
     this.render();
   }
 
@@ -46,6 +51,16 @@ export class MktRouter extends HTMLElement {
           visitEditor.setAttribute('data-user-id', this.userId);
         } else {
           visitEditor.removeAttribute('data-user-id');
+        }
+      }
+    } else if (name === 'user-role') {
+      this.userRole = (newValue && newValue !== 'null' && newValue !== 'undefined') ? newValue : null;
+      const visitPreview = this.querySelector('mkt-visit-preview');
+      if (visitPreview) {
+        if (this.userRole) {
+          visitPreview.setAttribute('data-user-role', this.userRole);
+        } else {
+          visitPreview.removeAttribute('data-user-role');
         }
       }
     }
@@ -74,7 +89,7 @@ export class MktRouter extends HTMLElement {
     const matchVisitId = this.routes.match(visitDetailRegex);
     if (matchVisitId) {
       const visitId = matchVisitId[1];
-      this.innerHTML += `<mkt-visit-preview data-visit-id="${visitId}"></mkt-visit-preview>`;
+      this.innerHTML += `<mkt-visit-preview data-visit-id="${visitId}" data-user-role="${this.userRole || ''}"></mkt-visit-preview>`;
       return;
     }
 

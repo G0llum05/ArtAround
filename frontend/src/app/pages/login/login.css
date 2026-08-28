@@ -121,6 +121,21 @@
   display: block;
 }
 
+.user-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-variant);
+  color: var(--on-surface-variant);
+}
+
+.avatar-placeholder-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  stroke: var(--primary);
+  opacity: 0.85;
+}
+
 .btn-edit-propic {
   position: absolute;
   bottom: 0;

@@ -1,6 +1,6 @@
 export class MuseumService {
 
-  static apiUrl = "http://localhost:8000/api/museum";
+  static apiUrl = "/api/museum";
 
   static async getAllHomePresentationMuseums() {
     try {

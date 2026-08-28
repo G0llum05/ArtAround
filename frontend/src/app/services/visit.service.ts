@@ -22,19 +22,19 @@ export class VisitService {
   }
 
   getLikesById(id: string): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}${id}/like`);
+    return this.http.get<number>(`${this.apiUrl}/${id}/like`);
   }
 
   getViewsById(id: string): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}${id}/view`);
+    return this.http.get<number>(`${this.apiUrl}/${id}/view`);
   }
 
   getArtworkImagesById(id: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}${id}/artwork-images`);
+    return this.http.get<string[]>(`${this.apiUrl}/${id}/artwork-images`);
   }
 
   getArtistImagesById(id: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}${id}/arist-images`);
+    return this.http.get<string[]>(`${this.apiUrl}/${id}/arist-images`);
   }
 
   getHomePresentation(): Observable<VisitHomePresentationResponse[]> {

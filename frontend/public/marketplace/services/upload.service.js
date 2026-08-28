@@ -1,5 +1,5 @@
 export class UploadService {
-  static apiUrl = "http://localhost:8000/api/upload";
+  static apiUrl = "/api/upload";
 
   /**
    * Carica l'immagine di copertina / meta della visita

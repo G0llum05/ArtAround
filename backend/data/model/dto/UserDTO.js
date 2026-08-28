@@ -9,10 +9,9 @@ class UserResponseDTO {
         this.likedVisits = likedVisits;
         this.preferences = preferences;
         this.gender = gender;
-        const defaultPropicUrl = '/assets/users/default/propic/default.jpeg';
         this.assets = assets || {
             profilePicture: {
-                url: defaultPropicUrl,
+                url: null,
                 orientation: 'square'
             }
         };

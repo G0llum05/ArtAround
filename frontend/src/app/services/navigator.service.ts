@@ -27,6 +27,16 @@ export class NavigatorService {
     formData.append('visitId', request.visitId);
     formData.append('currentArtworkIndex', request.currentArtworkIndex.toString());
 
+    if (request.isGroup !== undefined) {
+      formData.append('isGroup', request.isGroup.toString());
+    }
+    if (request.isTeacher !== undefined) {
+      formData.append('isTeacher', request.isTeacher.toString());
+    }
+    if (request.sessionCode) {
+      formData.append('sessionCode', request.sessionCode);
+    }
+
     if (request.itemAction) {
       formData.append('itemAction', request.itemAction);
     }

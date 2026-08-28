@@ -14,6 +14,7 @@ import { ArtworkResponse } from '../../models/artwork.model';
 export class Itinerary {
   itinerary = input.required<ArtworkResponse[]>();
   currentArtworkIndex = input.required<number>();
+  readOnly = input<boolean>(false);
   itinerarySteps = computed<ItineraryStep[]>(() => this.buildItinerarySteps(this.itinerary(), this.currentArtworkIndex()));
 
   clickedOnItineraryStep = output<number>();
@@ -34,6 +35,9 @@ export class Itinerary {
   }
 
   clickedInterestOfIndex(index: number) {
+    if (this.readOnly()) {
+      return;
+    }
     this.clickedOnItineraryStep.emit(index);
   }
 

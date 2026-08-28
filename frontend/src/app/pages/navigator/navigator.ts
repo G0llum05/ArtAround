@@ -49,6 +49,7 @@ export class Navigator {
   sessionCode = signal<string | null>(null);
   isGroup = signal<boolean>(false);
   isTeacher = signal<boolean>(false);
+  audioSummary = computed(() => this.socketService.studentsAudioSummary());
 
   //Setting
   currentSettings = signal<UserNavigatorSettings>({
@@ -116,7 +117,17 @@ export class Navigator {
         const code = params['sessionCode'].toUpperCase().trim();
         this.sessionCode.set(code);
         this.isGroup.set(true);
-        this.isTeacher.set(params['isTeacher'] === 'true');
+        const isTeacherUser = params['isTeacher'] === 'true';
+        this.isTeacher.set(isTeacherUser);
+
+        if (!isTeacherUser) {
+          this.messages.set([
+            {
+              sender: 'ai',
+              text: 'Benvenuto alla visita di gruppo! La navigazione è sincronizzata e guidata dal tuo docente. Puoi ascoltare la guida, approfondire l\'opera corrente o chiedere informazioni sui servizi del museo.'
+            }
+          ]);
+        }
 
         // Connetti WebSocket se non già connesso
         this.socketService.connect(code);
@@ -125,6 +136,14 @@ export class Navigator {
         this.socketService.onStepChanged((data) => {
           if (!this.isTeacher() && typeof data?.stepIndex === 'number') {
             console.log('[Navigator] Step sincronizzato dal docente:', data.stepIndex);
+            if (this.currentAudio) {
+              this.currentAudio.pause();
+              this.currentAudio = null;
+            }
+            this.isPlaying.set(false);
+            this.audioCurrentTime.set(0);
+            this.audioDuration.set(0);
+
             this.currentItineraryStepIndex.set(data.stepIndex);
             this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: data.stepIndex });
           }
@@ -211,6 +230,12 @@ export class Navigator {
 
   async executeCommand(extraParams: Partial<NavigatorRequest> = {}, audioBlob?: Blob): Promise<void> {
     const settings = this.currentSettings();
+
+    // Se è uno studente in visita di gruppo, rimane forzatamente ancorato alla tappa sincronizzata dal docente
+    if (this.isGroup() && !this.isTeacher()) {
+      extraParams.currentArtworkIndex = this.currentItineraryStepIndex();
+    }
+
     const request: NavigatorRequest = {
       museumId: this.museumId(),
       visitId: this.visitId(),
@@ -218,6 +243,9 @@ export class Navigator {
       language: settings.language,
       tone: settings.tone,
       length: settings.duration,
+      isGroup: this.isGroup(),
+      isTeacher: this.isTeacher(),
+      sessionCode: this.sessionCode() || undefined,
       ...extraParams
     };
 
@@ -267,7 +295,11 @@ export class Navigator {
 
     if (willPlay) {
       if (this.currentAudio) {
-        this.currentAudio.play().catch(err => {
+        this.currentAudio.play().then(() => {
+          if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+            this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
+          }
+        }).catch(err => {
           console.warn('Playback audio non consentito dal browser:', err);
           this.isPlaying.set(false);
         });
@@ -277,6 +309,9 @@ export class Navigator {
     } else {
       if (this.currentAudio) {
         this.currentAudio.pause();
+        if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+          this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'paused');
+        }
       }
     }
   }
@@ -331,6 +366,23 @@ export class Navigator {
     this.currentAudio.onended = () => {
       this.isPlaying.set(false);
       this.audioCurrentTime.set(0);
+      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+        this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'completed');
+      }
+    };
+    this.currentAudio.onpause = () => {
+      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+        const dur = this.audioDuration();
+        const cur = this.audioCurrentTime();
+        if (cur > 0 && cur < dur - 0.5) {
+          this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'paused');
+        }
+      }
+    };
+    this.currentAudio.onplay = () => {
+      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+        this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
+      }
     };
     this.currentAudio.onerror = () => this.isPlaying.set(false);
   }
@@ -338,7 +390,11 @@ export class Navigator {
   private playAudioSource(src: string): void {
     this.initAudioElement(src);
     if (this.currentAudio) {
-      this.currentAudio.play().catch(err => {
+      this.currentAudio.play().then(() => {
+        if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+          this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
+        }
+      }).catch(err => {
         console.warn('Playback audio non consentito dal browser:', err);
         this.isPlaying.set(false);
       });
@@ -404,6 +460,30 @@ export class Navigator {
   }
 
   changeItineraryStep(index: number): void {
+    if (this.isGroup() && !this.isTeacher()) {
+      console.warn('[Navigator] Navigazione non consentita: la visita è guidata dal docente.');
+      return;
+    }
+
+    if (index === this.currentItineraryStepIndex()) {
+      return;
+    }
+
+    // Se è il docente in una visita di gruppo e alcuni studenti non hanno finito, mostra un avviso ma permette di procedere
+    if (this.isGroup() && this.isTeacher()) {
+      const summary = this.audioSummary();
+      if (summary && summary.totalStudents > 0 && summary.completedCount < summary.totalStudents) {
+        const notDone = summary.totalStudents - summary.completedCount;
+        const msg = notDone === 1
+          ? `Attenzione: 1 studente non ha ancora completato l'ascolto di questa tappa.\n\nVuoi procedere comunque per tutto il gruppo?`
+          : `Attenzione: ${notDone} studenti non hanno ancora completato l'ascolto di questa tappa.\n\nVuoi procedere comunque per tutto il gruppo?`;
+        const proceed = window.confirm(msg);
+        if (!proceed) {
+          return;
+        }
+      }
+    }
+
     this.currentItineraryStepIndex.set(index);
     this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: index });
 
@@ -416,6 +496,7 @@ export class Navigator {
   }
 
   nextArtwork(): void {
+    if (this.isGroup() && !this.isTeacher()) return;
     const nextIdx = this.currentItineraryStepIndex() + 1;
     if (nextIdx < this.itinerary().length) {
       this.changeItineraryStep(nextIdx);
@@ -423,6 +504,7 @@ export class Navigator {
   }
 
   prevArtwork(): void {
+    if (this.isGroup() && !this.isTeacher()) return;
     const prevIdx = this.currentItineraryStepIndex() - 1;
     if (prevIdx >= 0) {
       this.changeItineraryStep(prevIdx);

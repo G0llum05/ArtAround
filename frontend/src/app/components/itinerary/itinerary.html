@@ -1,4 +1,4 @@
-<ul class="itinerary-container">
+<ul class="itinerary-container" [class.readonly-mode]="readOnly()">
   @for (item of itinerarySteps(); track item.id; let i = $index) {
     <li class="itinerary-step"
         [class.completed]="item.completed"

@@ -26,6 +26,9 @@ class NavigatorService {
       itemAction,
       targetPoiType,
       targetArtist,
+      isGroup,
+      isTeacher,
+      sessionCode,
       onTranscription
     } = requestDTO;
 
@@ -36,9 +39,16 @@ class NavigatorService {
       }
     }
 
+    // Se l'utente è uno studente in una visita di gruppo, blocca richieste di cambio opera
+    if (isGroup && !isTeacher) {
+      if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
+        return 'In questa visita di gruppo la navigazione tra le tappe è guidata dal docente. Puoi farmi domande sull\'opera corrente o chiedere informazioni sui servizi del museo.';
+      }
+    }
+
     switch (actionType) {
       case 'AUDIO_ACTION':
-        return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, onTranscription);
+        return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, isGroup, isTeacher, onTranscription);
       case 'ITEM_ACTION':
         return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language);
       case 'NON_ITEM_ACTION':
@@ -48,7 +58,7 @@ class NavigatorService {
     }
   }
 
-  static async audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, onTranscription) {
+  static async audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, isGroup, isTeacher, onTranscription) {
     if (!audioFile || !audioFile.buffer) {
       throw new Error('File audio mancante o non valido.');
     }
@@ -72,7 +82,21 @@ class NavigatorService {
       await onTranscription(transcribedText);
     }
 
-    // e continua l'elaborazione
+    // Se lo studente in visita di gruppo chiede a voce di cambiare opera, intercettiamo e blocchiamo
+    if (isGroup && !isTeacher) {
+      const museum = await Museum.findById(museumId).exec();
+      if (!museum) {
+        throw new Error(`Museo con ID "${museumId}" non trovato.`);
+      }
+      const artwork = await Artwork.findById(await this.getArtworkId(visitId, currentArtworkIndex)).exec();
+      const response = await this.parseIntentHandler(transcribedText, museum, artwork, tone, length, language);
+
+      if (response?.itemAction === 'NEXT_ITEM' || response?.itemAction === 'PREVIOUS_ITEM') {
+        return 'In questa visita di gruppo la navigazione è guidata dal docente. Puoi chiedermi maggiori informazioni sull\'opera attuale o curiosità sul museo.';
+      }
+    }
+
+    // e continua l'elaborazione standard
     const museum = await Museum.findById(museumId).exec();
     if (!museum) {
       throw new Error(`Museo con ID "${museumId}" non trovato.`);
@@ -108,7 +132,9 @@ class NavigatorService {
       audioFile: null, // rimosso l'audio
       itemAction: response.itemAction || null,
       targetPoiType: response.targetPoiType || null,
-      targetArtist: response.targetArtist || null
+      targetArtist: response.targetArtist || null,
+      isGroup,
+      isTeacher
     });
 
     return finalResult;

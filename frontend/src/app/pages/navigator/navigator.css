@@ -522,3 +522,155 @@
 .btn-secondary .card-svg{
   color: var(--on-secondary);
 }
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.itinerary-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.guided-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1976d2;
+  background-color: rgba(33, 150, 243, 0.12);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+}
+
+.control-lock-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--on-surface-variant);
+  opacity: 0.5;
+}
+
+/* --- MONITORAGGIO ASCOLTO STUDENTI DOCENTE --- */
+.teacher-monitoring-box {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--surface-variant, #f4f4f6);
+  border: 1px solid var(--outline-variant, #e0e0e0);
+  border-radius: var(--radius-lg, 0.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.monitoring-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.monitoring-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.monitoring-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f59e0b; /* Giallo/Arancio in corso */
+}
+
+.monitoring-dot.all-done {
+  background-color: #10b981; /* Verde completato */
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse-green 2s infinite;
+}
+
+.monitoring-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.monitoring-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.monitoring-badge.badge-ready {
+  color: #047857;
+  background-color: #d1fae5;
+}
+
+.monitoring-bar-track {
+  width: 100%;
+  height: 6px;
+  background-color: var(--outline-variant, #e5e7eb);
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+}
+
+.monitoring-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.fill-done {
+  background-color: #10b981; /* Verde */
+}
+
+.fill-active {
+  background-color: #3b82f6; /* Blu */
+}
+
+.monitoring-stats-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.375rem;
+}
+
+.stat-pill.stat-done {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #065f46;
+}
+
+.stat-pill.stat-active {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #1e40af;
+}
+
+.stat-pill.stat-paused {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #92400e;
+}
+
+.stat-mini-svg {
+  width: 13px;
+  height: 13px;
+}
+
+

@@ -56,6 +56,11 @@ class NavigatorRequestDTO {
     // Non Item Action
     this.targetPoiType = body.targetPoiType || null;
     this.targetArtist = body.targetArtist || null;
+
+    // Modalità Visita di Gruppo
+    this.isGroup = body.isGroup === true || body.isGroup === 'true';
+    this.isTeacher = body.isTeacher === true || body.isTeacher === 'true';
+    this.sessionCode = body.sessionCode ? body.sessionCode.toUpperCase().trim() : null;
   }
 
   _determineActionType(body, file) {

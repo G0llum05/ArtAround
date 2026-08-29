@@ -28,7 +28,7 @@
   flex-basis: 25rem;
 }
 
-@media (min-width: 48rem){
+@media (min-width: 60rem){
   .chat-messages-scroll {
     flex-basis: 0;
   }

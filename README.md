@@ -3,6 +3,8 @@
 - *Membri del gruppo*: Davide Gamberini, Mattia Graziani, Samuele Grillini
 - *Tipo di progetto*: 18 - 33
 - *Localizzazione di file e docker*: `/home/web/site252623/html`, gocker attiva il docker composer all'interno della cartella `html` in modo tale che i container partano da essa.
+
+### STRUTTURA DEL PROGETTO
 .
 ├── backend
 │   ├── assets -> immagini
@@ -72,121 +74,91 @@
 │   └── tsconfig.spec.json
 ├── package.json
 
-- *Features rilevanti*
+## FEATURES
+### SICUREZZA 
+#### Access Token + Refresh Token (Backend)
+  • Access Token (JWT a breve durata).
+  • Refresh Token (JWT a lunga durata), salvato in un Cookie HttpOnly (non accessibile da JavaScript lato client).
+  • Logout con pulizia del cookie e revoca della sessione.
+#### Middleware di Autenticazione e Ruoli (Backend)
+  • authenticate JWT in precisi endpoint.
+  • authorize Roles per bloccare l'accesso alle risorse a certi ruoli in specifici endpoint.
+#### Signup, Login (Backend)
+  • registrazione: ruoli controllati, verifica mail per signup con password (password hashata) con invio codice per conferma
+  • opzione login con Google OAuth2.0 (senza password)
+  • opzione login con password
+  • grazie a verifica mail implementato il merge degli account su mail univoca
+#### Sessione (Frontend)
+  • Interceptor per gestion automatica dell'Access Token su ogni richiesta HTTP
+  • Gestione trasparente dell'errore 401 Unauthorized per richiedere automaticamente un nuovo Access Token usando il Refresh Token in Cookie HttpOnly.
 
-
-## SECURITY
-### 🛡️ Architettura di Sicurezza & Autenticazione
-
-    flowchart TD
-        subgraph Client ["Frontend (Angular / Web)"]
-            UI[Login / Signup Form] --> AuthSvc[Auth Service / State]
-            AuthSvc --> Interceptor[HTTP Auth Interceptor]
-            Interceptor --> Guards[AuthGuard & RoleGuard]
-        end
-    
-        subgraph Security ["Security & Auth Layer"]
-            RateLimit[Rate Limiter & Helmet] --> Valid[Input Validation & Sanitization]
-            Valid --> Passport[Passport Local & OAuth2 Strategy]
-        end
-    
-        subgraph Backend ["Backend API & Controllers"]
-            Passport --> JWT[JWT / HttpOnly Refresh Token Engine]
-            JWT --> RBAC[RBAC Middleware: Roles & Permissions]
-            RBAC --> Controllers[Protected Controllers]
-        end
-    
-        Client --> Security
-    ──────
-  #### Modulo 1: Hashing, Gestione Token & Protezione API (Backend)
-
-  1. Strategia di Gestione Sessioni (Access Token + Refresh Token in Cookie HttpOnly):
-      • Access Token (JWT a breve durata, es. 15 min): Inviato nell'header Authorization: Bearer <token> per autenticare le
-      chiamate API.
-      • Refresh Token (JWT a lunga durata, es. 7 giorni): Salvato in un Cookie HttpOnly, SameSite=Strict, Secure (non
-      accessibile da JavaScript lato client, immune ad attacchi XSS).
-      • Logout & Invalidazione Sessione: Endpoint /api/auth/logout per la pulizia del cookie e la revoca della sessione.
-  2. Middleware di Autenticazione & Ruoli (RBAC - Role-Based Access Control):
-      • authenticateJWT: Middleware che verifica l'Access Token su tutte le rotte riservate.
-      • authorizeRoles('admin', 'museumstaff', 'teacher'): Middleware configurabile che blocca l'accesso alle risorse a
-      seconda del ruolo dell'utente.
-  3. Hardening della Sicurezza (Prevenzione Attacchi):
-      • Rate Limiting (express-rate-limit): Protezione da attacchi Brute Force sugli endpoint /api/auth/login e
-      /api/auth/signup.
-      • Header HTTP di Sicurezza (helmet): Attivazione di protezioni avanzate per evitare Clickjacking, MIME-sniffing e XSS.
-      • Validazione & Sanitizzazione Input (express-validator): Controllo rigoroso delle password (lunghezza, caratteri),
-      email e ruoli inviati nel body.
-
-  ──────
-  #### Modulo 2: Flussi Utente (Signup, Login, Profilo & OAuth)
-
-  1. Registrazione (Signup):
-      • Assegnazione controllata dei ruoli (gli utenti standard si registrano come guest o student; l'elevazione a
-      museumstaff o teacher richiede approvazione/invito).
-  2. Endpoint Me & Gestione Profilo:
-      • Endpoint /api/auth/me: Restituisce le informazioni sanificate dell'utente attualmente autenticato via
-      UserResponseDTO.
-      • Endpoint /api/auth/preferences: Consente all'utente di aggiornare le sue preferenze (lingua, notifiche, esigenze
-      particolari).
-  3. Perfezionamento OAuth (Google):
-      • Reindirizzamento sicuro al client dopo la login tramite token/cookie anziché passare il token visibile nei parametri
-      della query string.
-
-  ──────
-  #### Modulo 3: Integrazione lato Frontend (Angular / Web App)
-
-  1. Auth Service & Reattività:
-      • Gestione dello stato dell'utente autenticato tramite RxJS BehaviorSubject o Angular Signal (currentUser, isLoggedIn,
-      userRole).
-  2. HTTP Interceptor:
-      • Iniezione automatica dell'Access Token su ogni richiesta HTTP.
-      • Gestione trasparente dell'errore 401 Unauthorized per richiedere automaticamente un nuovo Access Token usando il
-      Refresh Token in Cookie HttpOnly.
-  3. Guardie di Navigazione (Route Guards):
-      • AuthGuard: Protegge le rotte riservate reindirizzando al login gli utenti non autenticati.
-      • RoleGuard: Protegge le sezioni riservate ai singoli ruoli (es. dashboard musei per museumstaff).
-  ### Modulo 4: Mail Checker
-    Utilizziamo un servizio per invio di mail di conferma improntato all'unficazione di utenti al login. Per vincoli amministrativi della macchina di laboratorio, non funziona. Ma se avessimo accesso al pannello di controllo del DNS potremmo abilitarlo e ottenere un livello di sicurezza ulteriore.
-    DNS Records
-    Domain Verification
-    DKIM
-    Type    Name    Content    TTL    Status
-    TXT    resend._domainkey.site252623.tw.cs    p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDu+wQuxt6/2IyR6JvKqcVnSt2YwoOTG9pG6Tmrv62I1xpY78jU+AAYtb5d4dmENTP2DBCvS/4ks1iZkwqRhV7j9OpibDMt6sy5f471S/6PGd6v6azMR4I96HQc7k5+PgQR8RGl6qLlaXegdGn3cFehDvDc4jtacLeDKq0yhEbO8wIDAQAB    Auto    not started
-    Enable Sending
-    SPF
-    Type    Name    Content    TTL    Priority    Status
-    MX    send.site252623.tw.cs    feedback-smtp.eu-west-1.amazonses.com    Auto    10    not started
-    TXT    send.site252623.tw.cs    v=spf1 include:amazonses.com ~all    Auto        not started
-  ──────
-  ## UPLOAD
-  ### Architettura di Upload di Immagini
+### IMMAGINI
+#### Upload Immagini
   [Client]
-  1. Uppy.js: mostra una maschera di caricamento tramite drag and drop e seleziona file
-  2. Invio dei file caricat tramite form-data
+  • Drag and drop e selezione file
   [Server]
-  1. Multer: middleware che permette di creare un buffer in ram appositamente per i file caricati, utilizzato per evitare operazione di I/O sul disco della VM, rendendo il processo molto più rapido.
-  2. Controllo del tipo di Upload:
-    - Museum-Related Upload: il file viene salvato all'interno della cartella `assets/museums/` seguendo il percorso corretto per ciascuna sotto categoria quale `artists`, `artwork`, `museum`, `visit`.
-    - Profile picture Upload: il file viene salvato nella cartella `assets/users/:userId` 
-  3. Imager: controlla l'estensione del file in input:
-    - Se Immagine raster: la converto tramite il middleware sharp nel formato webp, compresso e molto più leggero da salvare nel database.
-    - Se Immagine vettoriale: la mantengo nel suo formato originale.
-  4. File System: l'immagine viene restituita come risposta tramite un servizio di URL resolution.
+  • Multer: middleware che permette di creare un buffer in ram appositamente per i file caricati
+  • Imager: controlla estensione del file in input
+  • File System: immagine salvata su file system e identificata da un campo nei modelli del db tramite url fs (backend/assets/...)
 
-## NAVIGATOR
-### Archiettura del Navigator
-0. Pianificazione della visita: l'utente ha la possibilità, una volta selezionato il museo di trovare una o più visite, sulla base di diversi parametri.
+### NAVIGATOR
+#### Archiettura del Navigator
+Pianificazione della visita: l'utente ha la possibilità, una volta selezionato il museo di trovare una o più visite, sulla base di diversi parametri.
     - Chi sei (tono): l'utente può selezionare il tono della visita.
     - Quanto tempo hai: restituisce tutte le visite che hanno durata massima del tempo selezionato
     - Interessi: selezione le visita in base alle categorie scelte dall'utente.
     - Opzioni aggiuntive: accessibilità per disabili, visita gratuita.
-1. Interazione con l'utente
-    - Interazione guidata: utilizzo di bottoni con domande standardizzate per permettere una rapida interazione manuale
-    - Interazione vocale: utilizziamo un'architettura STT -> RequestParser -> [LLMRequest] -> TTS per fornire una risposta quanto più funzionale alle richieste dell'utente
-### Archiettura vocale
-1. Cattura audio: utilizziamo la Web Speech API nativa per catturare il file audio in formato `.wav`.
+#### Interazione con l'utente
+##### Se interazione vocale
+1. Cattura audio: utilizziamo la Web Speech API nativa per catturare il file audio.
 2. Multer: crea un buffer in RAM per evitare operazioni I/O su disco.
-3. Speech-To-Text: chiamata API a GroqSTT che restituisce il testo trascritto.
-4. Parsing della risposta: partendo dal testo trascritto [...]
-5. Text-To-Speech: mandiamo una richiesta alla ResponsiveVoiceAPI che restituisce un file audio `.wav`.
-6. Client: la Web Speech API risceve in input il file trascritto e riproduce l'audio in automatico.
+3. Speech-To-Text: chiamata API che restituisce il testo trascritto.
+4. Intenzione dell'utente
+> Se l'utente usa form salta i prunti precedenti
+5. Sistema di cache: se item già presente in DB no chiamate LLM, altrimenti inviamo richiesta alle API LLM per ottenere la risposta. 
+5. bis) Se risposta generata da LLM, salviamo la risposta tra gli item del DB
+6. Text-To-Speech: testo tradotto in audio, restituito un file audio.
+7. Client: la Web Speech API riceve il file l'audio e lo riproduce.
+
+### GRUPPI
+- Sviluppata tramite Angular.
+- Possibilità solo a utenti amministratori o professori di creare gruppi. Per accedere alla stanza condiviso un codice univoco dal professore (richiesto login per accedere alla stanza).
+- Visita di gruppo controllata dal docente, lascaita libertà di approfondimento e modifica impostazioni agli studenti.
+
+
+### MARKETPLACE
+#### Architettura
+- È stato sviluppato tramite web-components e Vanilla JS.
+- L'integrazione di marketplace con i web-components permette di utilizzare le funzionalità del router di Angular e di avere un'unica SPA (Single Page Application) senza ricaricare la pagina. Questo viene fatto tramite l'uso di un componente Angular che funge da wrapper per i web-components, consentendo la gestione della navigazione e delle interazioni all'interno dell'applicazione Angular e tramite il componente Vanilla Router che seleziona il contenuto corretto
+#### Funzionalità
+- Dal marketplace è possibile esplorare tutte le visite tramite filtri e barra di ricerca, cliccando su una visita o su un museo si viene reindirizzati alla pagina di dettaglio del museo o della visita.
+- Dal marketplace è possibile anche creare una visita, selezionando il museo e gli item da inserire nella visita. Una volta creata la visita, questa viene salvata nel database e resa disponibile per la navigazione.
+
+### VISITE
+#### Architettura
+- Sviluppate tramite web-components e Vanilla JS.
+- La pagina di creazione delle visite implementa funzionalità di drag and drop per selezionare gli item da inserire nella visita. Le opere possono essere selezionate da una lista resa disponibile dal museo, allegati di una descrizione di default.È possibile aggiungere descrizioni personalizzate per ogni opera selezionata e ulteriori dettagli sull'opera. La pagina permette di aggiungere ulteriori informazioni sulla visita (es costo, durata, licenza...).
+#### Funzionalità
+- Tre pagine principali: 
+    - Pagina di ricerca delle visite: permette di filtrare le visite in base a diversi parametri, come il museo, la durata, gli interessi e le opzioni aggiuntive.
+    - Pagina di dettaglio della visita: mostra le informazioni della visita selezionata, gli item e la durata.
+    - Pagina di creazione della visita: permette di creare una visita selezionando il museo e gli item da inserire nella visita.
+
+
+## ORGANIZZAZIONE DEL LAVORO
+Ci siamo inizialmente divisi l'organizzazione delle due macro componenti del progetto, frontend e backend. Nelle fasi successive del progetto la divisione è diventata sempre meno netta interagento tra le due parti. 
+Divisione iniziale del del progetto:
+- Frontend - Samuele Grillini
+- Backend - Davide Gamberini e Mattia Graziani
+Disione singolare delle parti del progetto:
+- HomePage - Samuele Grillini
+- Marketplace (pagina principale) - Samuele Grillini
+- Marketplace (creazione visita) - Tutti
+- Visite - Tutti
+- Navigator - Mattia Graziani + Samuele Grillini
+- Gruppi - Mattia Graziani
+- Login - Tutti
+- Immagini - Davide Gamberini
+### Uso LLM
+- Per la generazione di contenuti delle visite
+- Assistenza nel coding: inizialmente abbiamo generato molto codice tramite LLM, ma successivamente abbiamo deciso di ricominciare il lavoro da zero per avere un codice più pulito e comprensibile. Quindi LLM è stato utile per dare un'indea su cosa scrivere, di fatto una documentazione di supporto. Sulla parte conlusiva del progetto, vista la fretta, per piccole modifiche su codice già strutturato abbiamo usato LLM.

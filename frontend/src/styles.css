@@ -163,7 +163,7 @@ body {
   line-height: var(--body-lg-line);
   -webkit-font-smoothing: antialiased;
   opacity: 0;
-  transition: opacity 350ms ease;
+  transition: opacity 1s ease, background-color 1s ease;
 }
 
 body.page-ready {

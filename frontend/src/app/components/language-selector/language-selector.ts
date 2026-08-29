@@ -82,6 +82,6 @@ export class LanguageSelector {
     }
 
     document.body.classList.remove('page-ready');
-    setTimeout(() => window.location.reload(), 350);
+    setTimeout(() => window.location.reload(), 1000);
   }
 }

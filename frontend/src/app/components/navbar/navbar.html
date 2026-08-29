@@ -63,13 +63,21 @@
     </div>
     <div class="drawer-links">
       @for (item of navItems; track item.path) {
-        <a [routerLink]="item.path"
-           (click)="toggleMenu()"
-           class="drawer-link"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: item.path === '/' }">
-          {{ item.name }}
-        </a>
+        @if (item.path.includes(".html")) {
+          <a
+            [href]="item.path"
+            (click)="toggleMenu()"
+            class="drawer-link"
+          > {{ item.name }} </a>
+        } @else {
+          <a [routerLink]="item.path"
+             (click)="toggleMenu()"
+             class="drawer-link"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">
+            {{ item.name }}
+          </a>
+        }
       }
     </div>
   </div>

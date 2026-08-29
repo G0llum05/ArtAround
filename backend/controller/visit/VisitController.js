@@ -129,6 +129,28 @@ class VisitController {
   }
 
 
+  static async purchaseVisit(req, res) {
+    try {
+      const visitId = req.params.id;
+      const { userId } = req.body;
+      if (!visitId || !userId) {
+        return res.status(400).json({ message: 'visitId and userId are required' });
+      }
+      const UserService = require('../../service/UserService');
+      const UserMapper = require('../../data/mapper/UserMapper');
+      const updatedUser = await UserService.purchaseVisit(userId, visitId);
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.status(200).json({
+        message: 'Visita acquistata con successo',
+        user: UserMapper.toUserResponseDTO(updatedUser)
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Error purchasing visit', error: error.message });
+    }
+  }
+
   static async createVisit(req, res) {
     try {
       const request = VisitMapper.createVisit(req.body.museumId, req.body.userId, req.body);

@@ -15,6 +15,10 @@ router.post('/', UserController.createUser);
 // UPDATE a user by ID (PATCH for partial update)
 router.patch('/:id', UserController.updateUser);
 
+// PURCHASE a visit
+router.post('/:id/purchase-visit', UserController.purchaseVisit);
+router.post('/purchase-visit', UserController.purchaseVisit);
+
 // DELETE a user by ID
 router.delete('/:id', UserController.deleteUser);
 

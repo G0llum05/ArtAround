@@ -142,9 +142,39 @@
   color: #ffffff;
 }
 
+.mkt-badge-purchased {
+  background-color: #2e7d32;
+  color: #ffffff;
+}
+
 .mkt-badge svg {
   width: 1rem;
   height: 1rem;
+}
+
+/* Purchase Warning Banner */
+.mkt-purchase-banner {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  padding: 0.65rem 1rem;
+  background-color: var(--surface-variant, #f5f0ea);
+  border: 1px solid var(--outline-variant, #e0d7cd);
+  border-left: 4px solid var(--primary, #9a3b26);
+  border-radius: var(--radius-md, 8px);
+  color: var(--on-surface, #2d2320);
+  font-size: var(--body-md-size, 0.95rem);
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.mkt-purchase-banner-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: var(--primary, #9a3b26);
 }
 
 /* Immagine */

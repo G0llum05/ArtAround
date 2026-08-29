@@ -12,13 +12,20 @@ export class MktVisitPreview extends HTMLElement {
     this.loading = true;
     this.state = [];
     this.hasViewed = false;
+    this.hasPurchased = false;
   }
 
   async connectedCallback() {
     try {
       if (!this.visitId || this.visitId === 'undefined') throw new Error('visit id undefined');
-      // Assegniamo direttamente l'oggetto ricevuto dal backend a this.state
       this.state = await VisitService.getVisit(this.visitId);
+
+      const userId = this.getUserId();
+      if (userId) {
+        const purchasedVisits = await VisitService.getUserPurchasedVisits(userId);
+        const currentVisitId = this.visitId || this.state?.id || this.state?._id;
+        this.hasPurchased = purchasedVisits.some(p => p === currentVisitId || p === String(this.state?.id) || p === String(this.state?._id));
+      }
     } catch (error){
       console.error(error);
     } finally {
@@ -36,11 +43,32 @@ export class MktVisitPreview extends HTMLElement {
     }
   }
 
+  isPaid() {
+    const p = parseFloat(this.state?.price);
+    return !isNaN(p) && p > 0;
+  }
+
   formatPrice() {
-    if (!this.state.price || this.state.price === 0) {
+    if (this.hasPurchased) {
+      return "Già Acquistata ✓";
+    }
+    if (!this.isPaid()) {
       return "Gratuito (Incluso nel biglietto)";
     }
-    return `€ ${this.state.price.toFixed(2)}`;
+    return `€ ${parseFloat(this.state.price).toFixed(2)}`;
+  }
+
+  getUserId() {
+    const attrUserId = this.getAttribute('data-user-id');
+    if (attrUserId && attrUserId !== 'null' && attrUserId !== 'undefined') return attrUserId;
+    try {
+      const token = localStorage.getItem('artaround_accessToken');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.id || payload.userId || payload._id || null;
+      }
+    } catch (e) {}
+    return null;
   }
 
   getUserRole() {
@@ -64,6 +92,8 @@ export class MktVisitPreview extends HTMLElement {
 
     const role = this.getUserRole();
     const isTeacherOrAdmin = role === 'teacher' || role === 'admin';
+    const isPaid = this.isPaid();
+    const isPaidAndNotPurchased = isPaid && !this.hasPurchased;
 
     // Usa l'array 'visits' (o 'artworkNames') del backend per l'itinerario
     const itineraryHtml = this.state.visits && this.state.visits.length > 0
@@ -98,7 +128,7 @@ export class MktVisitPreview extends HTMLElement {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20" height="20" fill="currentColor">
                   <path d="m380-300 280-180-280-180v360ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
                 </svg>
-                Inizia Visita
+                ${isPaidAndNotPurchased ? 'Compra e Inizia' : 'Inizia Visita'}
               </button>
 
               ${isTeacherOrAdmin ? `
@@ -123,6 +153,15 @@ export class MktVisitPreview extends HTMLElement {
               ${this.state.museumName || 'Museo'}
             </div>
 
+            ${this.hasPurchased ? `
+              <div class="mkt-badge mkt-badge-purchased">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Acquistata
+              </div>
+            ` : ''}
+
             ${this.state.disabledFriendly ? `
               <div class="mkt-badge mkt-badge-accessibility">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
@@ -132,6 +171,17 @@ export class MktVisitPreview extends HTMLElement {
               </div>
             ` : ''}
           </div>
+
+          ${isPaidAndNotPurchased ? `
+            <div class="mkt-purchase-banner">
+              <svg class="mkt-purchase-banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>stai comprando la visita, presta attenzione al portafoglio</span>
+            </div>
+          ` : ''}
         </header>
 
         <aside class="mkt-sidebar-col">
@@ -155,9 +205,9 @@ export class MktVisitPreview extends HTMLElement {
           </div>
 
           <div class="mkt-info-card mkt-price-card">
-            <h3 class="mkt-info-card-title">Costo Biglietto</h3>
+            <h3 class="mkt-info-card-title">${this.hasPurchased ? 'Stato Visita' : 'Costo Biglietto'}</h3>
             <div class="mkt-info-card-body">
-              <span>Prezzo della visita</span>
+              <span>${this.hasPurchased ? 'Disponibilità' : 'Prezzo della visita'}</span>
               <span class="mkt-price-value">${this.formatPrice()}</span>
             </div>
 
@@ -179,7 +229,43 @@ export class MktVisitPreview extends HTMLElement {
 
     const startVisitBtn = this.querySelector('#btn-start-visit');
     if (startVisitBtn) {
-      startVisitBtn.addEventListener('click', () => {
+      startVisitBtn.addEventListener('click', async () => {
+        const visitId = this.visitId || this.state?.id || this.state?._id;
+        const userId = this.getUserId();
+        const isPaid = this.isPaid();
+
+        // Se la visita è a pagamento e non è ancora stata acquistata
+        if (isPaid && !this.hasPurchased) {
+          // Se non è loggato: reindirizza al login
+          if (!userId) {
+            const currentUrl = window.location.pathname + window.location.search;
+            const navEvent = new CustomEvent('angular-navigate', {
+              detail: {
+                destination: 'login',
+                queryParams: {
+                  returnUrl: currentUrl
+                }
+              },
+              bubbles: true,
+              composed: true
+            });
+            this.dispatchEvent(navEvent);
+            return;
+          }
+
+          // Mostra l'alert di avviso acquisto
+          const priceStr = this.state.price ? `€ ${parseFloat(this.state.price).toFixed(2)}` : '€ 0.00';
+          alert(`stai comprando la visita al costo di ${priceStr}, attento al portafogli`);
+
+          // Salva l'acquisto nel modello User.purchasedVisits
+          try {
+            await VisitService.purchaseVisit(visitId, userId);
+            this.hasPurchased = true;
+          } catch (e) {
+            console.warn('Errore durante il salvataggio dell\'acquisto della visita:', e);
+          }
+        }
+
         let tone = 'adulto';
         let museumId = '';
 
@@ -208,8 +294,6 @@ export class MktVisitPreview extends HTMLElement {
           duration: 30
         };
         localStorage.setItem('navigatorSettings', JSON.stringify(navigatorSettings));
-
-        const visitId = this.visitId || this.state?.id || this.state?._id;
 
         const navEvent = new CustomEvent('angular-navigate', {
           detail: {

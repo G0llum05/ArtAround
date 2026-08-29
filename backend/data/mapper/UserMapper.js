@@ -11,13 +11,14 @@ class UserMapper {
                 orientation: userModel.assets?.profilePicture?.orientation || 'square'
             }
         };
+        const purchasedVisits = (userModel.purchasedVisits || []).map(v => (v && (v._id || v.id)) ? (v._id || v.id).toString() : (v ? v.toString() : ''));
         return new UserResponseDTO(
             userModel._id,
             userModel.name,
             userModel.surname,
             userModel.email,
             userModel.role,
-            userModel.purchasedVisits,
+            purchasedVisits,
             userModel.likedVisits,
             userModel.preferences,
             userModel.gender,

@@ -52,6 +52,7 @@ class LoginResponseDTO {
     this.email = user.email;
     this.gender = user.gender || 'other';
     this.role = user.role;
+    this.purchasedVisits = user.purchasedVisits || [];
     const propicUrl = user.assets?.profilePicture?.url;
     const validUrl = propicUrl && !propicUrl.includes('default.jpeg') ? propicUrl : null;
     this.assets = {

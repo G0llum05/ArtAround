@@ -38,13 +38,13 @@ export interface UserResponse {
   email: string;
   gender?: Gender;
   role: 'guest' | 'student' | 'teacher' | 'museumstaff' | 'admin';
+  purchasedVisits?: string[];
   assets?: {
     profilePicture?: ImageSchema;
   };
   // TODO CHECK devono ritornare anche questi campi
   // roleStatus?: 'approved' | 'pending';
   // requestedRole?: 'teacher' | 'museumstaff' | null;
-  // purchasedVisits?: string[];
   // preferences?: Record<string, string>;
   // likedVisits?: string[];
 }
@@ -56,6 +56,7 @@ export interface AuthResponse {
   email: string;
   gender?: Gender;
   role: 'guest' | 'student' | 'teacher' | 'museumstaff' | 'admin';
+  purchasedVisits?: string[];
   assets?: {
     profilePicture?: ImageSchema;
   };

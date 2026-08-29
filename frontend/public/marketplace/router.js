@@ -53,6 +53,14 @@ export class MktRouter extends HTMLElement {
           visitEditor.removeAttribute('data-user-id');
         }
       }
+      const visitPreview = this.querySelector('mkt-visit-preview');
+      if (visitPreview) {
+        if (this.userId) {
+          visitPreview.setAttribute('data-user-id', this.userId);
+        } else {
+          visitPreview.removeAttribute('data-user-id');
+        }
+      }
     } else if (name === 'user-role') {
       this.userRole = (newValue && newValue !== 'null' && newValue !== 'undefined') ? newValue : null;
       const visitPreview = this.querySelector('mkt-visit-preview');
@@ -67,15 +75,17 @@ export class MktRouter extends HTMLElement {
   }
 
   render() {
-    const currentRoute = this.getAttribute('route') || window.location.pathname;
+    const rawRoute = this.getAttribute('route') || window.location.pathname;
+    const cleanRoute = rawRoute.split('?')[0].replace(/\/+$/, '') || '/marketplace';
+
     // non rieseguo il render se la rotta è la stessa (previene il doppio caricamento)
-    if (this.currentRenderedRoute === currentRoute && this.innerHTML.trim() !== '') return;
-    this.currentRenderedRoute = currentRoute;
+    if (this.currentRenderedRoute === cleanRoute && this.innerHTML.trim() !== '') return;
+    this.currentRenderedRoute = cleanRoute;
 
-    this.routes = this.getAttribute('route') || window.location.pathname;
-    this.innerHTML = `<link rel="stylesheet" href="/marketplace/marketplace.registry.css"/>\n`
+    this.routes = cleanRoute;
+    this.innerHTML = `<link rel="stylesheet" href="/marketplace/marketplace.registry.css"/>\n`;
 
-    // Questa RegExp cerca esattamente /marketplace/visit/ seguito da qualsiasi cosa non contenga "/"
+    // Questa RegExp cerca esattamente /marketplace/museum/ seguito da qualsiasi cosa non contenga "/"
     const museumDetailRegex = /^\/marketplace\/museum\/([^/]+)$/;
     const matchMuseumId = this.routes.match(museumDetailRegex);
     if (matchMuseumId) {
@@ -89,7 +99,7 @@ export class MktRouter extends HTMLElement {
     const matchVisitId = this.routes.match(visitDetailRegex);
     if (matchVisitId) {
       const visitId = matchVisitId[1];
-      this.innerHTML += `<mkt-visit-preview data-visit-id="${visitId}" data-user-role="${this.userRole || ''}"></mkt-visit-preview>`;
+      this.innerHTML += `<mkt-visit-preview data-visit-id="${visitId}" data-user-id="${this.userId || ''}" data-user-role="${this.userRole || ''}"></mkt-visit-preview>`;
       return;
     }
 

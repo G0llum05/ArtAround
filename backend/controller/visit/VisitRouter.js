@@ -25,10 +25,11 @@ router.post('/:id/like', VisitController.likeVisit);
 // POST /:id/view
 router.post('/:id/view', VisitController.viewVisit);
 
+// POST /:id/purchase
+router.post('/:id/purchase', VisitController.purchaseVisit);
+
 // POST /
 // Corrisponde a POST /api/visits/
 router.post('/', VisitController.createVisit);
-
-
 
 module.exports = router;

@@ -57,6 +57,27 @@ class UserController {
         }
     }
 
+    static async purchaseVisit(req, res) {
+        try {
+            const userId = req.params.id || req.body.userId;
+            const { visitId } = req.body;
+            if (!userId || !visitId) {
+                return res.status(400).json({ message: 'UserId e visitId sono obbligatori' });
+            }
+            const updatedUser = await UserService.purchaseVisit(userId, visitId);
+            if (!updatedUser) {
+                return res.status(404).json({ message: 'User non trovato' });
+            }
+            const userResponseDTO = UserMapper.toUserResponseDTO(updatedUser);
+            res.status(200).json({
+                message: 'Visita acquistata con successo',
+                user: userResponseDTO
+            });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
     static async deleteUser(req, res) {
         try {
             const deletedUser = await UserService.deleteUser(req.params.id);

@@ -39,6 +39,14 @@ class UserService {
         // return await User.findByIdAndUpdate(id, updateData, { new: true }).lean();
     }
 
+    static async purchaseVisit(userId, visitId) {
+        return await User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { purchasedVisits: visitId } },
+            { new: true }
+        ).lean();
+    }
+
     static async deleteUser(id) {
         return await User.findByIdAndDelete(id).lean();
     }

@@ -93,6 +93,9 @@ export class Visit implements OnInit {
 
         if (museumId) {
           this.loadVisitOfMuseum(museumId);
+        } else {
+          this.interestsList.set([]);
+          this.allVisitsOfMuseum.set([]);
         }
       });
 
@@ -144,16 +147,18 @@ export class Visit implements OnInit {
     console.log("Richiesta per id museo: ", museumID);
     this.isLoadingVisit.set(true);
     this.museumService.getAllMuseumVisits(museumID)
-      .pipe(takeUntilDestroyed(this.destroyRef))  //Le chiamate http si chiudono quando terminano, questo previene anche il caso limite in cui si distrugge il componente durante la chiamata
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (visits) => {
           this.allVisitsOfMuseum.set(visits);
-          console.log("Cosa mi manda il server?");
+          const cats = visits?.flatMap(v => v.categories || []) || [];
+          this.interestsList.set([...new Set(cats)].filter(Boolean));
           this.isLoadingVisit.set(false);
         },
         error: (err) => {
           console.error("Errore:", err);
           this.allVisitsOfMuseum.set([]);
+          this.interestsList.set([]);
           this.isLoadingVisit.set(false);
         },
       })

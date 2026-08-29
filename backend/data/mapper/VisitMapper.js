@@ -91,11 +91,12 @@ class VisitMapper {
       visit.description,
       visit.isVerified,
       visit.disableFriendly,
-      visit.maxDuration,
+      visit.maxDuration || visit.duration,
       visit.price,
       visit.isClosingSoon,
       visit.isNew,
-      visit.assets || { images: [] }
+      visit.assets || { images: [] },
+      visit.categories || []
     );
   }
 

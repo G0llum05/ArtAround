@@ -1,4 +1,5 @@
 import { MuseumService } from "../../services/museum.service.js";
+import { VisitService } from "../../services/visit.service.js";
 import { getImageUrl } from '../../services/images.services.js';
 
 export class MktVisitExplorer extends HTMLElement {
@@ -20,9 +21,21 @@ export class MktVisitExplorer extends HTMLElement {
     this.allMuseumVisit = [];
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     this.render();
     this.setupEventListeners();
+
+    this.loadingVisit = true;
+    this.allInterests = [];
+    this.updateGrid();
+    try {
+      this.allMuseumVisit = await VisitService.getAllVisits() || [];
+    } catch (e) {
+      console.error("Errore nel recupero di tutte le visite:", e);
+    } finally {
+      this.loadingVisit = false;
+      this.updateUI();
+    }
   }
 
   updateState(key, value) {
@@ -64,7 +77,6 @@ export class MktVisitExplorer extends HTMLElement {
   }
 
   get filteredVisits() {
-    if (!this.state.museumId) return [];
     let list = [...(this.allMuseumVisit || [])];
 
     // Filtro per interessi (se l'utente ha selezionato dei filtri specifici)
@@ -79,7 +91,7 @@ export class MktVisitExplorer extends HTMLElement {
       list = list.filter(v => !v.duration || v.duration <= maxMinutes);
     }
     if (this.state.accessibile) {
-      list = list.filter(v => v.disableFriendly === false);
+      list = list.filter(v => v.disableFriendly === true);
     }
     if (this.state.gratuito) {
       list = list.filter(v => v.price === 0 || v.price === '0' || v.price === 'Gratis');
@@ -146,7 +158,7 @@ export class MktVisitExplorer extends HTMLElement {
       return;
     }
 
-    if (!this.state.museumId) {
+    if (!this.state.museumId && this.allMuseumVisit.length === 0) {
       visitGrid.innerHTML = `<p class="mkt-empty-text">Seleziona un museo per visualizzare le visite.</p>`;
       return;
     }
@@ -339,28 +351,43 @@ export class MktVisitExplorer extends HTMLElement {
         const id = e.detail;
         this.loadingVisit = true;
         this.state.museumId = id;
+        this.state.interessi = [];
+        this.partialInterestsList = [];
         this.updateGrid();
 
         try {
           this.allMuseumVisit = await MuseumService.getAllMuseumVisits(id);
-          this.allInterests = [... new Set(this.allMuseumVisit?.flatMap(visit => visit.categories))];
+          const cats = this.allMuseumVisit?.flatMap(visit => visit.categories || []) || [];
+          this.allInterests = [...new Set(cats)].filter(Boolean);
           this.updateGrid();
         } catch (error) {
-          console.error("Errore nel recupero delle visite:", error);
+          console.error("Errore nel recupero delle visite del museo:", error);
           this.allMuseumVisit = [];
           this.allInterests = [];
         } finally {
           this.loadingVisit = false;
           this.updateUI();
         }
-      })
-    }
-      searchComponent.addEventListener('cleared', () => {
-        this.allMuseumVisit = [];
-        this.allInterests = [];
-        this.state.interessi = [];
-        this.updateState('museumId', '');
-        this.updateGrid();
       });
+
+      searchComponent.addEventListener('cleared', async () => {
+        this.loadingVisit = true;
+        this.state.museumId = '';
+        this.state.interessi = [];
+        this.partialInterestsList = [];
+        this.allInterests = [];
+        this.updateGrid();
+
+        try {
+          this.allMuseumVisit = await VisitService.getAllVisits() || [];
+        } catch (error) {
+          console.error("Errore nel recupero delle visite:", error);
+          this.allMuseumVisit = [];
+        } finally {
+          this.loadingVisit = false;
+          this.updateUI();
+        }
+      });
+    }
   }
 }

@@ -13,6 +13,7 @@ export interface VisitHomePresentationResponse {
   price: number,
   isClosingSoon: boolean,
   isNew: boolean,
+  categories?: string[],
   assets: {
     images: ImageSchema[]
   }

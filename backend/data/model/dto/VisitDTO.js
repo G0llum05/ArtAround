@@ -27,7 +27,7 @@ class VisitResponseDTO {
 }
 
 class VisitPresentationDTO {
-  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, assets = { images: [] }) {
+  constructor(id, title, description, isVerified, disableFriendly, duration, price, isClosingSoon, isNew, assets = { images: [] }, categories = []) {
     this.id = id;
     this.title = title;
     this.description = description;
@@ -38,6 +38,7 @@ class VisitPresentationDTO {
     this.isClosingSoon = isClosingSoon;
     this.isNew = isNew;
     this.assets = assets;
+    this.categories = categories;
   }
 }
 

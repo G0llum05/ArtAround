@@ -1,16 +1,79 @@
-# ArtAround
-Progetto Tecnologie Web A.A. 2025/26
+# ArtAround: Progetto di Tecnologie Web A.A. 25/26
+- *Nome gruppo*: Horash
+- *Membri del gruppo*: Davide Gamberini, Mattia Graziani, Samuele Grillini
+- *Tipo di progetto*: 18 - 33
+- *Localizzazione di file e docker*: `/home/web/site252623/html`, gocker attiva il docker composer all'interno della cartella `html` in modo tale che i container partano da essa.
+.
+├── backend
+│   ├── assets -> immagini
+│   │   └── seed
+│   │       ├── artists
+│   │       └── museums
+│   ├── config -> file di configurazione al setup dell'app
+│   ├── controller
+│   │   ├── artist
+│   │   ├── artwork
+│   │   ├── auth
+│   │   ├── groupvisit
+│   │   ├── item
+│   │   ├── museum
+│   │   ├── navigator
+│   │   ├── role
+│   │   ├── upload
+│   │   ├── user
+│   │   └── visit
+│   ├── data
+│   │   ├── mapper
+│   │   ├── model -> Modelli di dati che definiscono un'entità nel DB mongo.
+│   │   │   ├── dto
+│   │   │   ├── schemas -> Sotto-schemi che definiscono strutture dati complesse riutilizzabili.
+│   │   └── seed
+│   ├── Dockerfile
+│   ├── middleware
+│   ├── package.json
+│   ├── scripts -> script di appoggio per test
+│   ├── server.js
+│   ├── service
+│   ├── socket
+│   ├── swagger-output.json
+│   └── utils
+├── docker-compose.yaml
+├── frontend
+│   ├── angular.json
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── proxy.conf.json
+│   ├── public
+│   │   ├── assets
+│   │   │   ├── icons
+│   │   │   └── images
+│   │   └── marketplace -> vanilla (web-components) (web-components)
+│   │       ├── components -> componenti vanilla
+│   │       ├── marketplace.registry.css
+│   │       ├── marketplace.registry.js -> file di appoggio per includere i web-components all'interno di angular
+│   │       ├── pages -> pagine vanilla
+│   │       ├── router.js
+│   │       └── services -> servizi vanilla
+│   ├── README.md
+│   ├── src -> Angular APP
+│   │   ├── app
+│   │   │   ├── components -> sotto-components angular
+│   │   │   ├── interceptors
+│   │   │   ├── models
+│   │   │   ├── pages -> pagine angular
+│   │   │   ├── pipes -> funzioni oer l'utilizzo di operatori `|`
+│   │   │   └── services -> servizi che richiamano le API rest definite nel backend
+│   │   ├── environments -> variabili d'ambiente di angular
+│   │   ├── index.html
+│   │   ├── main.ts
+│   │   └── styles.css
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   └── tsconfig.spec.json
+├── package.json
 
-## Swagger API Backend
+- *Features rilevanti*
 
-**swagger-autogen** è un tool che permette di generare automaticamente la documentazione Swagger per le API RESTful basate su Node.js e Express. Questo strumento analizza il codice sorgente dell'applicazione e genera un file di specifica Swagger (in formato JSON o YAML) che descrive le API disponibili, i loro endpoint, i parametri, le risposte e altri dettagli rilevanti.
-- Per allineare i nuovi endpoint con la documentazione Swagger, è necessario eseguire il comando `npm run swagger` ogni volta che vengono aggiunti o modificati gli endpoint dell'API. Questo comando rigenererà automaticamente il file di specifica Swagger, garantendo che la documentazione sia sempre aggiornata e coerente con l'implementazione effettiva delle API.
-
-**generatore CLI** per setuppare una nuova root api e generare automaticamente la documentazione Swagger per le API RESTful basate su Node.js e Express. Questo strumento analizza il codice sorgente dell'applicazione e genera un file di specifica Swagger (in formato JSON o YAML) che descrive le API disponibili, i loro endpoint, i parametri, le risposte e altri dettagli rilevanti.
-- Usare il comando `npm run create:module <Nome>` per creare un nuovo modulo API. Questo comando genererà automaticamente la struttura di base del modulo, inclusi i file necessari per la gestione degli endpoint e la documentazione Swagger associata.
-
-## USER: Scelte implementative
-- Gender: 'f', 'm', 'other', caso di default -> 'other'
 
 ## SECURITY
 ### 🛡️ Architettura di Sicurezza & Autenticazione
@@ -127,10 +190,3 @@ Progetto Tecnologie Web A.A. 2025/26
 4. Parsing della risposta: partendo dal testo trascritto [...]
 5. Text-To-Speech: mandiamo una richiesta alla ResponsiveVoiceAPI che restituisce un file audio `.wav`.
 6. Client: la Web Speech API risceve in input il file trascritto e riproduce l'audio in automatico.
-
-## TEST CLI-Navigator 
-
-two options:
-`npm run navigator:cli --prefix backend`
-`node backend/scripts/test-navigator-cli.js`
-

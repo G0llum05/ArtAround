@@ -30,10 +30,14 @@ export class Chat {
   private scrollToBottom(): void {
     const el = this.scrollContainer()?.nativeElement;
     if (el) {
-      el.scrollTo({
-        top: el.scrollHeight,
-        behavior: 'smooth'
-      });
+      if (typeof el.scrollTo === 'function') {
+        el.scrollTo({
+          top: el.scrollHeight,
+          behavior: 'smooth'
+        });
+      } else {
+        el.scrollTop = el.scrollHeight;
+      }
     }
   }
 }

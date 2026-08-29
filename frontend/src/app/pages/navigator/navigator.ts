@@ -266,6 +266,10 @@ export class Navigator {
           });
         } else if (chunk.type === 'FINAL_RESPONSE') {
           this.isLoading.set(false);
+          const responseArtworkIndex = chunk.data?.currentArtworkIndex;
+          if (typeof responseArtworkIndex === 'number' && responseArtworkIndex >= 0 && responseArtworkIndex < this.itinerary().length) {
+            this.currentItineraryStepIndex.set(responseArtworkIndex);
+          }
           const reply = chunk.data?.reply || chunk.data?.text || chunk.text || 'Risposta ricevuta.';
           this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
           this.currentSubtitle.set(reply);

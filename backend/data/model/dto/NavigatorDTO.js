@@ -74,6 +74,9 @@ class NavigatorRequestDTO {
 class NavigatorResponseDTO {
   constructor(description = '', audio = null, error = null) {
     this.text = typeof description === 'string' ? description : (description?.description || description?.text || '');
+    if (description && typeof description === 'object' && Number.isInteger(description.currentArtworkIndex)) {
+      this.currentArtworkIndex = description.currentArtworkIndex;
+    }
     this.audio = audio;
     if (error) {
       this.error = error;

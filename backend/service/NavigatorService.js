@@ -205,7 +205,12 @@ class NavigatorService {
     console.log(`   • Tipo dato: ${typeof item}`);
     console.log(`   • Descrizione: "${item.description}"\n`);
 
-    return item.description ? item.description : null;
+    return item.description
+      ? {
+          text: item.description,
+          currentArtworkIndex: targetIndex
+        }
+      : null;
   }
 
 

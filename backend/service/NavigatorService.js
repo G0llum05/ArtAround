@@ -324,16 +324,26 @@ class NavigatorService {
       if (!artwork) {
         throw new Error(`Opera con ID "${currentArtworkId}" non trovata.`);
       }
-      if (!artwork.artists || artwork.artists.length === 0) {
-        throw new Error(`Nessun artista associato all'opera "${artwork.title}".`);
+
+      let artist = null;
+      if (artwork.artists && artwork.artists.length > 0) {
+        if (typeof targetArtist === 'string' && targetArtist !== 'CURRENT_AUTHOR' && targetArtist.toLowerCase() !== 'autore' && targetArtist.toLowerCase() !== "l'autore") {
+          artist = artwork.artists.find(a => {
+            const fullName = `${a.name || ''} ${a.surname || ''}`.toLowerCase().trim();
+            const target = targetArtist.toLowerCase().trim();
+            return fullName.includes(target) || target.includes((a.name || '').toLowerCase()) || (a.surname && target.includes(a.surname.toLowerCase()));
+          });
+        }
+        if (!artist) {
+          artist = artwork.artists[0];
+        }
       }
 
-      const artist = artwork.artists.find(a => a.name.toLowerCase() === targetArtist.toLowerCase());
       if (!artist) {
-        throw new Error(`Artista "${targetArtist}" non trovato per l'opera "${artwork.title}".`);
+        resultText = `Non ci sono informazioni registrate sull'autore per l'opera "${artwork.title}".`;
+      } else {
+        resultText = await LLMService.nonItemArtistInfo(artist, artwork, tone, length, language);
       }
-
-      resultText = await LLMService.nonItemArtistInfo(artist, artwork, tone, length, language);
     } else {
       throw new Error('Nessuna azione non-item valida fornita.');
     }

@@ -496,6 +496,12 @@ export class Navigator {
     this.executeCommand({ itemAction: 'TELL_ME_MORE' });
   }
 
+  askAuthor(): void {
+    console.log("Richiesta informazioni sull'autore dell'opera...");
+    this.messages.update(msgs => [...msgs, { sender: 'user', text: "Parlami dell'autore di quest'opera.", type: 'text' }]);
+    this.executeCommand({ targetArtist: 'CURRENT_AUTHOR' });
+  }
+
   askPoi(poiType: string, label: string): void {
     this.messages.update(msgs => [...msgs, { sender: 'user', text: `Dove si trova: ${label}?`, type: 'text' }]);
     this.executeCommand({ targetPoiType: poiType });

@@ -68,16 +68,16 @@
 
 /* Linea attiva (per i tratti già completati) */
 .step-line.line-active {
-  background-color: var(--primary, #007bff);
+  background-color: var(--primary);
 }
 
 /* --- STATI DEL PALLINO --- */
 
-/* 1. Completato (Blu o colore primario con spunta bianca) */
+/* 1. Completato (Colore primario con spunta bianca) */
 .itinerary-step.completed .step-circle {
-  background-color: var(--primary, #007bff);
-  color: var(--on-primary, #fff);
-  border-color: var(--primary, #007bff);
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
 }
 
 .step-icon {
@@ -86,13 +86,13 @@
   fill: currentColor;
 }
 
-/* 2. Corrente / Attivo (Stile in evidenza, es. Arancione o Primario marcato) */
+/* 2. Corrente / Attivo */
 .itinerary-step.current .step-circle {
-  background-color: var(--primary, #ff8c00); /* Oppure un colore d'accento */
-  color: #fff;
-  border-color: #fff;
-  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.2); /* Effetto alone luminoso */
-  transform: scale(1.1); /* Leggermente più grande per metterlo al centro dell'attenzione */
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--on-primary);
+  box-shadow: 0 0 0 4px rgba(159, 61, 37, 0.25);
+  transform: scale(1.1);
 }
 
 /* --- CONTENUTO TESTUALE DELLA TAPPA --- */
@@ -108,12 +108,12 @@
 .item-title {
   font-size: var(--body-md-size, 0.95rem);
   font-weight: 500;
-  color: var(--on-surface, #333);
+  color: var(--on-surface);
 }
 
 .item-desc {
   font-size: var(--label-md-size);
-  color: var(--on-surface-variant, #777);
+  color: var(--on-surface-variant);
 }
 
 @media(min-width: 48rem)  {
@@ -122,19 +122,19 @@
   }
 
   .item-desc {
-    font-size: var(--body-md-size,);
+    font-size: var(--body-md-size);
   }
 }
 
 /* Modifiche di testo quando lo step è completato */
 .itinerary-step.completed .item-title {
-  color: var(--on-surface-variant, #777);
+  color: var(--on-surface-variant);
 }
 
 /* Stile in evidenza per il testo della tappa corrente */
 .itinerary-step.current .item-title {
   font-weight: 700;
-  color: var(--primary, #007bff);
+  color: var(--primary);
 }
 
 /* --- POSIZIONE (Stanza e Piano) --- */

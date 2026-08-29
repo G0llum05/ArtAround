@@ -50,34 +50,34 @@
 }
 
 .toast.warning {
-  background-color: #fffbeb;
-  color: #92400e;
-  border-color: #fde68a;
+  background-color: var(--surface-variant);
+  color: var(--tertiary);
+  border-color: var(--outline-variant);
 }
 
 .toast.success {
-  background-color: #f0fdf4;
-  color: #2e7d32;
-  border-color: #bbf7d0;
+  background-color: var(--surface-variant);
+  color: var(--primary);
+  border-color: var(--outline-variant);
 }
 
 /* Supporto Dark Theme con background opaco al 100% */
 [data-theme="dark"] .toast.error {
-  background-color: #362221;
-  color: #ff857d;
-  border-color: #5c2c29;
+  background-color: var(--surface-variant);
+  color: var(--error);
+  border-color: var(--error);
 }
 
 [data-theme="dark"] .toast.warning {
-  background-color: #362e1d;
-  color: #ffd67a;
-  border-color: #5c4a24;
+  background-color: var(--surface-variant);
+  color: var(--tertiary);
+  border-color: var(--outline-variant);
 }
 
 [data-theme="dark"] .toast.success {
-  background-color: #1e3323;
-  color: #81c784;
-  border-color: #2a5232;
+  background-color: var(--surface-variant);
+  color: var(--primary);
+  border-color: var(--outline-variant);
 }
 
 /* Icona opzionale */
@@ -88,15 +88,15 @@
 }
 
 .toast.error i {
-  color: var(--error, #ba1a1a);
+  color: var(--error);
 }
 
 .toast.warning i {
-  color: #d97706;
+  color: var(--tertiary);
 }
 
 .toast.success i {
-  color: #2e7d32;
+  color: var(--primary);
 }
 
 /* Pulsante di chiusura */
@@ -138,27 +138,27 @@
 }
 
 .toast.error::after {
-  background-color: var(--error, #ba1a1a);
+  background-color: var(--error);
 }
 
 .toast.warning::after {
-  background-color: #d97706;
+  background-color: var(--tertiary);
 }
 
 .toast.success::after {
-  background-color: #2e7d32;
+  background-color: var(--primary);
 }
 
 [data-theme="dark"] .toast.error::after {
-  background-color: var(--error, #ff5449);
+  background-color: var(--error);
 }
 
 [data-theme="dark"] .toast.warning::after {
-  background-color: #f59e0b;
+  background-color: var(--tertiary);
 }
 
 [data-theme="dark"] .toast.success::after {
-  background-color: #4caf50;
+  background-color: var(--primary);
 }
 
 /* Animazioni */

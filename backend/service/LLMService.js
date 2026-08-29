@@ -135,14 +135,14 @@ class LLMService {
 
 
   static async nonItemArtistInfo(artist, artworkContext, tone, length, language) {
+    const artistName = artist?.name ? `${artist.name} ${artist.surname || ''}`.trim() : (typeof artist === 'string' ? artist : 'Autore');
 
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      // TODO
-      return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
+      return `L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`;
     }
 
     try {
-      let prompt = promptHandler('generalContext', { museum: artworkContext.museum, language });
+      let prompt = promptHandler('generalContext', { museum: artworkContext?.museum || 'Museo', language });
       prompt += promptHandler('artistInfo', {
         artworkContext,
         artist,
@@ -152,11 +152,10 @@ class LLMService {
       });
 
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione info artista:\x1b[0m`, prompt);
-      // TODO CHECK qua si DEVONO mettere dei controlli sui promtp che vengono fatti. Potrebbero esserci lingue sbagliate o lunghezze sbagliate
       return await this._callLLMHandler(prompt);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione info artista fallita, utilizzo fallback mock:', err.message);
-      return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
+      return `L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`;
     }
   }
 

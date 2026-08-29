@@ -147,18 +147,21 @@ Pianificazione della visita: l'utente ha la possibilità, una volta selezionato 
 
 ## ORGANIZZAZIONE DEL LAVORO
 Ci siamo inizialmente divisi l'organizzazione delle due macro componenti del progetto, frontend e backend. Nelle fasi successive del progetto la divisione è diventata sempre meno netta interagento tra le due parti. 
-Divisione iniziale del del progetto:
+### Divisione iniziale del del progetto
 - Frontend - Samuele Grillini
 - Backend - Davide Gamberini e Mattia Graziani
-Disione singolare delle parti del progetto:
+### Divisione singolare delle parti del progetto:
 - HomePage - Samuele Grillini
 - Marketplace (pagina principale) - Samuele Grillini
 - Marketplace (creazione visita) - Tutti
 - Visite - Tutti
-- Navigator - Mattia Graziani + Samuele Grillini
+- Audio (STT - TTS) - Davide Gamberini
+- Navigator - Mattia Graziani e Samuele Grillini
 - Gruppi - Mattia Graziani
-- Login - Tutti
+- Autenticazione e Ruoli - Tutti
 - Immagini - Davide Gamberini
+- Deploy - Mattia Graziani e Davide Gamberini
+
 ### Uso LLM
-- Per la generazione di contenuti delle visite
-- Assistenza nel coding: inizialmente abbiamo generato molto codice tramite LLM, ma successivamente abbiamo deciso di ricominciare il lavoro da zero per avere un codice più pulito e comprensibile. Quindi LLM è stato utile per dare un'indea su cosa scrivere, di fatto una documentazione di supporto. Sulla parte conlusiva del progetto, vista la fretta, per piccole modifiche su codice già strutturato abbiamo usato LLM.
+- Generazione di contenuti delle visite
+- Assistenza nel coding: inizialmente abbiamo generato molto codice tramite LLM, ma successivamente abbiamo deciso di ricominciare il lavoro da zero per avere un codice più scalabile, pulito e comprensibile. Quindi LLM è stato utile per dare un'idea su cosa scrivere, di fatto una documentazione di supporto. Sulla parte conclusiva del progetto, per piccole modifiche su codice già strutturato manualmente nella fase precedente, abbiamo usato LLM per comodità e velocità.

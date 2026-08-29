@@ -121,6 +121,14 @@ export class MktVisitPreview extends HTMLElement {
       <div class="mkt-preview-page">
 
         <header class="mkt-preview-header">
+          <div class="mkt-header-nav">
+            <button type="button" class="mkt-btn-back" id="btn-back" title="Torna indietro">
+              <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
+                <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/>
+              </svg>
+              <span>Indietro</span>
+            </button>
+          </div>
           <div class="mkt-header-top">
             <h1 class="mkt-preview-title">${this.state.title}</h1>
             <div class="mkt-header-buttons">
@@ -226,6 +234,26 @@ export class MktVisitPreview extends HTMLElement {
 
       </div>
     `;
+
+    const backBtn = this.querySelector('#btn-back');
+    if (backBtn) {
+      backBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        let returnRoute = '/marketplace/visit/search';
+        try {
+          returnRoute = sessionStorage.getItem('mkt_return_route') || '/marketplace/visit/search';
+        } catch (err) {}
+
+        const navEvent = new CustomEvent('angular-navigate', {
+          detail: {
+            destination: returnRoute
+          },
+          bubbles: true,
+          composed: true
+        });
+        this.dispatchEvent(navEvent);
+      });
+    }
 
     const startVisitBtn = this.querySelector('#btn-start-visit');
     if (startVisitBtn) {

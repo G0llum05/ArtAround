@@ -1,6 +1,10 @@
 import { MuseumService } from "../../services/museum.service.js";
 
 export class MktInputSearchText extends HTMLElement {
+  static get observedAttributes() {
+    return ['data-selected-id'];
+  }
+
   constructor() {
     super();
     this.museums = [
@@ -15,15 +19,44 @@ export class MktInputSearchText extends HTMLElement {
   }
 
   async connectedCallback() {
+    const attrId = this.getAttribute('data-selected-id');
+    if (attrId && attrId !== 'null' && attrId !== 'undefined') {
+      this.selectedMuseumId = attrId;
+    }
     this.render();
     try {
       this.museums = await MuseumService.getAllHomePresentationMuseums() || [{
         id: 0,
         name: "Nessun museo trovato"
       }];
+      if (this.selectedMuseumId) {
+        const found = this.museums.find(m => String(m.id) === String(this.selectedMuseumId));
+        if (found) {
+          this.searchTerm = found.name;
+          const input = this.querySelector('#search-input');
+          if (input) input.value = found.name;
+          this.updateClearBtnVisibility();
+        }
+      }
       this.updateSuggestions();
     } catch (error) {
       console.error("Errore nel recupero dei musei:", error);
+    }
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    if (name === 'data-selected-id') {
+      this.selectedMuseumId = (newValue && newValue !== 'null' && newValue !== 'undefined') ? newValue : null;
+      if (this.museums && this.museums.length > 0 && this.selectedMuseumId) {
+        const found = this.museums.find(m => String(m.id) === String(this.selectedMuseumId));
+        if (found) {
+          this.searchTerm = found.name;
+          const input = this.querySelector('#search-input');
+          if (input) input.value = found.name;
+          this.updateClearBtnVisibility();
+        }
+      }
     }
   }
 

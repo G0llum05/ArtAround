@@ -1,5 +1,13 @@
 export function goTo(btn, route, id) {
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    try {
+      const currentPath = window.location.pathname;
+      if (!currentPath.includes('/search/') && !currentPath.includes('/preview/')) {
+        sessionStorage.setItem('mkt_return_route', currentPath);
+      }
+    } catch (err) {}
+
     let payload = {
       destination: route,
     };
@@ -10,7 +18,7 @@ export function goTo(btn, route, id) {
       detail: payload,
       bubbles: true,
       composed: true, //"buca" lo shadowDOM
-    })
+    });
     btn.dispatchEvent(navEvent);
   });
 }
@@ -84,6 +92,13 @@ export class MktRouter extends HTMLElement {
 
     this.routes = cleanRoute;
     this.innerHTML = `<link rel="stylesheet" href="/marketplace/marketplace.registry.css"/>\n`;
+
+    // Salva la rotta di navigazione principale per permettere al tasto "Indietro" di tornare alla pagina giusta
+    if (cleanRoute === '/marketplace' || cleanRoute === '/marketplace/visit/search' || cleanRoute.startsWith('/marketplace/museum/')) {
+      try {
+        sessionStorage.setItem('mkt_return_route', cleanRoute);
+      } catch (e) {}
+    }
 
     // Questa RegExp cerca esattamente /marketplace/museum/ seguito da qualsiasi cosa non contenga "/"
     const museumDetailRegex = /^\/marketplace\/museum\/([^/]+)$/;

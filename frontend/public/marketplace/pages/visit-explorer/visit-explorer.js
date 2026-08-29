@@ -21,17 +21,42 @@ export class MktVisitExplorer extends HTMLElement {
     this.allMuseumVisit = [];
   }
 
+  saveState() {
+    try {
+      sessionStorage.setItem('mkt_visit_explorer_state', JSON.stringify(this.state));
+    } catch (e) {}
+  }
+
   async connectedCallback() {
+    try {
+      const saved = sessionStorage.getItem('mkt_visit_explorer_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.state = { ...this.state, ...parsed };
+      }
+    } catch (e) {}
+
     this.render();
     this.setupEventListeners();
 
     this.loadingVisit = true;
-    this.allInterests = [];
     this.updateGrid();
+
     try {
-      this.allMuseumVisit = await VisitService.getAllVisits() || [];
+      if (this.state.museumId) {
+        const searchComp = this.querySelector('#museum-search');
+        if (searchComp) {
+          searchComp.setAttribute('data-selected-id', this.state.museumId);
+        }
+        this.allMuseumVisit = await MuseumService.getAllMuseumVisits(this.state.museumId);
+        const cats = this.allMuseumVisit?.flatMap(visit => visit.categories || []) || [];
+        this.allInterests = [...new Set(cats)].filter(Boolean);
+      } else {
+        this.allMuseumVisit = await VisitService.getAllVisits() || [];
+        this.allInterests = [];
+      }
     } catch (e) {
-      console.error("Errore nel recupero di tutte le visite:", e);
+      console.error("Errore nel recupero delle visite:", e);
     } finally {
       this.loadingVisit = false;
       this.updateUI();
@@ -40,6 +65,7 @@ export class MktVisitExplorer extends HTMLElement {
 
   updateState(key, value) {
     this.state[key] = value;
+    this.saveState();
     this.updateUI();
   }
 
@@ -73,6 +99,7 @@ export class MktVisitExplorer extends HTMLElement {
       }
       this.partialInterestsList = [];
     }
+    this.saveState();
     this.updateUI();
   }
 
@@ -353,6 +380,7 @@ export class MktVisitExplorer extends HTMLElement {
         this.state.museumId = id;
         this.state.interessi = [];
         this.partialInterestsList = [];
+        this.saveState();
         this.updateGrid();
 
         try {
@@ -376,6 +404,7 @@ export class MktVisitExplorer extends HTMLElement {
         this.state.interessi = [];
         this.partialInterestsList = [];
         this.allInterests = [];
+        this.saveState();
         this.updateGrid();
 
         try {

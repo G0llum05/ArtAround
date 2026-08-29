@@ -22,21 +22,19 @@ export class Marketplace {
 
   navigateTo(event: Event) {
     const navigation = event as CustomEvent;
-    const dest = navigation.detail.destination as string;
-    const id = navigation.detail.id as string;
-    const queryParams = navigation.detail.queryParams;
-    console.log(dest);
-    if(dest) {
-      if(id === dest) {
+    const dest = navigation.detail?.destination as string;
+    const id = navigation.detail?.id as string;
+    const queryParams = navigation.detail?.queryParams;
+
+    if (dest) {
+      const url = dest.startsWith('/') ? dest : '/' + dest;
+      if (id && id === dest) {
         this.router.navigate(['marketplace', id]);
-      }
-      else if(queryParams) {
-        this.router.navigate([dest], { queryParams });
-      }
-      else {
-        this.router.navigate([dest]);
+      } else if (queryParams) {
+        this.router.navigate([url], { queryParams });
+      } else {
+        this.router.navigateByUrl(url);
       }
     }
-
   }
 }

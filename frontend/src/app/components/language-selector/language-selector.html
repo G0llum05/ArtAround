@@ -1,0 +1,31 @@
+<div class="lang-dropdown notranslate" translate="no">
+  <button
+    type="button"
+    class="nav-icon-btn nav-lang-btn"
+    (click)="toggleDropdown()"
+    [attr.aria-expanded]="isOpen()"
+    aria-haspopup="listbox"
+    title="Cambia lingua"
+  >
+    {{ currentLang() | uppercase }}
+  </button>
+
+  @if (isOpen()) {
+    <ul class="lang-menu" role="listbox">
+      @for (lang of languages; track lang.value) {
+        <li>
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="lang.value === currentLang()"
+            role="option"
+            [attr.aria-selected]="lang.value === currentLang()"
+            (click)="selectLanguage(lang.value)"
+          >
+            {{ lang.name }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

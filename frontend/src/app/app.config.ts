@@ -13,7 +13,20 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
-    provideRouter(routes, withViewTransitions()),
+    provideRouter(
+      routes,
+      withViewTransitions({
+        skipInitialTransition: true,
+        onViewTransitionCreated: ({ transition }) => {
+          if (typeof document !== 'undefined' && document.hidden) {
+            transition.skipTransition();
+          }
+          transition.ready.catch(() => {});
+          transition.finished.catch(() => {});
+          transition.updateCallbackDone?.catch(() => {});
+        }
+      })
+    ),
     provideAppInitializer(() => {
       const authService = inject(AuthService);
       return firstValueFrom(authService.refreshToken()).catch(() => null);

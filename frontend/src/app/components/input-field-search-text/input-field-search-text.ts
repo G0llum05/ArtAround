@@ -57,6 +57,16 @@ export class InputFieldSearchText {
     }
   }
 
+  clearSearch(event?: MouseEvent): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.searchTerm.set('');
+    this.isDropdownOpen.set(true);
+    this.cleared.emit();
+  }
+
   selectMuseum(museum: MuseumHomePresentationResponse): void {
     this.searchTerm.set(museum.name);
     this.isDropdownOpen.set(false);

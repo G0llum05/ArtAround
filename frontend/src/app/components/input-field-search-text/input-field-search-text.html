@@ -1,14 +1,30 @@
 <div class="autocomplete-container">
-  <input
-    type="text"
-    class="custom-select"
-    placeholder="Cerca e seleziona un museo..."
-    [value]="displayValue()"
-    (input)="onSearchInput($any($event.target).value)"
-    (focus)="isDropdownOpen.set(true)"
-    (keydown)="onKeyDown($event)"
-  />
-  <!-- Aggiunto (keydown) per catturare il tasto TAB -->
+  <div class="input-wrapper">
+    <input
+      type="text"
+      class="custom-select"
+      placeholder="Cerca e seleziona un museo..."
+      [value]="displayValue()"
+      (input)="onSearchInput($any($event.target).value)"
+      (focus)="isDropdownOpen.set(true)"
+      (click)="isDropdownOpen.set(true)"
+      (keydown)="onKeyDown($event)"
+      autocomplete="off"
+    />
+    @if (displayValue() && displayValue().trim().length > 0) {
+      <button
+        type="button"
+        class="clear-btn"
+        (click)="clearSearch($event)"
+        title="Cancella ricerca"
+        aria-label="Cancella testo"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
+          <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+        </svg>
+      </button>
+    }
+  </div>
 
   @if (isDropdownOpen() && filteredMuseums().length > 0) {
     <ul class="dropdown-suggestions">

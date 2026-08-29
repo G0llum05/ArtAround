@@ -3,6 +3,13 @@
   width: 100%;
 }
 
+.mkt-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
 .mkt-custom-select {
   width: 100%;
   appearance: none;
@@ -12,14 +19,47 @@
   font-size: var(--body-lg-size);
   border: 1px solid var(--outline-variant);
   border-radius: var(--radius-default);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-sm) 2.5rem var(--spacing-sm) var(--spacing-md);
   outline: none;
-  cursor: pointer;
+  cursor: text;
   box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .mkt-custom-select:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(154, 59, 38, 0.15);
+}
+
+.mkt-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--on-surface-variant, #79747e);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  z-index: 2;
+}
+
+.mkt-clear-btn:hover {
+  background-color: var(--surface-variant, #e7e0d8);
+  color: var(--primary, #9a3b26);
+}
+
+.mkt-clear-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  pointer-events: none;
 }
 
 .mkt-dropdown-suggestions {

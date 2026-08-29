@@ -49,15 +49,33 @@ export class MktInputSearchText extends HTMLElement {
   }
 
   render() {
+    const value = this.displayValue;
+    const hasValue = Boolean(value && value.trim() !== '');
+
     this.innerHTML = `
       <div class="mkt-autocomplete-container">
-        <input
-          type="text"
-          class="mkt-custom-select"
-          placeholder="Cerca..."
-          value="${this.displayValue}"
-          id="search-input"
-        />
+        <div class="mkt-input-wrapper">
+          <input
+            type="text"
+            class="mkt-custom-select"
+            placeholder="Cerca e seleziona un museo..."
+            value="${value}"
+            id="search-input"
+            autocomplete="off"
+          />
+          <button
+            type="button"
+            class="mkt-clear-btn"
+            id="clear-btn"
+            title="Cancella ricerca"
+            aria-label="Cancella testo"
+            style="${hasValue ? 'display: flex;' : 'display: none;'}"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
+              <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+            </svg>
+          </button>
+        </div>
         <div id="mkt-suggestions-wrapper"></div>
       </div>
     `;
@@ -79,6 +97,7 @@ export class MktInputSearchText extends HTMLElement {
 
       wrapper.querySelectorAll('.mkt-suggestion-item').forEach(item => {
         item.addEventListener('click', (e) => {
+          e.stopPropagation();
           const id = e.currentTarget.getAttribute('data-id');
           const museum = this.museums.find(m => m.id === id);
           if (museum) this.selectMuseum(museum);
@@ -89,25 +108,55 @@ export class MktInputSearchText extends HTMLElement {
     }
   }
 
+  updateClearBtnVisibility() {
+    const clearBtn = this.querySelector('#clear-btn');
+    const input = this.querySelector('#search-input');
+    if (clearBtn && input) {
+      const hasValue = Boolean(input.value && input.value.trim() !== '');
+      clearBtn.style.display = hasValue ? 'flex' : 'none';
+    }
+  }
+
   setupEventListeners() {
     const input = this.querySelector('#search-input');
+    const clearBtn = this.querySelector('#clear-btn');
     if (!input) return;
 
     input.addEventListener('input', (e) => {
       this.searchTerm = e.target.value;
-      this.isDropdownOpen = true;
       this.selectedMuseumId = null;
-      if (!this.searchTerm) {
+      this.isDropdownOpen = true;
+      this.updateClearBtnVisibility();
+      if (!this.searchTerm.trim()) {
         this.dispatchEvent(new CustomEvent('cleared', { bubbles: true, composed: true }));
-        this.isDropdownOpen = false;
       }
-      this.updateSuggestions(); // Aggiorna solo la tendina senza perdere il focus dall'input!
+      this.updateSuggestions();
     });
 
     input.addEventListener('focus', () => {
       this.isDropdownOpen = true;
       this.updateSuggestions();
     });
+
+    input.addEventListener('click', () => {
+      this.isDropdownOpen = true;
+      this.updateSuggestions();
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.searchTerm = '';
+        this.selectedMuseumId = null;
+        input.value = '';
+        this.updateClearBtnVisibility();
+        this.isDropdownOpen = true;
+        this.updateSuggestions();
+        input.focus();
+        this.dispatchEvent(new CustomEvent('cleared', { bubbles: true, composed: true }));
+      });
+    }
 
     input.addEventListener('keydown', (event) => {
       const results = this.filteredMuseums;
@@ -117,19 +166,17 @@ export class MktInputSearchText extends HTMLElement {
         event.preventDefault();
         this.selectMuseum(results[0]);
       }
+      if (event.key === 'Escape') {
+        this.isDropdownOpen = false;
+        this.updateSuggestions();
+      }
     });
 
     document.addEventListener('click', (event) => {
-      // Se il click avviene fuori da questo intero elemento (this)
       if (!this.contains(event.target)) {
         if (this.isDropdownOpen) {
           this.isDropdownOpen = false;
           this.updateSuggestions();
-        }
-        if (this.selectedMuseumId === null && input.value.trim() !== '') {
-          this.searchTerm = '';
-          input.value = '';
-          this.dispatchEvent(new CustomEvent('cleared', { bubbles: true, composed: true }));
         }
       }
     });
@@ -143,6 +190,7 @@ export class MktInputSearchText extends HTMLElement {
     const input = this.querySelector('#search-input');
     if (input) input.value = museum.name;
 
+    this.updateClearBtnVisibility();
     this.updateSuggestions();
     this.dispatchEvent(new CustomEvent('museumSelected', {
       detail: museum.id,

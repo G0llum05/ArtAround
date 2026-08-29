@@ -109,6 +109,19 @@ class NavigatorService {
       throw new Error('Parsing dell\'intento fallito o intento non riconosciuto.');
     }
 
+    if (isGroup && !isTeacher) {
+      if (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM') {
+        return {
+          text: 'In questa visita di gruppo la navigazione è guidata dal docente. Puoi chiedermi maggiori informazioni sull\'opera attuale o curiosità sul museo.',
+          currentArtworkIndex: currentArtworkIndex,
+          itemAction: 'EXPLAIN_ITEM',
+          tone,
+          language,
+          length
+        };
+      }
+    }
+
     if (response.language) {
       language = Sanitizer.sanitizeLanguage(response.language) || language;
     }
@@ -144,17 +157,13 @@ class NavigatorService {
   /**
   * @returns {Promise<{ actionType: string, itemAction?: string, targetPoiType?: string, targetArtist?: string }>}
   */
-  static async parseIntentHandler(transcribedText, language) {
+  static async parseIntentHandler(transcribedText, museum, artwork, tone, length, language) {
     try {
-      // const nlpResult = await NLParser.parseIntentNL(transcribedText, language);
-      // if (nlpResult) {
-      //   return nlpResult;
-      // }
-      const llmResult = await LLMService.parseIntentLLM(transcribedText, language);
+      const llmResult = await LLMService.parseIntentLLM(transcribedText, museum, artwork, tone, length, language);
       if (llmResult) {
         return llmResult;
       }
-      throw new Error('Intent non riconosciuto né dal parser né dall\'LLM.');
+      throw new Error('Intent non riconosciuto dall\'LLM.');
     } catch (error) {
       console.error('Errore durante il parsing dell\'intento:', error);
       throw new Error('Errore durante il parsing dell\'intento.');
@@ -173,8 +182,13 @@ class NavigatorService {
 
     let tellMeMore = false;
 
+    const steps = await this.getVisitSteps(visitId);
+
     switch (itemAction) {
       case 'NEXT_ITEM':
+        if (currentArtworkIndex >= steps.length - 1) {
+          throw new Error('Sei già all\'ultima opera della visita.');
+        }
         targetIndex = currentArtworkIndex + 1;
         break;
 
@@ -205,7 +219,14 @@ class NavigatorService {
     console.log(`   • Tipo dato: ${typeof item}`);
     console.log(`   • Descrizione: "${item.description}"\n`);
 
-    return item.description ? item.description : null;
+    return {
+      text: item.description ? item.description : '',
+      currentArtworkIndex: targetIndex,
+      itemAction: itemAction,
+      tone: tone,
+      language: language,
+      length: length
+    };
   }
 
 
@@ -280,6 +301,7 @@ class NavigatorService {
   }
 
   static async nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language) {
+    let resultText = '';
     // POI
     if (targetPoiType) {
       const museum = await Museum.findById(museumId).populate('pointsOfInterest').exec();
@@ -293,7 +315,7 @@ class NavigatorService {
         throw new Error(`Punto di interesse di tipo "${targetPoiType}" non trovato nel museo "${museum.name}".`);
       }
 
-      return LLMService.nonItemPOI(museum.name, POI, language, tone);
+      resultText = await LLMService.nonItemPOI(museum.name, POI, language, tone);
 
     } else if (targetArtist) { // Artist Info
 
@@ -311,10 +333,19 @@ class NavigatorService {
         throw new Error(`Artista "${targetArtist}" non trovato per l'opera "${artwork.title}".`);
       }
 
-      return LLMService.nonItemArtistInfo(artist, artwork, tone, length, language);
+      resultText = await LLMService.nonItemArtistInfo(artist, artwork, tone, length, language);
     } else {
       throw new Error('Nessuna azione non-item valida fornita.');
     }
+
+    return {
+      text: resultText,
+      currentArtworkIndex,
+      itemAction: null,
+      tone,
+      language,
+      length
+    };
   }
 
   static async getVisitSteps(visitId) {

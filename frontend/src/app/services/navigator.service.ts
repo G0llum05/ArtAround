@@ -3,11 +3,23 @@ import { environment } from '../../environments/environment';
 import { NavigatorRequest, TONE_MAPPING } from '../models/navigator.model';
 import { ToneType } from '../models/appModel/userNavigatorSettings';
 
+export interface NavigatorResponseData {
+  text?: string;
+  reply?: string;
+  audio?: string;
+  currentArtworkIndex?: number | null;
+  itemAction?: string | null;
+  tone?: string | null;
+  language?: string | null;
+  length?: number | null;
+  [key: string]: any;
+}
+
 export interface StreamChunk {
   type: 'TRANSCRIPTION' | 'FINAL_RESPONSE' | 'ERROR';
   success: boolean;
   text?: string;
-  data?: { text?: string; reply?: string; audio?: string; [key: string]: any };
+  data?: NavigatorResponseData;
   error?: string;
 }
 

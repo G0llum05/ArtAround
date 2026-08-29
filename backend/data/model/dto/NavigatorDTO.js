@@ -72,8 +72,22 @@ class NavigatorRequestDTO {
 }
 
 class NavigatorResponseDTO {
-  constructor(description = '', audio = null, error = null) {
-    this.text = typeof description === 'string' ? description : (description?.description || description?.text || '');
+  constructor(result = '', audio = null, error = null) {
+    if (typeof result === 'string') {
+      this.text = result;
+      this.currentArtworkIndex = null;
+      this.itemAction = null;
+      this.tone = null;
+      this.language = null;
+      this.length = null;
+    } else {
+      this.text = result?.text || result?.description || '';
+      this.currentArtworkIndex = result?.currentArtworkIndex !== undefined ? result.currentArtworkIndex : null;
+      this.itemAction = result?.itemAction || null;
+      this.tone = result?.tone || null;
+      this.language = result?.language || null;
+      this.length = result?.length !== undefined ? result.length : null;
+    }
     this.audio = audio;
     if (error) {
       this.error = error;

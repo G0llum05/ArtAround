@@ -270,6 +270,48 @@ export class Navigator {
           this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
           this.currentSubtitle.set(reply);
 
+          // Aggiorna l'indice dell'opera se il comando ha navigato verso un'altra opera
+          let targetIndex: number | null = null;
+          if (chunk.data?.currentArtworkIndex !== undefined && chunk.data?.currentArtworkIndex !== null) {
+            targetIndex = Number(chunk.data.currentArtworkIndex);
+          } else if (chunk.data?.itemAction === 'NEXT_ITEM') {
+            targetIndex = this.currentItineraryStepIndex() + 1;
+          } else if (chunk.data?.itemAction === 'PREVIOUS_ITEM') {
+            targetIndex = this.currentItineraryStepIndex() - 1;
+          }
+
+          if (targetIndex !== null && !isNaN(targetIndex) && targetIndex >= 0 && targetIndex < this.itinerary().length) {
+            if (targetIndex !== this.currentItineraryStepIndex()) {
+              this.currentItineraryStepIndex.set(targetIndex);
+              if (this.isGroup() && this.isTeacher() && this.sessionCode()) {
+                this.socketService.changeStep(this.sessionCode()!, '', targetIndex).catch(err => {
+                  console.warn('Errore broadcast step change da comando vocale:', err);
+                });
+              }
+            }
+          }
+
+          // Aggiorna eventuali impostazioni modificate a voce
+          if (chunk.data?.tone || chunk.data?.language || chunk.data?.length) {
+            this.currentSettings.update(curr => {
+              const updated = { ...curr };
+              if (chunk.data?.language) updated.language = chunk.data.language;
+              if (chunk.data?.tone) {
+                const t = chunk.data.tone;
+                if (t === 'infantile') updated.tone = 'bambino';
+                else if (t === 'simple') updated.tone = 'studente';
+                else if (t === 'medium') updated.tone = 'adulto';
+                else if (t === 'technical' || t === 'thecnical') updated.tone = 'specialista';
+                else if (['bambino', 'studente', 'adulto', 'specialista'].includes(t)) updated.tone = t as any;
+              }
+              if (chunk.data?.length !== undefined && chunk.data?.length !== null) {
+                const l = Number(chunk.data.length);
+                if (!isNaN(l)) updated.duration = l;
+              }
+              return updated;
+            });
+          }
+
           const audioData = chunk.data?.audio;
           if (audioData) {
             this.lastAudioUrl = audioData;

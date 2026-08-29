@@ -14,7 +14,8 @@ function replacePlaceholders(template, replacements = {}) {
       ? JSON.stringify(val, null, 2)
       : String(val ?? '');
 
-    result = result.replaceAll(`{{${param}}}`, valStr);
+    const regex = new RegExp(`\\{\\{\\s*${param}\\s*\\}\\}`, 'g');
+    result = result.replace(regex, valStr);
   }
 
   return result;
@@ -173,17 +174,27 @@ class LLMService {
     }
 
     try {
-      const prompt = promptHandler('parseCommand', { inputTextLower, museum, artwork, tone, length, language });
+      const prompt = promptHandler('parseCommand', {
+        inputTextLower,
+        museum: museum?.name || (typeof museum === 'string' ? museum : ''),
+        artwork: artwork?.title || (typeof artwork === 'string' ? artwork : ''),
+        artist: artwork?.artists?.map(a => a.name || a).join(', ') || '',
+        tone,
+        length,
+        language
+      });
       // response: actionType, itemAction/targetPoiType/targetArtist, lingua se cambia, lunghezza se cambia, tono se cambia
       const response = await this._callLLMHandler(prompt);
       const parsed = this._cleanAndParseJSON(response);
       console.log(`\x1b[36m[DEBUG AI] Prompt parsing intento:\x1b[0m`, parsed);
-      if (parsed) {
+      if (parsed && parsed.actionType) {
         return parsed;
       }
     } catch (err) {
-      console.warn('[LLMService] Chiamata LLM parsing intento fallita:', err.message);
+      console.warn('[LLMService] Chiamata LLM parsing intento fallita, uso parser locale:', err.message);
     }
+
+    return this._mockParseCommand(inputTextLower, { museum, artwork, tone, length, language });
   }
 
 
@@ -304,85 +315,97 @@ class LLMService {
   // IMPLEMENTAZIONE FALLBACK MOCK OFFLINE
   // =========================================================================
 
-  static _mockParseCommand(textLower, context) {
-    if (textLower.includes('inglese') || textLower.includes('english') || textLower.includes('englesh')) {
-      return { intent: 'CHANGE_LANGUAGE', requestedLanguage: 'en', confidence: 0.98 };
-    }
-    if (textLower.includes('francese') || textLower.includes('french') || textLower.includes('français')) {
-      return { intent: 'CHANGE_LANGUAGE', requestedLanguage: 'fr', confidence: 0.98 };
-    }
-    if (textLower.includes('spagnolo') || textLower.includes('spanish') || textLower.includes('español')) {
-      return { intent: 'CHANGE_LANGUAGE', requestedLanguage: 'es', confidence: 0.98 };
-    }
-    if (textLower.includes('italiano') || textLower.includes('italian')) {
-      return { intent: 'CHANGE_LANGUAGE', requestedLanguage: 'it', confidence: 0.98 };
-    }
-    if (textLower.includes('accorcia') || textLower.includes('riduci') || textLower.includes('tempi') || textLower.includes('veloce') || textLower.includes('fretta') || textLower.includes('sintetico')) {
-      return { intent: 'SHORTEN_LENGTH', requestedLength: 15, confidence: 0.98 };
-    }
-    if (textLower.includes('allunga') || textLower.includes('più lunga') || textLower.includes('estendi')) {
-      return { intent: 'EXTEND_LENGTH', requestedLength: 60, confidence: 0.98 };
-    }
-    if (textLower.includes('bambin') || textLower.includes('semplic') || textLower.includes('non capisc') || textLower.includes('più facile') || textLower.includes('meno diffic')) {
-      return { intent: 'SIMPLIFY_TONE', requestedTone: 'simple', confidence: 0.98 };
-    }
-    if (textLower.includes('dettagli') || textLower.includes('approfond') || textLower.includes('tecnic') || textLower.includes('esperti') || textLower.includes('scientific') || textLower.includes('studioso') || textLower.includes('diffic')) {
-      return { intent: 'THECNICAL_THONE', requestedTone: 'thecnical', confidence: 0.95 };
-    }
-    if (textLower.includes('prossim') || textLower.includes('avanti') || textLower.includes('dopo') || textLower.includes('successiv')) {
-      return { intent: 'NEXT_ITEM', confidence: 0.99 };
-    }
-    if (textLower.includes('indietro') || textLower.includes('prima') || textLower.includes('precedent')) {
-      return { intent: 'PREVIOUS_ITEM', confidence: 0.99 };
-    }
-    // POI Parsing completo
-    if (textLower.includes('bagno disabil') || textLower.includes('toilette disabil')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'disabled_toilette', confidence: 0.97 };
-    }
-    if (textLower.includes('bagno') || textLower.includes('toilette') || textLower.includes('wc')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'toilette', confidence: 0.96 };
-    }
-    if (textLower.includes('bar') || textLower.includes('caffè')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'bar', confidence: 0.96 };
-    }
-    if (textLower.includes('ristorante') || textLower.includes('pranzo') || textLower.includes('mangiare')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'restaurant', confidence: 0.96 };
-    }
-    if (textLower.includes('shop') || textLower.includes('negozio') || textLower.includes('bookshop') || textLower.includes('souvenir')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'shop', confidence: 0.96 };
-    }
-    if (textLower.includes('uscita di emergenza') || textLower.includes('antincendio')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'emergency_exit', confidence: 0.98 };
-    }
-    if (textLower.includes('uscita') || textLower.includes('uscire') || textLower.includes('fuori')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'exit', confidence: 0.97 };
-    }
-    if (textLower.includes('ingresso') || textLower.includes('entrata')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'entrance', confidence: 0.97 };
-    }
-    if (textLower.includes('ascensore')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'elevator', confidence: 0.96 };
-    }
-    if (textLower.includes('scale')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'stairs', confidence: 0.96 };
-    }
-    if (textLower.includes('bigliett') || textLower.includes('cassa')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'ticket_office', confidence: 0.96 };
-    }
-    if (textLower.includes('info') || textLower.includes('informazion')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'info_point', confidence: 0.96 };
-    }
-    if (textLower.includes('guardaroba') || textLower.includes('zaini') || textLower.includes('giacche')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'cloakroom', confidence: 0.96 };
-    }
-    if (textLower.includes('pronto soccorso') || textLower.includes('infermeria') || textLower.includes('medico')) {
-      return { intent: 'NAVIGATE_POI', targetPoiType: 'first_aid', confidence: 0.96 };
-    }
-    if (textLower.includes('autore') || textLower.includes('chi ha dipinto') || textLower.includes('chi l\'ha fatto') || textLower.includes('artista')) {
-      return { intent: 'ASK_AUTHOR_INFO', confidence: 0.92 };
+  static _mockParseCommand(textLower, context = {}) {
+    let language = null;
+    let length = null;
+    let tone = null;
+
+    if (textLower.includes('inglese') || textLower.includes('english')) language = 'en';
+    else if (textLower.includes('francese') || textLower.includes('french')) language = 'fr';
+    else if (textLower.includes('spagnolo') || textLower.includes('spanish')) language = 'es';
+    else if (textLower.includes('italiano') || textLower.includes('italian')) language = 'it';
+    else if (textLower.includes('tedesco') || textLower.includes('deutsch') || textLower.includes('german')) language = 'de';
+
+    if (textLower.includes('accorcia') || textLower.includes('riduci') || textLower.includes('veloce') || textLower.includes('sintetico') || textLower.includes('breve') || textLower.includes('15')) {
+      length = 15;
+    } else if (textLower.includes('allunga') || textLower.includes('più lunga') || textLower.includes('estendi') || textLower.includes('approfond') || textLower.includes('dettagli') || textLower.includes('60')) {
+      length = 60;
     }
 
-    return { intent: 'UNKNOWN', confidence: 0.40 };
+    if (textLower.includes('bambin') || textLower.includes('piccol') || textLower.includes('infantile')) {
+      tone = 'infantile';
+    } else if (textLower.includes('semplic') || textLower.includes('facile') || textLower.includes('studente')) {
+      tone = 'simple';
+    } else if (textLower.includes('tecnic') || textLower.includes('scientific') || textLower.includes('accademic') || textLower.includes('specialista')) {
+      tone = 'technical';
+    }
+
+    if (textLower.includes('prossim') || textLower.includes('avanti') || textLower.includes('dopo') || textLower.includes('successiv') || textLower.includes('seguente')) {
+      return { actionType: 'ITEM_ACTION', itemAction: 'NEXT_ITEM', targetPoiType: null, targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('indietro') || textLower.includes('prima') || textLower.includes('precedent')) {
+      return { actionType: 'ITEM_ACTION', itemAction: 'PREVIOUS_ITEM', targetPoiType: null, targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('dimmi di più') || textLower.includes('maggiori info') || textLower.includes('continua')) {
+      return { actionType: 'ITEM_ACTION', itemAction: 'TELL_ME_MORE', targetPoiType: null, targetArtist: null, language, length, tone };
+    }
+
+    // POI Parsing
+    if (textLower.includes('bagno disabil') || textLower.includes('toilette disabil')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'disabled_toilette', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('bagno') || textLower.includes('toilette') || textLower.includes('wc')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'toilette', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('bar') || textLower.includes('caffè')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'bar', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('ristorante') || textLower.includes('pranzo') || textLower.includes('mangiare')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'restaurant', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('shop') || textLower.includes('negozio') || textLower.includes('bookshop') || textLower.includes('souvenir')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'shop', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('uscita di emergenza') || textLower.includes('antincendio')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'emergency_exit', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('uscita') || textLower.includes('uscire') || textLower.includes('fuori')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'exit', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('ingresso') || textLower.includes('entrata')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'entrance', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('ascensore')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'elevator', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('scale')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'stairs', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('bigliett') || textLower.includes('cassa')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'ticket_office', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('info') || textLower.includes('informazion')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'info_point', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('guardaroba') || textLower.includes('zaini') || textLower.includes('giacche')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'cloakroom', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('pronto soccorso') || textLower.includes('infermeria') || textLower.includes('medico')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: 'first_aid', targetArtist: null, language, length, tone };
+    }
+    if (textLower.includes('autore') || textLower.includes('chi ha dipinto') || textLower.includes('chi l\'ha fatto') || textLower.includes('artista')) {
+      return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: null, targetArtist: context?.artist || 'Autore', language, length, tone };
+    }
+
+    return {
+      actionType: 'ITEM_ACTION',
+      itemAction: 'EXPLAIN_ITEM',
+      targetPoiType: null,
+      targetArtist: null,
+      language,
+      length,
+      tone
+    };
   }
 
   static _mockLogisticalDirections(currentLocation, targetLocation, museumContext) {

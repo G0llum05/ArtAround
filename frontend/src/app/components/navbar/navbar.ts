@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeToggleComponent } from '../themeToggle/themeToggleButton';
 import { AuthService } from '../../services/auth.service';
+import { QrScanner } from '../qr-scanner/qr-scanner';
 
 interface Entry{
   name: string;
@@ -15,7 +16,8 @@ interface Entry{
     RouterLinkActive,
     RouterLink,
     CommonModule,
-    ThemeToggleComponent
+    ThemeToggleComponent,
+    QrScanner,
   ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
@@ -26,6 +28,7 @@ export class Navbar {
 
   isMenuOpen = signal<boolean>(false);
   hasImageError = signal<boolean>(false);
+  isScannerOpen = signal<boolean>(false);
 
   profilePictureUrl = computed(() => {
     if (this.hasImageError()) {

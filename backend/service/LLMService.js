@@ -169,11 +169,12 @@ class LLMService {
     }
 
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      throw new Error('Nessun LLM configurato in .env. Impossibile eseguire il parsing dell\'intento.');
+      console.log('[LLMService] Nessun LLM configurato in .env, uso rule engine mock per parsing intento');
+      return this._mockParseCommand(inputTextLower, { museum, artwork, tone, length, language });
     }
 
     try {
-      const prompt = promptHandler('parseCommand', {
+      let prompt = promptHandler('parseCommand', {
         inputTextLower,
         museum: museum?.name || (typeof museum === 'string' ? museum : ''),
         artwork: artwork?.title || (typeof artwork === 'string' ? artwork : ''),
@@ -182,11 +183,18 @@ class LLMService {
         length,
         language
       });
+
+      // Istruzione esplicita e vincolante per comandi fuori contesto
+      prompt += `\n\nIMPORTANTE: Se la richiesta dell'utente NON riguarda le opere d'arte, la navigazione della visita, l'autore, i punti di interesse o le impostazioni della guida (es. domande generali, meteo, sport, cucina, barzellette o richieste fuori contesto), imposta TASSATIVAMENTE "actionType": "UNKNOWN_ACTION", "itemAction": null, "targetPoiType": null, "targetArtist": null.`;
+
       // response: actionType, itemAction/targetPoiType/targetArtist, lingua se cambia, lunghezza se cambia, tono se cambia
       const response = await this._callLLMHandler(prompt);
       const parsed = this._cleanAndParseJSON(response);
       console.log(`\x1b[36m[DEBUG AI] Prompt parsing intento:\x1b[0m`, parsed);
       if (parsed && parsed.actionType) {
+        if (parsed.actionType !== 'ITEM_ACTION' && parsed.actionType !== 'NON_ITEM_ACTION') {
+          parsed.actionType = 'UNKNOWN_ACTION';
+        }
         return parsed;
       }
     } catch (err) {
@@ -396,9 +404,36 @@ class LLMService {
       return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: null, targetArtist: context?.artist || 'Autore', language, length, tone };
     }
 
+    // Spiegazione opera attuale
+    if (textLower.includes('spieg') || textLower.includes('descriv') || textLower.includes('cos\'è') || textLower.includes('cosa rappresenta') || textLower.includes('parlami') || textLower.includes('opera') || textLower.includes('quadro') || textLower.includes('dipinto') || textLower.includes('statua') || textLower.includes('tappa') || textLower.includes('racconta') || textLower.includes('informazioni')) {
+      return {
+        actionType: 'ITEM_ACTION',
+        itemAction: 'EXPLAIN_ITEM',
+        targetPoiType: null,
+        targetArtist: null,
+        language,
+        length,
+        tone
+      };
+    }
+
+    // Modifica impostazioni (lingua, tono o durata)
+    if (language !== null || length !== null || tone !== null) {
+      return {
+        actionType: 'ITEM_ACTION',
+        itemAction: 'EXPLAIN_ITEM',
+        targetPoiType: null,
+        targetArtist: null,
+        language,
+        length,
+        tone
+      };
+    }
+
+    // Fuori contesto / Non mappabile
     return {
-      actionType: 'ITEM_ACTION',
-      itemAction: 'EXPLAIN_ITEM',
+      actionType: 'UNKNOWN_ACTION',
+      itemAction: null,
       targetPoiType: null,
       targetArtist: null,
       language,

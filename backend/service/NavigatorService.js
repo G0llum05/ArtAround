@@ -53,6 +53,15 @@ class NavigatorService {
         return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language);
       case 'NON_ITEM_ACTION':
         return await this.nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language);
+      case 'UNKNOWN_ACTION':
+        return {
+          text: this.getUnmappableActionMessage(language),
+          currentArtworkIndex: currentArtworkIndex,
+          itemAction: null,
+          tone,
+          length,
+          language
+        };
       default:
         throw new Error(`Tipo di azione non valido: ${actionType}`);
     }
@@ -82,28 +91,13 @@ class NavigatorService {
       await onTranscription(transcribedText);
     }
 
-    // Se lo studente in visita di gruppo chiede a voce di cambiare opera, intercettiamo e blocchiamo
-    if (isGroup && !isTeacher) {
-      const museum = await Museum.findById(museumId).exec();
-      if (!museum) {
-        throw new Error(`Museo con ID "${museumId}" non trovato.`);
-      }
-      const artwork = await Artwork.findById(await this.getArtworkId(visitId, currentArtworkIndex)).exec();
-      const response = await this.parseIntentHandler(transcribedText, museum, artwork, tone, length, language);
-
-      if (response?.itemAction === 'NEXT_ITEM' || response?.itemAction === 'PREVIOUS_ITEM') {
-        return 'In questa visita di gruppo la navigazione è guidata dal docente. Puoi chiedermi maggiori informazioni sull\'opera attuale o curiosità sul museo.';
-      }
-    }
-
-    // e continua l'elaborazione standard
     const museum = await Museum.findById(museumId).exec();
     if (!museum) {
       throw new Error(`Museo con ID "${museumId}" non trovato.`);
     }
     const artwork = await Artwork.findById(await this.getArtworkId(visitId, currentArtworkIndex)).exec();
 
-    // prima parser scritto a mano, se non riesce chiamate all'LLM. L'obiettivo di entrambi è capire l'intento, poi si passa agli handler item o non-item
+    // Riconoscimento dell'intento (tramite LLM o rule engine mock di fallback)
     const response = await this.parseIntentHandler(transcribedText, museum, artwork, tone, length, language);
     if (!response || !response.actionType) {
       throw new Error('Parsing dell\'intento fallito o intento non riconosciuto.');
@@ -442,6 +436,23 @@ class NavigatorService {
     scoredItems.sort((a, b) => b.score - a.score);
 
     return scoredItems[0]?.item || null;
+  }
+
+  static getUnmappableActionMessage(language = 'it') {
+    const lang = (language || 'it').toLowerCase();
+    switch (lang) {
+      case 'en':
+        return "I cannot answer this request. As your museum guide, I can help you with:\n• Navigating to the next or previous artwork\n• Explaining or going deeper into the current artwork\n• Providing information about the artist\n• Finding museum points of interest (restrooms, elevator, exits, bar, etc.)\n• Adjusting language, tone, or explanation length.";
+      case 'es':
+        return "No puedo responder a esta solicitud. Como tu guía del museo, puedo ayudarte a:\n• Pasar a la obra siguiente o anterior\n• Explicar o profundizar en la obra actual\n• Darte información sobre el autor\n• Indicarte puntos de interés del museo (baños, ascensor, salidas, etc.)\n• Ajustar el idioma, tono o duración de la explicación.";
+      case 'fr':
+        return "Je ne peux pas répondre à cette demande. En tant que guide du musée, je peux vous aider à :\n• Passer à l'œuvre suivante ou précédente\n• Expliquer ou approfondir l'œuvre actuelle\n• Donner des informations sur l'artiste\n• Trouver les points d'intérêt du musée (toilettes, ascenseur, sorties, etc.)\n• Ajuster la langue, le ton ou la durée de l'explication.";
+      case 'de':
+        return "Ich kann diese Anfrage leider nicht beantworten. Als Museumsführer kann ich Ihnen helfen:\n• Zum nächsten oder vorherigen Kunstwerk zu wechseln\n• Das aktuelle Werk zu erklären oder zu vertiefen\n• Informationen über den Künstler zu geben\n• Punkte von Interesse im Museum (Toiletten, Aufzug, Ausgänge usw.) zu finden\n• Sprache, Ton oder Dauer der Erklärung anzupassen.";
+      case 'it':
+      default:
+        return "Non posso rispondere a questa richiesta. Come guida del museo posso aiutarti a:\n• Passare all'opera successiva o precedente\n• Spiegare o approfondire l'opera attuale\n• Darti informazioni sull'autore dell'opera\n• Indicarti i punti di interesse del museo (come bagni, ascensore, uscite, bar)\n• Cambiare lingua, tono o durata della spiegazione.";
+    }
   }
 }
 

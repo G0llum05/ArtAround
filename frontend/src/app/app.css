@@ -16,18 +16,29 @@
   color: var(--on-surface-variant);
 }
 
-.footer-nav {
+.footer-links {
   display: flex;
-  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
 }
 
-.footer-nav a {
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
   color: var(--on-surface-variant);
   text-decoration: none;
   font-size: var(--label-md-size);
   transition: color 0.2s ease;
 }
 
-.footer-nav a:hover {
+.footer-link:hover {
   color: var(--primary);
+}
+
+.footer-icon {
+  width: 1.1rem;
+  height: 1.1rem;
 }

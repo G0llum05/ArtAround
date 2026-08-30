@@ -164,4 +164,10 @@ Ci siamo inizialmente divisi l'organizzazione delle due macro componenti del pro
 
 ### Uso LLM
 - Generazione di contenuti delle visite
-- Assistenza nel coding: inizialmente abbiamo generato molto codice tramite LLM, ma successivamente abbiamo deciso di ricominciare il lavoro da zero per avere un codice più scalabile, pulito e comprensibile. Quindi LLM è stato utile per dare un'idea su cosa scrivere, di fatto una documentazione di supporto. Sulla parte conclusiva del progetto, per piccole modifiche su codice già strutturato manualmente nella fase precedente, abbiamo usato LLM per comodità e velocità.
+- Assistenza nel coding: inizialmente abbiamo generato molto codice tramite LLM, ma successivamente abbiamo deciso di ricominciare il lavoro da zero per avere un codice più scalabile, pulito e comprensibile. Quindi l'LLM è stato utile per dare un'idea su cosa scrivere, di fatto una documentazione di supporto. Sulla parte conclusiva del progetto, per piccole modifiche su codice già strutturato manualmente nella fase precedente, abbiamo usato LLM per comodità e velocità.
+
+
+# !ATTENZIONE!
+Gli utenti di base inseriti nel database hanno password 12345678 come richiesto e nome utente autore1-2/visitatore1-2, ma per gestione del login è richiesta mail+password per accedere. Abbiamo semplicemente aggiunto il suffisso @artaround.it ai relativi utenti. Esempio d'accesso autore1:
+    - email: autore1@artaround.it
+    - password: 12345678

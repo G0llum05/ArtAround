@@ -7,11 +7,11 @@ const router = express.Router();
 
 /* #swagger.tags = ['Group Visit'] */
 
-// Creazione gruppo (Teacher / Admin)
+// Creazione gruppo (Teacher / MuseumStaff / Admin)
 router.post(
   '/',
   authenticateJWT,
-  authorizeRoles('teacher', 'admin'),
+  authorizeRoles('teacher', 'museumstaff', 'admin'),
   GroupVisitController.createSession
 );
 

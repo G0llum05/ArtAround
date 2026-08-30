@@ -1,0 +1,114 @@
+.lang-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--on-surface);
+  padding: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  transition: background-color 0.2s ease;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--body-md-size);
+  min-width: 2.5rem;
+}
+
+.nav-icon-btn:hover {
+  background-color: var(--surface-variant);
+}
+
+.nav-lang-btn {
+  padding: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Mobile-first: posizionato a sinistra (left: 0) e si apre verso l'alto */
+.lang-menu {
+  position: absolute;
+  left: 0; /* Allineato a sinistra su mobile per aprirsi verso destra */
+  right: auto;
+  min-width: 11rem;
+  list-style: none;
+  margin: 0;
+  padding: var(--spacing-xs);
+  background-color: var(--surface);
+  border: 0.0625rem solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
+  z-index: 50;
+
+  top: auto;
+  bottom: calc(100% + var(--spacing-xs));
+
+  animation: lang-menu-in-up 0.15s ease-out;
+}
+
+.lang-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--label-md-size);
+  letter-spacing: var(--label-md-tracking);
+  color: var(--on-surface);
+  transition: background-color 0.15s ease;
+}
+
+.lang-option:hover {
+  background-color: var(--surface-variant);
+}
+
+.lang-option.active {
+  font-weight: 600;
+  background-color: var(--surface-variant);
+  color: var(--tertiary);
+}
+
+@keyframes lang-menu-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lang-menu-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 48rem) {
+  .lang-menu {
+    left: auto;
+    right: 0; /* Allineato a destra su desktop per aprirsi verso sinistra */
+    top: calc(100% + var(--spacing-xs));
+    bottom: auto;
+    animation-name: lang-menu-in-down;
+  }
+}

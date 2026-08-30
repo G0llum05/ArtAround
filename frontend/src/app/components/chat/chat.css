@@ -11,7 +11,56 @@
   box-sizing: border-box;
   height: 100%;
   width: 100%;
+  min-height: 0;
   overflow: hidden;
+  flex: 1 1 0;
+  transition: all 0.25s ease;
+}
+
+.ai-chat-container.collapsed {
+  height: auto;
+  flex: 0 0 auto;
+}
+
+.chat-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 var(--spacing-xs) 0;
+  border-bottom: 1px solid var(--outline-variant);
+  flex-shrink: 0;
+}
+
+.chat-header-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.btn-toggle-collapse {
+  background: transparent;
+  border: none;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-collapse:hover {
+  background-color: var(--surface-variant);
+  color: var(--on-surface);
+}
+
+.collapse-icon {
+  transition: transform 0.2s ease;
+}
+
+.collapse-icon.rotated {
+  transform: rotate(180deg);
 }
 
 .chat-messages-scroll {
@@ -20,18 +69,8 @@
   gap: var(--spacing-sm);
   overflow-y: auto;
   padding-right: 0.5rem;
-  min-height: 0rem;
-  height: 100%;
-  overflow: auto;
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 25rem;
-}
-
-@media (min-width: 48rem){
-  .chat-messages-scroll {
-    flex-basis: 0;
-  }
+  min-height: 0;
+  flex: 1 1 0;
 }
 
 .chat-bubble {

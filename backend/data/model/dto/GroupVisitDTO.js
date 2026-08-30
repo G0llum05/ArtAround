@@ -11,6 +11,9 @@ class GroupVisitResponseDTO {
     settings,
     participants = [],
     questions = [],
+    activeQuiz = null,
+    quizState = 'not_started',
+    quizSubmissions = [],
     startedAt,
     endedAt,
     createdAt
@@ -26,6 +29,9 @@ class GroupVisitResponseDTO {
     this.settings = settings;
     this.participants = participants;
     this.questions = questions;
+    this.activeQuiz = activeQuiz;
+    this.quizState = quizState;
+    this.quizSubmissions = quizSubmissions;
     this.startedAt = startedAt;
     this.endedAt = endedAt;
     this.createdAt = createdAt;

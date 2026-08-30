@@ -59,18 +59,18 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.85rem;
-  background: rgba(33, 150, 243, 0.1);
-  color: #1976d2;
-  border: 1px solid rgba(33, 150, 243, 0.3);
-  border-radius: 9999px;
+  background-color: var(--surface-variant);
+  color: var(--secondary);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-full);
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .group-live-pill.teacher-pill {
-  background: rgba(103, 58, 183, 0.1);
-  color: #512da8;
-  border-color: rgba(103, 58, 183, 0.3);
+  background-color: var(--surface-variant);
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
 .group-live-pill strong {
@@ -81,23 +81,23 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #22c55e;
-  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-  animation: pulse-green 2s infinite;
+  background-color: var(--primary);
+  box-shadow: 0 0 0 0 rgba(159, 61, 37, 0.7);
+  animation: pulse-live 2s infinite;
 }
 
-@keyframes pulse-green {
+@keyframes pulse-live {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    box-shadow: 0 0 0 0 rgba(159, 61, 37, 0.7);
   }
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 6px rgba(159, 61, 37, 0);
   }
   100% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 0 rgba(159, 61, 37, 0);
   }
 }
 
@@ -144,21 +144,31 @@
 .area-itinerary { grid-area: itinerary; }
 
 .area-chat {
-  height: 100%;
+  height: 28rem;
+  min-height: 24rem;
   display: flex;
   flex-direction: column;
-
-
 }
 
 .area-chat .card-body {
    height: 100%;
+   min-height: 0;
    display: flex;
    flex-direction: column;
    flex-grow: 1;
    overflow: hidden;
    padding: var(--spacing-md);
  }
+
+.area-chat.chat-collapsed {
+  height: auto;
+  min-height: auto;
+}
+
+.area-chat.chat-collapsed .card-body {
+  height: auto;
+  flex-grow: 0;
+}
 
 /* --- Setup Media (Immagine) Mobile --- */
 .artwork-img-wrap {
@@ -218,9 +228,6 @@
 }
 
 /* --- Setup Aree Interne Mobile --- */
-.area-chat .card-body {
-  justify-content: flex-end; /* Spinge la chat verso il basso */
-}
 
 .area-actions .card-body {
   gap: var(--spacing-md);
@@ -256,6 +263,10 @@
     /* Diamo un'altezza fissa al contenitore così tutto si allunga */
     height: 75vh;
     min-height: 35rem;
+  }
+
+  .navigator-grid.chat-is-collapsed {
+    grid-template-rows: auto 1fr;
   }
 
   /* 1. MEDIA CARD (Si allunga per tutta la colonna) */
@@ -297,6 +308,18 @@
   /* 2. CHAT CARD */
   .area-chat {
     height: 100%;
+    min-height: 0;
+    transition: all 0.25s ease;
+  }
+
+  .area-chat.chat-collapsed {
+    height: auto;
+    min-height: auto;
+  }
+
+  .area-chat.chat-collapsed .card-body {
+    height: auto;
+    flex-grow: 0;
   }
 
   /* 3. AZIONI CARD (I bottoni) */
@@ -539,9 +562,9 @@
 .guided-pill {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #1976d2;
-  background-color: rgba(33, 150, 243, 0.12);
-  border: 1px solid rgba(33, 150, 243, 0.3);
+  color: var(--secondary);
+  background-color: var(--surface-variant);
+  border: 1px solid var(--outline-variant);
   padding: 0.2rem 0.55rem;
   border-radius: var(--radius-full);
 }
@@ -560,9 +583,9 @@
 .teacher-monitoring-box {
   margin-top: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--surface-variant, #f4f4f6);
-  border: 1px solid var(--outline-variant, #e0e0e0);
-  border-radius: var(--radius-lg, 0.75rem);
+  background-color: var(--surface-variant);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
@@ -585,13 +608,13 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #f59e0b; /* Giallo/Arancio in corso */
+  background-color: var(--tertiary);
 }
 
 .monitoring-dot.all-done {
-  background-color: #10b981; /* Verde completato */
-  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  animation: pulse-green 2s infinite;
+  background-color: var(--primary);
+  box-shadow: 0 0 0 0 rgba(159, 61, 37, 0.7);
+  animation: pulse-live 2s infinite;
 }
 
 .monitoring-title {
@@ -604,21 +627,22 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--on-surface-variant);
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--surface);
+  border: 1px solid var(--outline-variant);
   padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
 }
 
 .monitoring-badge.badge-ready {
-  color: #047857;
-  background-color: #d1fae5;
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
 .monitoring-bar-track {
   width: 100%;
   height: 6px;
-  background-color: var(--outline-variant, #e5e7eb);
-  border-radius: 9999px;
+  background-color: var(--outline-variant);
+  border-radius: var(--radius-full);
   overflow: hidden;
   display: flex;
 }
@@ -629,11 +653,11 @@
 }
 
 .fill-done {
-  background-color: #10b981; /* Verde */
+  background-color: var(--primary);
 }
 
 .fill-active {
-  background-color: #3b82f6; /* Blu */
+  background-color: var(--secondary);
 }
 
 .monitoring-stats-row {
@@ -650,27 +674,103 @@
   gap: 0.3rem;
   font-size: 0.75rem;
   padding: 0.15rem 0.45rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  border: 1px solid var(--outline-variant);
 }
 
 .stat-pill.stat-done {
-  background-color: rgba(16, 185, 129, 0.1);
-  color: #065f46;
+  color: var(--primary);
 }
 
 .stat-pill.stat-active {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: #1e40af;
+  color: var(--secondary);
 }
 
 .stat-pill.stat-paused {
-  background-color: rgba(245, 158, 11, 0.1);
-  color: #92400e;
+  color: var(--tertiary);
 }
 
 .stat-mini-svg {
   width: 13px;
   height: 13px;
+}
+
+.btn-start-final-quiz {
+  margin-top: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-start-final-quiz:hover:not(:disabled) {
+  opacity: 0.93;
+  transform: translateY(-1px);
+}
+
+.btn-start-final-quiz:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quiz-btn-icon {
+  font-size: 1rem;
+}
+
+.btn-lateral-group-chat {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  z-index: 1040;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-lateral-group-chat:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.chat-badge-counter {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: var(--error);
+  color: var(--on-error);
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 

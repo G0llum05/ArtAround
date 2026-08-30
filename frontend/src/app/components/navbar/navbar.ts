@@ -1,8 +1,11 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ThemeToggleComponent } from '../themeToggle/themeToggleButton';
+import { ThemeToggleComponent } from '../theme-toggle/themeToggleButton';
 import { AuthService } from '../../services/auth.service';
+import { QrScanner } from '../qr-scanner/qr-scanner';
+import { HighContrastToggle } from '../high-contrast-toggle/high-contrast-toggle';
+import { LanguageSelector } from '../language-selector/language-selector';
 
 interface Entry{
   name: string;
@@ -15,7 +18,10 @@ interface Entry{
     RouterLinkActive,
     RouterLink,
     CommonModule,
-    ThemeToggleComponent
+    ThemeToggleComponent,
+    QrScanner,
+    HighContrastToggle,
+    LanguageSelector,
   ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
@@ -26,6 +32,7 @@ export class Navbar {
 
   isMenuOpen = signal<boolean>(false);
   hasImageError = signal<boolean>(false);
+  isScannerOpen = signal<boolean>(false);
 
   profilePictureUrl = computed(() => {
     if (this.hasImageError()) {
@@ -47,7 +54,7 @@ export class Navbar {
   }
 
   toggleMenu() {
-    this.isMenuOpen.update(val => !val);
+    this.isMenuOpen.update((val) => !val);
   }
 
   onImageError() {
@@ -55,10 +62,10 @@ export class Navbar {
   }
 
   navItems: Entry[] = [
-    { name: 'Home', path: '/'},
-    { name: 'Marketplace', path: '/marketplace'},
-    { name: 'Visite', path: '/marketplace/visit/search'},
-    { name: 'Gruppi', path: '/groups'},
-    { name: 'Contatti', path: '/contacts'},
+    { name: 'Home', path: '/' },
+    { name: 'Marketplace', path: '/marketplace' },
+    { name: 'Visite', path: '/marketplace/visit/search' },
+    { name: 'Gruppi', path: '/groups' },
+    { name: 'Contatti', path: '/contacts' },
   ];
 }

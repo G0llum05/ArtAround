@@ -31,7 +31,10 @@
               "@transloadit/prettier-bytes",
               "mime-match",
               "lodash",
-              "namespace-emitter"
+              "namespace-emitter",
+              "@zxing/ngx-scanner",
+              "@zxing/browser",
+              "@zxing/library"
             ]
           },
           "configurations": {

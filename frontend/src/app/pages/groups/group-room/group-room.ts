@@ -1,9 +1,11 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { GroupService } from '../../../services/group.service';
 import { GroupSocketService } from '../../../services/group-socket.service';
+import { QuizService } from '../../../services/quiz.service';
 
 @Component({
   selector: 'app-group-room',
@@ -18,18 +20,21 @@ export class GroupRoom implements OnInit, OnDestroy {
   protected authService = inject(AuthService);
   private groupService = inject(GroupService);
   protected socketService = inject(GroupSocketService);
+  private quizService = inject(QuizService);
 
   session = signal<any | null>(null);
   sessionCode = signal<string>('');
   isLoading = signal<boolean>(true);
   errorMessage = signal<string | null>(null);
   copied = signal<boolean>(false);
+  includeQuiz = signal<boolean>(true);
+  activeQuizId = signal<string | null>(null);
 
   isTeacher = computed(() => {
     const role = this.authService.userRole();
     const currentUserId = this.authService.currentUser()?.userId;
     const teacherId = this.session()?.teacher?.id || this.session()?.teacher?._id;
-    return role === 'admin' || role === 'teacher' || (currentUserId && currentUserId === teacherId);
+    return role === 'admin' || role === 'teacher' || role === 'museumstaff' || (currentUserId && currentUserId === teacherId);
   });
 
   studentParticipants = computed(() => {
@@ -166,18 +171,33 @@ export class GroupRoom implements OnInit, OnDestroy {
     });
   }
 
-  startGroupVisit(): void {
+  async startGroupVisit(): Promise<void> {
     const code = this.sessionCode() || this.session()?.sessionCode;
     const sessionId = this.session()?.id || this.session()?._id;
+    const visitId = this.session()?.visit?.id || this.session()?.visit?._id || this.session()?.visit;
     if (!code) return;
 
     this.isStarting.set(true);
     this.errorMessage.set(null);
 
+    if (this.includeQuiz() && visitId) {
+      try {
+        await firstValueFrom(this.quizService.generateQuiz({
+          visitId: String(visitId),
+          numberOfQuestions: 5,
+          difficulty: 'medium',
+          targetAge: 'studente',
+          language: 'it'
+        }));
+      } catch (quizErr) {
+        console.warn('[GroupRoom] Generazione quiz in background non bloccante:', quizErr);
+      }
+    }
+
     this.socketService.startSession(code, sessionId)
       .then((res: any) => {
-        const visitId = res?.visitId || this.session()?.visit?.id || this.session()?.visit?._id || this.session()?.visit;
-        this.navigateToNavigator(code, visitId);
+        const vId = res?.visitId || visitId;
+        this.navigateToNavigator(code, vId);
       })
       .catch((err: any) => {
         this.isStarting.set(false);

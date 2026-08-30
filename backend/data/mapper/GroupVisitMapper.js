@@ -51,6 +51,9 @@ class GroupVisitMapper {
       settings: model.settings || { isLocked: true, allowQuestions: true },
       participants: mappedParticipants,
       questions: mappedQuestions,
+      activeQuiz: model.activeQuiz || null,
+      quizState: model.quizState || 'not_started',
+      quizSubmissions: model.quizSubmissions || [],
       startedAt: model.startedAt,
       endedAt: model.endedAt,
       createdAt: model.createdAt

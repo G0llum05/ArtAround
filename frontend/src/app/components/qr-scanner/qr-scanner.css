@@ -1,0 +1,159 @@
+.scanner-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10000;
+  background: var(--surface);
+  border: none;
+  color: var(--primary);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.close-btn:hover {
+  color: var(--on-primary);
+  background-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.close-btn svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.scanner-target-box {
+  position: absolute;
+  width: min(70vw, 18rem);
+  height: min(70vw, 18rem);
+  z-index: 10;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.corner {
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-color: var(--primary);
+  border-style: solid;
+}
+
+.corner.top-left {
+  top: 0;
+  left: 0;
+  border-width: 3px 0 0 3px;
+  border-top-left-radius: 6px;
+}
+
+.corner.top-right {
+  top: 0;
+  right: 0;
+  border-width: 3px 3px 0 0;
+  border-top-right-radius: 6px;
+}
+
+.corner.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 3px 3px;
+  border-bottom-left-radius: 6px;
+}
+
+.corner.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-width: 0 3px 3px 0;
+  border-bottom-right-radius: 6px;
+}
+
+.scan-laser-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  box-shadow: 0 0 8px var(--primary);
+  animation: laserScan 2.5s ease-in-out infinite;
+}
+
+@keyframes laserScan {
+  0% { top: 5%; opacity: 0.8; }
+  50% { top: 95%; opacity: 1; }
+  100% { top: 5%; opacity: 0.8; }
+}
+
+.scanner-manual-fallback {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  gap: var(--spacing-xs);
+  width: min(90vw, 24rem);
+  background-color: var(--surface);
+  padding: 0.4rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--outline-variant);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.manual-code-input {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  padding: 0.4rem 1rem;
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--body-md-size);
+  outline: none;
+}
+
+.btn-manual-submit {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  padding: 0.4rem 1.2rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btn-manual-submit:hover {
+  opacity: 0.9;
+}
+
+zxing-scanner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+::ng-deep zxing-scanner video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}

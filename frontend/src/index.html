@@ -6,7 +6,8 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="icon.png">
-
+  <link rel="preload" href="/assets/fonts/alegreya-700.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/fonts/alegreya-sans-400.ttf" as="font" type="font/ttf" crossorigin>
   <!-- Vanilla Marketplace -->
   <script type="module" src="/marketplace/marketplace.registry.js"></script>
 </head>
@@ -18,5 +19,20 @@
       "apiKey": ""
   });
   </script> -->
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <script type="text/javascript">
+    window.addEventListener('load', () => {
+      document.body.classList.add('page-ready');
+    });
+
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'it',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

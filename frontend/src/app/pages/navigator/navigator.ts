@@ -2,11 +2,17 @@ import { Component, signal, inject, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { Itinerary } from '../../components/itinerary/itinerary';
 import { Chat } from '../../components/chat/chat';
 import { NavigatorService, StreamChunk } from '../../services/navigator.service';
 import { VisitService } from '../../services/visit.service';
 import { GroupSocketService } from '../../services/group-socket.service';
+import { QuizService } from '../../services/quiz.service';
+import { AuthService } from '../../services/auth.service';
+import { ActiveVisitService } from '../../services/active-visit.service';
+import { QuizModal } from '../../components/quiz-modal/quiz-modal';
+import { GroupChat } from '../../components/group-chat/group-chat';
 import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
 import { ToneType, UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
 import { NavigatorRequest } from '../../models/navigator.model';
@@ -23,16 +29,57 @@ const settingsKey = 'navigatorSettings'
 @Component({
   selector: 'app-navigator',
   standalone: true,
-  imports: [CommonModule, FormsModule, Itinerary, Chat, NavigatorSettings, Map],
+  imports: [CommonModule, FormsModule, Itinerary, Chat, NavigatorSettings, Map, QuizModal, GroupChat],
   templateUrl: './navigator.html',
   styleUrl: './navigator.css'
 })
 export class Navigator {
   private navigatorService = inject(NavigatorService);
   private visitService = inject(VisitService);
-  private socketService = inject(GroupSocketService);
+  protected socketService = inject(GroupSocketService);
+  protected authService = inject(AuthService);
+  private quizService = inject(QuizService);
+  private activeVisitService = inject(ActiveVisitService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+
+  currentUserId = computed(() => {
+    const u = this.authService.currentUser();
+    return (u?.userId || '') as string;
+  });
+
+  // Chat di Gruppo (Stanza)
+  isGroupChatOpen = signal<boolean>(false);
+  groupMessages = computed<ChatMessage[]>(() => {
+    const myId = this.currentUserId();
+    const currentUser = this.authService.currentUser();
+    const myFullName = currentUser ? `${currentUser.name || ''} ${currentUser.surname || ''}`.trim() : '';
+
+    return this.socketService.groupMessages().map(msg => {
+      const isMine = !!(msg.senderId && myId && msg.senderId.toString() === myId.toString());
+      let displayName = msg.senderName;
+      if (isMine && myFullName) {
+        displayName = myFullName;
+      } else if (!displayName || displayName.includes('@')) {
+        displayName = msg.senderRole === 'teacher' ? 'Docente' : 'Studente';
+      }
+
+      return {
+        sender: isMine ? 'user' : 'group',
+        senderName: displayName,
+        senderRole: msg.senderRole || 'student',
+        senderId: msg.senderId ? msg.senderId.toString() : undefined,
+        text: msg.text,
+        createdAt: msg.createdAt
+      };
+    });
+  });
+  unreadGroupMessagesCount = signal<number>(0);
+
+  // Quiz Finale
+  isQuizModalOpen = signal<boolean>(false);
+  isGeneratingQuiz = signal<boolean>(false);
+  availableQuizzes = signal<any[]>([]);
 
   // Stati UI
   isPlaying = signal<boolean>(false);
@@ -40,6 +87,7 @@ export class Navigator {
   isSettingsOpen = signal<boolean>(false);
   isMapOpen = signal<boolean>(false);
   isLoading = signal<boolean>(false);
+  isChatCollapsed = signal<boolean>(false);
 
   // contesto
   museumId = signal<string>('650c1f1e1c9d440000a1b2c3');
@@ -50,6 +98,7 @@ export class Navigator {
   isGroup = signal<boolean>(false);
   isTeacher = signal<boolean>(false);
   audioSummary = computed(() => this.socketService.studentsAudioSummary());
+  isLastStep = computed(() => this.itinerary().length > 0 && this.currentItineraryStepIndex() >= this.itinerary().length - 1);
 
   //Setting
   currentSettings = signal<UserNavigatorSettings>({
@@ -65,6 +114,7 @@ export class Navigator {
   isDictating = signal<boolean>(false);
 
   // Audio recording e playback
+  private isVoiceUpdatingSettings = false;
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private currentAudio: HTMLAudioElement | null = null;
@@ -92,26 +142,69 @@ export class Navigator {
 
     effect(() => {
       localStorage.setItem(settingsKey, JSON.stringify(this.currentSettings()));
-    })
+    });
+
+    effect(() => {
+      if (this.isQuizModalOpen()) {
+        if (this.currentAudio) {
+          this.currentAudio.pause();
+          this.currentAudio = null;
+        }
+        this.isPlaying.set(false);
+        this.audioCurrentTime.set(0);
+        this.audioDuration.set(0);
+      }
+    });
+
+    effect(() => {
+      const active = this.socketService.activeQuiz();
+      const state = this.socketService.quizState();
+      if (active && (state === 'in_progress' || state === 'completed')) {
+        this.isQuizModalOpen.set(true);
+      }
+    });
+
+    let prevGroupMessagesLength = 0;
+    effect(() => {
+      const currentMsgs = this.socketService.groupMessages();
+      if (!this.isGroupChatOpen() && currentMsgs.length > prevGroupMessagesLength) {
+        this.unreadGroupMessagesCount.update(c => c + (currentMsgs.length - prevGroupMessagesLength));
+      }
+      prevGroupMessagesLength = currentMsgs.length;
+    });
 
     toObservable(this.currentSettings).pipe(
       takeUntilDestroyed(), // Chiude il tubo se il componente viene distrutto
       skip(1), // Opzionale: evita di fare la chiamata API al primo caricamento della pagina (quando legge dal localStorage)
-      debounceTime(500), // Aspetta mezzo secondo di inattività
-      switchMap(settings => {
-        console.log("Salvataggio sul server in corso...", settings);
-        // return this.apiService.updateNavigatorSettings(settings);
-        return [];
-      })
-    ).subscribe();
+      debounceTime(400) // Aspetta mezzo secondo di inattività
+    ).subscribe(() => {
+      if (!this.isVoiceUpdatingSettings) {
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM' });
+      }
+    });
+
+    this.activeVisitService.stepJumpRequested$.pipe(takeUntilDestroyed()).subscribe((stepIndex) => {
+      this.changeItineraryStep(stepIndex);
+    });
 
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => {
+      let initialStep = 0;
+      if (params['step'] !== undefined && params['step'] !== null) {
+        const parsed = parseInt(params['step'], 10);
+        if (!isNaN(parsed) && parsed >= 0) {
+          initialStep = parsed;
+        }
+      }
       if (params['museumId'] && typeof params['museumId'] === 'string' && params['museumId'].length === 24) {
         this.museumId.set(params['museumId']);
       }
       if (params['visitId']) {
         this.visitId.set(params['visitId']);
-        this.loadVisitData(params['visitId']);
+        this.loadVisitData(params['visitId'], initialStep);
+      } else {
+        this.currentItineraryStepIndex.set(initialStep);
+        this.activeVisitService.setActiveVisit(this.visitId(), this.museumId(), this.itinerary(), initialStep);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: initialStep });
       }
       if (params['sessionCode']) {
         const code = params['sessionCode'].toUpperCase().trim();
@@ -150,9 +243,26 @@ export class Navigator {
         });
 
         // Se la sessione viene conclusa dal docente
-        this.socketService.onSessionEnded((data) => {
-          alert(data?.message || 'La visita di gruppo è stata conclusa dal docente.');
-          this.router.navigate(['/groups']);
+        this.socketService.onSessionEnded((data: any) => {
+          this.isQuizModalOpen.set(false);
+          if (this.currentAudio) {
+            this.currentAudio.pause();
+            this.currentAudio = null;
+          }
+          this.isPlaying.set(false);
+          this.socketService.disconnect();
+          this.router.navigate(['/']);
+        });
+
+        // Ricezione avvio quiz finale per tutti i partecipanti
+        this.socketService.onQuizStarted((data) => {
+          console.log('[Navigator] Quiz finale avviato:', data);
+          this.isQuizModalOpen.set(true);
+        });
+
+        this.socketService.onQuizEnded((data) => {
+          console.log('[Navigator] Quiz finale concluso:', data);
+          this.isQuizModalOpen.set(true);
         });
       }
     });
@@ -161,12 +271,16 @@ export class Navigator {
   //TODO navigator service inject
   //TODO chiamate api facili inziali come per prendere l'itinerario e tutta la visita si usa to signal
 
-  private loadVisitData(vId: string): void {
-    // Svuota la chat e reimposta lo stato audio per la nuova visita
+  private loadVisitData(vId: string, initialStep: number = 0): void {
+    this.quizService.getQuizzesByVisit(vId).pipe(takeUntilDestroyed()).subscribe({
+      next: (res) => this.availableQuizzes.set(res.data || []),
+      error: () => {}
+    });
+
     this.messages.set([
       { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale per questa visita. Come posso aiutarti?' }
     ]);
-    this.currentItineraryStepIndex.set(0);
+    this.currentItineraryStepIndex.set(initialStep);
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio = null;
@@ -177,9 +291,10 @@ export class Navigator {
 
     this.visitService.getById(vId).pipe(takeUntilDestroyed()).subscribe({
       next: (visitData: any) => {
+        let loadedArtworks = DUMMY_ITINERARY_ARTWORKS;
         const rawSteps = visitData?.steps || visitData?.visits || [];
         if (rawSteps && rawSteps.length > 0) {
-          const artworks: ArtworkResponse[] = rawSteps.map((v: any, index: number) => {
+          loadedArtworks = rawSteps.map((v: any, index: number) => {
             const art = v.artwork && typeof v.artwork === 'object' ? v.artwork : null;
             return {
               id: art?._id || art?.id || v.artworkId || `art-${index}`,
@@ -201,14 +316,22 @@ export class Navigator {
               assets: art?.assets || { images: [{ url: '/assets/images/place_holder.jpg', orientation: 'landscape' }] }
             };
           });
-          this.itinerary.set(artworks);
+          this.itinerary.set(loadedArtworks);
         }
         if (visitData?.museumId && typeof visitData.museumId === 'string' && visitData.museumId.length === 24) {
           this.museumId.set(visitData.museumId);
         }
+        const validStep = (initialStep >= 0 && initialStep < loadedArtworks.length) ? initialStep : 0;
+        this.activeVisitService.setActiveVisit(vId, this.museumId(), loadedArtworks, validStep);
+        this.currentItineraryStepIndex.set(validStep);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: validStep });
       },
       error: (err) => {
         console.warn('Caricamento dati visita non riuscito, uso itinerario di fallback:', err);
+        const validStep = (initialStep >= 0 && initialStep < DUMMY_ITINERARY_ARTWORKS.length) ? initialStep : 0;
+        this.activeVisitService.setActiveVisit(vId, this.museumId(), DUMMY_ITINERARY_ARTWORKS, validStep);
+        this.currentItineraryStepIndex.set(validStep);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: validStep });
       }
     });
   }
@@ -269,6 +392,52 @@ export class Navigator {
           const reply = chunk.data?.reply || chunk.data?.text || chunk.text || 'Risposta ricevuta.';
           this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
           this.currentSubtitle.set(reply);
+
+          // Aggiorna l'indice dell'opera se il comando ha navigato verso un'altra opera
+          let targetIndex: number | null = null;
+          if (chunk.data?.currentArtworkIndex !== undefined && chunk.data?.currentArtworkIndex !== null) {
+            targetIndex = Number(chunk.data.currentArtworkIndex);
+          } else if (chunk.data?.itemAction === 'NEXT_ITEM') {
+            targetIndex = this.currentItineraryStepIndex() + 1;
+          } else if (chunk.data?.itemAction === 'PREVIOUS_ITEM') {
+            targetIndex = this.currentItineraryStepIndex() - 1;
+          }
+
+          if (targetIndex !== null && !isNaN(targetIndex) && targetIndex >= 0 && targetIndex < this.itinerary().length) {
+            if (targetIndex !== this.currentItineraryStepIndex()) {
+              this.currentItineraryStepIndex.set(targetIndex);
+              if (this.isGroup() && this.isTeacher() && this.sessionCode()) {
+                this.socketService.changeStep(this.sessionCode()!, '', targetIndex).catch(err => {
+                  console.warn('Errore broadcast step change da comando vocale:', err);
+                });
+              }
+            }
+          }
+
+          // Aggiorna eventuali impostazioni modificate a voce
+          if (chunk.data?.tone || chunk.data?.language || chunk.data?.length) {
+            this.isVoiceUpdatingSettings = true;
+            this.currentSettings.update(curr => {
+              const updated = { ...curr };
+              if (chunk.data?.language) updated.language = chunk.data.language;
+              if (chunk.data?.tone) {
+                const t = chunk.data.tone;
+                if (t === 'infantile') updated.tone = 'bambino';
+                else if (t === 'simple') updated.tone = 'studente';
+                else if (t === 'medium') updated.tone = 'adulto';
+                else if (t === 'technical' || t === 'thecnical') updated.tone = 'specialista';
+                else if (['bambino', 'studente', 'adulto', 'specialista'].includes(t)) updated.tone = t as any;
+              }
+              if (chunk.data?.length !== undefined && chunk.data?.length !== null) {
+                const l = Number(chunk.data.length);
+                if (!isNaN(l)) updated.duration = l;
+              }
+              return updated;
+            });
+            setTimeout(() => {
+              this.isVoiceUpdatingSettings = false;
+            }, 600);
+          }
 
           const audioData = chunk.data?.audio;
           if (audioData) {
@@ -454,6 +623,12 @@ export class Navigator {
     this.executeCommand({ itemAction: 'TELL_ME_MORE' });
   }
 
+  askAuthor(): void {
+    console.log("Richiesta informazioni sull'autore dell'opera...");
+    this.messages.update(msgs => [...msgs, { sender: 'user', text: "Parlami dell'autore di quest'opera.", type: 'text' }]);
+    this.executeCommand({ targetArtist: 'CURRENT_AUTHOR' });
+  }
+
   askPoi(poiType: string, label: string): void {
     this.messages.update(msgs => [...msgs, { sender: 'user', text: `Dove si trova: ${label}?`, type: 'text' }]);
     this.executeCommand({ targetPoiType: poiType });
@@ -485,6 +660,7 @@ export class Navigator {
     }
 
     this.currentItineraryStepIndex.set(index);
+    this.activeVisitService.updateCurrentStep(index);
     this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: index });
 
     // Se è il docente in una visita di gruppo, sincronizza tutti gli studenti
@@ -508,6 +684,82 @@ export class Navigator {
     const prevIdx = this.currentItineraryStepIndex() - 1;
     if (prevIdx >= 0) {
       this.changeItineraryStep(prevIdx);
+    }
+  }
+
+  async startGroupQuiz(): Promise<void> {
+    const code = this.sessionCode();
+    const vId = this.visitId();
+    if (!code) return;
+
+    const confirmed = window.confirm('Attenzione: avviando il quiz finale concluderai la navigazione della visita guidata e non sarà più possibile tornare indietro tra le tappe. Vuoi procedere?');
+    if (!confirmed) return;
+
+    this.isGeneratingQuiz.set(true);
+
+    try {
+      let quizzes = this.availableQuizzes();
+      let quizId = quizzes.length > 0 ? (quizzes[0]._id || quizzes[0].id) : null;
+
+      if (!quizId && vId) {
+        const genRes = await firstValueFrom(this.quizService.generateQuiz({
+          visitId: vId,
+          numberOfQuestions: 5,
+          difficulty: 'medium',
+          targetAge: 'studente',
+          language: this.currentSettings().language || 'it'
+        }));
+        if (genRes?.data?._id || genRes?.data?.id) {
+          quizId = genRes.data._id || genRes.data.id;
+        }
+      }
+
+      if (quizId) {
+        await this.socketService.startQuiz(code, undefined, quizId);
+        this.isQuizModalOpen.set(true);
+      }
+    } catch (err) {
+      console.error('[Navigator] Errore avvio quiz di gruppo:', err);
+    } finally {
+      this.isGeneratingQuiz.set(false);
+    }
+  }
+
+  endGroupVisit(): void {
+    const code = this.sessionCode();
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isPlaying.set(false);
+    this.isQuizModalOpen.set(false);
+
+    if (code) {
+      this.socketService.endSession(code, '')
+        .finally(() => {
+          this.socketService.disconnect();
+          this.router.navigate(['/']);
+        });
+    } else {
+      this.socketService.disconnect();
+      this.router.navigate(['/']);
+    }
+  }
+
+  toggleGroupChat(): void {
+    const next = !this.isGroupChatOpen();
+    this.isGroupChatOpen.set(next);
+    if (next) {
+      this.unreadGroupMessagesCount.set(0);
+    }
+  }
+
+  onSendGroupMessage(text: string): void {
+    if (!text || !text.trim()) return;
+    const code = this.sessionCode();
+    if (code) {
+      this.socketService.sendGroupMessage(code, text.trim(), this.currentItineraryStepIndex())
+        .catch((err: any) => console.error('[Navigator] Errore invio messaggio stanza:', err));
     }
   }
 }

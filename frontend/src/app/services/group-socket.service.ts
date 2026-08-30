@@ -39,6 +39,9 @@ export class GroupSocketService {
   currentStepIndex = signal<number>(0);
   isLocked = signal<boolean>(true);
   studentsAudioSummary = signal<StudentsAudioSummary | null>(null);
+  activeQuiz = signal<any | null>(null);
+  quizState = signal<'not_started' | 'in_progress' | 'completed'>('not_started');
+  groupMessages = signal<any[]>([]);
 
   // Callbacks per eventi
   private sessionStartedCallbacks: Array<(data: any) => void> = [];
@@ -46,6 +49,10 @@ export class GroupSocketService {
   private lockToggledCallbacks: Array<(data: { isLocked: boolean }) => void> = [];
   private sessionEndedCallbacks: Array<(data: { message?: string }) => void> = [];
   private studentsAudioStatusCallbacks: Array<(summary: StudentsAudioSummary) => void> = [];
+  private quizStartedCallbacks: Array<(data: any) => void> = [];
+  private quizStudentSubmittedCallbacks: Array<(data: any) => void> = [];
+  private quizEndedCallbacks: Array<(data: any) => void> = [];
+  private newMessageCallbacks: Array<(data: any) => void> = [];
 
   private getBackendUrl(): string {
     if (typeof window !== 'undefined') {
@@ -86,10 +93,70 @@ export class GroupSocketService {
     });
   }
 
+  private handleJoinResponse(res: any, sessionCode: string): void {
+    if (res?.success && res.session) {
+      console.log('[GroupSocket] Entrato nella stanza con successo:', res.session);
+      if (res.session.participants) {
+        this.participants.set(res.session.participants);
+      }
+      if (typeof res.session.currentStepIndex === 'number') {
+        this.currentStepIndex.set(res.session.currentStepIndex);
+      }
+      if (res.session.activeQuiz && res.session.quizState && res.session.quizState !== 'not_started') {
+        this.activeQuiz.set(res.session.activeQuiz);
+        this.quizState.set(res.session.quizState);
+        if (res.session.quizState === 'in_progress') {
+          this.quizStartedCallbacks.forEach(cb => {
+            try {
+              cb({
+                sessionCode,
+                quizState: 'in_progress',
+                quiz: res.session.activeQuiz,
+                mySubmission: res.session.mySubmission,
+                submissions: res.session.quizSubmissions || []
+              });
+            } catch (e) { console.error(e); }
+          });
+        } else if (res.session.quizState === 'completed') {
+          this.quizEndedCallbacks.forEach(cb => {
+            try {
+              cb({
+                sessionCode,
+                quizState: 'completed',
+                quiz: res.session.activeQuiz,
+                leaderboard: res.session.quizSubmissions || [],
+                myResult: res.session.mySubmission
+              });
+            } catch (e) { console.error(e); }
+          });
+        }
+      }
+      if (res.session.questions && Array.isArray(res.session.questions)) {
+        const mapped = res.session.questions.map((q: any) => ({
+          id: q.id || q._id,
+          senderId: q.studentId || (q.student?._id ? q.student._id : q.student),
+          senderName: q.studentName,
+          senderRole: q.studentRole || 'student',
+          text: q.text,
+          stepIndex: q.stepIndex,
+          createdAt: q.createdAt
+        }));
+        this.groupMessages.set(mapped);
+        mapped.forEach((msgObj: any) => {
+          this.newMessageCallbacks.forEach(cb => {
+            try { cb(msgObj); } catch (e) { console.error(e); }
+          });
+        });
+      }
+    }
+  }
+
   async connect(sessionCode: string): Promise<void> {
+    const code = sessionCode.toUpperCase().trim();
     if (this.socket && this.isConnected()) {
-      // Già connesso, unisciti alla stanza se necessario
-      this.socket.emit('session:join', { sessionCode: sessionCode.toUpperCase().trim() });
+      this.socket.emit('session:join', { sessionCode: code }, (res: any) => {
+        this.handleJoinResponse(res, code);
+      });
       return;
     }
 
@@ -102,7 +169,7 @@ export class GroupSocketService {
       const token = this.authService.getAccessToken() || localStorage.getItem('artaround_accessToken');
       const backendUrl = this.getBackendUrl();
 
-      console.log(`[GroupSocket] Connessione a ${backendUrl} per la stanza ${sessionCode}...`);
+      console.log(`[GroupSocket] Connessione a ${backendUrl} per la stanza ${code}...`);
 
       this.socket = ioFactory(backendUrl, {
         path: '/socket.io',
@@ -120,17 +187,8 @@ export class GroupSocketService {
         console.log('[GroupSocket] Connesso al server WebSocket con ID socket:', this.socket.id);
         this.isConnected.set(true);
 
-        // Entra nella stanza di visita
-        this.socket.emit('session:join', { sessionCode: sessionCode.toUpperCase().trim() }, (res: any) => {
-          if (res?.success && res.session) {
-            console.log('[GroupSocket] Entrato nella stanza con successo:', res.session);
-            if (res.session.participants) {
-              this.participants.set(res.session.participants);
-            }
-            if (typeof res.session.currentStepIndex === 'number') {
-              this.currentStepIndex.set(res.session.currentStepIndex);
-            }
-          }
+        this.socket.emit('session:join', { sessionCode: code }, (res: any) => {
+          this.handleJoinResponse(res, code);
         });
       });
 
@@ -224,6 +282,55 @@ export class GroupSocketService {
         });
       });
 
+      // Ricezione avvio quiz finale
+      this.socket.on('session:quiz-started', (data: any) => {
+        console.log('[GroupSocket] Ricevuto evento session:quiz-started:', data);
+        this.activeQuiz.set(data.quiz);
+        this.quizState.set('in_progress');
+        this.quizStartedCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
+      // Notifica sottomissione quiz studente
+      this.socket.on('session:quiz-student-submitted', (data: any) => {
+        console.log('[GroupSocket] Ricevuto evento session:quiz-student-submitted:', data);
+        this.quizStudentSubmittedCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
+      // Ricezione conclusione quiz e risultati
+      this.socket.on('session:quiz-ended', (data: any) => {
+        console.log('[GroupSocket] Ricevuto evento session:quiz-ended:', data);
+        this.quizState.set('completed');
+        this.quizEndedCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
+      // Ricezione nuovi messaggi / domande nella chat di gruppo
+      this.socket.on('session:new-message', (data: any) => {
+        console.log('[GroupSocket] Ricevuto messaggio chat di gruppo:', data);
+        this.groupMessages.update(prev => {
+          const exists = prev.some(m => (m.id && data.id && m.id === data.id));
+          return exists ? prev : [...prev, data];
+        });
+        this.newMessageCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
+      this.socket.on('session:new-question', (data: any) => {
+        this.groupMessages.update(prev => {
+          const exists = prev.some(m => (m.id && data.id && m.id === data.id));
+          return exists ? prev : [...prev, data];
+        });
+        this.newMessageCallbacks.forEach(cb => {
+          try { cb(data); } catch (e) { console.error(e); }
+        });
+      });
+
       this.socket.on('disconnect', () => {
         console.log('[GroupSocket] Disconnesso dal server WebSocket');
         this.isConnected.set(false);
@@ -274,7 +381,99 @@ export class GroupSocketService {
     };
   }
 
+  onQuizStarted(callback: (data: any) => void): () => void {
+    this.quizStartedCallbacks.push(callback);
+    return () => {
+      this.quizStartedCallbacks = this.quizStartedCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onQuizStudentSubmitted(callback: (data: any) => void): () => void {
+    this.quizStudentSubmittedCallbacks.push(callback);
+    return () => {
+      this.quizStudentSubmittedCallbacks = this.quizStudentSubmittedCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onQuizEnded(callback: (data: any) => void): () => void {
+    this.quizEndedCallbacks.push(callback);
+    return () => {
+      this.quizEndedCallbacks = this.quizEndedCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onNewMessage(callback: (data: any) => void): () => void {
+    this.newMessageCallbacks.push(callback);
+    return () => {
+      this.newMessageCallbacks = this.newMessageCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
   // Emitters
+  sendGroupMessage(sessionCode: string, text: string, stepIndex?: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        return reject(new Error('WebSocket non connesso.'));
+      }
+      this.socket.emit('session:send-message', { sessionCode, text, stepIndex }, (res: any) => {
+        if (res?.success) {
+          if (res.message) {
+            this.groupMessages.update(prev => {
+              const exists = prev.some(m => (m.id && res.message.id && m.id === res.message.id));
+              return exists ? prev : [...prev, res.message];
+            });
+          }
+          resolve(res.message || res);
+        } else {
+          reject(new Error(res?.error || 'Errore invio messaggio.'));
+        }
+      });
+    });
+  }
+  startQuiz(sessionCode: string, sessionId?: string, quizId?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        return reject(new Error('WebSocket non connesso.'));
+      }
+      this.socket.emit('teacher:start-quiz', { sessionCode, sessionId, quizId }, (res: any) => {
+        if (res?.success) {
+          resolve(res);
+        } else {
+          reject(new Error(res?.error || 'Impossibile avviare il quiz.'));
+        }
+      });
+    });
+  }
+
+  submitQuiz(sessionCode: string, answers: Array<{ questionIndex: number; selectedOption: number }>): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        return reject(new Error('WebSocket non connesso.'));
+      }
+      this.socket.emit('student:submit-quiz', { sessionCode, answers }, (res: any) => {
+        if (res?.success) {
+          resolve(res);
+        } else {
+          reject(new Error(res?.error || 'Errore invio risposte quiz.'));
+        }
+      });
+    });
+  }
+
+  endQuiz(sessionCode: string, sessionId?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        return reject(new Error('WebSocket non connesso.'));
+      }
+      this.socket.emit('teacher:end-quiz', { sessionCode, sessionId }, (res: any) => {
+        if (res?.success) {
+          resolve(res);
+        } else {
+          reject(new Error(res?.error || 'Errore conclusione quiz.'));
+        }
+      });
+    });
+  }
   sendAudioStatus(sessionCode: string, stepIndex: number, status: 'listening' | 'completed' | 'paused' | 'not_started'): void {
     if (this.socket) {
       this.socket.emit('student:audio-status', { sessionCode, stepIndex, status });

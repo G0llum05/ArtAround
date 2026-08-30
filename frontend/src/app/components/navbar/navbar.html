@@ -1,5 +1,4 @@
 <nav class="navbar">
-
   <!-- MOBILE: Tasto Hamburger -->
   <button class="nav-icon-btn mobile-only" (click)="toggleMenu()" aria-label="Apri menu">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -13,37 +12,39 @@
   <div class="navbar-links desktop-only">
     @for (item of navItems; track item.path) {
       @if (item.path.includes(".html")) {
-        <a
-          [href]=item.path
-          class="nav-link"
-        > {{ item.name }} </a>
+        <a [href]="item.path" class="nav-link"> {{ item.name }} </a>
       } @else {
-        <a [routerLink]="item.path"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: true }"
-           class="nav-link"
-        > {{ item.name }} </a>
+        <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link"> {{ item.name }} </a>
       }
     }
   </div>
 
   <!-- AZIONI DESTRA -->
   <div class="navbar-actions">
-   <app-theme-toggle-button></app-theme-toggle-button>
+    <!-- ICONA SCANSIONE QR CODE (Sempre visibile) -->
+    <button (click)="isScannerOpen.set(true)" class="nav-icon-btn" title="Scansiona QR Code">
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+        <path d="M120-520v-320h320v320H120Zm80-80h160v-160H200v160Zm-80 480v-320h320v320H120Zm80-80h160v-160H200v160Zm320-320v-320h320v320H520Zm80-80h160v-160H600v160Zm160 480v-80h80v80h-80ZM520-360v-80h80v80h-80Zm80 80v-80h80v80h-80Zm-80 80v-80h80v80h-80Zm80 80v-80h80v80h-80Zm80-80v-80h80v80h-80Zm0-160v-80h80v80h-80Zm80 80v-80h80v80h-80Z"/>
+      </svg>
+    </button>
 
-    <a
-      [routerLink]="['/login']"
-      [queryParams]="authService.isLoggedIn() || router.url.startsWith('/login') ? null : { returnUrl: router.url }"
-      class="nav-icon-btn"
-      [title]="authService.isLoggedIn() ? 'Profilo' : 'Login'"
-    >
+    <!-- NASCOSTI SU MOBILE: Preferenze -->
+    <div class="desktop-only preference-actions">
+      <!-- Bottone Lingua Futuro -->
+      <app-language-selector class="desktop-only"></app-language-selector>
+      <app-high-contrast-toggle class="desktop-only" ></app-high-contrast-toggle>
+      <app-theme-toggle-button class="desktop-only" ></app-theme-toggle-button>
+    </div>
+
+    <!-- AVATAR LOGIN (Sempre visibile) -->
+    <a [routerLink]="['/login']" [queryParams]="authService.isLoggedIn() || router.url.startsWith('/login') ? null : { returnUrl: router.url }" class="nav-icon-btn">
       @if (profilePictureUrl()) {
         <img [src]="profilePictureUrl()" (error)="onImageError()" alt="Foto profilo" class="nav-avatar" />
-      } @else {        
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
+      } @else {
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
       }
     </a>
   </div>
@@ -52,6 +53,7 @@
 <!-- SIDEBAR / DRAWER LATERALE DA SINISTRA -->
 @if (isMenuOpen()) {
   <div class="drawer-backdrop mobile-only" (click)="toggleMenu()"></div>
+
   <div class="side-drawer mobile-only">
     <div class="drawer-header">
       <span class="drawer-title">ArtAround</span>
@@ -61,24 +63,32 @@
         </svg>
       </button>
     </div>
+
     <div class="drawer-links">
       @for (item of navItems; track item.path) {
         @if (item.path.includes(".html")) {
-          <a
-            [href]="item.path"
-            (click)="toggleMenu()"
-            class="drawer-link"
-          > {{ item.name }} </a>
+          <a [href]="item.path" (click)="toggleMenu()" class="drawer-link"> {{ item.name }} </a>
         } @else {
-          <a [routerLink]="item.path"
-             (click)="toggleMenu()"
-             class="drawer-link"
-             routerLinkActive="active"
-             [routerLinkActiveOptions]="{ exact: true }">
+          <a [routerLink]="item.path" (click)="toggleMenu()" class="drawer-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             {{ item.name }}
           </a>
         }
       }
     </div>
+
+    <!-- FOOTER DEL MENU PER LE PREFERENZE (Mobile) -->
+    <div class="drawer-footer">
+      <span class="drawer-footer-title">Preferenze</span>
+      <div class="drawer-preferences">
+        <!-- Bottone Lingua Futuro -->
+        <app-language-selector></app-language-selector>
+        <app-high-contrast-toggle></app-high-contrast-toggle>
+        <app-theme-toggle-button></app-theme-toggle-button>
+      </div>
+    </div>
   </div>
+}
+
+@if (isScannerOpen()) {
+  <app-qr-scanner (closeScanner)="isScannerOpen.set(false)"></app-qr-scanner>
 }

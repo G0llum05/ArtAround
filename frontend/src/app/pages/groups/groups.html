@@ -127,7 +127,7 @@
           <div class="card-header-text">
             <div class="title-badge-row">
               <h2 class="card-title">Crea un Gruppo</h2>
-              <span class="role-badge">Docente</span>
+              <span class="role-badge">{{ authService.userRole() === 'museumstaff' ? 'Staff Museo' : authService.userRole() === 'admin' ? 'Admin' : 'Docente' }}</span>
             </div>
             <p class="card-desc">Avvia una stanza virtuale e guida i tuoi studenti attraverso le opere.</p>
           </div>

@@ -3,11 +3,23 @@ import { environment } from '../../environments/environment';
 import { NavigatorRequest, TONE_MAPPING } from '../models/navigator.model';
 import { ToneType } from '../models/appModel/userNavigatorSettings';
 
+export interface NavigatorResponseData {
+  text?: string;
+  reply?: string;
+  audio?: string;
+  currentArtworkIndex?: number | null;
+  itemAction?: string | null;
+  tone?: string | null;
+  language?: string | null;
+  length?: number | null;
+  [key: string]: any;
+}
+
 export interface StreamChunk {
   type: 'TRANSCRIPTION' | 'FINAL_RESPONSE' | 'ERROR';
   success: boolean;
   text?: string;
-  data?: { text?: string; reply?: string; audio?: string; [key: string]: any };
+  data?: NavigatorResponseData;
   error?: string;
 }
 
@@ -23,9 +35,18 @@ export class NavigatorService {
     formData.append('length', request.length.toString());
     const toneVal = TONE_MAPPING[request.tone as ToneType] || request.tone;
     formData.append('tone', toneVal);
-    formData.append('museumId', request.museumId);
-    formData.append('visitId', request.visitId);
-    formData.append('currentArtworkIndex', request.currentArtworkIndex.toString());
+    if (request.museumId) {
+      formData.append('museumId', request.museumId);
+    }
+    if (request.visitId) {
+      formData.append('visitId', request.visitId);
+    }
+    if (request.artworkId) {
+      formData.append('artworkId', request.artworkId);
+    }
+    if (request.currentArtworkIndex !== undefined && request.currentArtworkIndex !== null) {
+      formData.append('currentArtworkIndex', request.currentArtworkIndex.toString());
+    }
 
     if (request.isGroup !== undefined) {
       formData.append('isGroup', request.isGroup.toString());
@@ -37,6 +58,9 @@ export class NavigatorService {
       formData.append('sessionCode', request.sessionCode);
     }
 
+    if (request.actionType) {
+      formData.append('actionType', request.actionType);
+    }
     if (request.itemAction) {
       formData.append('itemAction', request.itemAction);
     }
@@ -45,6 +69,9 @@ export class NavigatorService {
     }
     if (request.targetArtist) {
       formData.append('targetArtist', request.targetArtist);
+    }
+    if (request.userQuery) {
+      formData.append('userQuery', request.userQuery);
     }
     if (audioBlob) {
       const mimeType = audioBlob.type || 'audio/webm';

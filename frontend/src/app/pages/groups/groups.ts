@@ -25,7 +25,7 @@ export class Groups {
   // Verifica se l'utente ha i permessi per creare un gruppo
   canCreateGroup = computed(() => {
     const role = this.authService.userRole();
-    return role === 'teacher' || role === 'admin';
+    return role === 'teacher' || role === 'museumstaff' || role === 'admin';
   });
 
   onJoinGroup(): void {

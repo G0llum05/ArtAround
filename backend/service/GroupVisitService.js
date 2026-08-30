@@ -96,7 +96,8 @@ class GroupVisitService {
       })
       .populate('teacher', 'name surname email role')
       .populate('participants.user', 'name surname email')
-      .populate('questions.student', 'name surname email');
+      .populate('questions.student', 'name surname email')
+      .populate('activeQuiz');
 
     if (!session) {
       throw new Error('Sessione di visita di gruppo non trovata.');
@@ -117,6 +118,7 @@ class GroupVisitService {
     const session = await GroupVisit.findOne({ sessionCode: cleanCode })
       .populate('visit', 'title description minDuration maxDuration assets steps')
       .populate('teacher', 'name surname email')
+      .populate('activeQuiz')
       .lean();
 
     if (!session) {
@@ -383,6 +385,64 @@ class GroupVisitService {
         );
       }
     }
+  }
+
+  static async startQuiz(identifier, leaderId, quizId) {
+    let session = null;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      session = await GroupVisit.findById(identifier);
+    }
+    if (!session && identifier) {
+      session = await GroupVisit.findOne({ sessionCode: String(identifier).toUpperCase().trim() });
+    }
+    if (!session) {
+      throw new Error('Sessione di gruppo non trovata.');
+    }
+
+    const Quiz = require('../data/model/Quiz');
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      throw new Error('Quiz non trovato.');
+    }
+
+    session.activeQuiz = quiz._id;
+    session.quizState = 'in_progress';
+    session.quizSubmissions = [];
+    await session.save();
+
+    return {
+      sessionCode: session.sessionCode,
+      quizState: 'in_progress',
+      quiz
+    };
+  }
+
+  static async endQuiz(identifier, leaderId) {
+    let session = null;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      session = await GroupVisit.findById(identifier).populate('activeQuiz');
+    }
+    if (!session && identifier) {
+      session = await GroupVisit.findOne({ sessionCode: String(identifier).toUpperCase().trim() }).populate('activeQuiz');
+    }
+    if (!session) {
+      throw new Error('Sessione di gruppo non trovata.');
+    }
+
+    session.quizState = 'completed';
+    await session.save();
+
+    const submissions = session.quizSubmissions || [];
+    const sortedSubmissions = [...submissions].sort((a, b) => b.score - a.score);
+
+    return {
+      sessionCode: session.sessionCode,
+      quizState: 'completed',
+      quiz: session.activeQuiz,
+      leaderboard: sortedSubmissions,
+      totalParticipants: session.participants?.length || 0,
+      totalSubmissions: submissions.length
+    };
   }
 }
 

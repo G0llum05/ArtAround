@@ -4,7 +4,7 @@ const questionSchema = new mongoose.Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false
   },
   studentName: {
     type: String,
@@ -23,6 +23,56 @@ const questionSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'answered', 'dismissed'],
     default: 'pending'
+  }
+}, { timestamps: true });
+
+const quizAnswerSchema = new mongoose.Schema({
+  questionIndex: {
+    type: Number,
+    required: true
+  },
+  selectedOption: {
+    type: Number,
+    required: true
+  },
+  isCorrect: {
+    type: Boolean,
+    required: true
+  }
+}, { _id: false });
+
+const quizSubmissionSchema = new mongoose.Schema({
+  student: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  studentName: {
+    type: String,
+    required: true
+  },
+  studentSurname: {
+    type: String,
+    default: ''
+  },
+  studentEmail: {
+    type: String,
+    default: ''
+  },
+  answers: [quizAnswerSchema],
+  score: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  totalQuestions: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  submittedAt: {
+    type: Date,
+    default: Date.now
   }
 }, { timestamps: true });
 
@@ -102,6 +152,17 @@ const groupVisitSchema = new mongoose.Schema({
   },
   participants: [participantSchema],
   questions: [questionSchema],
+  activeQuiz: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Quiz',
+    default: null
+  },
+  quizState: {
+    type: String,
+    enum: ['not_started', 'in_progress', 'completed'],
+    default: 'not_started'
+  },
+  quizSubmissions: [quizSubmissionSchema],
   startedAt: {
     type: Date
   },

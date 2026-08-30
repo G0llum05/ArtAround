@@ -92,6 +92,10 @@ const visitSchema = new mongoose.Schema({
   //   type: mongoose.Schema.Types.ObjectId,
   //   ref: 'Quiz'
   // },
+  quizzes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Quiz'
+  }],
 
   // Categorie tematiche (multiplo)
   categories: [{

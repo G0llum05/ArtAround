@@ -31,7 +31,9 @@ class TokenService {
     const payload = {
       id: user._id.toString(),
       email: user.email,
-      role: user.role
+      role: user.role,
+      name: user.name || '',
+      surname: user.surname || ''
     };
 
     return jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION }); // la libreria aggiunge timestamp e exp di scadenza automaticamente

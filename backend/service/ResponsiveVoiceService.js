@@ -84,11 +84,7 @@ class ResponsiveVoiceService {
     else if (cleanLang.includes('ru') || cleanLang.includes('rus')) cleanLang = 'ru';
     else cleanLang = 'it';
 
-    // Rimuove markdown, a capo e caratteri speciali
-    const cleanText = (text || '')
-      .replace(/[\r\n]+/g, ' ')
-      .replace(/[*#_~`«»]+/g, '')
-      .trim();
+    const cleanText = Sanitizer.cleanTextForVoice(text);
 
     if (!cleanText) return Buffer.alloc(0);
 
@@ -153,11 +149,12 @@ class ResponsiveVoiceService {
    * Ritorna il Buffer audio.
    */
   async synthesizeAudioBuffer(text, lang = 'it') {
+    const cleanedText = Sanitizer.cleanTextForVoice(text);
     const client = this.getClient();
     if (client) {
       try {
         const voiceName = this.getVoiceForLanguage(lang);
-        const trimmedText = text.trim().substring(0, 500);
+        const trimmedText = cleanedText.substring(0, 500);
 
         console.log(`[ResponsiveVoiceService] Avvio sintesi TTS: voice="${voiceName}", lang="${lang}", testo (${trimmedText.length} chars): "${trimmedText.substring(0, 60)}..."`);
 
@@ -189,7 +186,7 @@ class ResponsiveVoiceService {
       console.warn('[ResponsiveVoiceService] Client non inizializzato (mancano API_KEY o SECRET), uso fallback Google TTS.');
     }
 
-    return await this.synthesizeGoogleTTS(text, lang);
+    return await this.synthesizeGoogleTTS(cleanedText, lang);
   }
 
   /**
@@ -198,11 +195,14 @@ class ResponsiveVoiceService {
   async synthesizeAudioBase64(text, lang = 'it') {
     if (!text || !text.trim()) return null;
 
+    const cleanedText = Sanitizer.cleanTextForVoice(text);
+    if (!cleanedText) return null;
+
     const client = this.getClient();
     if (client) {
       try {
         const voiceName = this.getVoiceForLanguage(lang);
-        const trimmedText = text.trim().substring(0, 500);
+        const trimmedText = cleanedText.substring(0, 500);
 
         console.log(`[ResponsiveVoiceService] Avvio sintesi Base64: voice="${voiceName}", lang="${lang}", testo (${trimmedText.length} chars): "${trimmedText.substring(0, 60)}..."`);
 
@@ -237,7 +237,7 @@ class ResponsiveVoiceService {
     }
 
     try {
-      const googleBuffer = await this.synthesizeGoogleTTS(text, lang);
+      const googleBuffer = await this.synthesizeGoogleTTS(cleanedText, lang);
       if (googleBuffer && googleBuffer.length > 0) {
         console.log(`[ResponsiveVoiceService] Fallback Google TTS completato con successo (${googleBuffer.length} bytes)`);
         return `data:audio/mp3;base64,${googleBuffer.toString('base64')}`;

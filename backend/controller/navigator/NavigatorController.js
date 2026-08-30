@@ -2,6 +2,7 @@ const GroqSTTService = require('../../service/GroqSTTService');
 const NavigatorService = require('../../service/NavigatorService');
 const ResponsiveVoiceService = require('../../service/ResponsiveVoiceService');
 const NavigatorMapper = require('../../data/mapper/NavigatorMapper');
+const Sanitizer = require('../../utils/Sanitizer');
 
 // TODO GLOBALE -> DTO di req e res per TUTTI i metodi
 
@@ -35,7 +36,8 @@ class NavigatorController {
       });
 
       let audioBase64 = null;
-      const textToSpeak = typeof result === 'string' ? result : (result?.text || result?.description || '');
+      const rawText = typeof result === 'string' ? result : (result?.text || result?.description || '');
+      const textToSpeak = Sanitizer.cleanTextForVoice(rawText);
       if (textToSpeak) {
         try {
           audioBase64 = await ResponsiveVoiceService.synthesizeAudioBase64(textToSpeak, requestDTO?.language || 'it');

@@ -1,12 +1,12 @@
+/* --- BASE & MOBILE-FIRST STYLES --- */
 .navbar {
   position: sticky;
   top: 0;
   left: 0;
   z-index: 1000;
   background-color: var(--surface);
-  border-bottom: 1px solid var(--outline-variant);
+  border-bottom: 0.0625rem solid var(--outline-variant);
   transition: background-color 0.3s ease, border-color 0.3s ease;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -84,14 +84,14 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 280px;
+  width: 17.5rem;
   max-width: 80vw;
   height: 100vh;
   background-color: var(--surface);
   z-index: 1100;
   display: flex;
   flex-direction: column;
-  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0.375rem 0 1.5rem rgba(0, 0, 0, 0.12);
   animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -101,7 +101,7 @@
   justify-content: space-between;
   height: 4.5rem;
   padding: 0 var(--margin-mobile);
-  border-bottom: 1px solid var(--outline-variant);
+  border-bottom: 0.0625rem solid var(--outline-variant);
 }
 
 .drawer-title {
@@ -124,7 +124,7 @@
   color: var(--on-surface-variant);
   text-decoration: none;
   padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--surface-variant);
+  border-bottom: 0.0625rem solid var(--surface-variant);
   transition: color 0.2s ease;
 }
 
@@ -133,6 +133,43 @@
   font-weight: 600;
 }
 
+/* --- FOOTER DRAWER (IMPOSTAZIONI MOBILE) --- */
+.drawer-footer {
+  margin-top: auto;
+  padding: var(--spacing-md) var(--margin-mobile);
+  border-top: 0.0625rem solid var(--surface-variant);
+  background-color: var(--surface);
+}
+
+.drawer-footer-title {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--label-md-size);
+  color: var(--outline);
+  text-transform: uppercase;
+  letter-spacing: var(--label-md-tracking);
+  margin-bottom: var(--spacing-sm);
+}
+
+.drawer-preferences {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.preference-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.nav-lang-btn {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--body-md-size);
+}
+
+/* ANIMAZIONI */
 @keyframes slideInLeft {
   from { transform: translateX(-100%); }
   to { transform: translateX(0); }
@@ -143,16 +180,17 @@
   to { opacity: 1; }
 }
 
-/*  DESKTOP STYLES  */
+/* --- DESKTOP STYLES --- */
 @media (min-width: 48rem) {
-  .mobile-only {
-    display: none !important;
+  /* Nasconde elementi mobile senza usare !important */
+  .mobile-only,
+  .nav-icon-btn.mobile-only {
+    display: none;
   }
 
   .desktop-only {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xl);
   }
 
   .navbar {
@@ -188,7 +226,7 @@
     bottom: -1.3rem;
     left: 0;
     width: 100%;
-    height: 2px;
+    height: 0.125rem;
     background-color: var(--primary);
     border-radius: var(--radius-full);
   }

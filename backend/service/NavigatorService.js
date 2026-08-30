@@ -20,12 +20,14 @@ class NavigatorService {
       tone,
       museumId,
       visitId,
+      artworkId,
       currentArtworkIndex,
       actionType,
       audioFile,
       itemAction,
       targetPoiType,
       targetArtist,
+      userQuery,
       isGroup,
       isTeacher,
       sessionCode,
@@ -39,7 +41,14 @@ class NavigatorService {
       }
     }
 
-    // Se l'utente è uno studente in una visita di gruppo, blocca richieste di cambio opera
+    if (!museumId && artworkId) {
+      let query = mongoose.Types.ObjectId.isValid(artworkId) ? { $or: [{ _id: artworkId }, { qrCode: artworkId }] } : { qrCode: artworkId };
+      const art = await Artwork.findOne(query).lean();
+      if (art && art.museum) {
+        museumId = art.museum.toString();
+      }
+    }
+
     if (isGroup && !isTeacher) {
       if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
         return 'In questa visita di gruppo la navigazione tra le tappe è guidata dal docente. Puoi farmi domande sull\'opera corrente o chiedere informazioni sui servizi del museo.';
@@ -48,17 +57,30 @@ class NavigatorService {
 
     switch (actionType) {
       case 'AUDIO_ACTION':
-        return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, isGroup, isTeacher, onTranscription);
+        return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, isGroup, isTeacher, onTranscription, artworkId);
       case 'ITEM_ACTION':
-        return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language);
+        return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId);
       case 'NON_ITEM_ACTION':
-        return await this.nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language);
+        return await this.nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language, artworkId);
+      case 'MUSEUM_INFO':
+        return await this.museumInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language);
+      case 'CULTURE_INFO':
+        return await this.cultureInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language, artworkId);
+      case 'UNKNOWN_ACTION':
+        return {
+          text: this.getUnmappableActionMessage(language),
+          currentArtworkIndex: currentArtworkIndex || 0,
+          itemAction: null,
+          tone,
+          length,
+          language
+        };
       default:
         throw new Error(`Tipo di azione non valido: ${actionType}`);
     }
   }
 
-  static async audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, isGroup, isTeacher, onTranscription) {
+  static async audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, isGroup, isTeacher, onTranscription, artworkId = null) {
     if (!audioFile || !audioFile.buffer) {
       throw new Error('File audio mancante o non valido.');
     }
@@ -74,39 +96,50 @@ class NavigatorService {
       throw new Error('Trascrizione audio fallita o testo trascritto vuoto.');
     }
 
-    console.log(`\n\x1b[35m🎤 [DEBUG SERVICE] Testo trascritto dall'audio:\x1b[0m "${transcribedText}"\n`);
-
-    // Quando ha trascritto il testo lo inviamo nello streaming aperto al front
     if (typeof onTranscription === 'function') {
-      // onTranscription è una funzione che invia il testo trascritto al frontend in tempo reale
       await onTranscription(transcribedText);
     }
 
-    // Se lo studente in visita di gruppo chiede a voce di cambiare opera, intercettiamo e blocchiamo
-    if (isGroup && !isTeacher) {
-      const museum = await Museum.findById(museumId).exec();
-      if (!museum) {
-        throw new Error(`Museo con ID "${museumId}" non trovato.`);
-      }
-      const artwork = await Artwork.findById(await this.getArtworkId(visitId, currentArtworkIndex)).exec();
-      const response = await this.parseIntentHandler(transcribedText, museum, artwork, tone, length, language);
-
-      if (response?.itemAction === 'NEXT_ITEM' || response?.itemAction === 'PREVIOUS_ITEM') {
-        return 'In questa visita di gruppo la navigazione è guidata dal docente. Puoi chiedermi maggiori informazioni sull\'opera attuale o curiosità sul museo.';
-      }
+    const museum = museumId ? await Museum.findById(museumId).exec() : null;
+    let artwork = null;
+    if (visitId) {
+      const artId = await this.getArtworkId(visitId, currentArtworkIndex);
+      artwork = artId ? await Artwork.findById(artId).populate('artists').exec() : null;
+    } else if (artworkId) {
+      let query = mongoose.Types.ObjectId.isValid(artworkId) ? { $or: [{ _id: artworkId }, { qrCode: artworkId }] } : { qrCode: artworkId };
+      artwork = await Artwork.findOne(query).populate('artists').populate('defaultItems').exec();
     }
 
-    // e continua l'elaborazione standard
-    const museum = await Museum.findById(museumId).exec();
-    if (!museum) {
-      throw new Error(`Museo con ID "${museumId}" non trovato.`);
-    }
-    const artwork = await Artwork.findById(await this.getArtworkId(visitId, currentArtworkIndex)).exec();
-
-    // prima parser scritto a mano, se non riesce chiamate all'LLM. L'obiettivo di entrambi è capire l'intento, poi si passa agli handler item o non-item
     const response = await this.parseIntentHandler(transcribedText, museum, artwork, tone, length, language);
     if (!response || !response.actionType) {
       throw new Error('Parsing dell\'intento fallito o intento non riconosciuto.');
+    }
+
+    if (!visitId && artworkId && (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM')) {
+      const singleMsg = language === 'en'
+        ? "You are currently viewing this artwork individually outside a tour. You can ask for more details or information about the artist."
+        : "Stai consultando questa singola opera al di fuori di un itinerario. Puoi chiedermi maggiori approfondimenti o dettagli sull'autore.";
+      return {
+        text: singleMsg,
+        currentArtworkIndex: 0,
+        itemAction: 'EXPLAIN_ITEM',
+        tone,
+        language,
+        length
+      };
+    }
+
+    if (isGroup && !isTeacher) {
+      if (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM') {
+        return {
+          text: 'In questa visita di gruppo la navigazione è guidata dal docente. Puoi chiedermi maggiori informazioni sull\'opera attuale o curiosità sul museo.',
+          currentArtworkIndex: currentArtworkIndex,
+          itemAction: 'EXPLAIN_ITEM',
+          tone,
+          language,
+          length
+        };
+      }
     }
 
     if (response.language) {
@@ -127,12 +160,14 @@ class NavigatorService {
       tone,
       museumId: museumId,
       visitId: visitId,
-      currentArtworkIndex: currentArtworkIndex,
+      artworkId: artworkId,
+      currentArtworkIndex: currentArtworkIndex || 0,
       actionType: response.actionType,
-      audioFile: null, // rimosso l'audio
+      audioFile: null,
       itemAction: response.itemAction || null,
       targetPoiType: response.targetPoiType || null,
       targetArtist: response.targetArtist || null,
+      userQuery: response.userQuery || transcribedText,
       isGroup,
       isTeacher
     });
@@ -140,41 +175,54 @@ class NavigatorService {
     return finalResult;
   }
 
-
-  /**
-  * @returns {Promise<{ actionType: string, itemAction?: string, targetPoiType?: string, targetArtist?: string }>}
-  */
-  static async parseIntentHandler(transcribedText, language) {
+  static async parseIntentHandler(transcribedText, museum, artwork, tone, length, language) {
     try {
-      // const nlpResult = await NLParser.parseIntentNL(transcribedText, language);
-      // if (nlpResult) {
-      //   return nlpResult;
-      // }
-      const llmResult = await LLMService.parseIntentLLM(transcribedText, language);
+      const llmResult = await LLMService.parseIntentLLM(transcribedText, museum, artwork, tone, length, language);
       if (llmResult) {
         return llmResult;
       }
-      throw new Error('Intent non riconosciuto né dal parser né dall\'LLM.');
+      throw new Error('Intent non riconosciuto dall\'LLM.');
     } catch (error) {
       console.error('Errore durante il parsing dell\'intento:', error);
       throw new Error('Errore durante il parsing dell\'intento.');
     }
   }
 
-  /**
-   * retituisce item con scelte cache-first:
-   * - Cerca prima nel DB se esiste già l'item giusto
-   * - Se non esiste cerca item simili e genera un nuovo item con dati esistenti
-   * - Se non esiste proprio niente non da linee guida all'llm e lo genera con conoscenze generali
-   */
-  // TODO CHECK aggiungere il tellMeMore perchè ora c'è un item tell me more che prima non c'era
-  static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language) {
-    let targetIndex = currentArtworkIndex;
+  static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null) {
+    if (!visitId && artworkId) {
+      if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
+        const singleMsg = language === 'en'
+          ? "You are currently viewing this artwork individually outside a tour. You can ask for more details or information about the artist."
+          : "Stai consultando questa singola opera al di fuori di un itinerario. Puoi chiedermi maggiori approfondimenti o dettagli sull'autore.";
+        return {
+          text: singleMsg,
+          currentArtworkIndex: 0,
+          itemAction: 'EXPLAIN_ITEM',
+          tone: tone,
+          language: language,
+          length: length
+        };
+      }
+      const item = await this.getOrGenerateItemForArtwork(artworkId, tone, length, language, itemAction === 'TELL_ME_MORE');
+      return {
+        text: item.description ? item.description : '',
+        currentArtworkIndex: 0,
+        itemAction: itemAction,
+        tone: tone,
+        language: language,
+        length: length
+      };
+    }
 
+    let targetIndex = currentArtworkIndex;
     let tellMeMore = false;
+    const steps = await this.getVisitSteps(visitId);
 
     switch (itemAction) {
       case 'NEXT_ITEM':
+        if (currentArtworkIndex >= steps.length - 1) {
+          throw new Error('Sei già all\'ultima opera della visita.');
+        }
         targetIndex = currentArtworkIndex + 1;
         break;
 
@@ -198,14 +246,16 @@ class NavigatorService {
         break;
     }
 
-
     const item = await this.getOrGenerateItem(visitId, targetIndex, tone, length, language, tellMeMore);
 
-    console.log('\n\x1b[36m🔍 [DEBUG SERVICE] Contenuto della descrizione:\x1b[0m');
-    console.log(`   • Tipo dato: ${typeof item}`);
-    console.log(`   • Descrizione: "${item.description}"\n`);
-
-    return item.description ? item.description : null;
+    return {
+      text: item.description ? item.description : '',
+      currentArtworkIndex: targetIndex,
+      itemAction: itemAction,
+      tone: tone,
+      language: language,
+      length: length
+    };
   }
 
 
@@ -272,15 +322,49 @@ class NavigatorService {
       artwork: artwork._id
     });
     const savedItem = await newItem.save();
-    // salva l'item nella visita allo step corrente
     step.items.push(savedItem._id);
     await Visit.findByIdAndUpdate(visitId, { $set: { [`steps.${targetIndex}`]: step } }).exec();
 
     return savedItem;
   }
 
-  static async nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language) {
-    // POI
+  static async getOrGenerateItemForArtwork(artworkId, tone, length, language, tellMeMore) {
+    let query = mongoose.Types.ObjectId.isValid(artworkId) ? { $or: [{ _id: artworkId }, { qrCode: artworkId }] } : { qrCode: artworkId };
+    const artwork = await Artwork.findOne(query).populate('artists').populate('defaultItems').exec();
+    if (!artwork) {
+      throw new Error(`Opera con ID "${artworkId}" non trovata.`);
+    }
+
+    if (!tellMeMore) {
+      const matchingItem = await this.getItem(artwork, tone, language, length);
+      if (matchingItem) {
+        return matchingItem;
+      }
+    }
+
+    const rawExistingSimilarItem = this.getAvailableContentIfExists(artwork, tone, language, length);
+    const existingSimilarItem = ItemMapper.toItemLLMRequestDTO(rawExistingSimilarItem);
+    const artworkContext = ArtworkMapper.toArtworkLLMRequestDTO(artwork);
+
+    const generatedText = await LLMService.generateItem(tone, length, language, existingSimilarItem, artworkContext, tellMeMore);
+
+    const newItem = new Item({
+      description: generatedText,
+      tone: tone,
+      length: length,
+      language: language,
+      isAIGenerated: true,
+      authorName: 'AI Engine',
+      artwork: artwork._id
+    });
+    const savedItem = await newItem.save();
+    await Artwork.findByIdAndUpdate(artwork._id, { $addToSet: { defaultItems: savedItem._id } }).exec();
+
+    return savedItem;
+  }
+
+  static async nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language, artworkId = null) {
+    let resultText = '';
     if (targetPoiType) {
       const museum = await Museum.findById(museumId).populate('pointsOfInterest').exec();
       if (!museum) {
@@ -293,28 +377,53 @@ class NavigatorService {
         throw new Error(`Punto di interesse di tipo "${targetPoiType}" non trovato nel museo "${museum.name}".`);
       }
 
-      return LLMService.nonItemPOI(museum.name, POI, language, tone);
+      resultText = await LLMService.nonItemPOI(museum.name, POI, language, tone);
 
-    } else if (targetArtist) { // Artist Info
+    } else if (targetArtist) {
+      let artwork = null;
+      if (visitId) {
+        const currentArtworkId = await this.getArtworkId(visitId, currentArtworkIndex);
+        artwork = currentArtworkId ? await Artwork.findById(currentArtworkId).populate('defaultItems').populate('artists').exec() : null;
+      } else if (artworkId) {
+        let query = mongoose.Types.ObjectId.isValid(artworkId) ? { $or: [{ _id: artworkId }, { qrCode: artworkId }] } : { qrCode: artworkId };
+        artwork = await Artwork.findOne(query).populate('defaultItems').populate('artists').exec();
+      }
 
-      const currentArtworkId = await this.getArtworkId(visitId, currentArtworkIndex);
-      const artwork = await Artwork.findById(currentArtworkId).populate('defaultItems').populate('artists').exec();
       if (!artwork) {
-        throw new Error(`Opera con ID "${currentArtworkId}" non trovata.`);
-      }
-      if (!artwork.artists || artwork.artists.length === 0) {
-        throw new Error(`Nessun artista associato all'opera "${artwork.title}".`);
+        throw new Error('Opera non trovata.');
       }
 
-      const artist = artwork.artists.find(a => a.name.toLowerCase() === targetArtist.toLowerCase());
+      let artist = null;
+      if (artwork.artists && artwork.artists.length > 0) {
+        if (typeof targetArtist === 'string' && targetArtist !== 'CURRENT_AUTHOR' && targetArtist.toLowerCase() !== 'autore' && targetArtist.toLowerCase() !== "l'autore") {
+          artist = artwork.artists.find(a => {
+            const fullName = `${a.name || ''} ${a.surname || ''}`.toLowerCase().trim();
+            const target = targetArtist.toLowerCase().trim();
+            return fullName.includes(target) || target.includes((a.name || '').toLowerCase()) || (a.surname && target.includes(a.surname.toLowerCase()));
+          });
+        }
+        if (!artist) {
+          artist = artwork.artists[0];
+        }
+      }
+
       if (!artist) {
-        throw new Error(`Artista "${targetArtist}" non trovato per l'opera "${artwork.title}".`);
+        resultText = `Non ci sono informazioni registrate sull'autore per l'opera "${artwork.title}".`;
+      } else {
+        resultText = await LLMService.nonItemArtistInfo(artist, artwork, tone, length, language);
       }
-
-      return LLMService.nonItemArtistInfo(artist, artwork, tone, length, language);
     } else {
       throw new Error('Nessuna azione non-item valida fornita.');
     }
+
+    return {
+      text: resultText,
+      currentArtworkIndex: currentArtworkIndex || 0,
+      itemAction: null,
+      tone,
+      language,
+      length
+    };
   }
 
   static async getVisitSteps(visitId) {
@@ -401,6 +510,89 @@ class NavigatorService {
     scoredItems.sort((a, b) => b.score - a.score);
 
     return scoredItems[0]?.item || null;
+  }
+
+  static async museumInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language) {
+    const museum = museumId ? await Museum.findById(museumId).exec() : null;
+    const visit = visitId ? await Visit.findById(visitId).exec() : null;
+
+    const museumContext = museum ? {
+      name: museum.name,
+      description: museum.description,
+      address: museum.address,
+      contact: museum.contact,
+      ticketInfo: museum.ticketInfo,
+      openingHours: museum.openingHours,
+      services: museum.services,
+      accessibility: museum.accessibility,
+      transportInfo: museum.transportInfo,
+      eventsAndExhibitions: museum.eventsAndExhibitions,
+      requirements: museum.requirements
+    } : {};
+
+    const visitContext = visit ? {
+      title: visit.title,
+      description: visit.description,
+      price: visit.price,
+      minDuration: visit.minDuration,
+      maxDuration: visit.maxDuration,
+      weeklySchedule: visit.weeklySchedule,
+      requirements: visit.requirements,
+      categories: visit.categories
+    } : {};
+
+    const resultText = await LLMService.museumInfo(userQuery, museumContext, visitContext, tone, length, language);
+
+    return {
+      text: resultText,
+      currentArtworkIndex,
+      itemAction: null,
+      tone,
+      language,
+      length
+    };
+  }
+
+  static async cultureInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language, artworkId = null) {
+    let artwork = null;
+    if (visitId) {
+      const currentArtworkId = await this.getArtworkId(visitId, currentArtworkIndex);
+      artwork = currentArtworkId ? await Artwork.findById(currentArtworkId).populate('artists').exec() : null;
+    } else if (artworkId) {
+      let query = mongoose.Types.ObjectId.isValid(artworkId) ? { $or: [{ _id: artworkId }, { qrCode: artworkId }] } : { qrCode: artworkId };
+      artwork = await Artwork.findOne(query).populate('artists').exec();
+    }
+    const museum = museumId ? await Museum.findById(museumId).exec() : null;
+
+    const artworkContext = artwork ? ArtworkMapper.toArtworkLLMRequestDTO(artwork) : { title: 'Opere del museo', museum: museum?.name || 'Museo' };
+
+    const resultText = await LLMService.cultureInfo(userQuery, artworkContext, museum?.name, tone, length, language);
+
+    return {
+      text: resultText,
+      currentArtworkIndex: currentArtworkIndex || 0,
+      itemAction: null,
+      tone,
+      language,
+      length
+    };
+  }
+
+  static getUnmappableActionMessage(language = 'it') {
+    const lang = (language || 'it').toLowerCase();
+    switch (lang) {
+      case 'en':
+        return "I cannot answer this request. I can guide you through the artworks, explain their history and artist, or provide information about the museum and its services.";
+      case 'es':
+        return "No puedo responder a esta solicitud. Puedo guiarte por las obras, explicar su historia y artista, o darte información sobre el museo y sus servicios.";
+      case 'fr':
+        return "Je ne peux pas répondre à cette demande. Je peux vous guider à travers les œuvres, vous expliquer leur histoire et leur artiste, ou vous renseigner sur le musée et ses services.";
+      case 'de':
+        return "Ich kann diese Anfrage leider nicht beantworten. Ich kann Sie durch die Kunstwerke führen, deren Geschichte und Künstler erklären oder Auskunft über das Museum und seine Dienste geben.";
+      case 'it':
+      default:
+        return "Non posso rispondere a questa richiesta. Posso guidarti tra le opere, raccontarti la loro storia e l'artista, o darti informazioni sul museo e i suoi servizi.";
+    }
   }
 }
 

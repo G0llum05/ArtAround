@@ -384,6 +384,52 @@ class GroupVisitService {
       }
     }
   }
+
+  static async startQuiz(sessionId, leaderId, quizId) {
+    const session = await GroupVisit.findById(sessionId);
+    if (!session) {
+      throw new Error('Sessione di gruppo non trovata.');
+    }
+
+    const Quiz = require('../data/model/Quiz');
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      throw new Error('Quiz non trovato.');
+    }
+
+    session.activeQuiz = quiz._id;
+    session.quizState = 'in_progress';
+    session.quizSubmissions = [];
+    await session.save();
+
+    return {
+      sessionCode: session.sessionCode,
+      quizState: 'in_progress',
+      quiz
+    };
+  }
+
+  static async endQuiz(sessionId, leaderId) {
+    const session = await GroupVisit.findById(sessionId).populate('activeQuiz');
+    if (!session) {
+      throw new Error('Sessione di gruppo non trovata.');
+    }
+
+    session.quizState = 'completed';
+    await session.save();
+
+    const submissions = session.quizSubmissions || [];
+    const sortedSubmissions = [...submissions].sort((a, b) => b.score - a.score);
+
+    return {
+      sessionCode: session.sessionCode,
+      quizState: 'completed',
+      quiz: session.activeQuiz,
+      leaderboard: sortedSubmissions,
+      totalParticipants: session.participants?.length || 0,
+      totalSubmissions: submissions.length
+    };
+  }
 }
 
 module.exports = GroupVisitService;

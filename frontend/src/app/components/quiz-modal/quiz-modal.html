@@ -1,0 +1,207 @@
+<div class="quiz-overlay">
+  <div class="quiz-panel">
+
+    <header class="quiz-header">
+      <div class="quiz-header-content">
+        <div class="quiz-title-badge-row">
+          <span class="quiz-badge">Quiz Finale</span>
+          <span class="quiz-mode-pill">{{ isTeacher() ? 'Pannello Docente' : 'Sfida Live' }}</span>
+        </div>
+        <h2 class="quiz-title">{{ quiz()?.title || 'Quiz Finale di Verifica' }}</h2>
+        <p class="quiz-desc">{{ quiz()?.description || 'Rispondi alle domande sulle opere viste durante la visita.' }}</p>
+      </div>
+      <button type="button" class="btn-close-quiz" (click)="close()" aria-label="Chiudi Quiz">✕</button>
+    </header>
+
+    <div class="quiz-content">
+
+      @if (quizCompleted() && finalResults()) {
+        <section class="results-view">
+          <div class="results-hero">
+            <h3 class="results-title">Quiz Concluso</h3>
+            <p class="results-subtitle">Classifica finale della classe</p>
+          </div>
+
+          @if (myResult()) {
+            <div class="my-score-card">
+              <span class="my-score-label">Il tuo punteggio:</span>
+              <span class="my-score-value">{{ myResult()?.score }} / {{ myResult()?.totalQuestions }} ({{ myResult()?.percentage }}%)</span>
+            </div>
+          }
+
+          <div class="leaderboard-section">
+            <h4 class="leaderboard-title">Classifica Partecipanti</h4>
+            <div class="leaderboard-list">
+              @for (sub of finalResults()?.leaderboard; track sub.student; let idx = $index) {
+                <div class="leaderboard-item" [class.gold]="idx === 0" [class.silver]="idx === 1" [class.bronze]="idx === 2">
+                  <div class="rank-badge">
+                    #{{ idx + 1 }}
+                  </div>
+                  <span class="student-name">{{ sub.studentName }}</span>
+                  <span class="student-score">{{ sub.score }} / {{ sub.totalQuestions }}</span>
+                </div>
+              }
+              @if (!finalResults()?.leaderboard || finalResults()?.leaderboard.length === 0) {
+                <p class="empty-leaderboard">Nessuna risposta registrata.</p>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      @else if (isTeacher()) {
+        <section class="teacher-view">
+          <div class="live-progress-card">
+            <div class="live-progress-header">
+              <h3>Consegne Studenti</h3>
+              <span class="badge-count">{{ studentSubmissions().length }} / {{ totalStudents() > 0 ? totalStudents() : studentSubmissions().length }} Consegnati</span>
+            </div>
+            <p class="live-progress-hint">Studenti che hanno inviato le risposte rispetto al totale dei partecipanti.</p>
+            
+            <div class="submissions-list">
+              @for (sub of studentSubmissions(); track sub.studentId) {
+                <div class="submission-item">
+                  <span class="student-name">{{ sub.studentName }}</span>
+                  <span class="student-status-done">Completato ({{ sub.score }}/{{ sub.totalQuestions }})</span>
+                </div>
+              }
+              @if (studentSubmissions().length === 0) {
+                <div class="empty-submissions">
+                  <div class="spinner-sm"></div>
+                  <span>In attesa delle risposte degli studenti...</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="quiz-preview-questions">
+            <h4 class="preview-title">Domande del Quiz</h4>
+            @for (q of quiz()?.questions; track $index; let qIdx = $index) {
+              <div class="preview-question-card">
+                <p class="preview-q-title"><strong>{{ qIdx + 1 }}.</strong> {{ q.question }}</p>
+                <div class="preview-options">
+                  @for (opt of q.options; track $index; let oIdx = $index) {
+                    <div class="preview-option" [class.correct-option]="oIdx === q.correctAnswerIndex">
+                      <span>{{ opt }}</span>
+                      @if (oIdx === q.correctAnswerIndex) {
+                        <span class="badge-correct">Risposta Esatta</span>
+                      }
+                    </div>
+                  }
+                </div>
+                @if (q.explanation) {
+                  <p class="preview-explanation">{{ q.explanation }}</p>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      @else if (hasSubmitted() && myResult()) {
+        <section class="submitted-view">
+          <div class="submitted-hero">
+            <div class="done-icon">✓</div>
+            <h3>Risposte Inviate</h3>
+            <p class="submitted-score">Punteggio ottenuto: <strong>{{ myResult()?.score }} / {{ myResult()?.totalQuestions }}</strong> ({{ myResult()?.percentage }}%)</p>
+            <p class="waiting-teacher-text">In attesa che l'insegnante chiuda il quiz per mostrare la classifica finale della classe...</p>
+          </div>
+
+          <div class="answers-review-list">
+            <h4>Riepilogo delle tue risposte</h4>
+            @for (q of quiz()?.questions; track $index; let qIdx = $index) {
+              @let studentAnswer = myResult()?.evaluatedAnswers?.[qIdx];
+              <div class="review-question-card" [class.is-correct]="studentAnswer?.isCorrect" [class.is-wrong]="!studentAnswer?.isCorrect">
+                <p class="review-q-title">
+                  <strong>{{ qIdx + 1 }}.</strong> {{ q.question }}
+                </p>
+                <div class="review-options">
+                  @for (opt of q.options; track $index; let oIdx = $index) {
+                    <div class="review-option"
+                         [class.selected-by-user]="studentAnswer?.selectedOption === oIdx"
+                         [class.correct-highlight]="q.correctAnswerIndex === oIdx">
+                      <span>{{ opt }}</span>
+                      @if (studentAnswer?.selectedOption === oIdx && studentAnswer?.isCorrect) {
+                        <span class="badge-correct">Esatta</span>
+                      } @else if (studentAnswer?.selectedOption === oIdx && !studentAnswer?.isCorrect) {
+                        <span class="badge-wrong">Tua risposta</span>
+                      }
+                    </div>
+                  }
+                </div>
+                @if (q.explanation) {
+                  <p class="review-explanation">{{ q.explanation }}</p>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      @else {
+        <section class="student-form-view">
+          @for (q of quiz()?.questions; track $index; let qIdx = $index) {
+            <article class="question-card">
+              <header class="question-header">
+                <span class="question-number">Domanda {{ qIdx + 1 }} di {{ quiz()?.questions?.length }}</span>
+                @if (q.relatedArtworkTitle) {
+                  <span class="artwork-tag">{{ q.relatedArtworkTitle }}</span>
+                }
+              </header>
+
+              <h3 class="question-text">{{ q.question }}</h3>
+
+              <div class="options-grid">
+                @for (opt of q.options; track $index; let oIdx = $index) {
+                  <button
+                    type="button"
+                    class="option-btn"
+                    [class.selected]="selectedAnswers()[qIdx] === oIdx"
+                    (click)="selectOption(qIdx, oIdx)"
+                  >
+                    <span class="option-letter">{{ ['A', 'B', 'C', 'D'][oIdx] || (oIdx + 1) }}</span>
+                    <span class="option-label">{{ opt }}</span>
+                  </button>
+                }
+              </div>
+            </article>
+          }
+        </section>
+      }
+
+    </div>
+
+    <footer class="quiz-footer">
+      @if (quizCompleted()) {
+        @if (isTeacher()) {
+          <button type="button" class="btn btn-primary w-full" (click)="endVisitAndClose()">
+            Chiudi e Termina Visita per Tutti
+          </button>
+        } @else {
+          <button type="button" class="btn btn-primary w-full" (click)="close()">
+            Chiudi Quiz
+          </button>
+        }
+      } @else if (isTeacher()) {
+        <button type="button" class="btn btn-primary w-full" (click)="endQuiz()">
+          Termina Quiz e Mostra Risultati a Tutti
+        </button>
+      } @else if (!hasSubmitted()) {
+        <button
+          type="button"
+          class="btn btn-primary w-full"
+          [disabled]="!allAnswered() || isSubmitting()"
+          (click)="submitAnswers()"
+        >
+          @if (isSubmitting()) {
+            <span class="spinner-sm"></span>
+            <span>Invio risposte in corso...</span>
+          } @else {
+            <span>Invia le mie Risposte ({{ answeredCount() }}/{{ quiz()?.questions?.length || 0 }})</span>
+          }
+        </button>
+      }
+    </footer>
+
+  </div>
+</div>

@@ -220,6 +220,36 @@ class LLMService {
     }
   }
 
+  static async generateQuiz(visitContext, artworksContext, settings = {}) {
+    const { numberOfQuestions = 5, difficulty = 'medium', targetAge = 'studente', language = 'it' } = settings;
+
+    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+      return this._mockGenerateQuiz(visitContext, artworksContext, settings);
+    }
+
+    try {
+      const prompt = promptHandler('generateQuiz', {
+        visitTitle: visitContext?.title || 'Visita Guidata',
+        artworksContext: artworksContext || [],
+        numberOfQuestions,
+        difficulty,
+        targetAge,
+        language
+      });
+
+      console.log(`\x1b[36m[DEBUG AI] Prompt generazione quiz:\x1b[0m`, prompt);
+      const rawResponse = await this._callLLMHandler(prompt);
+      const parsed = this._extractJSON(rawResponse);
+      if (parsed && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+        return parsed;
+      }
+      return this._mockGenerateQuiz(visitContext, artworksContext, settings);
+    } catch (err) {
+      console.warn('[LLMService] Errore generazione quiz LLM, uso fallback mock:', err.message);
+      return this._mockGenerateQuiz(visitContext, artworksContext, settings);
+    }
+  }
+
   /**
   * @returns {Promise<{ actionType: string, itemAction?: string, targetPoiType?: string, targetArtist?: string, userQuery?: string }>}
   */
@@ -572,6 +602,49 @@ class LLMService {
     const currents = artworkContext?.artisticCurrents?.join(', ') || 'del suo periodo di appartenenza';
     const title = artworkContext?.title || 'quest\'opera';
     return `L'opera "${title}" si inserisce nel contesto artistico e culturale legato a ${currents}, riflettendo le innovazioni stilistiche, i canoni espressivi e gli eventi storici tipici della sua epoca.`;
+  }
+
+  static _mockGenerateQuiz(visitContext, artworksContext = [], settings = {}) {
+    const { numberOfQuestions = 5, difficulty = 'medium', targetAge = 'studente', language = 'it' } = settings;
+    const questions = [];
+    const artworks = Array.isArray(artworksContext) && artworksContext.length > 0
+      ? artworksContext
+      : [{ title: 'Opera Principale', artistName: 'Autore Celebre', artisticCurrents: ['Rinascimento'] }];
+
+    const count = Math.min(numberOfQuestions, Math.max(artworks.length, 3));
+    for (let i = 0; i < count; i++) {
+      const art = artworks[i % artworks.length];
+      const title = art.title || `Opera ${i + 1}`;
+      const artist = art.artistName || (art.artists && art.artists[0]?.name ? `${art.artists[0].name} ${art.artists[0].surname || ''}`.trim() : 'Autore sconosciuto');
+      const currents = Array.isArray(art.artisticCurrents) && art.artisticCurrents.length > 0 ? art.artisticCurrents[0] : 'Arte Classica';
+
+      if (i % 2 === 0) {
+        questions.push({
+          question: `Chi è l'autore dell'opera "${title}" ammirata durante il tour?`,
+          options: [artist, 'Leonardo da Vinci', 'Caravaggio', 'Michelangelo Buonarroti'],
+          correctAnswerIndex: 0,
+          explanation: `L'opera "${title}" è stata realizzata da ${artist}.`,
+          relatedArtworkTitle: title
+        });
+      } else {
+        questions.push({
+          question: `A quale corrente artistica o periodo appartiene l'opera "${title}"?`,
+          options: [currents, 'Cubismo contemporaneo', 'Gotico internazionale', 'Astrattismo geometrico'],
+          correctAnswerIndex: 0,
+          explanation: `L'opera "${title}" si inserisce nel contesto di ${currents}.`,
+          relatedArtworkTitle: title
+        });
+      }
+    }
+
+    return {
+      title: `Quiz: ${visitContext?.title || 'Visita Guidata'}`,
+      description: `Quiz finale di verifica per la visita ${visitContext?.title || 'del museo'}`,
+      difficulty,
+      targetAge,
+      language,
+      questions
+    };
   }
 
   static _mockLogisticalDirections(currentLocation, targetLocation, museumContext) {

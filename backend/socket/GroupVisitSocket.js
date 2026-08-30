@@ -441,9 +441,6 @@ function initGroupVisitSocket(httpServer) {
         }
       });
 
-      /**
-       * Docente termina la visita di gruppo
-       */
       socket.on('teacher:end-session', async ({ sessionCode, sessionId }, callback) => {
         try {
           if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') return;
@@ -457,16 +454,117 @@ function initGroupVisitSocket(httpServer) {
             if (found) querySessionId = found._id.toString();
           }
 
+          let museumId = null;
           if (querySessionId) {
-            await GroupVisitService.endSession(querySessionId, user.id);
+            const ended = await GroupVisitService.endSession(querySessionId, user.id);
+            if (ended?.visit?.museum) {
+              museumId = (ended.visit.museum._id || ended.visit.museum.id || ended.visit.museum).toString();
+            }
           }
 
           io.to(room).emit('session:ended', {
-            message: 'La visita guidata è stata terminata dal docente.'
+            message: 'La visita guidata è stata terminata dal docente.',
+            museumId
           });
 
-          if (typeof callback === 'function') callback({ success: true });
+          if (typeof callback === 'function') callback({ success: true, museumId });
         } catch (err) {
+          if (typeof callback === 'function') callback({ success: false, error: err.message });
+        }
+      });
+
+      socket.on('teacher:start-quiz', async ({ sessionCode, sessionId, quizId }, callback) => {
+        try {
+          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') {
+            throw new Error('Solo il docente o lo staff può avviare il quiz.');
+          }
+
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) throw new Error('Codice sessione mancante.');
+          const room = `session:${code}`;
+
+          let querySessionId = sessionId;
+          if (!querySessionId || !mongoose.Types.ObjectId.isValid(querySessionId)) {
+            const found = await GroupVisit.findOne({ sessionCode: code });
+            if (found) querySessionId = found._id.toString();
+          }
+
+          const result = await GroupVisitService.startQuiz(querySessionId, user.id, quizId);
+
+          const QuizService = require('../service/QuizService');
+          const studentQuiz = await QuizService.getQuizById(quizId, false);
+
+          io.to(room).emit('session:quiz-started', {
+            sessionCode: code,
+            quizState: 'in_progress',
+            quiz: studentQuiz
+          });
+
+          if (typeof callback === 'function') {
+            callback({
+              success: true,
+              quiz: result.quiz
+            });
+          }
+        } catch (err) {
+          console.error('[Socket.IO] Errore in teacher:start-quiz:', err.message);
+          if (typeof callback === 'function') callback({ success: false, error: err.message });
+        }
+      });
+
+      socket.on('student:submit-quiz', async ({ sessionCode, answers }, callback) => {
+        try {
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) throw new Error('Codice sessione mancante.');
+          const room = `session:${code}`;
+
+          const studentName = `${user.name || ''} ${user.surname || ''}`.trim() || user.email;
+          const QuizService = require('../service/QuizService');
+          const result = await QuizService.submitQuizAnswers(code, user.id, studentName, answers);
+
+          socket.to(room).emit('session:quiz-student-submitted', {
+            studentId: user.id,
+            studentName,
+            score: result.score,
+            totalQuestions: result.totalQuestions,
+            percentage: result.percentage
+          });
+
+          if (typeof callback === 'function') {
+            callback({
+              success: true,
+              ...result
+            });
+          }
+        } catch (err) {
+          console.error('[Socket.IO] Errore in student:submit-quiz:', err.message);
+          if (typeof callback === 'function') callback({ success: false, error: err.message });
+        }
+      });
+
+      socket.on('teacher:end-quiz', async ({ sessionCode, sessionId }, callback) => {
+        try {
+          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') {
+            throw new Error('Solo il docente o lo staff può concludere il quiz.');
+          }
+
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) throw new Error('Codice sessione mancante.');
+          const room = `session:${code}`;
+
+          let querySessionId = sessionId;
+          if (!querySessionId || !mongoose.Types.ObjectId.isValid(querySessionId)) {
+            const found = await GroupVisit.findOne({ sessionCode: code });
+            if (found) querySessionId = found._id.toString();
+          }
+
+          const result = await GroupVisitService.endQuiz(querySessionId, user.id);
+
+          io.to(room).emit('session:quiz-ended', result);
+
+          if (typeof callback === 'function') callback({ success: true, ...result });
+        } catch (err) {
+          console.error('[Socket.IO] Errore in teacher:end-quiz:', err.message);
           if (typeof callback === 'function') callback({ success: false, error: err.message });
         }
       });

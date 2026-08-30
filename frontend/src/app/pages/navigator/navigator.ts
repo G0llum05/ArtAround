@@ -2,11 +2,14 @@ import { Component, signal, inject, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { Itinerary } from '../../components/itinerary/itinerary';
 import { Chat } from '../../components/chat/chat';
 import { NavigatorService, StreamChunk } from '../../services/navigator.service';
 import { VisitService } from '../../services/visit.service';
 import { GroupSocketService } from '../../services/group-socket.service';
+import { QuizService } from '../../services/quiz.service';
+import { QuizModal } from '../../components/quiz-modal/quiz-modal';
 import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
 import { ToneType, UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
 import { NavigatorRequest } from '../../models/navigator.model';
@@ -23,16 +26,22 @@ const settingsKey = 'navigatorSettings'
 @Component({
   selector: 'app-navigator',
   standalone: true,
-  imports: [CommonModule, FormsModule, Itinerary, Chat, NavigatorSettings, Map],
+  imports: [CommonModule, FormsModule, Itinerary, Chat, NavigatorSettings, Map, QuizModal],
   templateUrl: './navigator.html',
   styleUrl: './navigator.css'
 })
 export class Navigator {
   private navigatorService = inject(NavigatorService);
   private visitService = inject(VisitService);
-  private socketService = inject(GroupSocketService);
+  protected socketService = inject(GroupSocketService);
+  private quizService = inject(QuizService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+
+  // Quiz Finale
+  isQuizModalOpen = signal<boolean>(false);
+  isGeneratingQuiz = signal<boolean>(false);
+  availableQuizzes = signal<any[]>([]);
 
   // Stati UI
   isPlaying = signal<boolean>(false);
@@ -150,9 +159,27 @@ export class Navigator {
         });
 
         // Se la sessione viene conclusa dal docente
-        this.socketService.onSessionEnded((data) => {
-          alert(data?.message || 'La visita di gruppo è stata conclusa dal docente.');
-          this.router.navigate(['/groups']);
+        this.socketService.onSessionEnded((data: any) => {
+          this.isQuizModalOpen.set(false);
+          if (this.currentAudio) {
+            this.currentAudio.pause();
+            this.currentAudio = null;
+          }
+          this.isPlaying.set(false);
+          this.socketService.disconnect();
+
+          const targetMuseumId = data?.museumId || this.museumId();
+          if (targetMuseumId && /^[0-9a-fA-F]{24}$/.test(targetMuseumId)) {
+            this.router.navigate(['/marketplace', targetMuseumId]);
+          } else {
+            this.router.navigate(['/']);
+          }
+        });
+
+        // Ricezione avvio quiz finale per tutti i partecipanti
+        this.socketService.onQuizStarted((data) => {
+          console.log('[Navigator] Quiz finale avviato:', data);
+          this.isQuizModalOpen.set(true);
         });
       }
     });
@@ -162,6 +189,12 @@ export class Navigator {
   //TODO chiamate api facili inziali come per prendere l'itinerario e tutta la visita si usa to signal
 
   private loadVisitData(vId: string): void {
+    // Carica eventuali quiz disponibili per la visita
+    this.quizService.getQuizzesByVisit(vId).pipe(takeUntilDestroyed()).subscribe({
+      next: (res) => this.availableQuizzes.set(res.data || []),
+      error: () => {}
+    });
+
     // Svuota la chat e reimposta lo stato audio per la nuova visita
     this.messages.set([
       { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale per questa visita. Come posso aiutarti?' }
@@ -560,6 +593,71 @@ export class Navigator {
     const prevIdx = this.currentItineraryStepIndex() - 1;
     if (prevIdx >= 0) {
       this.changeItineraryStep(prevIdx);
+    }
+  }
+
+  async startGroupQuiz(): Promise<void> {
+    const code = this.sessionCode();
+    const vId = this.visitId();
+    if (!code) return;
+
+    this.isGeneratingQuiz.set(true);
+
+    try {
+      let quizzes = this.availableQuizzes();
+      let quizId = quizzes.length > 0 ? (quizzes[0]._id || quizzes[0].id) : null;
+
+      if (!quizId && vId) {
+        const genRes = await firstValueFrom(this.quizService.generateQuiz({
+          visitId: vId,
+          numberOfQuestions: 5,
+          difficulty: 'medium',
+          targetAge: 'studente',
+          language: this.currentSettings().language || 'it'
+        }));
+        if (genRes?.data?._id || genRes?.data?.id) {
+          quizId = genRes.data._id || genRes.data.id;
+        }
+      }
+
+      if (quizId) {
+        await this.socketService.startQuiz(code, undefined, quizId);
+        this.isQuizModalOpen.set(true);
+      }
+    } catch (err) {
+      console.error('[Navigator] Errore avvio quiz di gruppo:', err);
+    } finally {
+      this.isGeneratingQuiz.set(false);
+    }
+  }
+
+  endGroupVisit(): void {
+    const code = this.sessionCode();
+    const musId = this.museumId();
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isPlaying.set(false);
+    this.isQuizModalOpen.set(false);
+
+    if (code) {
+      this.socketService.endSession(code, '')
+        .finally(() => {
+          this.socketService.disconnect();
+          if (musId && /^[0-9a-fA-F]{24}$/.test(musId)) {
+            this.router.navigate(['/marketplace', musId]);
+          } else {
+            this.router.navigate(['/']);
+          }
+        });
+    } else {
+      this.socketService.disconnect();
+      if (musId && /^[0-9a-fA-F]{24}$/.test(musId)) {
+        this.router.navigate(['/marketplace', musId]);
+      } else {
+        this.router.navigate(['/']);
+      }
     }
   }
 }

@@ -41,7 +41,7 @@
       
       @if (session()?.visit?.museum?.name || session()?.museumName) {
         <p class="museum-name">
-          🏛️ {{ session()?.visit?.museum?.name || session()?.museumName }}
+          {{ session()?.visit?.museum?.name || session()?.museumName }}
         </p>
       }
     </header>
@@ -74,6 +74,37 @@
       </p>
     </section>
 
+    @if (isTeacher()) {
+      <section class="quiz-config-card">
+        <div class="quiz-config-header">
+          <div class="quiz-config-icon-wrap">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <div class="quiz-config-text">
+            <div class="quiz-config-title-row">
+              <h2 class="quiz-config-title">Quiz Finale Interattivo (AI)</h2>
+              <span class="badge-ai">Generato da AI</span>
+            </div>
+            <p class="quiz-config-desc">Genera automaticamente un quiz al termine del tour per verificare l'apprendimento degli studenti.</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [checked]="includeQuiz()" (change)="includeQuiz.set(!includeQuiz())">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </section>
+    } @else if (includeQuiz()) {
+      <div class="student-quiz-badge">
+        <span>Quiz finale previsto al termine del tour</span>
+      </div>
+    }
+
     <!-- LISTA PARTECIPANTI CONNESSI IN TEMPO REALE -->
     <section class="participants-section">
       <div class="participants-header">
@@ -96,7 +127,7 @@
         @if (session()?.teacher) {
           <div class="participant-item host-item">
             <div class="participant-avatar host-avatar">
-              🎓
+              D
             </div>
             <div class="participant-info">
               <span class="participant-name">

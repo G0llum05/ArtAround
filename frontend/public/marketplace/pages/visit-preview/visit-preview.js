@@ -91,7 +91,7 @@ export class MktVisitPreview extends HTMLElement {
     }
 
     const role = this.getUserRole();
-    const isTeacherOrAdmin = role === 'teacher' || role === 'admin';
+    const isTeacherOrAdmin = role === 'teacher' || role === 'museumstaff' || role === 'admin';
     const isPaid = this.isPaid();
     const isPaidAndNotPurchased = isPaid && !this.hasPurchased;
 

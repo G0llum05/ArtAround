@@ -29,7 +29,7 @@ export class GroupRoom implements OnInit, OnDestroy {
     const role = this.authService.userRole();
     const currentUserId = this.authService.currentUser()?.userId;
     const teacherId = this.session()?.teacher?.id || this.session()?.teacher?._id;
-    return role === 'admin' || role === 'teacher' || (currentUserId && currentUserId === teacherId);
+    return role === 'admin' || role === 'teacher' || role === 'museumstaff' || (currentUserId && currentUserId === teacherId);
   });
 
   studentParticipants = computed(() => {

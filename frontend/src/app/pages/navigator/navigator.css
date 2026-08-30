@@ -160,6 +160,16 @@
    padding: var(--spacing-md);
  }
 
+.area-chat.chat-collapsed {
+  height: auto;
+  min-height: auto;
+}
+
+.area-chat.chat-collapsed .card-body {
+  height: auto;
+  flex-grow: 0;
+}
+
 /* --- Setup Media (Immagine) Mobile --- */
 .artwork-img-wrap {
   width: 100%;
@@ -255,6 +265,10 @@
     min-height: 35rem;
   }
 
+  .navigator-grid.chat-is-collapsed {
+    grid-template-rows: auto 1fr;
+  }
+
   /* 1. MEDIA CARD (Si allunga per tutta la colonna) */
   .area-media {
     height: 100%;
@@ -295,6 +309,17 @@
   .area-chat {
     height: 100%;
     min-height: 0;
+    transition: all 0.25s ease;
+  }
+
+  .area-chat.chat-collapsed {
+    height: auto;
+    min-height: auto;
+  }
+
+  .area-chat.chat-collapsed .card-body {
+    height: auto;
+    flex-grow: 0;
   }
 
   /* 3. AZIONI CARD (I bottoni) */
@@ -703,6 +728,49 @@
 
 .quiz-btn-icon {
   font-size: 1rem;
+}
+
+.btn-lateral-group-chat {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  z-index: 1040;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-lateral-group-chat:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.chat-badge-counter {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: var(--error);
+  color: var(--on-error);
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 

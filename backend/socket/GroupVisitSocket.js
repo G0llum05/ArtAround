@@ -70,8 +70,8 @@ function initGroupVisitSocket(httpServer) {
           id: (decoded.id || decoded._id).toString(),
           email: decoded.email,
           role: decoded.role,
-          name: decoded.name,
-          surname: decoded.surname
+          name: decoded.name || '',
+          surname: decoded.surname || ''
         };
         next();
       } catch (err) {
@@ -450,16 +450,142 @@ function initGroupVisitSocket(httpServer) {
         }
       });
 
-      /**
-       * Studente invia una domanda testuale
-       */
+      socket.on('session:send-message', async ({ sessionCode, sessionId, text, stepIndex }, callback) => {
+        try {
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) throw new Error('Codice sessione mancante.');
+          const room = `session:${code}`;
+
+          if (!text || !text.trim()) {
+            throw new Error('Il testo del messaggio non può essere vuoto.');
+          }
+
+          let querySessionId = sessionId;
+          if (!querySessionId || !mongoose.Types.ObjectId.isValid(querySessionId)) {
+            const found = await GroupVisit.findOne({ sessionCode: code });
+            if (found) querySessionId = found._id.toString();
+          }
+
+          let senderName = `${user.name || ''} ${user.surname || ''}`.trim();
+          if (!senderName && mongoose.Types.ObjectId.isValid(user.id)) {
+            try {
+              const User = require('../data/model/User');
+              const dbUser = await User.findById(user.id).select('name surname').lean();
+              if (dbUser) {
+                senderName = `${dbUser.name || ''} ${dbUser.surname || ''}`.trim();
+              }
+            } catch (e) {}
+          }
+          if (!senderName) {
+            senderName = user.role === 'teacher' ? 'Docente' : 'Studente';
+          }
+
+          const msgObj = {
+            id: new mongoose.Types.ObjectId().toString(),
+            senderId: user.id,
+            senderName: senderName,
+            senderRole: user.role,
+            text: text.trim(),
+            stepIndex: typeof stepIndex === 'number' ? stepIndex : 0,
+            createdAt: new Date()
+          };
+
+          if (querySessionId) {
+            const studentId = (user.id && mongoose.Types.ObjectId.isValid(user.id))
+              ? new mongoose.Types.ObjectId(user.id)
+              : undefined;
+
+            try {
+              await GroupVisit.findByIdAndUpdate(querySessionId, {
+                $push: {
+                  questions: {
+                    _id: new mongoose.Types.ObjectId(msgObj.id),
+                    student: studentId,
+                    studentName: senderName,
+                    text: text.trim(),
+                    stepIndex: msgObj.stepIndex,
+                    status: 'pending',
+                    createdAt: msgObj.createdAt
+                  }
+                }
+              });
+            } catch (dbErr) {
+              console.warn('[Socket.IO] Avviso salvataggio messaggio:', dbErr.message);
+            }
+          }
+
+          io.to(room).emit('session:new-message', msgObj);
+          io.to(room).emit('session:new-question', msgObj);
+          if (typeof callback === 'function') callback({ success: true, message: msgObj });
+        } catch (err) {
+          console.error('[Socket.IO] Errore in session:send-message:', err.message);
+          if (typeof callback === 'function') callback({ success: false, error: err.message });
+        }
+      });
+
       socket.on('student:ask-question', async ({ sessionCode, sessionId, text, stepIndex }, callback) => {
         try {
-          const room = `session:${sessionCode.toUpperCase().trim()}`;
-          const question = await GroupVisitService.addQuestion(sessionId, user.id, text, stepIndex);
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          if (!code) throw new Error('Codice sessione mancante.');
+          const room = `session:${code}`;
 
-          io.to(room).emit('session:new-question', question);
-          if (typeof callback === 'function') callback({ success: true, question });
+          let querySessionId = sessionId;
+          if (!querySessionId || !mongoose.Types.ObjectId.isValid(querySessionId)) {
+            const found = await GroupVisit.findOne({ sessionCode: code });
+            if (found) querySessionId = found._id.toString();
+          }
+
+          let senderName = `${user.name || ''} ${user.surname || ''}`.trim();
+          if (!senderName && mongoose.Types.ObjectId.isValid(user.id)) {
+            try {
+              const User = require('../data/model/User');
+              const dbUser = await User.findById(user.id).select('name surname').lean();
+              if (dbUser) {
+                senderName = `${dbUser.name || ''} ${dbUser.surname || ''}`.trim();
+              }
+            } catch (e) {}
+          }
+          if (!senderName) {
+            senderName = user.role === 'teacher' ? 'Docente' : 'Studente';
+          }
+
+          const msgObj = {
+            id: new mongoose.Types.ObjectId().toString(),
+            senderId: user.id,
+            senderName: senderName,
+            senderRole: user.role,
+            text: (text || '').trim(),
+            stepIndex: typeof stepIndex === 'number' ? stepIndex : 0,
+            createdAt: new Date()
+          };
+
+          if (querySessionId) {
+            const studentId = (user.id && mongoose.Types.ObjectId.isValid(user.id))
+              ? new mongoose.Types.ObjectId(user.id)
+              : undefined;
+
+            try {
+              await GroupVisit.findByIdAndUpdate(querySessionId, {
+                $push: {
+                  questions: {
+                    _id: new mongoose.Types.ObjectId(msgObj.id),
+                    student: studentId,
+                    studentName: senderName,
+                    text: msgObj.text,
+                    stepIndex: msgObj.stepIndex,
+                    status: 'pending',
+                    createdAt: msgObj.createdAt
+                  }
+                }
+              });
+            } catch (dbErr) {
+              console.warn('[Socket.IO] Avviso salvataggio domanda:', dbErr.message);
+            }
+          }
+
+          io.to(room).emit('session:new-message', msgObj);
+          io.to(room).emit('session:new-question', msgObj);
+          if (typeof callback === 'function') callback({ success: true, question: msgObj, message: msgObj });
         } catch (err) {
           if (typeof callback === 'function') callback({ success: false, error: err.message });
         }

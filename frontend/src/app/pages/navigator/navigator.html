@@ -21,7 +21,7 @@
   </header>
 
   <!-- LA GRIGLIA -->
-  <div class="navigator-grid">
+  <div class="navigator-grid" [class.chat-is-collapsed]="isChatCollapsed()">
 
     <!-- settings -->
     @if(isSettingsOpen()) {
@@ -173,12 +173,14 @@
     </section>
 
     <!-- COLONNA 2 (ALTO): CHAT -->
-    <section class="card area-chat">
+    <section class="card area-chat" [class.chat-collapsed]="isChatCollapsed()">
       <div class="card-body">
         <app-chat
           [messages]="messages()"
           [isDictating]="isDictating()"
+          [isCollapsed]="isChatCollapsed()"
           (toggleDictation)="toggleDictation()"
+          (toggleCollapse)="isChatCollapsed.set(!isChatCollapsed())"
         >
         </app-chat>
       </div>
@@ -256,5 +258,33 @@
       [totalStudents]="(audioSummary()?.totalStudents) || (socketService.participants().length)"
       (closeModal)="isQuizModalOpen.set(false)"
     ></app-quiz-modal>
+  }
+
+  @if (isGroup()) {
+    <button
+      type="button"
+      class="btn-lateral-group-chat"
+      [class.has-unread]="unreadGroupMessagesCount() > 0"
+      (click)="toggleGroupChat()"
+      aria-label="Apri chat della stanza"
+      title="Chat della Stanza"
+    >
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      @if (unreadGroupMessagesCount() > 0) {
+        <span class="chat-badge-counter">{{ unreadGroupMessagesCount() }}</span>
+      }
+    </button>
+
+    <app-group-chat
+      [isOpen]="isGroupChatOpen()"
+      [messages]="groupMessages()"
+      [currentUserId]="currentUserId()"
+      [sessionCode]="sessionCode() || ''"
+      [isTeacher]="isTeacher()"
+      (closeDrawer)="isGroupChatOpen.set(false)"
+      (sendMessage)="onSendGroupMessage($event)"
+    ></app-group-chat>
   }
 </main>

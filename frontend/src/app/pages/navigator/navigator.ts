@@ -9,7 +9,9 @@ import { NavigatorService, StreamChunk } from '../../services/navigator.service'
 import { VisitService } from '../../services/visit.service';
 import { GroupSocketService } from '../../services/group-socket.service';
 import { QuizService } from '../../services/quiz.service';
+import { AuthService } from '../../services/auth.service';
 import { QuizModal } from '../../components/quiz-modal/quiz-modal';
+import { GroupChat } from '../../components/group-chat/group-chat';
 import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
 import { ToneType, UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
 import { NavigatorRequest } from '../../models/navigator.model';
@@ -26,7 +28,7 @@ const settingsKey = 'navigatorSettings'
 @Component({
   selector: 'app-navigator',
   standalone: true,
-  imports: [CommonModule, FormsModule, Itinerary, Chat, NavigatorSettings, Map, QuizModal],
+  imports: [CommonModule, FormsModule, Itinerary, Chat, NavigatorSettings, Map, QuizModal, GroupChat],
   templateUrl: './navigator.html',
   styleUrl: './navigator.css'
 })
@@ -34,9 +36,43 @@ export class Navigator {
   private navigatorService = inject(NavigatorService);
   private visitService = inject(VisitService);
   protected socketService = inject(GroupSocketService);
+  protected authService = inject(AuthService);
   private quizService = inject(QuizService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+
+  currentUserId = computed(() => {
+    const u = this.authService.currentUser();
+    return (u?.userId || '') as string;
+  });
+
+  // Chat di Gruppo (Stanza)
+  isGroupChatOpen = signal<boolean>(false);
+  groupMessages = computed<ChatMessage[]>(() => {
+    const myId = this.currentUserId();
+    const currentUser = this.authService.currentUser();
+    const myFullName = currentUser ? `${currentUser.name || ''} ${currentUser.surname || ''}`.trim() : '';
+
+    return this.socketService.groupMessages().map(msg => {
+      const isMine = !!(msg.senderId && myId && msg.senderId.toString() === myId.toString());
+      let displayName = msg.senderName;
+      if (isMine && myFullName) {
+        displayName = myFullName;
+      } else if (!displayName || displayName.includes('@')) {
+        displayName = msg.senderRole === 'teacher' ? 'Docente' : 'Studente';
+      }
+
+      return {
+        sender: isMine ? 'user' : 'group',
+        senderName: displayName,
+        senderRole: msg.senderRole || 'student',
+        senderId: msg.senderId ? msg.senderId.toString() : undefined,
+        text: msg.text,
+        createdAt: msg.createdAt
+      };
+    });
+  });
+  unreadGroupMessagesCount = signal<number>(0);
 
   // Quiz Finale
   isQuizModalOpen = signal<boolean>(false);
@@ -49,6 +85,7 @@ export class Navigator {
   isSettingsOpen = signal<boolean>(false);
   isMapOpen = signal<boolean>(false);
   isLoading = signal<boolean>(false);
+  isChatCollapsed = signal<boolean>(false);
 
   // contesto
   museumId = signal<string>('650c1f1e1c9d440000a1b2c3');
@@ -123,6 +160,15 @@ export class Navigator {
       if (active && (state === 'in_progress' || state === 'completed')) {
         this.isQuizModalOpen.set(true);
       }
+    });
+
+    let prevGroupMessagesLength = 0;
+    effect(() => {
+      const currentMsgs = this.socketService.groupMessages();
+      if (!this.isGroupChatOpen() && currentMsgs.length > prevGroupMessagesLength) {
+        this.unreadGroupMessagesCount.update(c => c + (currentMsgs.length - prevGroupMessagesLength));
+      }
+      prevGroupMessagesLength = currentMsgs.length;
     });
 
     toObservable(this.currentSettings).pipe(
@@ -679,6 +725,23 @@ export class Navigator {
     } else {
       this.socketService.disconnect();
       this.router.navigate(['/']);
+    }
+  }
+
+  toggleGroupChat(): void {
+    const next = !this.isGroupChatOpen();
+    this.isGroupChatOpen.set(next);
+    if (next) {
+      this.unreadGroupMessagesCount.set(0);
+    }
+  }
+
+  onSendGroupMessage(text: string): void {
+    if (!text || !text.trim()) return;
+    const code = this.sessionCode();
+    if (code) {
+      this.socketService.sendGroupMessage(code, text.trim(), this.currentItineraryStepIndex())
+        .catch((err: any) => console.error('[Navigator] Errore invio messaggio stanza:', err));
     }
   }
 }

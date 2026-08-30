@@ -1,0 +1,71 @@
+@if (isOpen()) {
+  <div class="group-chat-backdrop" (click)="closeDrawer.emit()"></div>
+
+  <aside class="group-chat-drawer" [class.open]="isOpen()" role="dialog" aria-label="Chat della classe">
+    
+    <header class="drawer-header">
+      <div class="drawer-header-title">
+        <svg class="header-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <div class="title-text-col">
+          <h2 class="drawer-title">Chat della Stanza</h2>
+          <span class="drawer-code-badge">PIN: {{ sessionCode() }}</span>
+        </div>
+      </div>
+      <button type="button" class="btn-close-drawer" (click)="closeDrawer.emit()" aria-label="Chiudi chat">✕</button>
+    </header>
+
+    <div class="drawer-messages" #scrollContainer>
+      @if (messages().length === 0) {
+        <div class="empty-chat-state">
+          <p class="empty-title">Nessuna domanda inviata</p>
+          <p class="empty-desc">Usa il campo in basso per fare una domanda al docente o alla classe.</p>
+        </div>
+      }
+
+      @for (msg of messages(); track $index) {
+        <div
+          class="room-chat-bubble"
+          [class.my-message]="msg.senderId && currentUserId() && msg.senderId === currentUserId()"
+          [class.other-message]="!msg.senderId || !currentUserId() || msg.senderId !== currentUserId()"
+          [class.teacher-message]="msg.senderRole === 'teacher' || msg.senderRole === 'museumstaff'"
+        >
+          <div class="msg-meta-row">
+            <span class="msg-sender-name">{{ msg.senderName || 'Partecipante' }}</span>
+            @if (msg.senderRole === 'teacher' || msg.senderRole === 'museumstaff') {
+              <span class="badge-role">Docente</span>
+            }
+          </div>
+          <p class="msg-text">{{ msg.text }}</p>
+        </div>
+      }
+    </div>
+
+    <footer class="drawer-footer">
+      <div class="drawer-input-row">
+        <input
+          type="text"
+          class="drawer-input"
+          [value]="typedText()"
+          (input)="typedText.set($any($event.target).value)"
+          (keydown)="onKeyDown($event)"
+          placeholder="Scrivi una domanda a tutti..."
+        />
+        <button
+          type="button"
+          class="btn-send-message"
+          [disabled]="!typedText().trim()"
+          (click)="onSend()"
+          aria-label="Invia domanda"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </footer>
+
+  </aside>
+}

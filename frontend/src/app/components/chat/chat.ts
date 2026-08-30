@@ -1,4 +1,4 @@
-import { Component, input, output, ElementRef, viewChild, effect } from '@angular/core';
+import { Component, input, output, signal, ElementRef, viewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 
@@ -10,20 +10,21 @@ import { ChatMessage } from '../../models/appModel/chatMessage';
   styleUrl: './chat.css'
 })
 export class Chat {
-  // Riceve la cronologia dei messaggi dal padre
   messages = input<ChatMessage[]>([]);
   isDictating = input<boolean>(false);
+  isCollapsed = input<boolean>(false);
 
-  // Output verso il padre per gestire il click sul microfono
   toggleDictation = output<void>();
+  toggleCollapse = output<void>();
 
   scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
 
   constructor() {
     effect(() => {
-      // Reagisce a ogni aggiornamento di messages()
       this.messages();
-      setTimeout(() => this.scrollToBottom(), 50);
+      if (!this.isCollapsed()) {
+        setTimeout(() => this.scrollToBottom(), 50);
+      }
     });
   }
 

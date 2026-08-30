@@ -33,6 +33,8 @@ export interface QuizSubmissionAnswer {
 export interface QuizSubmission {
   student?: string;
   studentName: string;
+  studentSurname?: string;
+  studentEmail?: string;
   answers: QuizSubmissionAnswer[];
   score: number;
   totalQuestions: number;

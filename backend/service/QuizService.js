@@ -216,9 +216,17 @@ class QuizService {
       };
     });
 
+    const User = require('../data/model/User');
+    const userDoc = await User.findById(studentId).lean();
+    const sName = userDoc?.name || studentName || 'Studente';
+    const sSurname = userDoc?.surname || '';
+    const sEmail = userDoc?.email || '';
+
     const submission = {
       student: new mongoose.Types.ObjectId(studentId),
-      studentName: studentName || 'Studente',
+      studentName: sName,
+      studentSurname: sSurname,
+      studentEmail: sEmail,
       answers: evaluatedAnswers,
       score: score,
       totalQuestions: questions.length,

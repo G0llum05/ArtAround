@@ -51,6 +51,14 @@ const quizSubmissionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  studentSurname: {
+    type: String,
+    default: ''
+  },
+  studentEmail: {
+    type: String,
+    default: ''
+  },
   answers: [quizAnswerSchema],
   score: {
     type: Number,

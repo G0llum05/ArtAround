@@ -1,6 +1,7 @@
 import { Component, input, output, signal, inject, OnInit, OnDestroy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { GroupSocketService } from '../../services/group-socket.service';
 import { Quiz, QuizSubmissionAnswer, QuizResult } from '../../models/quiz.model';
 
@@ -13,6 +14,7 @@ import { Quiz, QuizSubmissionAnswer, QuizResult } from '../../models/quiz.model'
 })
 export class QuizModal implements OnInit, OnDestroy {
   protected socketService = inject(GroupSocketService);
+  private router = inject(Router);
 
   isTeacher = input<boolean>(false);
   sessionCode = input.required<string>();
@@ -29,6 +31,8 @@ export class QuizModal implements OnInit, OnDestroy {
   studentSubmissions = signal<Array<{
     studentId: string;
     studentName: string;
+    studentSurname?: string;
+    studentEmail?: string;
     score: number;
     totalQuestions: number;
     percentage: number;
@@ -111,14 +115,29 @@ export class QuizModal implements OnInit, OnDestroy {
     if (this.isTeacher()) {
       this.socketService.endSession(this.sessionCode(), '')
         .finally(() => {
+          this.socketService.disconnect();
           this.closeModal.emit();
+          this.router.navigate(['/']);
         });
     } else {
+      this.socketService.disconnect();
       this.closeModal.emit();
+      this.router.navigate(['/']);
     }
   }
 
   close(): void {
-    this.closeModal.emit();
+    if (this.isTeacher()) {
+      this.socketService.endSession(this.sessionCode(), '')
+        .finally(() => {
+          this.socketService.disconnect();
+          this.closeModal.emit();
+          this.router.navigate(['/']);
+        });
+    } else {
+      this.socketService.disconnect();
+      this.closeModal.emit();
+      this.router.navigate(['/']);
+    }
   }
 }

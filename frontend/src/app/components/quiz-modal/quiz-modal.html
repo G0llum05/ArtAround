@@ -10,7 +10,6 @@
         <h2 class="quiz-title">{{ quiz()?.title || 'Quiz Finale di Verifica' }}</h2>
         <p class="quiz-desc">{{ quiz()?.description || 'Rispondi alle domande sulle opere viste durante la visita.' }}</p>
       </div>
-      <button type="button" class="btn-close-quiz" (click)="close()" aria-label="Chiudi Quiz">✕</button>
     </header>
 
     <div class="quiz-content">
@@ -37,7 +36,12 @@
                   <div class="rank-badge">
                     #{{ idx + 1 }}
                   </div>
-                  <span class="student-name">{{ sub.studentName }}</span>
+                  <div class="student-info-col">
+                    <span class="student-full-name">{{ sub.studentName }} {{ sub.studentSurname || '' }}</span>
+                    @if (sub.studentEmail || sub.email) {
+                      <span class="student-email-text">{{ sub.studentEmail || sub.email }}</span>
+                    }
+                  </div>
                   <span class="student-score">{{ sub.score }} / {{ sub.totalQuestions }}</span>
                 </div>
               }
@@ -61,7 +65,12 @@
             <div class="submissions-list">
               @for (sub of studentSubmissions(); track sub.studentId) {
                 <div class="submission-item">
-                  <span class="student-name">{{ sub.studentName }}</span>
+                  <div class="student-info-col">
+                    <span class="student-full-name">{{ sub.studentName }} {{ sub.studentSurname || '' }}</span>
+                    @if (sub.studentEmail) {
+                      <span class="student-email-text">{{ sub.studentEmail }}</span>
+                    }
+                  </div>
                   <span class="student-status-done">Completato ({{ sub.score }}/{{ sub.totalQuestions }})</span>
                 </div>
               }

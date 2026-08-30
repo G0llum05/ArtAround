@@ -385,8 +385,14 @@ class GroupVisitService {
     }
   }
 
-  static async startQuiz(sessionId, leaderId, quizId) {
-    const session = await GroupVisit.findById(sessionId);
+  static async startQuiz(identifier, leaderId, quizId) {
+    let session = null;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      session = await GroupVisit.findById(identifier);
+    }
+    if (!session && identifier) {
+      session = await GroupVisit.findOne({ sessionCode: String(identifier).toUpperCase().trim() });
+    }
     if (!session) {
       throw new Error('Sessione di gruppo non trovata.');
     }
@@ -409,8 +415,14 @@ class GroupVisitService {
     };
   }
 
-  static async endQuiz(sessionId, leaderId) {
-    const session = await GroupVisit.findById(sessionId).populate('activeQuiz');
+  static async endQuiz(identifier, leaderId) {
+    let session = null;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      session = await GroupVisit.findById(identifier).populate('activeQuiz');
+    }
+    if (!session && identifier) {
+      session = await GroupVisit.findOne({ sessionCode: String(identifier).toUpperCase().trim() }).populate('activeQuiz');
+    }
     if (!session) {
       throw new Error('Sessione di gruppo non trovata.');
     }

@@ -59,6 +59,7 @@ export class Navigator {
   isGroup = signal<boolean>(false);
   isTeacher = signal<boolean>(false);
   audioSummary = computed(() => this.socketService.studentsAudioSummary());
+  isLastStep = computed(() => this.itinerary().length > 0 && this.currentItineraryStepIndex() >= this.itinerary().length - 1);
 
   //Setting
   currentSettings = signal<UserNavigatorSettings>({
@@ -167,13 +168,7 @@ export class Navigator {
           }
           this.isPlaying.set(false);
           this.socketService.disconnect();
-
-          const targetMuseumId = data?.museumId || this.museumId();
-          if (targetMuseumId && /^[0-9a-fA-F]{24}$/.test(targetMuseumId)) {
-            this.router.navigate(['/marketplace', targetMuseumId]);
-          } else {
-            this.router.navigate(['/']);
-          }
+          this.router.navigate(['/']);
         });
 
         // Ricezione avvio quiz finale per tutti i partecipanti
@@ -601,6 +596,9 @@ export class Navigator {
     const vId = this.visitId();
     if (!code) return;
 
+    const confirmed = window.confirm('Attenzione: avviando il quiz finale concluderai la navigazione della visita guidata e non sarà più possibile tornare indietro tra le tappe. Vuoi procedere?');
+    if (!confirmed) return;
+
     this.isGeneratingQuiz.set(true);
 
     try {
@@ -633,7 +631,6 @@ export class Navigator {
 
   endGroupVisit(): void {
     const code = this.sessionCode();
-    const musId = this.museumId();
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio = null;
@@ -645,19 +642,11 @@ export class Navigator {
       this.socketService.endSession(code, '')
         .finally(() => {
           this.socketService.disconnect();
-          if (musId && /^[0-9a-fA-F]{24}$/.test(musId)) {
-            this.router.navigate(['/marketplace', musId]);
-          } else {
-            this.router.navigate(['/']);
-          }
+          this.router.navigate(['/']);
         });
     } else {
       this.socketService.disconnect();
-      if (musId && /^[0-9a-fA-F]{24}$/.test(musId)) {
-        this.router.navigate(['/marketplace', musId]);
-      } else {
-        this.router.navigate(['/']);
-      }
+      this.router.navigate(['/']);
     }
   }
 }

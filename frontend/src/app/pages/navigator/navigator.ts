@@ -103,7 +103,19 @@ export class Navigator {
 
     effect(() => {
       localStorage.setItem(settingsKey, JSON.stringify(this.currentSettings()));
-    })
+    });
+
+    effect(() => {
+      if (this.isQuizModalOpen()) {
+        if (this.currentAudio) {
+          this.currentAudio.pause();
+          this.currentAudio = null;
+        }
+        this.isPlaying.set(false);
+        this.audioCurrentTime.set(0);
+        this.audioDuration.set(0);
+      }
+    });
 
     toObservable(this.currentSettings).pipe(
       takeUntilDestroyed(), // Chiude il tubo se il componente viene distrutto
@@ -122,6 +134,9 @@ export class Navigator {
       if (params['visitId']) {
         this.visitId.set(params['visitId']);
         this.loadVisitData(params['visitId']);
+      } else {
+        this.currentItineraryStepIndex.set(0);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: 0 });
       }
       if (params['sessionCode']) {
         const code = params['sessionCode'].toUpperCase().trim();
@@ -234,9 +249,13 @@ export class Navigator {
         if (visitData?.museumId && typeof visitData.museumId === 'string' && visitData.museumId.length === 24) {
           this.museumId.set(visitData.museumId);
         }
+        this.currentItineraryStepIndex.set(0);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: 0 });
       },
       error: (err) => {
         console.warn('Caricamento dati visita non riuscito, uso itinerario di fallback:', err);
+        this.currentItineraryStepIndex.set(0);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: 0 });
       }
     });
   }

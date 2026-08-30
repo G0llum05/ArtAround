@@ -395,9 +395,11 @@ class LLMService {
     else if (textLower.includes('italiano') || textLower.includes('italian')) language = 'it';
     else if (textLower.includes('tedesco') || textLower.includes('deutsch') || textLower.includes('german')) language = 'de';
 
-    if (textLower.includes('accorcia') || textLower.includes('riduci') || textLower.includes('veloce') || textLower.includes('sintetico') || textLower.includes('breve') || textLower.includes('15')) {
+    if (textLower.includes('poco') || textLower.includes('accorcia') || textLower.includes('riduci') || textLower.includes('veloce') || textLower.includes('sintetico') || textLower.includes('breve') || textLower.includes('15')) {
       length = 15;
-    } else if (textLower.includes('allunga') || textLower.includes('più lunga') || textLower.includes('estendi') || textLower.includes('approfond') || textLower.includes('dettagli') || textLower.includes('60')) {
+    } else if (textLower.includes('normale') || textLower.includes('medio') || textLower.includes('standard') || textLower.includes('30')) {
+      length = 30;
+    } else if (textLower.includes('abbastanza') || textLower.includes('allunga') || textLower.includes('più lunga') || textLower.includes('estendi') || textLower.includes('approfond') || textLower.includes('dettagli') || textLower.includes('60')) {
       length = 60;
     }
 

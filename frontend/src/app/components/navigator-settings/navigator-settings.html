@@ -57,12 +57,12 @@
       <!-- DURATA -->
       <section class="card">
         <div class="card-body">
-          <h3 class="card-title">Durata del percorso</h3>
-          <p class="card-desc">Quanto tempo hai a disposizione?</p>
+          <h3 class="card-title">Durata della spiegazione</h3>
+          <p class="card-desc">Quanto vuoi che sia dettagliata la guida?</p>
           <div class="chips-group">
-            <button type="button" class="chip" [class.active]="settings().duration === 15" (click)="setDuration(15)">15 Min</button>
-            <button type="button" class="chip" [class.active]="settings().duration === 30" (click)="setDuration(30)">30 Min</button>
-            <button type="button" class="chip" [class.active]="settings().duration === 60" (click)="setDuration(60)">60 Min</button>
+            <button type="button" class="chip" [class.active]="settings().duration === 15" (click)="setDuration(15)">Poco</button>
+            <button type="button" class="chip" [class.active]="settings().duration === 30" (click)="setDuration(30)">Normale</button>
+            <button type="button" class="chip" [class.active]="settings().duration === 60" (click)="setDuration(60)">Abbastanza</button>
           </div>
         </div>
       </section>

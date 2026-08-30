@@ -283,7 +283,13 @@ class AuthService {
    */
   async _getUserByEmail(email) {
     if (!email) return null;
-    return await User.findOne({ email: email.toLowerCase().trim() });
+    const cleanEmail = email.toLowerCase().trim();
+    return await User.findOne({
+      $or: [
+        { email: cleanEmail },
+        { email: `${cleanEmail}@artaround.it` }
+      ]
+    });
   }
 
 

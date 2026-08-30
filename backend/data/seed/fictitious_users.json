@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "key": "autore1",
+      "name": "Autore",
+      "surname": "Uno",
+      "email": "autore1@artaround.it",
+      "password": "12345678",
+      "role": "museumstaff",
+      "roleStatus": "approved"
+    },
+    {
+      "key": "autore2",
+      "name": "Autore",
+      "surname": "Due",
+      "email": "autore2@artaround.it",
+      "password": "12345678",
+      "role": "museumstaff",
+      "roleStatus": "approved"
+    },
+    {
+      "key": "visitatore1",
+      "name": "Visitatore",
+      "surname": "Uno",
+      "email": "visitatore1@artaround.it",
+      "password": "12345678",
+      "role": "guest",
+      "roleStatus": "approved"
+    },
+    {
+      "key": "visitatore2",
+      "name": "Visitatore",
+      "surname": "Due",
+      "email": "visitatore2@artaround.it",
+      "password": "12345678",
+      "role": "student",
+      "roleStatus": "approved"
+    }
+  ]
+}

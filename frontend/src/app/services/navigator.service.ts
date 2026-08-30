@@ -35,9 +35,18 @@ export class NavigatorService {
     formData.append('length', request.length.toString());
     const toneVal = TONE_MAPPING[request.tone as ToneType] || request.tone;
     formData.append('tone', toneVal);
-    formData.append('museumId', request.museumId);
-    formData.append('visitId', request.visitId);
-    formData.append('currentArtworkIndex', request.currentArtworkIndex.toString());
+    if (request.museumId) {
+      formData.append('museumId', request.museumId);
+    }
+    if (request.visitId) {
+      formData.append('visitId', request.visitId);
+    }
+    if (request.artworkId) {
+      formData.append('artworkId', request.artworkId);
+    }
+    if (request.currentArtworkIndex !== undefined && request.currentArtworkIndex !== null) {
+      formData.append('currentArtworkIndex', request.currentArtworkIndex.toString());
+    }
 
     if (request.isGroup !== undefined) {
       formData.append('isGroup', request.isGroup.toString());

@@ -1,0 +1,166 @@
+@if (modalService.isOpen() && artwork()) {
+  <div class="modal-backdrop" (click)="close()">
+    <div class="modal-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+      <header class="modal-header">
+        <div class="header-titles">
+          <div class="badge-qr">
+            <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Opera da QR Code</span>
+          </div>
+          <h2 class="artwork-title">{{ artwork()?.title }}</h2>
+          @if (artwork()?.artists && artwork()!.artists.length > 0) {
+            <p class="artwork-subtitle">
+              {{ artwork()!.artists[0].name }} {{ artwork()!.artists[0].surname }}
+            </p>
+          }
+        </div>
+        <button type="button" class="btn-close" (click)="close()" aria-label="Chiudi consultazione">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="modal-body-grid">
+
+        <section class="media-column">
+          <div class="artwork-img-wrapper">
+            <img
+              [src]="artwork()?.assets?.images?.[0]?.url || '/assets/images/place_holder.jpg'"
+              [alt]="artwork()?.title || 'Dettaglio opera'"
+              class="artwork-image"
+            />
+
+            @if (showSubtitles() && currentSubtitle()) {
+              <div class="subtitles-overlay">
+                <p>{{ currentSubtitle() }}</p>
+              </div>
+            }
+
+            <button
+              type="button"
+              class="floating-cc"
+              [class.active]="showSubtitles()"
+              (click)="toggleSubtitles()"
+              aria-label="Attiva/Disattiva Sottotitoli"
+            >
+              <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="M240-320h320v-80H240v80Zm400 0h80v-80h-80v80ZM240-480h80v-80h-80v80Zm160 0h320v-80H400v80ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80h640v-480H160v480Zm0 0v-480 480Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="audio-control-bar">
+            <div class="audio-info">
+              <span class="audio-label">Guida Audio Opera</span>
+              <span class="audio-time">{{ formattedTime() }}</span>
+            </div>
+            <div
+              class="progress-track"
+              (click)="seekAudio($event)"
+              role="progressbar"
+              [attr.aria-valuenow]="audioProgressPercent()"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div class="progress-fill" [style.width.%]="audioProgressPercent()"></div>
+            </div>
+            <div class="audio-playback-row">
+              <button
+                type="button"
+                class="btn-play-standalone"
+                (click)="togglePlay()"
+                [disabled]="isLoading()"
+                aria-label="Play o Pausa spiegazione audio"
+              >
+                @if (!isPlaying()) {
+                  <svg class="icon-lg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z"/>
+                  </svg>
+                } @else {
+                  <svg class="icon-lg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M520-200v-560h240v560H520Zm-320 0v-560h240v560H200Zm400-80h80v-400h-80v400Zm-320 0h80v-400h-80v400Zm0-400v400-400Zm320 0v400-400Z"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="details-column">
+          <div class="actions-panel">
+            <button
+              type="button"
+              class="btn-action-primary"
+              (click)="tellMeMore()"
+              [disabled]="isLoading()"
+            >
+              <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="M440-280h80v-240h-80v240Zm68.5-331.5Q520-623 520-640t-11.5-28.5Q497-680 480-680t-28.5 11.5Q440-657 440-640t11.5 28.5Q463-600 480-600t28.5-11.5ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
+              </svg>
+              <span>Dimmi di più</span>
+            </button>
+
+            <button
+              type="button"
+              class="btn-action-secondary"
+              (click)="askAuthor()"
+              [disabled]="isLoading()"
+            >
+              <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q64 0 128 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"/>
+              </svg>
+              <span>Autore</span>
+            </button>
+
+            <button
+              type="button"
+              class="btn-action-mic"
+              [class.dictating]="isDictating()"
+              (click)="toggleDictation()"
+              [disabled]="isLoading()"
+              aria-label="Registra domanda vocale sull'opera"
+              title="Fai una domanda a voce sull'opera"
+            >
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+              <span>{{ isDictating() ? 'Ascolto...' : 'Chiedi a voce' }}</span>
+            </button>
+          </div>
+
+          <div class="explanation-box">
+            <h3 class="box-title">Spiegazione e Dialogo</h3>
+            <div class="dialog-history">
+              @for (msg of messages(); track $index) {
+                <div class="dialog-bubble" [class.bubble-user]="msg.sender === 'user'" [class.bubble-ai]="msg.sender === 'ai'">
+                  <span class="bubble-sender">{{ msg.sender === 'user' ? 'Tu' : 'Guida' }}</span>
+                  <p class="bubble-text">{{ msg.text }}</p>
+                </div>
+              }
+              @if (isLoading()) {
+                <div class="dialog-bubble bubble-ai loading-bubble">
+                  <span class="loading-dots">
+                    <span>.</span><span>.</span><span>.</span>
+                  </span>
+                  <span>Elaborazione in corso...</span>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </div>
+}

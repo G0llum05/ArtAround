@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Artwork = require('../data/model/Artwork');
 
 class ArtworkService {
@@ -10,10 +11,18 @@ class ArtworkService {
   }
 
   static async getArtworkById(id) {
-    return await Artwork.findById(id)
+    if (!id) return null;
+    let query;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query = { $or: [{ _id: id }, { qrCode: id }] };
+    } else {
+      query = { qrCode: id };
+    }
+    return await Artwork.findOne(query)
       .populate('artists')
       .populate('copyOf')
       .populate('falsificationOf')
+      .populate('defaultItems')
       .lean();
   }
 

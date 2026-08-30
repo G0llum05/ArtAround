@@ -4,9 +4,10 @@ export interface NavigatorRequest {
   language: string;
   length: number;
   tone: string | ToneType;
-  museumId: string;
-  visitId: string;
-  currentArtworkIndex: number;
+  museumId?: string;
+  visitId?: string;
+  artworkId?: string;
+  currentArtworkIndex?: number;
   actionType?: string;
   itemAction?: string;
   targetPoiType?: string;

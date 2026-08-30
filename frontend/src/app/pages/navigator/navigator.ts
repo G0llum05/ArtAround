@@ -10,6 +10,7 @@ import { VisitService } from '../../services/visit.service';
 import { GroupSocketService } from '../../services/group-socket.service';
 import { QuizService } from '../../services/quiz.service';
 import { AuthService } from '../../services/auth.service';
+import { ActiveVisitService } from '../../services/active-visit.service';
 import { QuizModal } from '../../components/quiz-modal/quiz-modal';
 import { GroupChat } from '../../components/group-chat/group-chat';
 import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
@@ -38,6 +39,7 @@ export class Navigator {
   protected socketService = inject(GroupSocketService);
   protected authService = inject(AuthService);
   private quizService = inject(QuizService);
+  private activeVisitService = inject(ActiveVisitService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -181,16 +183,28 @@ export class Navigator {
       }
     });
 
+    this.activeVisitService.stepJumpRequested$.pipe(takeUntilDestroyed()).subscribe((stepIndex) => {
+      this.changeItineraryStep(stepIndex);
+    });
+
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => {
+      let initialStep = 0;
+      if (params['step'] !== undefined && params['step'] !== null) {
+        const parsed = parseInt(params['step'], 10);
+        if (!isNaN(parsed) && parsed >= 0) {
+          initialStep = parsed;
+        }
+      }
       if (params['museumId'] && typeof params['museumId'] === 'string' && params['museumId'].length === 24) {
         this.museumId.set(params['museumId']);
       }
       if (params['visitId']) {
         this.visitId.set(params['visitId']);
-        this.loadVisitData(params['visitId']);
+        this.loadVisitData(params['visitId'], initialStep);
       } else {
-        this.currentItineraryStepIndex.set(0);
-        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: 0 });
+        this.currentItineraryStepIndex.set(initialStep);
+        this.activeVisitService.setActiveVisit(this.visitId(), this.museumId(), this.itinerary(), initialStep);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: initialStep });
       }
       if (params['sessionCode']) {
         const code = params['sessionCode'].toUpperCase().trim();
@@ -257,18 +271,16 @@ export class Navigator {
   //TODO navigator service inject
   //TODO chiamate api facili inziali come per prendere l'itinerario e tutta la visita si usa to signal
 
-  private loadVisitData(vId: string): void {
-    // Carica eventuali quiz disponibili per la visita
+  private loadVisitData(vId: string, initialStep: number = 0): void {
     this.quizService.getQuizzesByVisit(vId).pipe(takeUntilDestroyed()).subscribe({
       next: (res) => this.availableQuizzes.set(res.data || []),
       error: () => {}
     });
 
-    // Svuota la chat e reimposta lo stato audio per la nuova visita
     this.messages.set([
       { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale per questa visita. Come posso aiutarti?' }
     ]);
-    this.currentItineraryStepIndex.set(0);
+    this.currentItineraryStepIndex.set(initialStep);
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio = null;
@@ -279,9 +291,10 @@ export class Navigator {
 
     this.visitService.getById(vId).pipe(takeUntilDestroyed()).subscribe({
       next: (visitData: any) => {
+        let loadedArtworks = DUMMY_ITINERARY_ARTWORKS;
         const rawSteps = visitData?.steps || visitData?.visits || [];
         if (rawSteps && rawSteps.length > 0) {
-          const artworks: ArtworkResponse[] = rawSteps.map((v: any, index: number) => {
+          loadedArtworks = rawSteps.map((v: any, index: number) => {
             const art = v.artwork && typeof v.artwork === 'object' ? v.artwork : null;
             return {
               id: art?._id || art?.id || v.artworkId || `art-${index}`,
@@ -303,18 +316,22 @@ export class Navigator {
               assets: art?.assets || { images: [{ url: '/assets/images/place_holder.jpg', orientation: 'landscape' }] }
             };
           });
-          this.itinerary.set(artworks);
+          this.itinerary.set(loadedArtworks);
         }
         if (visitData?.museumId && typeof visitData.museumId === 'string' && visitData.museumId.length === 24) {
           this.museumId.set(visitData.museumId);
         }
-        this.currentItineraryStepIndex.set(0);
-        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: 0 });
+        const validStep = (initialStep >= 0 && initialStep < loadedArtworks.length) ? initialStep : 0;
+        this.activeVisitService.setActiveVisit(vId, this.museumId(), loadedArtworks, validStep);
+        this.currentItineraryStepIndex.set(validStep);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: validStep });
       },
       error: (err) => {
         console.warn('Caricamento dati visita non riuscito, uso itinerario di fallback:', err);
-        this.currentItineraryStepIndex.set(0);
-        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: 0 });
+        const validStep = (initialStep >= 0 && initialStep < DUMMY_ITINERARY_ARTWORKS.length) ? initialStep : 0;
+        this.activeVisitService.setActiveVisit(vId, this.museumId(), DUMMY_ITINERARY_ARTWORKS, validStep);
+        this.currentItineraryStepIndex.set(validStep);
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: validStep });
       }
     });
   }
@@ -643,6 +660,7 @@ export class Navigator {
     }
 
     this.currentItineraryStepIndex.set(index);
+    this.activeVisitService.updateCurrentStep(index);
     this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: index });
 
     // Se è il docente in una visita di gruppo, sincronizza tutti gli studenti

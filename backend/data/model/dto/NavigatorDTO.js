@@ -35,7 +35,7 @@ class NavigatorRequestDTO {
 
     // Azioni
 
-    // 'AUDIO_ACTION' | 'ITEM_ACTION' | 'NON_ITEM_ACTION' | 'ERROR'
+    // 'AUDIO_ACTION' | 'ITEM_ACTION' | 'NON_ITEM_ACTION' | 'MUSEUM_INFO' | 'CULTURE_INFO' | 'UNKNOWN_ACTION' | 'ERROR'
     this.actionType = this._determineActionType(body, file);
     if (this.actionType === 'ERROR') {
       throw new Error(`Nessuna azione valida trovata nella richiesta. Controlla i parametri inviati.`);
@@ -57,6 +57,9 @@ class NavigatorRequestDTO {
     this.targetPoiType = body.targetPoiType || null;
     this.targetArtist = body.targetArtist || null;
 
+    // Domanda libera / Info Museo / Culture
+    this.userQuery = body.userQuery || body.query || body.question || null;
+
     // Modalità Visita di Gruppo
     this.isGroup = body.isGroup === true || body.isGroup === 'true';
     this.isTeacher = body.isTeacher === true || body.isTeacher === 'true';
@@ -65,8 +68,10 @@ class NavigatorRequestDTO {
 
   _determineActionType(body, file) {
     if (file) return 'AUDIO_ACTION';
+    if (body.actionType) return body.actionType;
     if (body.itemAction) return 'ITEM_ACTION';
     if (body.targetPoiType || body.targetArtist) return 'NON_ITEM_ACTION';
+    if (body.userQuery || body.query || body.question) return 'CULTURE_INFO';
     return 'ERROR';
   }
 }

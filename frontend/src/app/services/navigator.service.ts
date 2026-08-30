@@ -49,6 +49,9 @@ export class NavigatorService {
       formData.append('sessionCode', request.sessionCode);
     }
 
+    if (request.actionType) {
+      formData.append('actionType', request.actionType);
+    }
     if (request.itemAction) {
       formData.append('itemAction', request.itemAction);
     }
@@ -57,6 +60,9 @@ export class NavigatorService {
     }
     if (request.targetArtist) {
       formData.append('targetArtist', request.targetArtist);
+    }
+    if (request.userQuery) {
+      formData.append('userQuery', request.userQuery);
     }
     if (audioBlob) {
       const mimeType = audioBlob.type || 'audio/webm';

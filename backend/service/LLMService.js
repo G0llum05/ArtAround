@@ -2,6 +2,7 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const Sanitizer = require('../utils/Sanitizer');
 
 function replacePlaceholders(template, replacements = {}) {
   if (!template || typeof template !== 'string') return '';
@@ -58,6 +59,14 @@ function promptHandler(key, replacements = {}) {
       template = promptsConfig?.POI;
       break;
 
+    case 'museumInfo':
+      template = promptsConfig?.museumInfo;
+      break;
+
+    case 'cultureInfo':
+      template = promptsConfig?.cultureInfo;
+      break;
+
     case 'parseCommand':
       template = promptsConfig?.parseCommand;
       break;
@@ -104,7 +113,8 @@ class LLMService {
 
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione item:\x1b[0m`, prompt);
       // TODO CHECK qua si DEVONO mettere dei controlli sui promtp che vengono fatti. Potrebbero esserci lingue sbagliate o lunghezze sbagliate
-      return await this._callLLMHandler(prompt);
+      const generated = await this._callLLMHandler(prompt);
+      return Sanitizer.cleanTextForVoice(generated);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione item fallita, utilizzo fallback mock:', err.message);
       return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
@@ -115,7 +125,7 @@ class LLMService {
   static async nonItemPOI(museumName, POI, language, tone) {
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
       // TODO
-      return `Il ${POI} nel museo ${museumName} è un punto di interesse importante.`;
+      return Sanitizer.cleanTextForVoice(`Il ${POI} nel museo ${museumName} è un punto di interesse importante.`);
     }
 
     try {
@@ -126,10 +136,11 @@ class LLMService {
         language
       });
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione info POI:\x1b[0m`, prompt);
-      return await this._callLLMHandler(prompt);
+      const generated = await this._callLLMHandler(prompt);
+      return Sanitizer.cleanTextForVoice(generated);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione info POI fallita, utilizzo fallback mock:', err.message);
-      return `Il ${POI} nel museo ${museumName} è un punto di interesse importante.`;
+      return Sanitizer.cleanTextForVoice(`Il ${POI} nel museo ${museumName} è un punto di interesse importante.`);
     }
   }
 
@@ -138,7 +149,7 @@ class LLMService {
     const artistName = artist?.name ? `${artist.name} ${artist.surname || ''}`.trim() : (typeof artist === 'string' ? artist : 'Autore');
 
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return `L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`;
+      return Sanitizer.cleanTextForVoice(`L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`);
     }
 
     try {
@@ -152,20 +163,70 @@ class LLMService {
       });
 
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione info artista:\x1b[0m`, prompt);
-      return await this._callLLMHandler(prompt);
+      const generated = await this._callLLMHandler(prompt);
+      return Sanitizer.cleanTextForVoice(generated);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione info artista fallita, utilizzo fallback mock:', err.message);
-      return `L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`;
+      return Sanitizer.cleanTextForVoice(`L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`);
+    }
+  }
+
+  static async museumInfo(userQuery, museumContext, visitContext, tone, length, language) {
+    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+      return this._mockMuseumInfo(userQuery, museumContext, visitContext, language);
+    }
+
+    try {
+      let prompt = promptHandler('generalContext', { museum: museumContext?.name || 'Museo', language });
+      prompt += promptHandler('museumInfo', {
+        userQuery,
+        museumContext,
+        visitContext,
+        tone,
+        length,
+        language
+      });
+
+      console.log(`\x1b[36m[DEBUG AI] Prompt generazione info museo/visita:\x1b[0m`, prompt);
+      const generated = await this._callLLMHandler(prompt);
+      return Sanitizer.cleanTextForVoice(generated);
+    } catch (err) {
+      console.warn('[LLMService] Chiamata LLM generazione info museo fallita, utilizzo fallback mock:', err.message);
+      return this._mockMuseumInfo(userQuery, museumContext, visitContext, language);
+    }
+  }
+
+  static async cultureInfo(userQuery, artworkContext, museumName, tone, length, language) {
+    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+      return this._mockCultureInfo(userQuery, artworkContext, language);
+    }
+
+    try {
+      let prompt = promptHandler('generalContext', { museum: museumName || artworkContext?.museum || 'Museo', language });
+      prompt += promptHandler('cultureInfo', {
+        userQuery,
+        artworkContext,
+        tone,
+        length,
+        language
+      });
+
+      console.log(`\x1b[36m[DEBUG AI] Prompt generazione culture info:\x1b[0m`, prompt);
+      const generated = await this._callLLMHandler(prompt);
+      return Sanitizer.cleanTextForVoice(generated);
+    } catch (err) {
+      console.warn('[LLMService] Chiamata LLM generazione culture info fallita, utilizzo fallback mock:', err.message);
+      return this._mockCultureInfo(userQuery, artworkContext, language);
     }
   }
 
   /**
-  * @returns {Promise<{ actionType: string, itemAction?: string, targetPoiType?: string, targetArtist?: string }>}
+  * @returns {Promise<{ actionType: string, itemAction?: string, targetPoiType?: string, targetArtist?: string, userQuery?: string }>}
   */
   static async parseIntentLLM(inputText, museum, artwork, tone, length, language) {
     const inputTextLower = (inputText || '').toLowerCase().trim();
     if (!inputTextLower) {
-      return { actionType: 'ERROR', itemAction: null, targetPoiType: null, targetArtist: null };
+      return { actionType: 'ERROR', itemAction: null, targetPoiType: null, targetArtist: null, userQuery: null };
     }
 
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
@@ -178,22 +239,23 @@ class LLMService {
         inputTextLower,
         museum: museum?.name || (typeof museum === 'string' ? museum : ''),
         artwork: artwork?.title || (typeof artwork === 'string' ? artwork : ''),
-        artist: artwork?.artists?.map(a => a.name || a).join(', ') || '',
+        artist: artwork?.artists?.map(a => a?.name ? `${a.name} ${a.surname || ''}`.trim() : a).join(', ') || '',
         tone,
         length,
         language
       });
 
-      // Istruzione esplicita e vincolante per comandi fuori contesto
-      prompt += `\n\nIMPORTANTE: Se la richiesta dell'utente NON riguarda le opere d'arte, la navigazione della visita, l'autore, i punti di interesse o le impostazioni della guida (es. domande generali, meteo, sport, cucina, barzellette o richieste fuori contesto), imposta TASSATIVAMENTE "actionType": "UNKNOWN_ACTION", "itemAction": null, "targetPoiType": null, "targetArtist": null.`;
-
-      // response: actionType, itemAction/targetPoiType/targetArtist, lingua se cambia, lunghezza se cambia, tono se cambia
+      // response: actionType, itemAction/targetPoiType/targetArtist, userQuery, lingua se cambia, lunghezza se cambia, tono se cambia
       const response = await this._callLLMHandler(prompt);
       const parsed = this._cleanAndParseJSON(response);
       console.log(`\x1b[36m[DEBUG AI] Prompt parsing intento:\x1b[0m`, parsed);
       if (parsed && parsed.actionType) {
-        if (parsed.actionType !== 'ITEM_ACTION' && parsed.actionType !== 'NON_ITEM_ACTION') {
+        const validActionTypes = ['ITEM_ACTION', 'MUSEUM_INFO', 'CULTURE_INFO', 'NON_ITEM_ACTION', 'UNKNOWN_ACTION'];
+        if (!validActionTypes.includes(parsed.actionType)) {
           parsed.actionType = 'UNKNOWN_ACTION';
+        }
+        if (!parsed.userQuery && (parsed.actionType === 'MUSEUM_INFO' || parsed.actionType === 'CULTURE_INFO')) {
+          parsed.userQuery = inputText;
         }
         return parsed;
       }
@@ -404,6 +466,51 @@ class LLMService {
       return { actionType: 'NON_ITEM_ACTION', itemAction: null, targetPoiType: null, targetArtist: context?.artist || 'Autore', language, length, tone };
     }
 
+    // Informazioni Museo / Visita (costi, biglietti, orari, servizi, accessibilità, trasporti)
+    if (
+      textLower.includes('costa') || textLower.includes('costo') || textLower.includes('prezzo') || textLower.includes('prezzi') ||
+      textLower.includes('bigliett') || textLower.includes('tariff') || textLower.includes('quanto viene') ||
+      textLower.includes('orari') || textLower.includes('orario') || textLower.includes('quando apre') ||
+      textLower.includes('quando chiude') || textLower.includes('apert') || textLower.includes('chius') ||
+      textLower.includes('wifi') || textLower.includes('wi-fi') || textLower.includes('parcheggio') ||
+      textLower.includes('come arrivare') || textLower.includes('trasport') || textLower.includes('servizi') ||
+      textLower.includes('accessibil') || textLower.includes('disabil') || textLower.includes('eventi') ||
+      textLower.includes('mostre') || textLower.includes('regol') || textLower.includes('storia del museo')
+    ) {
+      return {
+        actionType: 'MUSEUM_INFO',
+        itemAction: null,
+        targetPoiType: null,
+        targetArtist: null,
+        userQuery: textLower,
+        language,
+        length,
+        tone
+      };
+    }
+
+    // Domande Culturali, Movimenti artistici, Stili, Tecniche, Eventi storici
+    if (
+      textLower.includes('movimento') || textLower.includes('corrente') || textLower.includes('stile') ||
+      textLower.includes('barocc') || textLower.includes('rinasciment') || textLower.includes('impressionis') ||
+      textLower.includes('cubis') || textLower.includes('futuris') || textLower.includes('romanticis') ||
+      textLower.includes('neoclassic') || textLower.includes('manieris') || textLower.includes('tecnica') ||
+      textLower.includes('affresco') || textLower.includes('chiaroscuro') || textLower.includes('prospettiva') ||
+      textLower.includes('contesto storico') || textLower.includes('periodo storico') || textLower.includes('cosa succedeva') ||
+      textLower.includes('epoca') || textLower.includes('secolo') || textLower.includes('simbol') || textLower.includes('significato')
+    ) {
+      return {
+        actionType: 'CULTURE_INFO',
+        itemAction: null,
+        targetPoiType: null,
+        targetArtist: null,
+        userQuery: textLower,
+        language,
+        length,
+        tone
+      };
+    }
+
     // Spiegazione opera attuale
     if (textLower.includes('spieg') || textLower.includes('descriv') || textLower.includes('cos\'è') || textLower.includes('cosa rappresenta') || textLower.includes('parlami') || textLower.includes('opera') || textLower.includes('quadro') || textLower.includes('dipinto') || textLower.includes('statua') || textLower.includes('tappa') || textLower.includes('racconta') || textLower.includes('informazioni')) {
       return {
@@ -411,6 +518,7 @@ class LLMService {
         itemAction: 'EXPLAIN_ITEM',
         targetPoiType: null,
         targetArtist: null,
+        userQuery: null,
         language,
         length,
         tone
@@ -424,6 +532,7 @@ class LLMService {
         itemAction: 'EXPLAIN_ITEM',
         targetPoiType: null,
         targetArtist: null,
+        userQuery: null,
         language,
         length,
         tone
@@ -436,10 +545,31 @@ class LLMService {
       itemAction: null,
       targetPoiType: null,
       targetArtist: null,
+      userQuery: null,
       language,
       length,
       tone
     };
+  }
+
+  static _mockMuseumInfo(userQuery, museumContext, visitContext, language = 'it') {
+    const pricesList = museumContext?.ticketInfo?.prices;
+    if (pricesList && pricesList.length > 0) {
+      const formatted = pricesList.map(p => `${p.planName || 'Intero'} ${p.price} euro`).join(', ');
+      return `Il costo dei biglietti è: ${formatted}.`;
+    }
+    if (visitContext?.price !== undefined && visitContext?.price !== null) {
+      return visitContext.price > 0
+        ? `Il costo della visita è di ${visitContext.price} euro.`
+        : 'La visita è gratuita.';
+    }
+    return 'L\'ingresso al museo è gratuito.';
+  }
+
+  static _mockCultureInfo(userQuery, artworkContext, language = 'it') {
+    const currents = artworkContext?.artisticCurrents?.join(', ') || 'del suo periodo di appartenenza';
+    const title = artworkContext?.title || 'quest\'opera';
+    return `L'opera "${title}" si inserisce nel contesto artistico e culturale legato a ${currents}, riflettendo le innovazioni stilistiche, i canoni espressivi e gli eventi storici tipici della sua epoca.`;
   }
 
   static _mockLogisticalDirections(currentLocation, targetLocation, museumContext) {

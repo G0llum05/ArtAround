@@ -7,9 +7,11 @@ export interface NavigatorRequest {
   museumId: string;
   visitId: string;
   currentArtworkIndex: number;
+  actionType?: string;
   itemAction?: string;
   targetPoiType?: string;
   targetArtist?: string;
+  userQuery?: string;
   isGroup?: boolean;
   isTeacher?: boolean;
   sessionCode?: string;

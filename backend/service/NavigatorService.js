@@ -26,6 +26,7 @@ class NavigatorService {
       itemAction,
       targetPoiType,
       targetArtist,
+      userQuery,
       isGroup,
       isTeacher,
       sessionCode,
@@ -53,6 +54,10 @@ class NavigatorService {
         return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language);
       case 'NON_ITEM_ACTION':
         return await this.nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language);
+      case 'MUSEUM_INFO':
+        return await this.museumInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language);
+      case 'CULTURE_INFO':
+        return await this.cultureInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language);
       case 'UNKNOWN_ACTION':
         return {
           text: this.getUnmappableActionMessage(language),
@@ -95,7 +100,8 @@ class NavigatorService {
     if (!museum) {
       throw new Error(`Museo con ID "${museumId}" non trovato.`);
     }
-    const artwork = await Artwork.findById(await this.getArtworkId(visitId, currentArtworkIndex)).exec();
+    const artworkId = await this.getArtworkId(visitId, currentArtworkIndex);
+    const artwork = artworkId ? await Artwork.findById(artworkId).populate('artists').exec() : null;
 
     // Riconoscimento dell'intento (tramite LLM o rule engine mock di fallback)
     const response = await this.parseIntentHandler(transcribedText, museum, artwork, tone, length, language);
@@ -140,6 +146,7 @@ class NavigatorService {
       itemAction: response.itemAction || null,
       targetPoiType: response.targetPoiType || null,
       targetArtist: response.targetArtist || null,
+      userQuery: response.userQuery || transcribedText,
       isGroup,
       isTeacher
     });
@@ -438,20 +445,80 @@ class NavigatorService {
     return scoredItems[0]?.item || null;
   }
 
+  static async museumInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language) {
+    const museum = museumId ? await Museum.findById(museumId).exec() : null;
+    const visit = visitId ? await Visit.findById(visitId).exec() : null;
+
+    const museumContext = museum ? {
+      name: museum.name,
+      description: museum.description,
+      address: museum.address,
+      contact: museum.contact,
+      ticketInfo: museum.ticketInfo,
+      openingHours: museum.openingHours,
+      services: museum.services,
+      accessibility: museum.accessibility,
+      transportInfo: museum.transportInfo,
+      eventsAndExhibitions: museum.eventsAndExhibitions,
+      requirements: museum.requirements
+    } : {};
+
+    const visitContext = visit ? {
+      title: visit.title,
+      description: visit.description,
+      price: visit.price,
+      minDuration: visit.minDuration,
+      maxDuration: visit.maxDuration,
+      weeklySchedule: visit.weeklySchedule,
+      requirements: visit.requirements,
+      categories: visit.categories
+    } : {};
+
+    const resultText = await LLMService.museumInfo(userQuery, museumContext, visitContext, tone, length, language);
+
+    return {
+      text: resultText,
+      currentArtworkIndex,
+      itemAction: null,
+      tone,
+      language,
+      length
+    };
+  }
+
+  static async cultureInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language) {
+    const currentArtworkId = await this.getArtworkId(visitId, currentArtworkIndex);
+    const artwork = currentArtworkId ? await Artwork.findById(currentArtworkId).populate('artists').exec() : null;
+    const museum = museumId ? await Museum.findById(museumId).exec() : null;
+
+    const artworkContext = artwork ? ArtworkMapper.toArtworkLLMRequestDTO(artwork) : { title: 'Opere del museo', museum: museum?.name || 'Museo' };
+
+    const resultText = await LLMService.cultureInfo(userQuery, artworkContext, museum?.name, tone, length, language);
+
+    return {
+      text: resultText,
+      currentArtworkIndex,
+      itemAction: null,
+      tone,
+      language,
+      length
+    };
+  }
+
   static getUnmappableActionMessage(language = 'it') {
     const lang = (language || 'it').toLowerCase();
     switch (lang) {
       case 'en':
-        return "I cannot answer this request. As your museum guide, I can help you with:\n• Navigating to the next or previous artwork\n• Explaining or going deeper into the current artwork\n• Providing information about the artist\n• Finding museum points of interest (restrooms, elevator, exits, bar, etc.)\n• Adjusting language, tone, or explanation length.";
+        return "I cannot answer this request. I can guide you through the artworks, explain their history and artist, or provide information about the museum and its services.";
       case 'es':
-        return "No puedo responder a esta solicitud. Como tu guía del museo, puedo ayudarte a:\n• Pasar a la obra siguiente o anterior\n• Explicar o profundizar en la obra actual\n• Darte información sobre el autor\n• Indicarte puntos de interés del museo (baños, ascensor, salidas, etc.)\n• Ajustar el idioma, tono o duración de la explicación.";
+        return "No puedo responder a esta solicitud. Puedo guiarte por las obras, explicar su historia y artista, o darte información sobre el museo y sus servicios.";
       case 'fr':
-        return "Je ne peux pas répondre à cette demande. En tant que guide du musée, je peux vous aider à :\n• Passer à l'œuvre suivante ou précédente\n• Expliquer ou approfondir l'œuvre actuelle\n• Donner des informations sur l'artiste\n• Trouver les points d'intérêt du musée (toilettes, ascenseur, sorties, etc.)\n• Ajuster la langue, le ton ou la durée de l'explication.";
+        return "Je ne peux pas répondre à cette demande. Je peux vous guider à travers les œuvres, vous expliquer leur histoire et leur artiste, ou vous renseigner sur le musée et ses services.";
       case 'de':
-        return "Ich kann diese Anfrage leider nicht beantworten. Als Museumsführer kann ich Ihnen helfen:\n• Zum nächsten oder vorherigen Kunstwerk zu wechseln\n• Das aktuelle Werk zu erklären oder zu vertiefen\n• Informationen über den Künstler zu geben\n• Punkte von Interesse im Museum (Toiletten, Aufzug, Ausgänge usw.) zu finden\n• Sprache, Ton oder Dauer der Erklärung anzupassen.";
+        return "Ich kann diese Anfrage leider nicht beantworten. Ich kann Sie durch die Kunstwerke führen, deren Geschichte und Künstler erklären oder Auskunft über das Museum und seine Dienste geben.";
       case 'it':
       default:
-        return "Non posso rispondere a questa richiesta. Come guida del museo posso aiutarti a:\n• Passare all'opera successiva o precedente\n• Spiegare o approfondire l'opera attuale\n• Darti informazioni sull'autore dell'opera\n• Indicarti i punti di interesse del museo (come bagni, ascensore, uscite, bar)\n• Cambiare lingua, tono o durata della spiegazione.";
+        return "Non posso rispondere a questa richiesta. Posso guidarti tra le opere, raccontarti la loro storia e l'artista, o darti informazioni sul museo e i suoi servizi.";
     }
   }
 }

@@ -65,6 +65,7 @@ export class Navigator {
   isDictating = signal<boolean>(false);
 
   // Audio recording e playback
+  private isVoiceUpdatingSettings = false;
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private currentAudio: HTMLAudioElement | null = null;
@@ -97,13 +98,12 @@ export class Navigator {
     toObservable(this.currentSettings).pipe(
       takeUntilDestroyed(), // Chiude il tubo se il componente viene distrutto
       skip(1), // Opzionale: evita di fare la chiamata API al primo caricamento della pagina (quando legge dal localStorage)
-      debounceTime(500), // Aspetta mezzo secondo di inattività
-      switchMap(settings => {
-        console.log("Salvataggio sul server in corso...", settings);
-        // return this.apiService.updateNavigatorSettings(settings);
-        return [];
-      })
-    ).subscribe();
+      debounceTime(400) // Aspetta mezzo secondo di inattività
+    ).subscribe(() => {
+      if (!this.isVoiceUpdatingSettings) {
+        this.executeCommand({ itemAction: 'EXPLAIN_ITEM' });
+      }
+    });
 
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => {
       if (params['museumId'] && typeof params['museumId'] === 'string' && params['museumId'].length === 24) {
@@ -293,6 +293,7 @@ export class Navigator {
 
           // Aggiorna eventuali impostazioni modificate a voce
           if (chunk.data?.tone || chunk.data?.language || chunk.data?.length) {
+            this.isVoiceUpdatingSettings = true;
             this.currentSettings.update(curr => {
               const updated = { ...curr };
               if (chunk.data?.language) updated.language = chunk.data.language;
@@ -310,6 +311,9 @@ export class Navigator {
               }
               return updated;
             });
+            setTimeout(() => {
+              this.isVoiceUpdatingSettings = false;
+            }, 600);
           }
 
           const audioData = chunk.data?.audio;

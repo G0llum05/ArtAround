@@ -135,6 +135,35 @@ export class GroupSocketService {
             if (typeof res.session.currentStepIndex === 'number') {
               this.currentStepIndex.set(res.session.currentStepIndex);
             }
+            if (res.session.activeQuiz && res.session.quizState && res.session.quizState !== 'not_started') {
+              this.activeQuiz.set(res.session.activeQuiz);
+              this.quizState.set(res.session.quizState);
+              if (res.session.quizState === 'in_progress') {
+                this.quizStartedCallbacks.forEach(cb => {
+                  try {
+                    cb({
+                      sessionCode,
+                      quizState: 'in_progress',
+                      quiz: res.session.activeQuiz,
+                      mySubmission: res.session.mySubmission,
+                      submissions: res.session.quizSubmissions || []
+                    });
+                  } catch (e) { console.error(e); }
+                });
+              } else if (res.session.quizState === 'completed') {
+                this.quizEndedCallbacks.forEach(cb => {
+                  try {
+                    cb({
+                      sessionCode,
+                      quizState: 'completed',
+                      quiz: res.session.activeQuiz,
+                      leaderboard: res.session.quizSubmissions || [],
+                      myResult: res.session.mySubmission
+                    });
+                  } catch (e) { console.error(e); }
+                });
+              }
+            }
           }
         });
       });

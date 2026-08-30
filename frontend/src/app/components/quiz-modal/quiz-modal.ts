@@ -54,8 +54,31 @@ export class QuizModal implements OnInit, OnDestroy {
 
   private unregisterStudentSubmitted: (() => void) | null = null;
   private unregisterQuizEnded: (() => void) | null = null;
+  private unregisterQuizStarted: (() => void) | null = null;
 
   ngOnInit(): void {
+    if (this.socketService.quizState() === 'completed') {
+      this.quizCompleted.set(true);
+    }
+
+    this.unregisterQuizStarted = this.socketService.onQuizStarted((data) => {
+      if (data?.submissions && Array.isArray(data.submissions)) {
+        this.studentSubmissions.set(data.submissions.map((s: any) => ({
+          studentId: s.student?._id || s.student?.id || s.student || s.studentId,
+          studentName: s.studentName,
+          studentSurname: s.studentSurname,
+          studentEmail: s.studentEmail,
+          score: s.score,
+          totalQuestions: s.totalQuestions,
+          percentage: s.percentage || Math.round((s.score / (s.totalQuestions || 1)) * 100)
+        })));
+      }
+      if (data?.mySubmission) {
+        this.hasSubmitted.set(true);
+        this.myResult.set(data.mySubmission);
+      }
+    });
+
     this.unregisterStudentSubmitted = this.socketService.onQuizStudentSubmitted((data) => {
       this.studentSubmissions.update(list => {
         const filtered = list.filter(s => s.studentId !== data.studentId);
@@ -70,6 +93,7 @@ export class QuizModal implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.unregisterQuizStarted) this.unregisterQuizStarted();
     if (this.unregisterStudentSubmitted) this.unregisterStudentSubmitted();
     if (this.unregisterQuizEnded) this.unregisterQuizEnded();
   }
@@ -107,6 +131,14 @@ export class QuizModal implements OnInit, OnDestroy {
   }
 
   endQuiz(): void {
+    const total = this.totalStudents();
+    const submittedCount = this.studentSubmissions().length;
+
+    if (total > 0 && submittedCount < total) {
+      const confirmed = window.confirm(`Attenzione: non tutti gli studenti hanno consegnato il quiz (${submittedCount} su ${total} partecipanti). Vuoi terminare comunque il quiz e mostrare i risultati?`);
+      if (!confirmed) return;
+    }
+
     this.socketService.endQuiz(this.sessionCode())
       .catch(err => console.error('[QuizModal] Errore conclusione quiz:', err));
   }

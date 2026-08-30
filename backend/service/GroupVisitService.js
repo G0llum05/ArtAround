@@ -96,7 +96,8 @@ class GroupVisitService {
       })
       .populate('teacher', 'name surname email role')
       .populate('participants.user', 'name surname email')
-      .populate('questions.student', 'name surname email');
+      .populate('questions.student', 'name surname email')
+      .populate('activeQuiz');
 
     if (!session) {
       throw new Error('Sessione di visita di gruppo non trovata.');
@@ -117,6 +118,7 @@ class GroupVisitService {
     const session = await GroupVisit.findOne({ sessionCode: cleanCode })
       .populate('visit', 'title description minDuration maxDuration assets steps')
       .populate('teacher', 'name surname email')
+      .populate('activeQuiz')
       .lean();
 
     if (!session) {

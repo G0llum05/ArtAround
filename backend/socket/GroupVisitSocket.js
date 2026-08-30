@@ -141,11 +141,51 @@ function initGroupVisitSocket(httpServer) {
             socket.emit('session:students-audio-status', summary);
           }
 
-          // Invia stato corrente al client che si è appena collegato
+          let studentQuiz = updatedSession.activeQuiz;
+          let mySubmission = null;
+
+          if (updatedSession.activeQuiz && (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin')) {
+            const QuizService = require('../service/QuizService');
+            const isCompleted = updatedSession.quizState === 'completed';
+            const rawQuizId = updatedSession.activeQuiz._id || updatedSession.activeQuiz.id || updatedSession.activeQuiz;
+            try {
+              studentQuiz = await QuizService.getQuizById(rawQuizId, isCompleted);
+            } catch (e) {
+              studentQuiz = updatedSession.activeQuiz;
+            }
+            
+            const submissions = updatedSession.quizSubmissions || [];
+            mySubmission = submissions.find(s => (s.student?._id || s.student || '').toString() === user.id.toString()) || null;
+          }
+
+          if (updatedSession.activeQuiz && updatedSession.quizState && updatedSession.quizState !== 'not_started') {
+            if (updatedSession.quizState === 'in_progress') {
+              socket.emit('session:quiz-started', {
+                sessionCode,
+                quizState: 'in_progress',
+                quiz: studentQuiz,
+                mySubmission,
+                submissions: updatedSession.quizSubmissions || []
+              });
+            } else if (updatedSession.quizState === 'completed') {
+              socket.emit('session:quiz-ended', {
+                sessionCode,
+                quizState: 'completed',
+                quiz: updatedSession.activeQuiz,
+                leaderboard: updatedSession.quizSubmissions || [],
+                myResult: mySubmission
+              });
+            }
+          }
+
           if (typeof callback === 'function') {
             callback({
               success: true,
-              session: updatedSession
+              session: {
+                ...updatedSession,
+                activeQuiz: studentQuiz,
+                mySubmission
+              }
             });
           }
         } catch (err) {

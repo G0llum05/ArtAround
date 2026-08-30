@@ -117,6 +117,14 @@ export class Navigator {
       }
     });
 
+    effect(() => {
+      const active = this.socketService.activeQuiz();
+      const state = this.socketService.quizState();
+      if (active && (state === 'in_progress' || state === 'completed')) {
+        this.isQuizModalOpen.set(true);
+      }
+    });
+
     toObservable(this.currentSettings).pipe(
       takeUntilDestroyed(), // Chiude il tubo se il componente viene distrutto
       skip(1), // Opzionale: evita di fare la chiamata API al primo caricamento della pagina (quando legge dal localStorage)
@@ -189,6 +197,11 @@ export class Navigator {
         // Ricezione avvio quiz finale per tutti i partecipanti
         this.socketService.onQuizStarted((data) => {
           console.log('[Navigator] Quiz finale avviato:', data);
+          this.isQuizModalOpen.set(true);
+        });
+
+        this.socketService.onQuizEnded((data) => {
+          console.log('[Navigator] Quiz finale concluso:', data);
           this.isQuizModalOpen.set(true);
         });
       }

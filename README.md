@@ -162,3 +162,10 @@ Disione singolare delle parti del progetto:
 ### Uso LLM
 - Per la generazione di contenuti delle visite
 - Assistenza nel coding: inizialmente abbiamo generato molto codice tramite LLM, ma successivamente abbiamo deciso di ricominciare il lavoro da zero per avere un codice più pulito e comprensibile. Quindi LLM è stato utile per dare un'indea su cosa scrivere, di fatto una documentazione di supporto. Sulla parte conlusiva del progetto, vista la fretta, per piccole modifiche su codice già strutturato abbiamo usato LLM.
+
+
+
+# !ATTENZIONE!
+Gli utenti di base inseriti nel database hanno password 12345678 come richiesto e nome utente autore1-2/visitatore1-2, ma per gestione del login è richiesta mail+password per accedere. Abbiamo semplicemente aggiunto il suffisso @artaround.it ai relativi utenti. Esempio d'accesso autore1:
+    - email: autore1@artaround.it
+    - password: 12345678

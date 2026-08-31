@@ -1,14 +1,8 @@
 name: Build & Deploy
+
 on:
   push:
     branches: [main]
-  workflow_dispatch:
-    inputs:
-      run_seed:
-        description: 'Vuoi eseguire il seed?'
-        required: true
-        type: boolean
-        default: false
 
 jobs:
   build:
@@ -17,8 +11,8 @@ jobs:
       # 1. Scarica il codice dalla repository
       - name: Checkout del codice
         uses: actions/checkout@v4
-      # 2. Prepara l'ambiente Node.js per la build
 
+      # 2. Prepara l'ambiente Node.js per la build
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -51,9 +45,9 @@ jobs:
           echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> .env
           echo "GROQ_MODEL=${{ secrets.GROQ_MODEL }}" >> .env
           echo "GROQ_STT_MODEL=${{ secrets.GROQ_STT_MODEL }}" >> .env
+
           echo "RESPONSIVEVOICE_API_KEY=${{ secrets.RESPONSIVEVOICE_API_KEY }}" >> .env
           echo "RESPONSIVEVOICE_SECRET=${{ secrets.RESPONSIVEVOICE_PROD_SECRET }}" >> .env
-
       - name: Build Frontend
         run: |
           cd frontend
@@ -67,8 +61,3 @@ jobs:
           sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" scp -P ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }}:/home/web/site252623/html/
           sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html && tar -zxvf deploy.tar.gz && rm deploy.tar.gz"
 
-      - name: Popolazione MongoDB + Immagini
-        if: ${{ inputs.run_seed == true }}
-          sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html && docker compose run --rm backend npm run seed"
-          cd backend
-          node scripts/seedDatabase.js

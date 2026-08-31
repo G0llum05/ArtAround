@@ -16,7 +16,7 @@ Horash
 18 - 33
 
 ## Data di disponibilità delle applicazioni
-14 settembre
+15 settembre
 
 ## Locazione del progetto:
 * URI del Marketplace: https://site252623.tw.cs.unibo.it/marketplace
@@ -147,7 +147,7 @@ Abbiamo voluto mantenere un unica SPA e per fare ciò ci siamo serviti di un fil
 - Gestione trasparente dell'errore 401 Unauthorized per richiedere automaticamente un nuovo Access Token usando il Refresh Token in Cookie HttpOnly.
 
 #### Upload Immagini
-• Drag and drop e selezione file
+- Drag and drop e selezione file
 
 #### Archiettura del Navigator
 Pianificazione della visita: l'utente ha la possibilità, una volta selezionato il museo di trovare una o più visite, sulla base di diversi parametri.
@@ -170,6 +170,10 @@ Pianificazione della visita: l'utente ha la possibilità, una volta selezionato 
 - Sviluppata tramite Angular.
 - Possibilità solo a utenti amministratori o professori di creare gruppi. Per accedere alla stanza condiviso un codice univoco dal professore (richiesto login per accedere alla stanza).
 - Visita di gruppo controllata dal docente, lasciata libertà di approfondimento e modifica impostazioni agli studenti.
+- Quiz a fine visita
+
+#### Qr-Code
+- Possibilità di scansionare qr-code direttamente dall'applicazione per avere una descrizione dell'opera associata
 
 ---
 
@@ -226,9 +230,9 @@ Ci siamo inizialmente divisi l'organizzazione delle due macro componenti del pro
 - Frontend - Samuele Grillini
 - Backend - Davide Gamberini e Mattia Graziani
 ### Divisione singolare delle parti del progetto:
-- Davide Gamberini: Creazione della visita, audio(TTS - STT), autenticazione(verifica con email, e salvataggio dati utente, e gestione token), caricamento e salvataggio delle immagini, deploy su gocker. salvataggio dati nel database(creazione dei modelli dati)
-- Samuele Grillini: HomePage, Marketplace(pagina principale), creazione della visita, ricerca visita, navigator(principalmente frontend), qr-code, login(principalmente frontend), navbar e impostazioni utente(lingua, modalità ad alto contrasto, e modalità notte/giorno)
-- Mattia Graziani: Creazione della visita, ricerca visita, navigator(sia frontend che backend), vista a gruppi e quiz, qr-code, autenticazione(in particolare la gestione dei token e la gestione dei dati nel database), deplpoy su gocker. salvataggio dati nel database(creazione dei modelli dati)
+- **Davide Gamberini**: Creazione della visita, audio(TTS - STT), autenticazione(verifica con email, e salvataggio dati utente, e gestione token), caricamento e salvataggio delle immagini, deploy su gocker, salvataggio dati nel database(creazione dei modelli dati)
+- **Samuele Grillini**: HomePage, Marketplace(pagina principale), creazione della visita, ricerca visita, navigator(principalmente frontend), qr-code, login(principalmente frontend), navbar e impostazioni utente(lingua, modalità ad alto contrasto, e modalità notte/giorno)
+- **Mattia Graziani**: Creazione della visita, ricerca visita, navigator(sia frontend che backend), vista a gruppi e quiz, qr-code, autenticazione(in particolare la gestione dei token e la gestione dei dati nel database), deplpoy su gocker, salvataggio dati nel database(creazione dei modelli dati)
 
 ### LLM
 - Generazione di contenuti delle visite

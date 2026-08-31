@@ -228,16 +228,6 @@ async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap }) 
 }
 
 async function seed() {
-  
-  if (process.env.NODE_ENV.trim() === "production") {
-    // Controlla se esistono già record prima di sovrascrivere
-    const adminExists = await User.findOne({ role: 'admin' });
-    if (adminExists) {
-      console.log("Database già inizializzato. Operazione di seed interrotta per sicurezza.");
-      process.exit(0);
-    }
-  }
-  
   console.log('[Seed] Connecting to MongoDB at:', MONGO_URI);
 
   const options = {};
@@ -248,7 +238,17 @@ async function seed() {
     await mongoose.connect(MONGO_URI, options);
     console.log('[Seed] Database connection established successfully.');
 
-    const seedData = loadAllSeedData();
+    if (process.env.NODE_ENV && process.env.NODE_ENV.trim() === "production") {
+      // Controlla se esistono già record prima di sovrascrivere
+      const adminExists = await User.findOne({ role: 'admin' });
+      if (adminExists) {
+        console.log("Database già inizializzato. Operazione di seed interrotta per sicurezza.");
+        await mongoose.disconnect();
+        process.exit(0);
+      }
+    }
+
+    const seedData = await loadAllSeedData();
 
     // Clear existing dataset
     console.log('[Seed] Cleaning old collection data...');

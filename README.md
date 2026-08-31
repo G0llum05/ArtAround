@@ -1,10 +1,34 @@
-# ArtAround: Progetto di Tecnologie Web A.A. 25/26
-- *Nome gruppo*: Horash
-- *Membri del gruppo*: Davide Gamberini, Mattia Graziani, Samuele Grillini
-- *Tipo di progetto*: 18 - 33
+# Insegnamento di Tecnologie Web
+# CdS In Informatica   
+# (A.A. 2025-26)
+
+# Progetto ArtAround 18-33
+
+## Nome gruppo
+Horash
+
+## Membri del gruppo
+- Nome e cognome: `Davide Gamberini` matricola: `0001163129`, mail: `davide.gamberini7@studio.unibo.it` 
+- Nome e cognome: `Mattia Graziani` matricola: `0001160010`, mail: `mattia.graziani3@studio.unibo.it` 
+- Nome e cognome: `Samuele Grillini` matricola: `0001161555`, mail: `samuele.grillini@studio.unibo.it` 
+- LLM: Gemini 3.7 flash (Antigravity) licenza proprietaria, ottenuto con abbonamento da 1 anno gratuito per studenti delle Università.
+## Tipo di progetto
+18 - 33
+
+## Locazione del progetto
+## Locazione del progetto:
+
+* URI del marketplace: https://site252623.tw.cs.unibo.it/marketplace
+* URI del navigator: https://site252623.tw.cs.unibo.it/navigator?visitId=[visitId]&museumId=[museumId]
+* URI Home: https://site252623.tw.cs.unibo.it/
+* URI Ricerca della visita: https://site252623.tw.cs.unibo.it/marketplace/visit/search
+* URI Creazione della visita: https://site252623.tw.cs.unibo.it/marketplace/visit/create
+* URI Accesso al Gruppo Visita: https://site252623.tw.cs.unibo.it/groups
+* URI Login: https://site252623.tw.cs.unibo.it/login
+
+## Organizzazione dei sorgenti
 - *Localizzazione di file e docker*: `/home/web/site252623/html`, gocker attiva il docker composer all'interno della cartella `html` in modo tale che i container partano da essa.
 
-### STRUTTURA DEL PROGETTO
 .
 ├── backend
 │   ├── assets -> immagini
@@ -73,6 +97,12 @@
 │   ├── tsconfig.json
 │   └── tsconfig.spec.json
 ├── package.json
+
+## Tecnologie utilizzate
+Abbiamo utilizzato Vanilla JS con Node e Express per il backend, mentre per il frontend abbiamo utilizzato Vanilla JS + HTML + CSS per la parte di Marketplace e Visite, mentre per la restante parte abbiamo utilizzato Angular.
+Abbiamo voluto mantenere un unica SPA e per fare ciò ci siamo serviti di un file registry e un componente fittizio Angular per richiamare tutta la parte di Marketplace includendo anche le visite.
+### Pacchetti NPM
+
 
 ## FEATURES
 ### SICUREZZA 

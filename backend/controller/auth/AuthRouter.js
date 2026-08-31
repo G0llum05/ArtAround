@@ -31,6 +31,9 @@ router.put('/preferences', authenticateJWT, (req, res) => authController.updateP
 // Richiesta di cambio ruolo (teacher / museumstaff) in attesa di approvazione admin
 router.post('/request-role', authenticateJWT, (req, res) => authController.requestRoleUpgrade(req, res));
 
+// Endpoint per lanciare il seed del database on-demand
+router.all('/seed', (req, res) => authController.triggerSeed(req, res));
+
 const CLIENT_URL = (process.env.CLIENT_URL || 'http://localhost:4200').trim();
 
 // Rotte Google OAuth2

@@ -227,25 +227,19 @@ async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap }) 
   console.log('[Seed Assets] All seed images processed and attached successfully.');
 }
 
-async function seed() {
-  console.log('[Seed] Connecting to MongoDB at:', MONGO_URI);
-
-  const options = {};
-  if (process.env.MONGO_USER) options.user = process.env.MONGO_USER;
-  if (process.env.MONGO_PASSWORD) options.pass = process.env.MONGO_PASSWORD;
-
+async function runSeed({ isStandalone = false } = {}) {
+  let connectedLocally = false;
   try {
-    await mongoose.connect(MONGO_URI, options);
-    console.log('[Seed] Database connection established successfully.');
+    if (mongoose.connection.readyState !== 1) {
+      console.log('[Seed] Connecting to MongoDB at:', MONGO_URI);
 
-    if (process.env.NODE_ENV && process.env.NODE_ENV.trim() === "production") {
-      // Controlla se esistono già record prima di sovrascrivere
-      const adminExists = await User.findOne({ role: 'admin' });
-      if (adminExists) {
-        console.log("Database già inizializzato. Operazione di seed interrotta per sicurezza.");
-        await mongoose.disconnect();
-        process.exit(0);
-      }
+      const options = {};
+      if (process.env.MONGO_USER) options.user = process.env.MONGO_USER;
+      if (process.env.MONGO_PASSWORD) options.pass = process.env.MONGO_PASSWORD;
+
+      await mongoose.connect(MONGO_URI, options);
+      connectedLocally = true;
+      console.log('[Seed] Database connection established successfully.');
     }
 
     const seedData = await loadAllSeedData();
@@ -533,12 +527,25 @@ async function seed() {
     await uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap });
 
     console.log('[Seed] Complete! Database populated cleanly with all entities and assets.');
+    return { success: true, message: 'Database populated cleanly with all entities and assets.' };
   } catch (err) {
     console.error('[Seed] Error populating database:', err);
+    throw err;
   } finally {
-    await mongoose.disconnect();
-    console.log('[Seed] Disconnected from MongoDB.');
+    if (isStandalone && connectedLocally) {
+      await mongoose.disconnect();
+      console.log('[Seed] Disconnected from MongoDB.');
+    }
   }
 }
 
-seed();
+if (require.main === module) {
+  runSeed({ isStandalone: true })
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('[Seed CLI Error]:', err);
+      process.exit(1);
+    });
+}
+
+module.exports = { runSeed };

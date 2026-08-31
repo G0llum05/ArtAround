@@ -286,6 +286,27 @@ class AuthController {
       res.redirect(`${clientUrl}/login?error=oauth_error`);
     }
   }
+
+  /**
+   * Endpoint per popolare il database coi seed on-demand
+   */
+  async triggerSeed(req, res) {
+    try {
+      const { runSeed } = require('../../scripts/seedDatabase');
+      const result = await runSeed({ isStandalone: false });
+      return res.status(200).json({
+        type: 'success',
+        message: 'Database popolato con successo coi dati di seed!',
+        data: result
+      });
+    } catch (error) {
+      console.error('[Seed Endpoint Error]:', error);
+      return res.status(500).json({
+        type: 'error',
+        message: error.message
+      });
+    }
+  }
 }
 
 module.exports = new AuthController();

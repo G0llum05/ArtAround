@@ -69,4 +69,4 @@ jobs:
       - name: Esegui Database & Image Seed (Opzionale)
         if: ${{ inputs.run_seed == true }}
         run: |
-          sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html && docker compose run --rm backend npm run seed"
+          sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html && docker-compose run --rm backend npm run seed"

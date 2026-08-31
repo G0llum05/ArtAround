@@ -66,7 +66,9 @@ jobs:
           sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" scp -P ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }}:/home/web/site252623/html/
           sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html && tar -zxvf deploy.tar.gz && rm deploy.tar.gz"
 
-      - name: Esegui Database & Image Seed (Opzionale)
+      # Esegue il seed direttamente dal runner GitHub (ha Node 22 e npm)
+      - name: Esegui Database & Image Seed (Runner Locale)
         if: ${{ inputs.run_seed == true }}
         run: |
-          sshpass -p "${{ secrets.LAB_SERVER_PASSWORD }}" ssh -p ${{ secrets.LAB_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.LAB_SERVER_USER }}@${{ secrets.LAB_SERVER_HOST }} "cd /home/web/site252623/html/backend && node scripts/seedDatabase.js"
+          cd backend
+          node scripts/seedDatabase.js

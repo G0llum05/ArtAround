@@ -35,7 +35,7 @@ function getMongoUri() {
 const MONGO_URI = getMongoUri();
 
 // Load and aggregate data from all seed files in data/seed/ folder
-function loadAllSeedData() {
+async function loadAllSeedData() {
   const seedDir = path.join(__dirname, '../data/seed');
   const aggregated = {
     users: [],
@@ -228,6 +228,16 @@ async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap }) 
 }
 
 async function seed() {
+  
+  if (process.env.NODE_ENV.trim() === "production") {
+    // Controlla se esistono già record prima di sovrascrivere
+    const adminExists = await User.findOne({ role: 'admin' });
+    if (adminExists) {
+      console.log("Database già inizializzato. Operazione di seed interrotta per sicurezza.");
+      process.exit(0);
+    }
+  }
+  
   console.log('[Seed] Connecting to MongoDB at:', MONGO_URI);
 
   const options = {};

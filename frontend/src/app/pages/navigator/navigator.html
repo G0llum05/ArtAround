@@ -43,7 +43,13 @@
     <!-- COLONNA 1: IMMAGINE + AUDIO -->
     <section class="card area-media">
       <div class="artwork-img-wrap">
-        <img [src]="currentArtwork()?.assets?.images?.[0]?.url || '/assets/images/place_holder.jpg'" [alt]="currentArtwork()?.title || 'Dettaglio opera d\'arte'" class="card-img" />
+        <img [src]="displayImageUrl()" [alt]="displayImageAlt()" class="card-img" />
+
+        @if (!itemIsArtwork()) {
+          <div class="item-type-badge">
+            <span>Autore</span>
+          </div>
+        }
 
         @if(showSubtitles()) {
           <div class="subtitles-overlay">

@@ -661,17 +661,21 @@ class LLMService {
   }
 
   static _mockAdaptedItem(artworkTitle, tone, lengthSeconds, language, existingText = '') {
-    const prefix = existingText ? `[AI Adaptation from Original Author Text]` : `[AI Storyteller]`;
+    // const prefix = existingText ? `[AI Adaptation from Original Author Text]` : `[AI Storyteller]`;
     if (tone === 'infantile') {
-      return `${prefix} Ciao! Guarda che bella quest'opera intitolata "${artworkTitle}"! È stata creata con colori vivaci per raccontarci una storia fantastica su persone e luoghi speciali del passato. Riesci a vedere tutti i dettagli nascosti?`;
+      return `Ciao! Guarda che bella quest'opera intitolata "${artworkTitle}"! È stata creata con colori vivaci per raccontarci una storia fantastica su persone e luoghi speciali del passato. Riesci a vedere tutti i dettagli nascosti?`;
+      // return `${prefix} Ciao! Guarda che bella quest'opera intitolata "${artworkTitle}"! È stata creata con colori vivaci per raccontarci una storia fantastica su persone e luoghi speciali del passato. Riesci a vedere tutti i dettagli nascosti?`;
     }
     if (tone === 'technical' || tone === 'scientific' || tone === 'expert') {
-      return `${prefix} L'opera "${artworkTitle}" costituisce una testimonianza emblematica dell'evoluzione stilistica del periodo. La composizione formale, l'uso del chiaroscuro e la gestione della prospettiva spaziale rivelano un'intellettualizzazione rigorosa dei codici visivi contemporanei.`;
+      return `L'opera "${artworkTitle}" costituisce una testimonianza emblematica dell'evoluzione stilistica del periodo. La composizione formale, l'uso del chiaroscuro e la gestione della prospettiva spaziale rivelano un'intellettualizzazione rigorosa dei codici visivi contemporanei.`;
+      // return `${prefix} L'opera "${artworkTitle}" costituisce una testimonianza emblematica dell'evoluzione stilistica del periodo. La composizione formale, l'uso del chiaroscuro e la gestione della prospettiva spaziale rivelano un'intellettualizzazione rigorosa dei codici visivi contemporanei.`;
     }
     if (tone === 'simple') {
-      return `${prefix} Questa è l'opera "${artworkTitle}". È un dipinto molto interessante creato con uno stile semplice e chiaro per mostrare i momenti importanti della storia dell'artista.`;
+      return `Questa è l'opera "${artworkTitle}". È un dipinto molto interessante creato con uno stile semplice e chiaro per mostrare i momenti importanti della storia dell'artista.`;
+      // return `${prefix} Questa è l'opera "${artworkTitle}". È un dipinto molto interessante creato con uno stile semplice e chiaro per mostrare i momenti importanti della storia dell'artista.`;
     }
-    return `${prefix} L'opera "${artworkTitle}" offre uno sguardo affascinante sulla sensibilità artistica dell'epoca. Attraverso una tecnica raffinata e una scelta cromatica ben bilanciata, l'autore guida lo sguardo del visitatore verso gli elementi simbolo della composizione.`;
+    return `L'opera "${artworkTitle}" offre uno sguardo affascinante sulla sensibilità artistica dell'epoca. Attraverso una tecnica raffinata e una scelta cromatica ben bilanciata, l'autore guida lo sguardo del visitatore verso gli elementi simbolo della composizione.`;
+    // return `${prefix} L'opera "${artworkTitle}" offre uno sguardo affascinante sulla sensibilità artistica dell'epoca. Attraverso una tecnica raffinata e una scelta cromatica ben bilanciata, l'autore guida lo sguardo del visitatore verso gli elementi simbolo della composizione.`;
   }
 
   /**

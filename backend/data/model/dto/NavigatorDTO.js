@@ -83,6 +83,7 @@ class NavigatorResponseDTO {
       this.text = result?.text || result?.description || '';
       this.currentArtworkIndex = result?.currentArtworkIndex !== undefined ? result.currentArtworkIndex : null;
       this.itemAction = result?.itemAction || null;
+      this.targetArtist = result?.targetArtist || null;
       this.tone = result?.tone || null;
       this.language = result?.language || null;
       this.length = result?.length !== undefined ? result.length : null;

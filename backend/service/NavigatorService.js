@@ -420,6 +420,8 @@ class NavigatorService {
       text: resultText,
       currentArtworkIndex: currentArtworkIndex || 0,
       itemAction: null,
+      targetArtist: targetArtist || null,
+      targetPoiType: targetPoiType || null,
       tone,
       language,
       length

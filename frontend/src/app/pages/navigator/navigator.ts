@@ -21,6 +21,7 @@ import { debounceTime, skip, switchMap } from 'rxjs/operators';
 import { Map } from '../../components/map/map';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 import { ArtworkResponse } from '../../models/artwork.model';
+import { ArtistResponse } from '../../models/artist.model';
 
 import { dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS } from './dummy'
 
@@ -88,6 +89,7 @@ export class Navigator {
   isMapOpen = signal<boolean>(false);
   isLoading = signal<boolean>(false);
   isChatCollapsed = signal<boolean>(false);
+
 
   // contesto
   museumId = signal<string>('650c1f1e1c9d440000a1b2c3');
@@ -238,6 +240,7 @@ export class Navigator {
             this.audioDuration.set(0);
 
             this.currentItineraryStepIndex.set(data.stepIndex);
+            this.itemIsArtwork.set(true);
             this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: data.stepIndex });
           }
         });
@@ -280,6 +283,7 @@ export class Navigator {
     this.messages.set([
       { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale per questa visita. Come posso aiutarti?' }
     ]);
+    this.itemIsArtwork.set(true);
     this.currentItineraryStepIndex.set(initialStep);
     if (this.currentAudio) {
       this.currentAudio.pause();
@@ -343,10 +347,40 @@ export class Navigator {
   currentItineraryStepIndex = signal<number>(0);
   itinerary = signal<ArtworkResponse[]>(DUMMY_ITINERARY_ARTWORKS);
 
+  // Gestione tipologia item (Opera vs Artista)
+  itemIsArtwork = signal<boolean>(true);
+
   currentArtwork = computed<ArtworkResponse | null>(() => {
     const list = this.itinerary();
     const idx = this.currentItineraryStepIndex();
     return list[idx] || list[0] || null;
+  });
+
+  currentArtist = computed<ArtistResponse | null>(() => {
+    const artwork = this.currentArtwork();
+    if (artwork && artwork.artists && artwork.artists.length > 0) {
+      const firstArtist = artwork.artists[0];
+      return (typeof firstArtist === 'object' && firstArtist !== null) ? (firstArtist as ArtistResponse) : null;
+    }
+    return null;
+  });
+
+  displayImageUrl = computed<string>(() => {
+    if (this.itemIsArtwork()) {
+      return this.currentArtwork()?.assets?.images?.[0]?.url || '/assets/images/place_holder.jpg';
+    }
+    return this.currentArtist()?.assets?.images?.[0]?.url || '/assets/images/place_holder.jpg';
+  });
+
+  displayImageAlt = computed<string>(() => {
+    if (this.itemIsArtwork()) {
+      return this.currentArtwork()?.title || 'Dettaglio opera d\'arte';
+    }
+    const artist = this.currentArtist();
+    if (artist) {
+      return `${artist.name || ''} ${artist.surname || ''}`.trim() || 'Foto autore';
+    }
+    return 'Foto autore';
   });
 
   private lastAudioUrl: string | null = null;
@@ -406,12 +440,20 @@ export class Navigator {
           if (targetIndex !== null && !isNaN(targetIndex) && targetIndex >= 0 && targetIndex < this.itinerary().length) {
             if (targetIndex !== this.currentItineraryStepIndex()) {
               this.currentItineraryStepIndex.set(targetIndex);
+              this.itemIsArtwork.set(true);
               if (this.isGroup() && this.isTeacher() && this.sessionCode()) {
                 this.socketService.changeStep(this.sessionCode()!, '', targetIndex).catch(err => {
                   console.warn('Errore broadcast step change da comando vocale:', err);
                 });
               }
             }
+          }
+
+          // Aggiorna lo stato opera vs artista se indicato dalla risposta o dai parametri
+          if (chunk.data?.targetArtist || extraParams.targetArtist) {
+            this.itemIsArtwork.set(false);
+          } else if (chunk.data?.itemAction || extraParams.itemAction || targetIndex !== null) {
+            this.itemIsArtwork.set(true);
           }
 
           // Aggiorna eventuali impostazioni modificate a voce
@@ -619,12 +661,14 @@ export class Navigator {
 
   tellMeMore(): void {
     console.log("Richiesta maggiori informazioni sull'opera...");
+    this.itemIsArtwork.set(true);
     this.messages.update(msgs => [...msgs, { sender: 'user', text: "Dimmi di più sull'opera corrente.", type: 'text' }]);
     this.executeCommand({ itemAction: 'TELL_ME_MORE' });
   }
 
   askAuthor(): void {
     console.log("Richiesta informazioni sull'autore dell'opera...");
+    this.itemIsArtwork.set(false);
     this.messages.update(msgs => [...msgs, { sender: 'user', text: "Parlami dell'autore di quest'opera.", type: 'text' }]);
     this.executeCommand({ targetArtist: 'CURRENT_AUTHOR' });
   }
@@ -659,6 +703,7 @@ export class Navigator {
       }
     }
 
+    this.itemIsArtwork.set(true);
     this.currentItineraryStepIndex.set(index);
     this.activeVisitService.updateCurrentStep(index);
     this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: index });

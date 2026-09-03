@@ -9,6 +9,7 @@ export interface NavigatorResponseData {
   audio?: string;
   currentArtworkIndex?: number | null;
   itemAction?: string | null;
+  targetArtist?: string | null;
   tone?: string | null;
   language?: string | null;
   length?: number | null;

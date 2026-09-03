@@ -15,7 +15,8 @@ class VisitService {
     const visit = await Visit.findById(id)
       .populate({
         path: 'steps.artwork',
-        select: 'title author artists startYear endYear assets location'
+        select: 'title author artists startYear endYear assets location',
+        populate: { path: 'artists' }
       })
       .populate({
         path: 'steps.items'

@@ -270,28 +270,79 @@
   }
 }
 
+/* --- MOBILE: Layout Grid Ultra-Compatto --- */
 .large-card {
-  padding: var(--spacing-xl);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 220px;
+  padding: var(--spacing-md);
+  display: grid;
+  grid-template-columns: 1fr auto; /* Testo a sinistra, freccia a destra */
+  row-gap: var(--spacing-sm);
+  min-height: auto; /* Rimpicciolisce la card al minimo assoluto */
 }
 
-.large-card.card.visit-card{
+/* Forziamo l'icona rotonda a stare da sola nella riga superiore */
+.large-card .quick-icon {
+  grid-column: 1 / 3;
+  margin-bottom: 0;
+}
+
+.large-card-content {
+  grid-column: 1 / 2;
+}
+
+/* Allineiamo la freccia in basso a destra */
+.large-card .arrow {
+  grid-column: 2 / 3;
+  align-self: end; /* Si aggancia all'ultima riga del testo */
+  margin: 0; /* Annulla il margin-top originale */
+}
+
+.large-card.card.visit-card {
   border: 1px solid var(--primary);
 }
 
 .large-card h2 {
   font-family: var(--font-serif);
-  font-size: 1.5rem;
+  font-size: var(--headline-md-size);
   margin: 0 0 var(--spacing-sm) 0;
 }
 
 .large-card p {
   color: var(--on-surface-variant);
-  font-size: var(--body-lg-size);
+  font-size: var(--body-md-size);
   margin: 0;
+}
+
+
+/* --- DESKTOP: Ritorna al layout spazioso --- */
+@media (min-width: 48rem) {
+  .large-card {
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 14rem;
+  }
+
+  .large-card .arrow {
+    align-self: flex-end;
+    margin-top: auto;
+  }
+
+  .large-card h2 {
+    font-size: var(--headline-lg-size);
+  }
+
+  .large-card p {
+    font-size: var(--body-lg-size);
+  }
+}
+
+.text-desktop { display: none; }
+.text-mobile { display: block; }
+
+@media (min-width: 48rem) {
+  .text-desktop { display: block; }
+  .text-mobile { display: none; }
 }
 
 /* CAROSELLO PER LE MOSTRE CONSIGLIATE */

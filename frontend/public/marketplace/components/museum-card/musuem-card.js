@@ -14,6 +14,7 @@ export class MktMuseumCard extends HTMLElement {
     const city = this.getAttribute('data-city') || '';
     const desc = this.getAttribute('data-desc') || '';
     const image = this.getAttribute('data-image') || '/assets/images/place_holder.jpg';
+    const disableFriendly = this.getAttribute('data-disable-friendly') || '';
 
     // Struttura HTML fedele a quella di Angular
     this.innerHTML = `
@@ -21,6 +22,8 @@ export class MktMuseumCard extends HTMLElement {
         <div class="mkt-museum-image-wrapper">
           <img alt="${title}" src="${image}" class="mkt-museum-img">
         </div>
+
+        <mkt-badges-list disable-friendly="${disableFriendly}"></mkt-badges-list>
 
         <div class="mkt-museum-content">
           <header class="mkt-museum-header">

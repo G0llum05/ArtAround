@@ -9,6 +9,7 @@ mkt-museum-card {
 }
 
 .mkt-museum-card-container {
+  position: relative;
   background-color: var(--surface);
   border: 0.0625rem solid var(--outline-variant);
   border-radius: var(--radius-lg);

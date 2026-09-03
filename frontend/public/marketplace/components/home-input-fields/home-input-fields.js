@@ -13,13 +13,6 @@ export class MktHomeInputFields extends HTMLElement {
   render() {
     this.innerHTML = `
       <div class="mkt-controls-section">
-        <!-- Filtri veloci (Pillole) -->
-        <div class="mkt-quick-filters">
-          <button class="mkt-filter-pill ${this.activeFilter.includes('all') ? 'mkt-active' : ''}" data-filter="all">Tutte</button>
-          <button class="mkt-filter-pill ${this.activeFilter.includes('new') ? 'mkt-active' : ''}" data-filter="new">Novità</button>
-          <button class="mkt-filter-pill ${this.activeFilter.includes('free') ? 'mkt-active' : ''}" data-filter="free">Gratuite</button>
-        </div>
-
         <!-- Barra di ricerca musei -->
         <div class="mkt-search-wrapper">
           <input
@@ -28,6 +21,15 @@ export class MktHomeInputFields extends HTMLElement {
             placeholder="Cerca museo per nome o città..."
             value="${this.searchQuery}"
           />
+        </div>
+
+        <!-- Filtri veloci (Pillole) -->
+        <div class="mkt-quick-filters">
+          <button class="mkt-filter-pill ${this.activeFilter.includes('all') ? 'mkt-active' : ''}" data-filter="all">Tutte</button>
+          <button class="mkt-filter-pill ${this.activeFilter.includes('new') ? 'mkt-active' : ''}" data-filter="new">Novità</button>
+          <button class="mkt-filter-pill ${this.activeFilter.includes('free') ? 'mkt-active' : ''}" data-filter="free">Gratuite</button>
+          <button class="mkt-filter-pill ${this.activeFilter.includes('verified') ? 'mkt-active' : ''}" data-filter="verified">Verificate</button>
+          <button class="mkt-filter-pill ${this.activeFilter.includes('disable-friendly') ? 'mkt-active' : ''}" data-filter="disable-friendly">Accessibile</button>
         </div>
       </div>
     `;

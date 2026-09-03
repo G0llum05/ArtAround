@@ -1,0 +1,57 @@
+/* Annulliamo qualsiasi ingombro strutturale del componente custom */
+mkt-badges-list {
+  display: block;
+  height: 0;
+  width: 0;
+  overflow: visible;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  pointer-events: none; /* Permette i click attraverso il contenitore vuoto */
+}
+
+/* Riatticiamo i click solo sui singoli badge */
+mkt-badges-list .card-badges-top {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  display: flex;
+  gap: var(--spacing-xs);
+  pointer-events: auto;
+}
+
+mkt-badges-list .floating-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
+  border: 0.0625rem solid transparent;
+}
+
+mkt-badges-list .floating-badge svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: currentColor;
+}
+
+mkt-badges-list .disable-friendly {
+  background-color: var(--surface-variant);
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+mkt-badges-list .free {
+  background-color: var(--surface-variant);
+  border-color: var(--tertiary);
+  color: var(--tertiary);
+}
+
+mkt-badges-list .verified {
+  background-color: var(--surface-variant);
+  border-color: var(--primary);
+  color: var(--primary);
+}

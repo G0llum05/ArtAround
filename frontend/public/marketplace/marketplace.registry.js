@@ -1,4 +1,7 @@
 //components
+import  {MktBadgesList} from "./components/badges-list/badges-list.js";
+customElements.define('mkt-badges-list', MktBadgesList)
+
 import {MktHomeInputFields} from "./components/home-input-fields/home-input-fields.js";
 customElements.define('mkt-home-input-fields', MktHomeInputFields);
 

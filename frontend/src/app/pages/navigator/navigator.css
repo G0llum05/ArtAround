@@ -1,6 +1,4 @@
-/* =========================================
-   BASE E CONTENITORE PRINCIPALE
-   ========================================= */
+/*  BASE E CONTENITORE PRINCIPALE */
 :host {
   display: flex;
   flex-direction: column;
@@ -254,6 +252,8 @@
 
 .action-row {
   display: flex;
+  flex-wrap: wrap;
+  flex-grow: 1;
   gap: var(--spacing-sm);
 }
 

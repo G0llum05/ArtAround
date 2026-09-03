@@ -17,6 +17,10 @@ export class MktVisitCard extends HTMLElement {
     const price = this.getAttribute('data-price')==="0" ? `Gratis` : `€ ${this.getAttribute('data-price')}`;
     const desc = this.getAttribute('data-desc');
     const image = this.getAttribute('data-image') === "undefined" ? '/assets/images/place_holder.jpg' : this.getAttribute('data-image');
+
+    const isDisableFriendly = this.getAttribute('data-disable-friendly');
+    const isVerified = this.getAttribute('data-verified');
+    const isFree = price === 'Gratis';
     const duration = `${this.getAttribute('data-duration')  || ''} `;
 
     function formattedDuration(input) {
@@ -39,6 +43,9 @@ export class MktVisitCard extends HTMLElement {
         <div class="mkt-visit-image-wrapper">
           <img alt="${title}" src="${image}" class="mkt-visit-img">
         </div>
+
+
+      <mkt-badges-list disable-friendly='${isDisableFriendly}' free='${isFree}' verified='${isVerified}' "></mkt-badges-list>
 
         <div class="mkt-visit-content">
           <header class="mkt-visit-header">

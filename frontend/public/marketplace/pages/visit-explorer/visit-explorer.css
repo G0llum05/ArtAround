@@ -278,9 +278,51 @@
 }
 
 /* Mobile */
+/* Mobile: Card compattate in modo naturale */
 @media (max-width: 48rem) {
-  .mkt-results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-    gap: var(--spacing-sm);
+  .mkt-visit-page-container .mkt-results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+    align-items: stretch;
+  }
+
+  .mkt-visit-page-container mkt-visit-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+  }
+
+  .mkt-visit-page-container .mkt-visit-card-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .mkt-visit-page-container .mkt-visit-image-wrapper {
+    height: 6.5rem;
+  }
+
+  .mkt-visit-page-container .mkt-visit-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0.4rem;
+  }
+
+  .mkt-visit-page-container .mkt-visit-title {
+    font-size: 0.88rem;
+    -webkit-line-clamp: 1;
+  }
+
+  .mkt-visit-page-container .mkt-visit-desc {
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.78rem;
   }
 }

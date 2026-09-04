@@ -31,9 +31,10 @@ class VisitService {
       throw new Error('Visit id non valido');
     }
 
-    const museum = await Museum.findOne({ visits: id }).select('name address').lean();
+    const museum = await Museum.findOne({ visits: id }).select('name address assets').lean();
     visit.museumName = museum ? museum.name : null;
     visit.museumId = museum ? museum._id.toString() : null;
+    visit.museum = museum ? museum : null;
 
     return visit;
   }

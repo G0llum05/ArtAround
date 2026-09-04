@@ -18,7 +18,11 @@
     </header>
 
     <div class="map-content">
-      <img [src]="imageUrl()" class="map-image">
+      <img
+        [src]="imageUrl()"
+        [alt]="'Mappa ' + (museum()?.name || 'Museo')"
+        class="map-image"
+      >
     </div>
 
   </div>

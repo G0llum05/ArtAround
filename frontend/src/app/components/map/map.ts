@@ -1,5 +1,6 @@
-import { Component, output, input } from '@angular/core';
+import { Component, output, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MuseumResponse } from '../../models/museum.model';
 
 @Component({
   selector: 'app-map',
@@ -9,11 +10,17 @@ import { CommonModule } from '@angular/common';
   styleUrl: './map.css'
 })
 export class Map {
-  // Output per chiedere al padre di chiudere la mappa
-  imageUrl = input.required<string>();
+  museum = input<MuseumResponse | null | undefined>(null);
   closeMap = output<void>();
+
+  // Restituisce l'URL salvato all'interno di museum.assets.map
+  imageUrl = computed<string>(() => {
+    return this.museum()?.assets?.map?.url || '/assets/images/place_holder.jpg';
+  });
 
   close() {
     this.closeMap.emit();
   }
 }
+
+

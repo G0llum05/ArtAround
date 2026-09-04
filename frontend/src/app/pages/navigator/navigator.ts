@@ -15,10 +15,12 @@ import { ChatMessage } from '../../models/appModel/chatMessage';
 import { UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
 import { ArtistResponse } from '../../models/artist.model';
 import { ArtworkResponse } from '../../models/artwork.model';
+import { MuseumResponse } from '../../models/museum.model';
 import { NavigatorRequest } from '../../models/navigator.model';
 import { ActiveVisitService } from '../../services/active-visit.service';
 import { AuthService } from '../../services/auth.service';
 import { GroupSocketService } from '../../services/group-socket.service';
+import { MuseumService } from '../../services/museum.service';
 import { NavigatorService, StreamChunk } from '../../services/navigator.service';
 import { QuizService } from '../../services/quiz.service';
 import { VisitService } from '../../services/visit.service';
@@ -37,6 +39,7 @@ const settingsKey = 'navigatorSettings'
 export class Navigator {
   private navigatorService = inject(NavigatorService);
   private visitService = inject(VisitService);
+  private museumService = inject(MuseumService);
   protected socketService = inject(GroupSocketService);
   protected authService = inject(AuthService);
   private quizService = inject(QuizService);
@@ -95,6 +98,7 @@ export class Navigator {
   // contesto
   museumId = signal<string>('650c1f1e1c9d440000a1b2c3');
   visitId = signal<string>('650c1f1e1c9d440000a1b2c4');
+  currentMuseum = signal<MuseumResponse | null>(null);
 
   // Visite di gruppo
   sessionCode = signal<string | null>(null);
@@ -137,6 +141,8 @@ export class Navigator {
 
   //effect sempre nel costruttore per injection contest
   constructor() {
+    this.loadMuseumData(this.museumId());
+
     const saved = localStorage.getItem(settingsKey);
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -200,6 +206,7 @@ export class Navigator {
       }
       if (params['museumId'] && typeof params['museumId'] === 'string' && params['museumId'].length === 24) {
         this.museumId.set(params['museumId']);
+        this.loadMuseumData(params['museumId']);
       }
       if (params['visitId']) {
         this.visitId.set(params['visitId']);
@@ -272,8 +279,17 @@ export class Navigator {
     });
   }
 
-  //TODO navigator service inject
-  //TODO chiamate api facili inziali come per prendere l'itinerario e tutta la visita si usa to signal
+  private loadMuseumData(mId: string): void {
+    if (!mId || typeof mId !== 'string' || mId.length !== 24) return;
+    this.museumService.getById(mId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => {
+        if (data) {
+          this.currentMuseum.set(data);
+        }
+      },
+      error: () => {}
+    });
+  }
 
   private loadVisitData(vId: string, initialStep: number = 0): void {
     this.quizService.getQuizzesByVisit(vId).pipe(takeUntilDestroyed()).subscribe({
@@ -323,8 +339,14 @@ export class Navigator {
           });
           this.itinerary.set(loadedArtworks);
         }
+        if (visitData?.museum) {
+          this.currentMuseum.set(visitData.museum);
+        }
         if (visitData?.museumId && typeof visitData.museumId === 'string' && visitData.museumId.length === 24) {
           this.museumId.set(visitData.museumId);
+          if (!visitData?.museum) {
+            this.loadMuseumData(visitData.museumId);
+          }
         }
         const validStep = (initialStep >= 0 && initialStep < loadedArtworks.length) ? initialStep : 0;
         this.activeVisitService.setActiveVisit(vId, this.museumId(), loadedArtworks, validStep);

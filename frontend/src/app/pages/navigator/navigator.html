@@ -35,7 +35,7 @@
     @if(isMapOpen()) {
       <app-map
         (closeMap)="isMapOpen.set(false)"
-        [imageUrl] = "'/assets/images/place_holder.jpg'"
+        [museum]="currentMuseum() || currentArtwork()?.museum"
       >
       </app-map>
     }

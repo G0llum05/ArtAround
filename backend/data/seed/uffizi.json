@@ -1,0 +1,2007 @@
+{
+  "users": [
+    {
+      "key": "uffizi_staff",
+      "name": "Direzione",
+      "surname": "Gallerie degli Uffizi",
+      "email": "staff@uffizi.it",
+      "password": "Password123!",
+      "role": "museumstaff",
+      "roleStatus": "approved"
+    }
+  ],
+  "museum": {
+    "key": "museum_uffizi",
+    "name": "Galleria degli Uffizi",
+    "description": "Situata nel cuore pulsante di Firenze tra Piazza della Signoria e il fiume Arno, la Galleria degli Uffizi è uno dei complessi museali più illustri, visitati e prestigiosi al mondo. Progettato nel 1560 da Giorgio Vasari per volere del Granduca Cosimo I de' Medici come sede degli 'Uffizi' (uffici amministrativi e giudiziari del governo granducale), l'edificio a ferro di cavallo fu arricchito con la creazione di una galleria superiore destinata ad accogliere le inestimabili collezioni artistiche della famiglia Medici. Oggi il museo custodisce il più straordinario patrimonio mondiale di pittura rinascimentale, con celebri capolavori assoluti che spaziano dal Medioevo di Giotto al Rinascimento di Botticelli, Leonardo da Vinci, Michelangelo, Raffaello, fino al tonalismo di Tiziano e alla potenza drammatica e chiaroscurale di Caravaggio e Artemisia Gentileschi.",
+    "address": {
+      "street": "Piazzale degli Uffizi 6",
+      "city": "Firenze",
+      "zipCode": "50122",
+      "country": "Italia"
+    },
+    "contact": {
+      "phone": "+39 055 294883",
+      "email": "ga-uff@cultura.gov.it",
+      "website": "https://www.uffizi.it",
+      "social": {
+        "facebook": "https://www.facebook.com/uffizigalleries",
+        "instagram": "https://www.instagram.com/uffizigalleries",
+        "youtube": "https://www.youtube.com/@GallerieUffizi",
+        "x": "https://twitter.com/UffiziGalleries"
+      }
+    },
+    "maxCapacity": 900,
+    "actualCapacity": 0,
+    "openingHours": [
+      {
+        "weeklyStandard": [
+          {
+            "day": 0,
+            "slots": [
+              {
+                "startTime": "08:15",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 1,
+            "slots": [],
+            "closed": true
+          },
+          {
+            "day": 2,
+            "slots": [
+              {
+                "startTime": "08:15",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 3,
+            "slots": [
+              {
+                "startTime": "08:15",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 4,
+            "slots": [
+              {
+                "startTime": "08:15",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 5,
+            "slots": [
+              {
+                "startTime": "08:15",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          },
+          {
+            "day": 6,
+            "slots": [
+              {
+                "startTime": "08:15",
+                "endTime": "18:30"
+              }
+            ],
+            "closed": false
+          }
+        ],
+        "exceptions": []
+      }
+    ],
+    "ticketInfo": {
+      "prices": [
+        {
+          "planName": "Intero",
+          "price": 25,
+          "target": "Adulto (singolo)"
+        },
+        {
+          "planName": "Ridotto UE 18-25 anni",
+          "price": 2,
+          "target": "Giovani cittadini UE tra 18 e 25 anni"
+        },
+        {
+          "planName": "Gratuito Under 18 e Disabili",
+          "price": 0,
+          "target": "Minori di 18 anni, docenti, disabili con accompagnatore"
+        }
+      ],
+      "discountCode": [
+        "UFFIZI2026",
+        "FIRENZECARD"
+      ]
+    },
+    "isActive": true,
+    "services": {
+      "hasToilette": true,
+      "hasDisabledToilette": true,
+      "hasElevator": true,
+      "hasStairs": true,
+      "hasBar": true,
+      "hasRestaurant": true,
+      "hasShop": true,
+      "hasParking": false,
+      "hasAudioGuide": true,
+      "hasAirConditioning": true,
+      "hasHeating": true,
+      "hasWifi": true,
+      "hasGuidedTours": true,
+      "hasCloakroom": true
+    },
+    "accessibility": {
+      "disableFriendly": true,
+      "wheelchairAccessible": true,
+      "childFriendly": true,
+      "petFriendly": false,
+      "tactilePaths": true,
+      "brailleSignage": true,
+      "audioDescriptions": true,
+      "notes": "Accessibilità completa con ascensori, rampe e montacarichi. Disponibili sedie a rotelle gratuite su prenotazione e percorsi tattili guidati 'Uffizi da Toccare'."
+    },
+    "visits": [
+      "visit_uffizi_rinascimento_capolavori",
+      "visit_uffizi_mito_bellezza",
+      "visit_uffizi_luce_ombre_caravaggio"
+    ],
+    "artworks": [
+      "artwork_uffizi_nascita_venere",
+      "artwork_uffizi_primavera",
+      "artwork_uffizi_annunciazione_leonardo",
+      "artwork_uffizi_battesimo_cristo",
+      "artwork_uffizi_adorazione_magi_leonardo",
+      "artwork_uffizi_tondo_doni",
+      "artwork_uffizi_madonna_cardellino",
+      "artwork_uffizi_ritratto_leone_x",
+      "artwork_uffizi_venere_urbino",
+      "artwork_uffizi_bacco_caravaggio",
+      "artwork_uffizi_medusa_caravaggio",
+      "artwork_uffizi_giuditta_artemisia",
+      "artwork_uffizi_duchi_urbino",
+      "artwork_uffizi_maesta_giotto",
+      "artwork_uffizi_battaglia_san_romano",
+      "artwork_uffizi_adorazione_gentile"
+    ],
+    "pointsOfInterest": [
+      {
+        "name": "Biglietteria e Ingresso Principale (Porta 1 e 2)",
+        "type": "ticket_office",
+        "floor": "Piano Terra",
+        "room": "Ala di Ponente"
+      },
+      {
+        "name": "Guardaroba e Deposito Bagagli",
+        "type": "cloakroom",
+        "floor": "Piano Terra",
+        "room": "Ala di Levante"
+      },
+      {
+        "name": "Scalone Monumentale del Vasari",
+        "type": "stairs",
+        "floor": "Piano Terra",
+        "room": "Accesso Galleria Superiore"
+      },
+      {
+        "name": "Ascensore Principale Accessibile",
+        "type": "elevator",
+        "floor": "Piano Terra",
+        "room": "Atrio Ingresso"
+      },
+      {
+        "name": "Gabinetto Disegni e Stampe",
+        "type": "info_point",
+        "floor": "Primo Piano",
+        "room": "Ala Centrale"
+      },
+      {
+        "name": "Caffetteria sulla Terrazza della Loggia dei Lanzi",
+        "type": "bar",
+        "floor": "Secondo Piano",
+        "room": "Terrazza Panoramica"
+      },
+      {
+        "name": "Uffizi Bookshop & Souvenir",
+        "type": "shop",
+        "floor": "Piano Terra",
+        "room": "Atrio Uscita"
+      },
+      {
+        "name": "Uscita Piazza del Grano",
+        "type": "exit",
+        "floor": "Piano Terra",
+        "room": "Piazza del Grano"
+      },
+      {
+        "name": "Info Point & Ritiro Audioguide",
+        "type": "info_point",
+        "floor": "Piano Terra",
+        "room": "Atrio Accoglienza"
+      },
+      {
+        "name": "Toilette Secondo Piano",
+        "type": "toilette",
+        "floor": "Secondo Piano",
+        "room": "Presso Terrazza Caffetteria"
+      }
+    ],
+    "floors": [
+      {
+        "level": 0,
+        "name": "Piano Terra",
+        "description": "Ingresso monumentale, Biglietteria, Controlli di sicurezza, Guardaroba, Bookshop e Uscita."
+      },
+      {
+        "level": 1,
+        "name": "Primo Piano",
+        "description": "Sale del tardo Rinascimento e Seicento: Caravaggio, Artemisia Gentileschi, Tiziano, Barocci e Gabinetto Disegni e Stampe."
+      },
+      {
+        "level": 2,
+        "name": "Secondo Piano",
+        "description": "Galleria principale con i Corridoi delle Statue e i sommi capolavori: Giotto, Botticelli, Leonardo da Vinci, Michelangelo, Raffaello e Terrazza panoramica."
+      }
+    ],
+    "transportInfo": {
+      "publicTransport": "A 15 minuti a piedi dalla Stazione FS di Firenze Santa Maria Novella. Linee bus urbane C1 e C2 con fermata Galleria degli Uffizi / Ponte Vecchio. Tramvia T1/T2 fermata Unità.",
+      "parkingDetails": "Il centro storico di Firenze è ZTL pedonale. Parcheggi consigliati nelle vicinanze: Parcheggio Sotterraneo Stazione SMN (Piazza Stazione) o Parcheggio Sant'Ambrogio (Piazza Annigoni)."
+    },
+    "eventsAndExhibitions": {
+      "specialEvents": [
+        "Uffizi sotto le stelle: aperture serali straordinarie del martedì",
+        "Lectures magistrali sul Rinascimento mediceo"
+      ],
+      "temporaryExhibitions": [
+        "La linea e il colore: capolavori grafici del Quattrocento toscano",
+        "I volti del potere: ritrattistica medicea da Cosimo I a Cosimo III"
+      ]
+    },
+    "requirements": "I biglietti con orario prefissato sono fortemente raccomandati per evitare lunghe code all'ingresso. È vietato introdurre borse voluminose o liquidi superiori a 100ml."
+  },
+  "artists": [
+    {
+      "key": "artist_botticelli",
+      "name": "Sandro",
+      "surname": "Botticelli",
+      "artisticCurrents": [
+        "Rinascimento Fiorentino",
+        "Umanesimo Mediceo",
+        "Neoplatonismo",
+        "Pittura Lineare ed Espressiva"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_leonardo",
+      "name": "Leonardo",
+      "surname": "da Vinci",
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Pittura a Sfumato",
+        "Prospettiva Aerea e Atmosferica",
+        "Studio Scientifico della Natura"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_verrocchio",
+      "name": "Andrea",
+      "surname": "del Verrocchio",
+      "artisticCurrents": [
+        "Primo Rinascimento Fiorentino",
+        "Scultura e Pittura di Bottega",
+        "Studio Anatomico e del Drappeggio"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_michelangelo",
+      "name": "Michelangelo",
+      "surname": "Buonarroti",
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Manierismo",
+        "Scultura Monumentale e Anatomia Erculea",
+        "Colori Cangianti e Plastici"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_raffaello",
+      "name": "Raffaello",
+      "surname": "Sanzio",
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Armonia ed Equilibrio Classico",
+        "Dolcezza Espressiva e Composizione Piramidale"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_tiziano",
+      "name": "Tiziano",
+      "surname": "Vecellio",
+      "artisticCurrents": [
+        "Rinascimento Veneto",
+        "Tonalismo",
+        "Pittura Materica e Cromatismo Sensuale"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_caravaggio",
+      "name": "Michelangelo",
+      "surname": "Merisi da Caravaggio",
+      "artisticCurrents": [
+        "Barocco",
+        "Tenebrismo e Chiaroscuro Radente",
+        "Naturalismo Radicale"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_artemisia",
+      "name": "Artemisia",
+      "surname": "Gentileschi",
+      "artisticCurrents": [
+        "Barocco",
+        "Caravaggismo",
+        "Drammatismo Teatrale ed Espressività Femminile"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_piero_della_francesca",
+      "name": "Piero",
+      "surname": "della Francesca",
+      "artisticCurrents": [
+        "Primo Rinascimento",
+        "Prospettiva Matematica e Geometrica",
+        "Luminismo Razionale e Spazialità Assoluta"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_giotto",
+      "name": "Giotto",
+      "surname": "di Bondone",
+      "artisticCurrents": [
+        "Trecento Fiorentino",
+        "Rinnovamento Plastico e Spaziale",
+        "Naturalismo Espressivo e Umano"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_paolo_uccello",
+      "name": "Paolo",
+      "surname": "Uccello",
+      "artisticCurrents": [
+        "Primo Rinascimento",
+        "Prospettiva Geometrica Visionaria",
+        "Scorci Dinamici e Colore Araldico"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_gentile_da_fabriano",
+      "name": "Gentile",
+      "surname": "da Fabriano",
+      "artisticCurrents": [
+        "Tardo Gotico",
+        "Gotico Internazionale",
+        "Decorazione Polimaterica a Foglia d'Oro e Punzonatura"
+      ],
+      "assets": {
+        "images": []
+      }
+    }
+  ],
+  "items": [
+    {
+      "key": "item_uffizi_nascita_venere_medium",
+      "description": "Dipinta attorno al 1485 da Sandro Botticelli per la villa medicea di Castello, la 'Nascita di Venere' è una delle icone universali dell'arte occidentale. La dea della bellezza emerge dalle acque del mare sospinta sopra una conchiglia gigante dai soffi alati di Zefiro e Clori, mentre a riva l'Ora della Primavera le porge un manto ricamato di fiori. L'opera incarna i principi del neoplatonismo mediceo, in cui l'amore e la bellezza spirituale si fondono con la grazia del mito antico.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_nascita_venere_tech",
+      "description": "Capolavoro su tela fine di lino dipinta a tempera magra e lumeggiature in oro zecchino, la Venere di Botticelli stupisce per l'eleganza sinuosa del contorno grafico che prevale sui rigori anatomici prospettici. Il collo allungato e la postura curva donano alla dea una leggerezza incorporea e fluttuante.",
+      "tone": "technical",
+      "length": 30,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_primavera_medium",
+      "description": "La 'Primavera' di Sandro Botticelli (circa 1480) è una complessa e affascinante allegoria ambientata in un boschetto di aranci in fiore. Al centro Venere presiede la scena sotto Cupido bendato, mentre a destra Zefiro insegue la ninfa Clori che si trasforma in Flora spargendo rose; a sinistra le Tre Grazie danzano con movenze armoniose accanto a Mercurio che dissipa le nubi.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_primavera_simple",
+      "description": "Questo dipinto meraviglioso celebra l'arrivo della bella stagione con fiori profumati e figure fiabesche della mitologia. Sul prato si contano centinaia di specie diverse di piante e fiori descritti nei minimi dettagli.",
+      "tone": "simple",
+      "length": 30,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_annunciazione_leonardo_tech",
+      "description": "L'Annunciazione è un'opera giovanile fondamentale di Leonardo da Vinci, dipinta tra il 1472 e il 1475. L'Arcangelo Gabriele atterra in un rigoglioso giardino fiorito (hortus conclusus) con ali realistiche ispirate al volo degli uccelli rapaci. Sullo sfondo si ammira la pionieristica applicazione della prospettiva aerea leonardesca con il paesaggio portuale avvolto nella foschia azzurrina.",
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_battesimo_cristo_medium",
+      "description": "Realizzato nella fiorente bottega fiorentina di Andrea del Verrocchio, il dipinto è celebre per l'intervento del giovane allievo Leonardo da Vinci. Leonardo dipinse con magistrale dolcezza a velature d'olio l'angelo biondo di profilo a sinistra e l'ampio paesaggio fluviale sfumato, eclissando per modernità le parti a tempera del maestro.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_adorazione_magi_leonardo_tech",
+      "description": "Lasciata incompiuta da Leonardo nel 1482 prima della sua partenza per Milano, l'Adorazione dei Magi svela i segreti del processo creativo del genio. Sulla tavola a monocromo a chiaroscuro emergono turbini di figure sconvolte dalla rivelazione divina, architetture in rovina e cavalli scalpitanti, anticipando l'introspezione psicologica del Rinascimento maturo.",
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_tondo_doni_medium",
+      "description": "Il Tondo Doni è l'unico dipinto su tavola certo e completato di Michelangelo Buonarroti giunto fino a noi, commissionato per le nozze del ricco mercante Agnolo Doni con Maddalena Strozzi. La composizione serpentinata della Vergine che riceve Gesù dalle braccia di san Giuseppe trasmette una potenza scultorea inaudita, con colori cangianti e contrastati che aprirono la strada al Manierismo.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_tondo_doni_tech",
+      "description": "L'innovazione michelangiolesca rompe ogni simmetria tradizionale attraverso la torsione a spirale della Vergine e la divisione spaziale tra il mondo cristiano in primo piano e i nudi pagani sullo sfondo oltre la balaustra, collegati dal piccolo san Giovannino Battista.",
+      "tone": "technical",
+      "length": 30,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_madonna_cardellino_medium",
+      "description": "Dipinta da Raffaello nel 1506 durante il suo fecondo soggiorno a Firenze, la Madonna del Cardellino mostra Maria seduta in un idilliaco paesaggio toscano con Gesù Bambino e san Giovannino. L'armonia piramidale di derivazione leonardesca si fonde con la proverbiale grazia e serenità del maestro urbinate.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_ritratto_leone_x_tech",
+      "description": "Ritratto papale monumentale dipinto da Raffaello nel 1518, raffigura Papa Leone X de' Medici tra i cugini cardinali Giulio de' Medici e Luigi de' Rossi. Il virtuosismo ottico nella resa dei velluti cremisi, del pomo d'argento cesellato della sedia e del prezioso codice miniato con lente d'ingrandimento eguaglia i massimi maestri fiamminghi.",
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_venere_urbino_medium",
+      "description": "Capolavoro assoluto del Rinascimento veneto dipinto da Tiziano nel 1538 per Guidobaldo II Della Rovere, la Venere di Urbino ritrae una giovane donna adagiata su lenzuola candide in una ricca camera rinascimentale. Il caldo tonalismo dorato e il cagnolino addormentato ai suoi piedi simboleggiano la fedeltà coniugale e la bellezza terrena.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_bacco_caravaggio_medium",
+      "description": "Il Bacco degli Uffizi, dipinto da Caravaggio tra il 1596 e il 1598, ritrae il dio del vino come un giovane popolano incoronato di pampini d'uva che offre una coppa di vino con mano tremula. La magistrale canestra di frutta bacata in primo piano introduce la poetica della caducità della vita e del tempo che scorre (vanitas).",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_medusa_caravaggio_tech",
+      "description": "Dipinta ad olio su tela applicata a uno scudo bombato di legno di pioppo, la Medusa di Caravaggio immortala l'istante agghiacciante della decapitazione da parte di Perseo. Con la bocca spalancata in un urlo disperato e i serpenti frementi, l'opera annulla l'illusione della convessità trasformando lo scudo in una superficie concava insanguinata.",
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_giuditta_artemisia_medium",
+      "description": "Dipinta con feroce intensità da Artemisia Gentileschi a Firenze nel 1620, l'opera illustra l'eroina biblica Giuditta che, aiutata dall'ancella Abra, recide con determinazione implacabile la testa del generale assiro Oloferne. Il realismo crudo del sangue che zampilla e la possente muscolatura delle braccia riflettono il genio tenebrista caravaggesco della pittrice.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_duchi_urbino_tech",
+      "description": "Il Dittico dei duchi d'Urbino di Piero della Francesca (1465-1472) ritrae di profilo Federico da Montefeltro e Battista Sforza su uno sfondo paesaggistico sconfinato e luminoso. La geometria rigorosa dei profumi volumetrici si combina con la meticolosa resa fiamminga dei dettagli epidermici e dei gioielli nobiliari.",
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_maesta_giotto_medium",
+      "description": "La Maestà di Ognissanti, dipinta da Giotto verso il 1310, segna la nascita della pittura moderna occidentale. La Vergine col Bambino in trono possiede una concretezza fisica e un volume monumentale sconosciuti all'arte bizantina, circondata da angeli e santi disposti con naturalezza prospettica nello spazio.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_battaglia_san_romano_tech",
+      "description": "La Battaglia di San Romano di Paolo Uccello (1438-1440) è una spettacolare celebrazione geometrica della vittoria fiorentina sui senesi. Le lance spezzate a terra formano una rigorosa griglia prospettica a scacchiera che conduce l'occhio verso il cavaliere disarcionato al centro del campo di battaglia.",
+      "tone": "technical",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_uffizi_adorazione_gentile_medium",
+      "description": "La Pala Strozzi di Gentile da Fabriano (1423) rappresenta il vertice assoluto del Gotico Internazionale in Italia. Il corteo sontuoso dei Re Magi è impreziosito da profusione di oro zecchino punzonato a rilievo, tessuti damascati, cavalli bardati e animali esotici in un'atmosfera di fiaba cavalleresca.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    }
+  ],
+  "artworks": [
+    {
+      "key": "artwork_uffizi_nascita_venere",
+      "title": "Nascita di Venere",
+      "startYear": 1485,
+      "endYear": 1486,
+      "artists": [
+        "artist_botticelli"
+      ],
+      "location": {
+        "room": "Sala 10-14 (Sale del Botticelli)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 172,
+        "width": 278,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Rinascimento Fiorentino",
+        "Umanesimo Mediceo",
+        "Neoplatonismo"
+      ],
+      "details": {
+        "subjects": [
+          "Venere",
+          "Zefiro",
+          "Clori",
+          "Ora della Primavera",
+          "Conchiglia marina"
+        ],
+        "colors": [
+          "Verde azzurro marino",
+          "Oro",
+          "Rosa incarnato",
+          "Bianco spuma"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dipinto su tela di lino",
+        "materials": [
+          "Tempera magra su tela di lino",
+          "Oro in polvere"
+        ],
+        "techniques": [
+          "Pittura a tempera magra",
+          "Lumeggiature a pennello in oro zecchino"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-VENERE-001",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_nascita_venere_medium",
+        "item_uffizi_nascita_venere_tech"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_primavera",
+      "title": "Primavera",
+      "startYear": 1478,
+      "endYear": 1482,
+      "artists": [
+        "artist_botticelli"
+      ],
+      "location": {
+        "room": "Sala 10-14 (Sale del Botticelli)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 207,
+        "width": 319,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Rinascimento Fiorentino",
+        "Umanesimo Mediceo",
+        "Allegoria Mitologica"
+      ],
+      "details": {
+        "subjects": [
+          "Venere",
+          "Flora",
+          "Clori",
+          "Zefiro",
+          "Tre Grazie",
+          "Mercurio",
+          "Cupido"
+        ],
+        "colors": [
+          "Verde scuro boschivo",
+          "Fiori multicolori",
+          "Rosso purpureo",
+          "Bianco velato"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dipinto su tavola di pioppo",
+        "materials": [
+          "Tempera su legno di pioppo"
+        ],
+        "techniques": [
+          "Pittura a tempera con finitura a vernice protettiva"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-PRIMAVERA-002",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_primavera_medium",
+        "item_uffizi_primavera_simple"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_annunciazione_leonardo",
+      "title": "Annunciazione",
+      "startYear": 1472,
+      "endYear": 1475,
+      "artists": [
+        "artist_leonardo"
+      ],
+      "location": {
+        "room": "Sala 35 (Sala di Leonardo)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Ponente"
+      },
+      "dimensions": {
+        "height": 98,
+        "width": 217,
+        "depth": 4,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Primo Rinascimento",
+        "Pittura di Paesaggio e Sfumato",
+        "Bottega del Verrocchio"
+      ],
+      "details": {
+        "subjects": [
+          "Vergine Maria",
+          "Arcangelo Gabriele",
+          "Giglio bianco",
+          "Leggio marmoreo",
+          "Paesaggio fluviale"
+        ],
+        "colors": [
+          "Azzurro velato",
+          "Rosso vermiglio",
+          "Verde prato",
+          "Giallo ocra"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dipinto su tavola di pioppo",
+        "materials": [
+          "Olio e tempera su tavola di pioppo"
+        ],
+        "techniques": [
+          "Pittura mista a velature d'olio e tempera",
+          "Prospettiva aerea"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-ANNUNCIAZIONE-003",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_annunciazione_leonardo_tech"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_battesimo_cristo",
+      "title": "Battesimo di Cristo",
+      "startYear": 1475,
+      "endYear": 1478,
+      "artists": [
+        "artist_verrocchio",
+        "artist_leonardo"
+      ],
+      "location": {
+        "room": "Sala 35 (Sala di Leonardo)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Ponente"
+      },
+      "dimensions": {
+        "height": 177,
+        "width": 151,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Quattrocento Fiorentino",
+        "Pittura di Bottega",
+        "Rinascimento"
+      ],
+      "details": {
+        "subjects": [
+          "Gesù Cristo",
+          "San Giovanni Battista",
+          "Due Angeli",
+          "Fiume Giordano",
+          "Colomba dello Spirito Santo"
+        ],
+        "colors": [
+          "Azzurro acqueo",
+          "Ocra dorata",
+          "Bruno roccioso"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Pala d'altare su tavola",
+        "materials": [
+          "Olio e tempera su tavola di legno"
+        ],
+        "techniques": [
+          "Pittura a tempera con interventi a velatura a olio"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-BATTESIMO-004",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_battesimo_cristo_medium"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_adorazione_magi_leonardo",
+      "title": "Adorazione dei Magi",
+      "startYear": 1481,
+      "endYear": 1482,
+      "artists": [
+        "artist_leonardo"
+      ],
+      "location": {
+        "room": "Sala 35 (Sala di Leonardo)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Ponente"
+      },
+      "dimensions": {
+        "height": 246,
+        "width": 243,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Disegno Preparatorio e Sottotono a Chiaroscuro",
+        "Monocromo"
+      ],
+      "details": {
+        "subjects": [
+          "Vergine col Bambino",
+          "Tre Re Magi",
+          "Cavalieri in lotta",
+          "Rovine architettoniche",
+          "Albero della vita"
+        ],
+        "colors": [
+          "Terra d'ombra bruciata",
+          "Bistro",
+          "Giallo ocra chiaro",
+          "Monocromo"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Tavola dipinta incompiuta",
+        "materials": [
+          "Olio e inchiostro su tavola di pioppo"
+        ],
+        "techniques": [
+          "Disegno preparatorio a carboncino, inchiostro e acquerello bruno"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-ADORAZIONE-LEO-005",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_adorazione_magi_leonardo_tech"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_tondo_doni",
+      "title": "Tondo Doni (Sacra Famiglia con san Giovannino)",
+      "startYear": 1504,
+      "endYear": 1507,
+      "artists": [
+        "artist_michelangelo"
+      ],
+      "location": {
+        "room": "Sala 41 (Sala di Michelangelo e Raffaello)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Ponente"
+      },
+      "dimensions": {
+        "height": 120,
+        "width": 120,
+        "depth": 6,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Premesse del Manierismo",
+        "Pittura Scultorea Cangiante"
+      ],
+      "details": {
+        "subjects": [
+          "Madonna",
+          "San Giuseppe",
+          "Bambino Gesù",
+          "San Giovannino",
+          "Ignudi classici"
+        ],
+        "colors": [
+          "Azzurro lapislazzulo",
+          "Giallo cangiante",
+          "Rosso corallo",
+          "Verde brillante"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Tondo dipinto con cornice monumentale intagliata",
+        "materials": [
+          "Tempera grassa su tavola di legno",
+          "Cornice originale intagliata da Francesco del Tasso"
+        ],
+        "techniques": [
+          "Tempera ad emulsione grassa",
+          "Torsione a serpentina (figura serpentinata)"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-TONDO-DONI-006",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_tondo_doni_medium",
+        "item_uffizi_tondo_doni_tech"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_madonna_cardellino",
+      "title": "Madonna del Cardellino",
+      "startYear": 1505,
+      "endYear": 1506,
+      "artists": [
+        "artist_raffaello"
+      ],
+      "location": {
+        "room": "Sala 41 (Sala di Michelangelo e Raffaello)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Ponente"
+      },
+      "dimensions": {
+        "height": 107,
+        "width": 77,
+        "depth": 4,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Classicismo Rinascimentale",
+        "Scuola Fiorentina di Raffaello"
+      ],
+      "details": {
+        "subjects": [
+          "Madonna",
+          "Bambino Gesù",
+          "San Giovannino",
+          "Cardellino",
+          "Paesaggio collinare toscano"
+        ],
+        "colors": [
+          "Rosso cardinalizio",
+          "Blu oltremare",
+          "Verde smeraldo",
+          "Oro morbido"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dipinto devozionale su tavola",
+        "materials": [
+          "Olio su tavola di pioppo"
+        ],
+        "techniques": [
+          "Pittura a velature ad olio",
+          "Composizione piramidale"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-MADONNA-CARDELLINO-007",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_madonna_cardellino_medium"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_ritratto_leone_x",
+      "title": "Ritratto di Leone X con i cardinali Giulio de' Medici e Luigi de' Rossi",
+      "startYear": 1518,
+      "endYear": 1519,
+      "artists": [
+        "artist_raffaello"
+      ],
+      "location": {
+        "room": "Sala 41 (Sala di Michelangelo e Raffaello)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Ponente"
+      },
+      "dimensions": {
+        "height": 154,
+        "width": 119,
+        "depth": 4,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Rinascimento Romano",
+        "Ritrattistica Umanistica e Papale"
+      ],
+      "details": {
+        "subjects": [
+          "Papa Leone X (Giovanni de' Medici)",
+          "Cardinale Giulio de' Medici",
+          "Cardinale Luigi de' Rossi",
+          "Codice miniato",
+          "Campanella d'argento"
+        ],
+        "colors": [
+          "Rosso velluto",
+          "Bianco damasco",
+          "Argento lucido",
+          "Bruno profondo"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dipinto a olio su tavola",
+        "materials": [
+          "Olio su tavola di pioppo"
+        ],
+        "techniques": [
+          "Pittura a olio con virtuosismo materico su stoffe e metalli"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-LEONE-X-008",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_ritratto_leone_x_tech"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_venere_urbino",
+      "title": "Venere di Urbino",
+      "startYear": 1538,
+      "endYear": 1538,
+      "artists": [
+        "artist_tiziano"
+      ],
+      "location": {
+        "room": "Sala 83 (Sala di Tiziano)",
+        "floor": "Primo Piano",
+        "building": "Galleria degli Uffizi - Ala di Ponente"
+      },
+      "dimensions": {
+        "height": 119,
+        "width": 165,
+        "depth": 4,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Rinascimento Veneto",
+        "Tonalismo Veneziano",
+        "Nudo Disteso Rinascimentale"
+      ],
+      "details": {
+        "subjects": [
+          "Venere",
+          "Cagnolino da compagnia",
+          "Due ancelle al cassone",
+          "Finestra con mirto"
+        ],
+        "colors": [
+          "Oro caldo dell'incarnato",
+          "Rosso velluto",
+          "Bianco panna",
+          "Verde scuro"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dipinto a olio su tela",
+        "materials": [
+          "Olio su tela di lino"
+        ],
+        "techniques": [
+          "Pittura tonale veneziana",
+          "Impasti cromatici morbidi e caldi"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-VENERE-URBINO-009",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_venere_urbino_medium"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_bacco_caravaggio",
+      "title": "Bacco",
+      "startYear": 1596,
+      "endYear": 1598,
+      "artists": [
+        "artist_caravaggio"
+      ],
+      "location": {
+        "room": "Sala 90 (Sale Caravaggesche)",
+        "floor": "Primo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 95,
+        "width": 85,
+        "depth": 3,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Barocco Iniziale",
+        "Naturalismo Caravaggesco",
+        "Natura Morta e Allegoria della Vanitas"
+      ],
+      "details": {
+        "subjects": [
+          "Bacco",
+          "Coppa di vino rosso",
+          "Canestra di frutta mista bacata",
+          "Corona di pampini e foglie di vite",
+          "Caraffa di vetro con autoritratto"
+        ],
+        "colors": [
+          "Rosso rubino del vino",
+          "Bianco del lenzuolo",
+          "Verde foglie",
+          "Bruno caldo di fondo"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dipinto a olio su tela",
+        "materials": [
+          "Olio su tela di lino"
+        ],
+        "techniques": [
+          "Pittura diretta dal vero senza disegno preparatorio",
+          "Resa realistica e materica del vetro e della frutta"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-BACCO-CARAVAGGIO-010",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_bacco_caravaggio_medium"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_medusa_caravaggio",
+      "title": "Medusa (Scudo con la testa di Medusa)",
+      "startYear": 1597,
+      "endYear": 1598,
+      "artists": [
+        "artist_caravaggio"
+      ],
+      "location": {
+        "room": "Sala 90 (Sale Caravaggesche)",
+        "floor": "Primo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 60,
+        "width": 55,
+        "depth": 10,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Barocco",
+        "Tenebrismo",
+        "Trompe-l'œil e Virtuosismo Ottico"
+      ],
+      "details": {
+        "subjects": [
+          "Testa mozza di Medusa",
+          "Serpenti aggrovigliati",
+          "Spruzzo di sangue",
+          "Urlo terrifico"
+        ],
+        "colors": [
+          "Rosso vivo del sangue",
+          "Verde scuro serpenti",
+          "Pallore olivastro del volto",
+          "Fondo dorato e verdastro"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Scudo da parata dipinto a rotella",
+        "materials": [
+          "Olio su tela montata su tavola convessa di pioppo"
+        ],
+        "techniques": [
+          "Pittura su supporto bombato convesso con correzione anamorfica"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-MEDUSA-CARAVAGGIO-011",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_medusa_caravaggio_tech"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_giuditta_artemisia",
+      "title": "Giuditta che decapita Oloferne",
+      "startYear": 1620,
+      "endYear": 1621,
+      "artists": [
+        "artist_artemisia"
+      ],
+      "location": {
+        "room": "Sala 90 (Sale Caravaggesche)",
+        "floor": "Primo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 199,
+        "width": 162,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Barocco Fiorentino e Romano",
+        "Caravaggismo Tenebrista",
+        "Pittura di Storia ad Alto Impatto Emotivo"
+      ],
+      "details": {
+        "subjects": [
+          "Giuditta",
+          "Oloferne",
+          "Ancella Abra",
+          "Sciabola d'acciaio",
+          "Letto e lenzuola insanguinate"
+        ],
+        "colors": [
+          "Giallo oro dell'abito di Giuditta",
+          "Rosso sangue a getti",
+          "Blu profondo dell'ancella",
+          "Nero d'ombra totale di fondo"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dipinto monumentale a olio su tela",
+        "materials": [
+          "Olio su tela di lino a trama fitta"
+        ],
+        "techniques": [
+          "Chiaroscuro violento e luce radente teatrale"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-GIUDITTA-ARTEMISIA-012",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_giuditta_artemisia_medium"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_duchi_urbino",
+      "title": "Dittico dei duchi d'Urbino (Federico da Montefeltro e Battista Sforza)",
+      "startYear": 1465,
+      "endYear": 1472,
+      "artists": [
+        "artist_piero_della_francesca"
+      ],
+      "location": {
+        "room": "Sala 8 (Sala di Piero della Francesca)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 47,
+        "width": 66,
+        "depth": 4,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Umanesimo Matematico e Prospettico",
+        "Pittura delle Corti Rinascimentali",
+        "Ritrattistica a Profilo Rigoroso"
+      ],
+      "details": {
+        "subjects": [
+          "Federico da Montefeltro",
+          "Battista Sforza",
+          "Paesaggio del Montefeltro a perdita d'occhio",
+          "Trionfi allegorici sul retro"
+        ],
+        "colors": [
+          "Rosso vermiglio della berretta e giubba",
+          "Azzurro chiarissimo del cielo",
+          "Bianco perla dei gioielli",
+          "Verde collinare"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Dittico dipinto fronte e retro su due tavole di legno",
+        "materials": [
+          "Olio e tempera su tavola di noce"
+        ],
+        "techniques": [
+          "Pittura fiamminghizzante a velature sottilissime",
+          "Prospettiva aerea infinita"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-DUCHI-URBINO-013",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_duchi_urbino_tech"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_maesta_giotto",
+      "title": "Maestà di Ognissanti (Madonna in trono col Bambino, angeli e santi)",
+      "startYear": 1310,
+      "endYear": 1310,
+      "artists": [
+        "artist_giotto"
+      ],
+      "location": {
+        "room": "Sala 2 (Sala del Duecento e di Giotto)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 325,
+        "width": 204,
+        "depth": 8,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Trecento Fiorentino",
+        "Rinnovamento Spaziale e Corporeo della Pittura Occidentale"
+      ],
+      "details": {
+        "subjects": [
+          "Madonna in trono",
+          "Gesù Bambino benedicente",
+          "Schiera di angeli in preghiera",
+          "Santi e profeti dell'Antico Testamento",
+          "Trono gotico cuspidato"
+        ],
+        "colors": [
+          "Fondo oro zecchino punzonato",
+          "Blu lapislazzulo del manto",
+          "Bianco luminoso",
+          "Rosso vermiglio"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Grande pala d'altare cuspidata",
+        "materials": [
+          "Tempera e foglia d'oro su grande tavola di pioppo gessata"
+        ],
+        "techniques": [
+          "Doratura a guazzo con punzonatura",
+          "Modellato plastico a chiaroscuro"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-MAESTA-GIOTTO-014",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_maesta_giotto_medium"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_battaglia_san_romano",
+      "title": "Battaglia di San Romano (Disarcionamento di Bernardino della Ciarda)",
+      "startYear": 1438,
+      "endYear": 1440,
+      "artists": [
+        "artist_paolo_uccello"
+      ],
+      "location": {
+        "room": "Sala 7 (Sala del Primo Rinascimento)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 182,
+        "width": 320,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Primo Rinascimento Fiorentino",
+        "Prospettiva Visionaria e Scorci Matematici"
+      ],
+      "details": {
+        "subjects": [
+          "Cavalieri in armatura scintillante",
+          "Cavalli bianchi, neri e bai",
+          "Lance spezzate a terra disposte a griglia",
+          "Siepe di rose e aranci sullo sfondo"
+        ],
+        "colors": [
+          "Argento delle armature brunite",
+          "Rosso araldico",
+          "Nero",
+          "Bianco",
+          "Verde scuro"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Grande dipinto decorativo su tavola",
+        "materials": [
+          "Tempera all'uovo su tavola di pioppo"
+        ],
+        "techniques": [
+          "Prospettiva lineare geometrica rigorosa applicata ai corpi e agli oggetti"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-SAN-ROMANO-015",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_battaglia_san_romano_tech"
+      ]
+    },
+    {
+      "key": "artwork_uffizi_adorazione_gentile",
+      "title": "Adorazione dei Magi (Pala Strozzi)",
+      "startYear": 1423,
+      "endYear": 1423,
+      "artists": [
+        "artist_gentile_da_fabriano"
+      ],
+      "location": {
+        "room": "Sala 5-6 (Sala del Gotico Internazionale)",
+        "floor": "Secondo Piano",
+        "building": "Galleria degli Uffizi - Ala di Levante"
+      },
+      "dimensions": {
+        "height": 300,
+        "width": 282,
+        "depth": 10,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Tardo Gotico",
+        "Gotico Internazionale Cortese",
+        "Pittura Polimaterica a Rilievo"
+      ],
+      "details": {
+        "subjects": [
+          "Sacra Famiglia",
+          "Tre Re Magi in sontuosi abiti principeschi",
+          "Corteo cavalleresco con falconi, leopardi e scimmie",
+          "Predella con Natività e Fuga in Egitto"
+        ],
+        "colors": [
+          "Oro zecchino scintillante",
+          "Rosso cremisi",
+          "Blu oltremare",
+          "Verde prato floreale"
+        ],
+        "places": [
+          "Firenze - Gallerie degli Uffizi"
+        ],
+        "objectType": "Trittico gotico monumentale con predella e cuspidi",
+        "materials": [
+          "Tempera e oro su tavola di legno gessata con pastiglia a rilievo"
+        ],
+        "techniques": [
+          "Doratura a foglia d'oro punzonata e graffita",
+          "Pastiglia a rilievo in gesso e colla"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-UFFIZI-ADORAZIONE-GENTILE-016",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_uffizi_adorazione_gentile_medium"
+      ]
+    }
+  ],
+  "visits": [
+    {
+      "key": "visit_uffizi_rinascimento_capolavori",
+      "title": "I Capolavori Assoluti del Rinascimento: Da Botticelli a Michelangelo",
+      "description": "Un itinerario imperdibile attraverso le vette ineguagliabili del Rinascimento fiorentino. Dalla poesia neoplatonica della Venere e della Primavera di Sandro Botticelli alle rivoluzionarie innovazioni ottiche di Leonardo da Vinci, fino alla maestosità scultorea del Tondo Doni di Michelangelo e alla dolcezza classica di Raffaello.",
+      "price": 25,
+      "creator": "uffizi_staff",
+      "minDuration": 90,
+      "maxDuration": 120,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "09:00",
+                  "endTime": "11:00"
+                },
+                {
+                  "startTime": "14:30",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Percorso guidato completo al Secondo Piano della Galleria, accessibile con ascensori.",
+      "categories": [
+        "Rinascimento",
+        "Capolavori",
+        "Pittura"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_uffizi_nascita_venere",
+          "items": [
+            "item_uffizi_nascita_venere_medium"
+          ],
+          "tellMeMore": "item_uffizi_nascita_venere_tech"
+        },
+        {
+          "artwork": "artwork_uffizi_primavera",
+          "items": [
+            "item_uffizi_primavera_medium"
+          ],
+          "tellMeMore": "item_uffizi_primavera_simple"
+        },
+        {
+          "artwork": "artwork_uffizi_annunciazione_leonardo",
+          "items": [
+            "item_uffizi_annunciazione_leonardo_tech"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_tondo_doni",
+          "items": [
+            "item_uffizi_tondo_doni_medium"
+          ],
+          "tellMeMore": "item_uffizi_tondo_doni_tech"
+        },
+        {
+          "artwork": "artwork_uffizi_madonna_cardellino",
+          "items": [
+            "item_uffizi_madonna_cardellino_medium"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_duchi_urbino",
+          "items": [
+            "item_uffizi_duchi_urbino_tech"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "visit_uffizi_mito_bellezza",
+      "title": "Dalle Origini al Mito: La Rivoluzione della Prospettiva e dell'Umanesimo",
+      "description": "Scopri l'evoluzione artistica che ha cambiato per sempre l'arte occidentale: dalla solenne spazialità corporea di Giotto all'incanto dorato del Gotico Internazionale di Gentile da Fabriano, fino alle vertiginose prospettive di Paolo Uccello e Piero della Francesca e alla grazia mitologica di Sandro Botticelli.",
+      "price": 20,
+      "creator": "uffizi_staff",
+      "minDuration": 75,
+      "maxDuration": 100,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "10:30",
+                  "endTime": "12:00"
+                },
+                {
+                  "startTime": "16:00",
+                  "endTime": "17:30"
+                }
+              ],
+              "closed": false
+            }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Percorso artistico cronologico ideale per studenti, famiglie e appassionati di storia dell'arte.",
+      "categories": [
+        "Medioevo",
+        "Rinascimento",
+        "Umanesimo"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_uffizi_maesta_giotto",
+          "items": [
+            "item_uffizi_maesta_giotto_medium"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_adorazione_gentile",
+          "items": [
+            "item_uffizi_adorazione_gentile_medium"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_battaglia_san_romano",
+          "items": [
+            "item_uffizi_battaglia_san_romano_tech"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_duchi_urbino",
+          "items": [
+            "item_uffizi_duchi_urbino_tech"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_battesimo_cristo",
+          "items": [
+            "item_uffizi_battesimo_cristo_medium"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_primavera",
+          "items": [
+            "item_uffizi_primavera_medium"
+          ],
+          "tellMeMore": "item_uffizi_primavera_simple"
+        }
+      ]
+    },
+    {
+      "key": "visit_uffizi_luce_ombre_caravaggio",
+      "title": "Luce, Ombra e Passione: Da Tiziano a Caravaggio e Artemisia",
+      "description": "Un viaggio appassionante nella pittura del Cinquecento maturo e del Seicento barocco. Dalla calda e avvolgente sensualità della Venere di Tiziano all'introspezione psicologica di Raffaello, fino all'impatto dirompente del tenebrismo di Caravaggio e alla travolgente forza espressiva di Artemisia Gentileschi.",
+      "price": 22,
+      "creator": "uffizi_staff",
+      "minDuration": 80,
+      "maxDuration": 110,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "11:30",
+                  "endTime": "13:00"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "16:30"
+                }
+              ],
+              "closed": false
+            }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "Visita guidata focalizzata sulle sale del Primo Piano e sulle collezioni caravaggesche.",
+      "categories": [
+        "Barocco",
+        "Caravaggismo",
+        "Rinascimento Veneto"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_uffizi_ritratto_leone_x",
+          "items": [
+            "item_uffizi_ritratto_leone_x_tech"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_venere_urbino",
+          "items": [
+            "item_uffizi_venere_urbino_medium"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_bacco_caravaggio",
+          "items": [
+            "item_uffizi_bacco_caravaggio_medium"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_medusa_caravaggio",
+          "items": [
+            "item_uffizi_medusa_caravaggio_tech"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_giuditta_artemisia",
+          "items": [
+            "item_uffizi_giuditta_artemisia_medium"
+          ]
+        },
+        {
+          "artwork": "artwork_uffizi_adorazione_magi_leonardo",
+          "items": [
+            "item_uffizi_adorazione_magi_leonardo_tech"
+          ]
+        }
+      ]
+    }
+  ]
+}

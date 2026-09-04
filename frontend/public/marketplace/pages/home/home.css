@@ -183,6 +183,11 @@ mkt-home-input-fields {
   background-color: var(--secondary);
 }
 
+.mkt-horizontal-track > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
 .mkt-empty-text {
   color: var(--on-surface-variant);
   font-size: var(--body-md-size);
@@ -190,8 +195,6 @@ mkt-home-input-fields {
 }
 
 /* --- ADATTAMENTO MOBILE (Max 48rem / 768px) --- */
-/* Desktop-first: qui si sovrascrive solo ciò che serve per il mobile,
-   stesso schema della home principale (.large-card in versione compatta). */
 @media (max-width: 48rem) {
   .mkt-empty-grid {
     grid-template-columns: 1fr;

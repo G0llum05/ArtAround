@@ -27,7 +27,7 @@ mkt-visit-card {
 
 .mkt-visit-image-wrapper {
   position: relative;
-  height: 8.75rem;
+  height: 10rem;
   width: 100%;
   background-color: var(--surface-variant);
 }
@@ -122,7 +122,6 @@ mkt-visit-card {
 
 /* MEDIA QUERY: MOBILE E PORTRAIT (Desktop First - max-width)*/
 @media (max-width: 48rem) {
-
   .mkt-visit-title {
     font-size: var(--body-lg-size);
     -webkit-line-clamp: 1;
@@ -133,7 +132,10 @@ mkt-visit-card {
   }
 
   mkt-visit-card {
+    width: 100%;
     min-height: 16rem;
+    min-width: 0;
+    max-width: 14rem;
   }
 
   .mkt-visit-desc {

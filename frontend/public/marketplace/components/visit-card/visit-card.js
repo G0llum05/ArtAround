@@ -44,7 +44,6 @@ export class MktVisitCard extends HTMLElement {
           <img alt="${title}" src="${image}" class="mkt-visit-img">
         </div>
 
-
       <mkt-badges-list disable-friendly='${isDisableFriendly}' free='${isFree}' verified='${isVerified}' "></mkt-badges-list>
 
         <div class="mkt-visit-content">

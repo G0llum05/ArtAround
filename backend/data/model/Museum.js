@@ -117,7 +117,8 @@ const museumSchema = new mongoose.Schema({
   },
 
   assets: {
-    images: [ImageSchema]
+    images: [ImageSchema],
+    map: ImageSchema
   }
 }, { timestamps: true });
 

@@ -43,6 +43,37 @@ class UploadService {
 
     return savedFile.url;
   }
+  
+  /**
+   * Caricamento immagine mappa del museo
+   */
+  static async museumMapImgUpload(museumId, file, orientation) {
+    if (!museumId || !file) {
+      throw new Error('museumId e file sono obbligatori per il caricamento dell\'immagine della mappa del museo.');
+    }
+
+    if (!await Museum.exists({ _id: museumId })) {
+      throw new Error('Museo non trovato.');
+    }
+
+    const savedFile = await this.saveMuseumRelatedImage(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+      { museumId, isMap: true, orientation }
+    );
+
+    const targetOrientation = orientation || await this.resolveMetaSuffix(file.buffer, file.originalname, { orientation });
+
+    const updatedMuseum = await Museum.findByIdAndUpdate(museumId,
+      {
+        $set: { 'assets.map': { url: savedFile.url, orientation: targetOrientation } }
+      }, { new: true });
+
+    if (!updatedMuseum) throw new Error('Errore durante l\'aggiornamento del museo.');
+
+    return savedFile.url;
+  }
 
   /**
    * Caricamento immagine copertina/meta della visita
@@ -267,10 +298,14 @@ class UploadService {
     const escapedPrefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
     const isMeta = options.isMeta || targetDir.endsWith('/meta') || targetDir.endsWith('\\meta');
+    const isMap = options.isMap || targetDir.endsWith('/map') || targetDir.endsWith('\\map');
     let suffix;
 
-    if (isMeta) {
-      // Per i meta esistono solo 2 possibili suffissi: 'landscape' e 'portrait'
+    if (isMeta || isMap) {
+      if (isMap) {
+        await fs.emptyDir(targetDir);
+      }
+      // Per meta e mappe si risolve l'orientamento: 'landscape', 'portrait', 'square'
       suffix = await this.resolveMetaSuffix(fileBuffer, originalName, options);
     } else {
       // Per risorse non-meta (es. artworks), si usa l'indice numerico sequenziale
@@ -418,7 +453,7 @@ class UploadService {
   /**
    * Restituisce la directory di destinazione per le risorse collegate al museo
    */
-  static getMuseumRelatedDir({ museumId, visitId, artworkId }) {
+  static getMuseumRelatedDir({ museumId, visitId, artworkId, isMap }) {
     if (!museumId) {
       throw new Error('museumId è obbligatorio per definire il percorso di salvataggio.');
     }
@@ -432,7 +467,15 @@ class UploadService {
       return path.join(baseMuseumDir, 'visit', visitId, 'meta');
     }
 
+    if (isMap) {
+      return path.join(baseMuseumDir, 'map');
+    }
+
     return path.join(baseMuseumDir, 'meta');
+  }
+
+  static getMapDir({ museumId }) {
+    return this.getMuseumRelatedDir({ museumId, isMap: true });
   }
 
   /**
@@ -448,9 +491,10 @@ class UploadService {
   /**
    * Risolve il prefisso base per il nome del file
    */
-  static getMuseumRelatedFilePrefix({ museumId, visitId, artworkId }) {
+  static getMuseumRelatedFilePrefix({ museumId, visitId, artworkId, isMap }) {
     if (artworkId) return artworkId;
     if (visitId) return visitId;
+    if (isMap) return `${museumId}_map`;
     return museumId;
   }
 

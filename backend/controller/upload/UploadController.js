@@ -37,6 +37,42 @@ class UploadController {
       });
     }
   }
+  
+  /**
+   * Caricamento immagine della mappa del museo
+   */
+  static async museumMapImgUpload(req, res) {
+    try {
+      const uploadDTO = UploadMapper.toUploadMuseumImgDTO(req);
+      if (!uploadDTO || !uploadDTO.museumId || !uploadDTO.file) {
+        return res.status(400).json({
+          message: 'Errore: dati di caricamento non validi.',
+          details: {
+            museumId: uploadDTO?.museumId || null,
+            hasFile: !!uploadDTO?.file,
+            orientation: uploadDTO?.orientation || null
+          }
+        });
+      }
+
+      const url = await UploadService.museumMapImgUpload(
+        uploadDTO.museumId,
+        uploadDTO.file,
+        uploadDTO.orientation
+      );
+
+      return res.status(201).json({
+        message: 'Immagine del museo caricata con successo.',
+        url
+      });
+    } catch (err) {
+      console.error('[UploadController museumImgUpload Error]:', err);
+      return res.status(400).json({
+        message: 'Errore durante il caricamento dell\'immagine del museo.',
+        error: err.message
+      });
+    }
+  }
 
   /**
    * Caricamento immagine della visita (meta/copertina)

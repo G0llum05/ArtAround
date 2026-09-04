@@ -1,5 +1,5 @@
 class MuseumResponseDTO {
-  constructor(id, name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { images: [] }) {
+  constructor(id, name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { images: [], map: null }) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -24,7 +24,7 @@ class MuseumResponseDTO {
 }
 
 class MuseumRequestDTO {
-  constructor(name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { images: [] }) {
+  constructor(name, description, address, contact, maxCapacity, actualCapacity, visits, artworks, openingHours, ticketInfo, isActive, services, accessibility, pointsOfInterest, floors, transportInfo, eventsAndExibitions, requirements, assets = { images: [], map: null }) {
     this.name = name;
     this.description = description;
     this.address = address;
@@ -48,7 +48,7 @@ class MuseumRequestDTO {
 }
 
 class MuseumVisitPlanResponseDTO {
-  constructor(id, name, city, maxCapacity, actualCapacity, ticketInfo, assets = { images: [] }) {
+  constructor(id, name, city, maxCapacity, actualCapacity, ticketInfo, assets = { images: [], map: null }) {
     this.id = id;
     this.name = name;
     this.city = city;

@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 })
 export class Map {
   // Output per chiedere al padre di chiudere la mappa
-  imageUrl = input.required<string>()
+  imageUrl = input.required<string>();
   closeMap = output<void>();
 
   close() {

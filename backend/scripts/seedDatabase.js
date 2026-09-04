@@ -158,6 +158,26 @@ async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap }) 
         }
       }
 
+      // Mappa Museo
+      const mapDir = path.join(museumDirPath, 'map');
+      if (fs.existsSync(mapDir) && fs.statSync(mapDir).isDirectory()) {
+        const mapFiles = fs.readdirSync(mapDir).filter(file => Imager.isImage(file));
+        for (const file of mapFiles) {
+          const filePath = path.join(mapDir, file);
+          const payload = {
+            buffer: fs.readFileSync(filePath),
+            originalname: file,
+            mimetype: Imager.getMimeType(file)
+          };
+          try {
+            const url = await UploadService.museumMapImgUpload(museumId.toString(), payload);
+            console.log(`[Seed Assets] Loaded museum map for "${museumKey}" -> ${url}`);
+          } catch (err) {
+            console.error(`[Seed Assets] Error uploading museum map "${file}" for "${museumKey}":`, err.message);
+          }
+        }
+      }
+
       // Visite
       const visitsDir = path.join(museumDirPath, 'visits');
       if (fs.existsSync(visitsDir) && fs.statSync(visitsDir).isDirectory()) {

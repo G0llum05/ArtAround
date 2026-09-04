@@ -92,7 +92,8 @@ export interface MuseumResponse {
   requirements: string,
 
   assets?: {
-    images: ImageSchema[]
+    images: ImageSchema[],
+    map: ImageSchema
   }
 }
 
@@ -182,7 +183,8 @@ export interface MuseumRequest {
   requirements: string,
 
   assets: {
-    images: ImageSchema[]
+    images: ImageSchema[],
+    map: ImageSchema
   }
 }
 

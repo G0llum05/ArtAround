@@ -136,7 +136,42 @@
     "itinerary";
 }
 
-.area-media { grid-area: media; border-color: var(--primary); }
+.area-media {
+  grid-area: media;
+  border-color: var(--primary);
+  transition: border-color 0.25s ease;
+}
+
+.area-media.artwork-mode {
+  border-color: var(--primary);
+}
+
+.area-media.artist-mode {
+  border-color: var(--secondary);
+}
+
+/* Accenti interni alla card area-media per artista */
+.area-media.artist-mode .progress-fill {
+  background-color: var(--secondary);
+}
+
+.area-media.artist-mode .btn-play {
+  background-color: var(--secondary);
+  color: var(--on-secondary);
+}
+
+.area-media.artist-mode .btn-play:hover {
+  background-color: var(--secondary);
+  color: var(--on-secondary);
+}
+
+.area-media.artist-mode .icon-btn:hover {
+  color: var(--secondary);
+}
+
+.area-media.artist-mode .floating-cc.active {
+  color: var(--secondary);
+}
 .area-chat { grid-area: chat; }
 .area-actions { grid-area: actions; }
 .area-itinerary { grid-area: itinerary; }
@@ -187,8 +222,6 @@
   position: absolute;
   top: var(--spacing-md);
   left: var(--spacing-md);
-  background-color: rgba(20, 20, 20, 0.75);
-  color: #ffffff;
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
   font-size: 0.8rem;
@@ -198,7 +231,18 @@
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.item-type-badge.artwork-badge,
+.item-type-badge .artwork-badge {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.item-type-badge.artist-badge,
+.item-type-badge .artist-badge {
+  background-color: var(--secondary);
+  color: var(--on-secondary);
 }
 
 .subtitles-overlay {

@@ -41,13 +41,17 @@
     }
 
     <!-- COLONNA 1: IMMAGINE + AUDIO -->
-    <section class="card area-media">
+    <section class="card area-media" [class.artist-mode]="!itemIsArtwork()" [class.artwork-mode]="itemIsArtwork()">
       <div class="artwork-img-wrap">
         <img [src]="displayImageUrl()" [alt]="displayImageAlt()" class="card-img" />
 
         @if (!itemIsArtwork()) {
-          <div class="item-type-badge">
-            <span>Autore</span>
+          <div class="item-type-badge artist-badge">
+            <span>{{ currentArtistName() }}</span>
+          </div>
+        } @else {
+          <div class="item-type-badge artwork-badge">
+            <span>{{ currentArtworkName() }}</span>
           </div>
         }
 
@@ -251,6 +255,15 @@
           [readOnly]="isGroup() && !isTeacher()"
           (clickedOnItineraryStep)="changeItineraryStep($event)"
         ></app-itinerary>
+        @if(isGroup()) {
+          <button type="button" class="btn btn-primary flex-fill" (click)="endGroupVisit()">
+            Termina visita di gruppo
+          </button>
+        } @else {
+          <button type="button" class="btn btn-primary flex-fill" (click)="endVisit()">
+            Termina visita
+          </button>
+        }
       </div>
     </section>
 

@@ -1,29 +1,29 @@
-import { Component, signal, inject, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, effect, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { Itinerary } from '../../components/itinerary/itinerary';
+import { debounceTime, skip } from 'rxjs/operators';
 import { Chat } from '../../components/chat/chat';
-import { NavigatorService, StreamChunk } from '../../services/navigator.service';
-import { VisitService } from '../../services/visit.service';
-import { GroupSocketService } from '../../services/group-socket.service';
-import { QuizService } from '../../services/quiz.service';
-import { AuthService } from '../../services/auth.service';
-import { ActiveVisitService } from '../../services/active-visit.service';
-import { QuizModal } from '../../components/quiz-modal/quiz-modal';
 import { GroupChat } from '../../components/group-chat/group-chat';
-import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
-import { ToneType, UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
-import { NavigatorRequest } from '../../models/navigator.model';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { debounceTime, skip, switchMap } from 'rxjs/operators';
+import { Itinerary } from '../../components/itinerary/itinerary';
 import { Map } from '../../components/map/map';
+import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
+import { QuizModal } from '../../components/quiz-modal/quiz-modal';
 import { ChatMessage } from '../../models/appModel/chatMessage';
-import { ArtworkResponse } from '../../models/artwork.model';
+import { UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
 import { ArtistResponse } from '../../models/artist.model';
+import { ArtworkResponse } from '../../models/artwork.model';
+import { NavigatorRequest } from '../../models/navigator.model';
+import { ActiveVisitService } from '../../services/active-visit.service';
+import { AuthService } from '../../services/auth.service';
+import { GroupSocketService } from '../../services/group-socket.service';
+import { NavigatorService, StreamChunk } from '../../services/navigator.service';
+import { QuizService } from '../../services/quiz.service';
+import { VisitService } from '../../services/visit.service';
 
-import { dummyItinerary, dummyArtwork, DUMMY_ITINERARY_ARTWORKS } from './dummy'
+import { DUMMY_ITINERARY_ARTWORKS } from './dummy';
 
 const settingsKey = 'navigatorSettings'
 
@@ -43,6 +43,7 @@ export class Navigator {
   private activeVisitService = inject(ActiveVisitService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
 
   currentUserId = computed(() => {
     const u = this.authService.currentUser();
@@ -365,6 +366,16 @@ export class Navigator {
     return null;
   });
 
+  currentArtworkName = computed<string>(() => {
+    const artwork = this.currentArtwork();
+    return artwork?.title || 'OPERA';
+  });
+
+  currentArtistName = computed<string>(() => {
+    const artist = this.currentArtist();
+    return `${artist?.name || ''} ${artist?.surname || ''}`.trim() || 'AUTORE';
+  });
+
   displayImageUrl = computed<string>(() => {
     if (this.itemIsArtwork()) {
       return this.currentArtwork()?.assets?.images?.[0]?.url || '/assets/images/place_holder.jpg';
@@ -384,6 +395,14 @@ export class Navigator {
   });
 
   private lastAudioUrl: string | null = null;
+
+  private stopAudio(): void {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isPlaying.set(false);
+  }
 
   async executeCommand(extraParams: Partial<NavigatorRequest> = {}, audioBlob?: Blob): Promise<void> {
     const settings = this.currentSettings();
@@ -656,11 +675,13 @@ export class Navigator {
   }
 
   openMap(): void {
+    this.stopAudio();
     this.isMapOpen.set(true);
   }
 
   tellMeMore(): void {
     console.log("Richiesta maggiori informazioni sull'opera...");
+    this.stopAudio();
     this.itemIsArtwork.set(true);
     this.messages.update(msgs => [...msgs, { sender: 'user', text: "Dimmi di più sull'opera corrente.", type: 'text' }]);
     this.executeCommand({ itemAction: 'TELL_ME_MORE' });
@@ -668,6 +689,7 @@ export class Navigator {
 
   askAuthor(): void {
     console.log("Richiesta informazioni sull'autore dell'opera...");
+    this.stopAudio();
     this.itemIsArtwork.set(false);
     this.messages.update(msgs => [...msgs, { sender: 'user', text: "Parlami dell'autore di quest'opera.", type: 'text' }]);
     this.executeCommand({ targetArtist: 'CURRENT_AUTHOR' });
@@ -675,10 +697,12 @@ export class Navigator {
 
   askPoi(poiType: string, label: string): void {
     this.messages.update(msgs => [...msgs, { sender: 'user', text: `Dove si trova: ${label}?`, type: 'text' }]);
+    this.stopAudio();
     this.executeCommand({ targetPoiType: poiType });
   }
 
   changeItineraryStep(index: number): void {
+    this.stopAudio();
     if (this.isGroup() && !this.isTeacher()) {
       console.warn('[Navigator] Navigazione non consentita: la visita è guidata dal docente.');
       return;
@@ -717,6 +741,7 @@ export class Navigator {
   }
 
   nextArtwork(): void {
+    this.stopAudio();
     if (this.isGroup() && !this.isTeacher()) return;
     const nextIdx = this.currentItineraryStepIndex() + 1;
     if (nextIdx < this.itinerary().length) {
@@ -725,6 +750,7 @@ export class Navigator {
   }
 
   prevArtwork(): void {
+    this.stopAudio();
     if (this.isGroup() && !this.isTeacher()) return;
     const prevIdx = this.currentItineraryStepIndex() - 1;
     if (prevIdx >= 0) {
@@ -733,6 +759,7 @@ export class Navigator {
   }
 
   async startGroupQuiz(): Promise<void> {
+    this.stopAudio();
     const code = this.sessionCode();
     const vId = this.visitId();
     if (!code) return;
@@ -769,14 +796,21 @@ export class Navigator {
       this.isGeneratingQuiz.set(false);
     }
   }
+  
+  endVisit(): void {
+    confirm("Terminando la visita perderai tutti i progressi. Sei Sicuro?")
+    this.stopAudio();
+
+    this.isQuizModalOpen.set(false);
+    
+    this.socketService.disconnect();
+    this.router.navigate(['/marketplace']);
+  }
 
   endGroupVisit(): void {
     const code = this.sessionCode();
-    if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio = null;
-    }
-    this.isPlaying.set(false);
+    this.stopAudio();
+
     this.isQuizModalOpen.set(false);
 
     if (code) {
@@ -790,6 +824,7 @@ export class Navigator {
       this.router.navigate(['/']);
     }
   }
+
 
   toggleGroupChat(): void {
     const next = !this.isGroupChatOpen();

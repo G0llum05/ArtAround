@@ -5,21 +5,25 @@
     (click)="toggleDropdown()"
     [attr.aria-expanded]="isOpen()"
     aria-haspopup="listbox"
+    aria-label="Cambia lingua"
     title="Cambia lingua"
+    tabindex="0"
   >
     {{ currentLang() | uppercase }}
   </button>
 
   @if (isOpen()) {
-    <ul class="lang-menu" role="listbox">
+    <ul class="lang-menu" role="listbox" aria-label="Seleziona lingua">
       @for (lang of languages; track lang.value) {
-        <li>
+        <li role="presentation">
           <button
             type="button"
             class="lang-option"
             [class.active]="lang.value === currentLang()"
             role="option"
             [attr.aria-selected]="lang.value === currentLang()"
+            [attr.aria-label]="lang.name"
+            tabindex="0"
             (click)="selectLanguage(lang.value)"
           >
             {{ lang.name }}

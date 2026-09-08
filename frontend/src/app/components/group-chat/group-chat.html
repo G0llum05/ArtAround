@@ -1,22 +1,22 @@
 @if (isOpen()) {
-  <div class="group-chat-backdrop" (click)="closeDrawer.emit()"></div>
+  <div class="group-chat-backdrop" (click)="closeDrawer.emit()" aria-hidden="true"></div>
 
-  <aside class="group-chat-drawer" [class.open]="isOpen()" role="dialog" aria-label="Chat della classe">
+  <aside class="group-chat-drawer" [class.open]="isOpen()" role="dialog" aria-modal="true" aria-labelledby="group-chat-modal-title">
     
     <header class="drawer-header">
       <div class="drawer-header-title">
-        <svg class="header-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <svg aria-hidden="true" class="header-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
         <div class="title-text-col">
-          <h2 class="drawer-title">Chat della Stanza</h2>
+          <h2 class="drawer-title" id="group-chat-modal-title">Chat della Stanza</h2>
           <span class="drawer-code-badge">PIN: {{ sessionCode() }}</span>
         </div>
       </div>
-      <button type="button" class="btn-close-drawer" (click)="closeDrawer.emit()" aria-label="Chiudi chat">✕</button>
+      <button type="button" class="btn-close-drawer" (click)="closeDrawer.emit()" aria-label="Chiudi chat della stanza" tabindex="0">✕</button>
     </header>
 
-    <div class="drawer-messages" #scrollContainer>
+    <div class="drawer-messages" #scrollContainer tabindex="0" role="log" aria-live="polite" aria-label="Cronologia messaggi della stanza">
       @if (messages().length === 0) {
         <div class="empty-chat-state">
           <p class="empty-title">Nessuna domanda inviata</p>
@@ -51,6 +51,8 @@
           (input)="typedText.set($any($event.target).value)"
           (keydown)="onKeyDown($event)"
           placeholder="Scrivi una domanda a tutti..."
+          aria-label="Scrivi una domanda o un messaggio per la stanza"
+          tabindex="0"
         />
         <button
           type="button"
@@ -58,8 +60,9 @@
           [disabled]="!typedText().trim()"
           (click)="onSend()"
           aria-label="Invia domanda"
+          tabindex="0"
         >
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>

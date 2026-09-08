@@ -10,14 +10,14 @@ import { QrService } from '../../services/qr.service';
   standalone: true,
   imports: [CommonModule, FormsModule, ZXingScannerModule],
   template: `
-    <div class="scanner-container">
-      <button class="close-btn" (click)="closeScanner.emit()" aria-label="Chiudi scanner">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <div class="scanner-container" role="dialog" aria-modal="true" aria-label="Scanner di codici QR">
+      <button class="close-btn" (click)="closeScanner.emit()" aria-label="Chiudi scanner" tabindex="0">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 6L6 18M6 6l12 12"/>
         </svg>
       </button>
 
-      <div class="scanner-target-box">
+      <div class="scanner-target-box" aria-hidden="true">
         <div class="corner top-left"></div>
         <div class="corner top-right"></div>
         <div class="corner bottom-left"></div>
@@ -35,10 +35,12 @@ import { QrService } from '../../services/qr.service';
           type="text"
           class="manual-code-input"
           placeholder="Inserisci codice QR o ID..."
+          aria-label="Inserisci codice QR o ID manualmente"
+          tabindex="0"
           [(ngModel)]="manualCode"
           (keyup.enter)="onManualSubmit()"
         />
-        <button type="button" class="btn-manual-submit" (click)="onManualSubmit()">
+        <button type="button" class="btn-manual-submit" (click)="onManualSubmit()" aria-label="Invia codice manuale" tabindex="0">
           Invia
         </button>
       </div>

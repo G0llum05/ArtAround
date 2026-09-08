@@ -1,4 +1,4 @@
-<section class="results-section">
+<section class="results-section" aria-label="Elenco musei">
   <header class="results-header">
     <h2 class="results-title"> Musei </h2>
     <p class="results-subtitle">
@@ -14,7 +14,7 @@
     <!-- SKELETON LOADER -->
     @if (isLoading()) {
       @for (skeleton of [1, 2, 3, 4, 5, 6]; track skeleton) {
-        <div class="skeleton-card">
+        <div class="skeleton-card" aria-hidden="true">
           <div class="skeleton skeleton-img"></div>
           <div class="skeleton-content">
             <div class="skeleton skeleton-text" style="width: 80%; height: 1.5rem;"></div>
@@ -27,7 +27,7 @@
       <ng-content></ng-content>
       <!-- EMPTY STATE -->
       @if (length() === 0) {
-        <div class="empty-state">
+        <div class="empty-state" role="status" aria-live="polite">
           <p>Errore durante il caricamento dei musei</p>
         </div>
       }

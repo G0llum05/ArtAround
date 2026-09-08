@@ -1,4 +1,4 @@
-<div class="not-found-wrapper">
+<main class="not-found-wrapper" aria-label="Pagina non trovata">
   <!-- Contenuto Testuale (Sopra su Mobile, Sinistra su Desktop) -->
   <div class="not-found-content">
     <h1 class="not-found-title">C'è stato un problema</h1>
@@ -6,14 +6,14 @@
       La pagina che stai cercando non esiste o potrebbe essere stata spostata. Verifica l'indirizzo inserito oppure torna alla home.
     </p>
     <div class="not-found-actions">
-      <a routerLink="/" class="btn btn-primary">Torna alla Home</a>
-      <button (click)="goBack()" class="btn btn-secondary">Torna indietro</button>
+      <a routerLink="/" class="btn btn-primary" aria-label="Torna alla home" tabindex="0">Torna alla Home</a>
+      <button (click)="goBack()" class="btn btn-secondary" aria-label="Torna alla pagina precedente" tabindex="0">Torna indietro</button>
     </div>
   </div>
 
   <div class="not-found-image-container desktop-only">
-    <img src="/assets/images/pageNotFound.png" alt="immagine errore generico" class="not-found-img" />
+    <img src="/assets/images/pageNotFound.png" alt="Illustrazione errore 404 pagina non trovata" class="not-found-img" />
   </div>
 
-</div>
+</main>
 

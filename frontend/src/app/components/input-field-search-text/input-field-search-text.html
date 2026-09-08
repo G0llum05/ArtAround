@@ -10,6 +10,11 @@
       (click)="isDropdownOpen.set(true)"
       (keydown)="onKeyDown($event)"
       autocomplete="off"
+      role="combobox"
+      aria-label="Cerca e seleziona un museo"
+      aria-autocomplete="list"
+      [attr.aria-expanded]="isDropdownOpen()"
+      tabindex="0"
     />
     @if (displayValue() && displayValue().trim().length > 0) {
       <button
@@ -17,9 +22,10 @@
         class="clear-btn"
         (click)="clearSearch($event)"
         title="Cancella ricerca"
-        aria-label="Cancella testo"
+        aria-label="Cancella testo di ricerca"
+        tabindex="0"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
       </button>
@@ -27,11 +33,17 @@
   </div>
 
   @if (isDropdownOpen() && filteredMuseums().length > 0) {
-    <ul class="dropdown-suggestions">
+    <ul class="dropdown-suggestions" role="listbox" aria-label="Suggerimenti musei">
       @for (museum of filteredMuseums(); track museum.id) {
         <li
           (click)="selectMuseum(museum)"
-          class="suggestion-item">
+          (keydown.enter)="selectMuseum(museum)"
+          (keydown.space)="selectMuseum(museum); $event.preventDefault()"
+          class="suggestion-item"
+          role="option"
+          tabindex="0"
+          [attr.aria-label]="museum.name"
+        >
           {{ museum.name }}
         </li>
       }

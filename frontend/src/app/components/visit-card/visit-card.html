@@ -1,7 +1,15 @@
-<article class="visit-card" (click)="onCardClick()">
+<article
+  class="visit-card"
+  role="button"
+  tabindex="0"
+  (click)="onCardClick()"
+  (keydown.enter)="onCardClick()"
+  (keydown.space)="onCardClick(); $event.preventDefault()"
+  [attr.aria-label]="'Dettagli della visita: ' + visit().title + ', prezzo ' + ((visit().price == 0) ? 'gratis' : visit().price + ' euro') + ', durata ' + formatedDuration()"
+>
   <!-- Immagine e Badge in alto a destra -->
   <div class="card-image-wrapper">
-    <img [alt]="visit().title" [src]="imageUrl()" class="card-img">
+    <img [alt]="'Immagine per la visita ' + visit().title" [src]="imageUrl()" class="card-img">
     <app-badges-list
       [disableFriendly] = "visit().disableFriendly || false"
       [free] = "(visit().price === 0)"
@@ -26,7 +34,7 @@
 
     <!-- Tags in fondo (Durata, Audio, ecc.) -->
     <footer class="card-tags">
-      <span class="tag accent"> {{ formatedDuration() }} </span>
+      <span class="tag accent" [attr.aria-label]="'Durata: ' + formatedDuration()"> {{ formatedDuration() }} </span>
     </footer>
 
   </div>

@@ -1,4 +1,4 @@
-<main class="groups-container">
+<main class="groups-container" aria-label="Gestione gruppi e visite guidate">
   <!-- INTESTAZIONE PAGINA -->
   <header class="groups-header">
     <h1 class="groups-title">Gruppi</h1>
@@ -9,7 +9,7 @@
   @if (errorMessage()) {
     <div class="alert-box alert-error" role="alert">
       <div class="alert-content">
-        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -17,13 +17,13 @@
         <div class="alert-text">
           <span>{{ errorMessage() }}</span>
           @if (!authService.isLoggedIn()) {
-            <a [routerLink]="['/login']" [queryParams]="{ returnUrl: '/groups' }" class="alert-login-link">
+            <a [routerLink]="['/login']" [queryParams]="{ returnUrl: '/groups' }" class="alert-login-link" aria-label="Accedi subito al tuo account" tabindex="0">
               Accedi subito →
             </a>
           }
         </div>
       </div>
-      <button type="button" class="btn-close-alert" (click)="clearError()" aria-label="Chiudi avviso">✕</button>
+      <button type="button" class="btn-close-alert" (click)="clearError()" aria-label="Chiudi avviso" tabindex="0">✕</button>
     </div>
   }
 
@@ -31,7 +31,7 @@
   @if (successMessage()) {
     <div class="alert-box alert-success" role="status">
       <div class="alert-content">
-        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
@@ -47,7 +47,7 @@
     <article class="group-card join-card" [class.card-has-error]="errorMessage()">
       <div class="card-top">
         <div class="card-icon-wrap join-icon">
-          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
             <polyline points="10 17 15 12 10 7"></polyline>
             <line x1="15" y1="12" x2="3" y2="12"></line>
@@ -62,7 +62,7 @@
       <!-- AVVISO LOGIN RICHIESTO (SE NON AUTENTICATO) -->
       @if (!authService.isLoggedIn()) {
         <div class="login-required-banner">
-          <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
@@ -70,13 +70,13 @@
             <strong>Accesso richiesto</strong>
             <p>È necessario effettuare il login per unirti a una visita guidata.</p>
           </div>
-          <a [routerLink]="['/login']" [queryParams]="{ returnUrl: '/groups' }" class="btn btn-login-compact">
+          <a [routerLink]="['/login']" [queryParams]="{ returnUrl: '/groups' }" class="btn btn-login-compact" aria-label="Accedi per unirti al gruppo" tabindex="0">
             Accedi
           </a>
         </div>
       }
 
-      <form class="join-form" (ngSubmit)="onJoinGroup()">
+      <form class="join-form" (ngSubmit)="onJoinGroup()" aria-label="Modulo per unirsi al gruppo">
         <div class="input-action-row">
           <input
             type="text"
@@ -89,20 +89,21 @@
             maxlength="8"
             autocomplete="off"
             aria-label="Codice PIN del gruppo"
+            tabindex="0"
           />
-          <button type="submit" class="btn btn-primary" [disabled]="isLoading() || (authService.isLoggedIn() && !pinCode().trim())">
+          <button type="submit" class="btn btn-primary" [disabled]="isLoading() || (authService.isLoggedIn() && !pinCode().trim())" [attr.aria-label]="isLoading() ? 'Connessione in corso' : (!authService.isLoggedIn() ? 'Accedi e connettiti' : 'Connettiti al gruppo')" tabindex="0">
             @if (isLoading()) {
-              <span class="spinner"></span>
+              <span class="spinner" aria-hidden="true"></span>
               <span>Connessione...</span>
             } @else if (!authService.isLoggedIn()) {
-              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
               <span>Accedi e Connettiti</span>
             } @else {
               <span>Connettiti</span>
-              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
               </svg>
@@ -117,7 +118,7 @@
       <article class="group-card create-card">
         <div class="card-top">
           <div class="card-icon-wrap create-icon">
-            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
               <circle cx="9" cy="7" r="4"></circle>
               <line x1="19" y1="8" x2="19" y2="14"></line>
@@ -134,8 +135,8 @@
         </div>
 
         <div class="create-action-wrap">
-          <button type="button" class="btn btn-secondary w-full" (click)="onCreateGroup()">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <button type="button" class="btn btn-secondary w-full" (click)="onCreateGroup()" aria-label="Crea un nuovo gruppo" tabindex="0">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>

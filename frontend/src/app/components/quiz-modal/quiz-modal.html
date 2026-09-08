@@ -1,4 +1,4 @@
-<div class="quiz-overlay">
+<div class="quiz-overlay" role="dialog" aria-modal="true" aria-labelledby="quiz-modal-title">
   <div class="quiz-panel">
 
     <header class="quiz-header">
@@ -7,7 +7,7 @@
           <span class="quiz-badge">Quiz Finale</span>
           <span class="quiz-mode-pill">{{ isTeacher() ? 'Pannello Docente' : 'Sfida Live' }}</span>
         </div>
-        <h2 class="quiz-title">{{ quiz()?.title || 'Quiz Finale di Verifica' }}</h2>
+        <h2 class="quiz-title" id="quiz-modal-title">{{ quiz()?.title || 'Quiz Finale di Verifica' }}</h2>
         <p class="quiz-desc">{{ quiz()?.description || 'Rispondi alle domande sulle opere viste durante la visita.' }}</p>
       </div>
     </header>
@@ -160,12 +160,15 @@
 
               <h3 class="question-text">{{ q.question }}</h3>
 
-              <div class="options-grid">
+              <div class="options-grid" role="group" [attr.aria-label]="'Opzioni di risposta per la domanda ' + (qIdx + 1)">
                 @for (opt of q.options; track $index; let oIdx = $index) {
                   <button
                     type="button"
                     class="option-btn"
                     [class.selected]="selectedAnswers()[qIdx] === oIdx"
+                    [attr.aria-pressed]="selectedAnswers()[qIdx] === oIdx"
+                    [attr.aria-label]="'Opzione ' + (['A', 'B', 'C', 'D'][oIdx] || (oIdx + 1)) + ': ' + opt"
+                    tabindex="0"
                     (click)="selectOption(qIdx, oIdx)"
                   >
                     <span class="option-letter">{{ ['A', 'B', 'C', 'D'][oIdx] || (oIdx + 1) }}</span>
@@ -183,16 +186,16 @@
     <footer class="quiz-footer">
       @if (quizCompleted()) {
         @if (isTeacher()) {
-          <button type="button" class="btn btn-primary w-full" (click)="endVisitAndClose()">
+          <button type="button" class="btn btn-primary w-full" (click)="endVisitAndClose()" aria-label="Chiudi e termina la visita per tutti" tabindex="0">
             Chiudi e Termina Visita per Tutti
           </button>
         } @else {
-          <button type="button" class="btn btn-primary w-full" (click)="close()">
+          <button type="button" class="btn btn-primary w-full" (click)="close()" aria-label="Chiudi il quiz" tabindex="0">
             Chiudi Quiz
           </button>
         }
       } @else if (isTeacher()) {
-        <button type="button" class="btn btn-primary w-full" (click)="endQuiz()">
+        <button type="button" class="btn btn-primary w-full" (click)="endQuiz()" aria-label="Termina il quiz e mostra i risultati a tutti" tabindex="0">
           Termina Quiz e Mostra Risultati a Tutti
         </button>
       } @else if (!hasSubmitted()) {
@@ -201,6 +204,8 @@
           class="btn btn-primary w-full"
           [disabled]="!allAnswered() || isSubmitting()"
           (click)="submitAnswers()"
+          [attr.aria-label]="'Invia le mie risposte: ' + answeredCount() + ' su ' + (quiz()?.questions?.length || 0) + ' completate'"
+          tabindex="0"
         >
           @if (isSubmitting()) {
             <span class="spinner-sm"></span>

@@ -1,4 +1,4 @@
-<div class="map-overlay" (click)="close()">
+<div class="map-overlay" (click)="close()" role="dialog" aria-modal="true" aria-labelledby="map-modal-title">
 
   <!-- Se l'utente clicca sullo sfondo scuro esterno ➔ la modale si chiude (close() viene eseguito).
   Se l'utente clicca dentro il pannello bianco della mappa ➔ l'evento si ferma lì dentro -->
@@ -7,20 +7,20 @@
 
     <header class="panel-header">
       <div>
-        <h2 class="panel-title">Mappa del Museo</h2>
+        <h2 class="panel-title" id="map-modal-title">Mappa del Museo</h2>
         <p class="panel-subtitle">Visualizza il percorso e le sale</p>
       </div>
-      <button type="button" class="close-btn" (click)="close()" aria-label="Chiudi">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+      <button type="button" class="close-btn" (click)="close()" aria-label="Chiudi mappa del museo" tabindex="0">
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
       </button>
     </header>
 
-    <div class="map-content">
+    <div class="map-content" tabindex="0" aria-label="Area visualizzazione mappa">
       <img
         [src]="imageUrl()"
-        [alt]="'Mappa ' + (museum()?.name || 'Museo')"
+        [alt]="'Mappa del museo ' + (museum()?.name || 'Museo')"
         class="map-image"
       >
     </div>

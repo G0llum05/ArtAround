@@ -1,20 +1,20 @@
-<nav class="navbar">
+<nav class="navbar" role="navigation" aria-label="Navigazione principale">
   <!-- MOBILE: Tasto Hamburger -->
-  <button class="nav-icon-btn mobile-only" (click)="toggleMenu()" aria-label="Apri menu">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <button class="nav-icon-btn mobile-only" (click)="toggleMenu()" aria-label="Apri menu di navigazione" [attr.aria-expanded]="isMenuOpen()" aria-controls="mobile-side-drawer" tabindex="0">
+    <svg aria-hidden="true" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M3 12h18M3 6h18M3 18h18"/>
     </svg>
   </button>
 
-  <a routerLink="/" class="navbar-brand" (click)="toggleMenu()">ArtAround</a>
+  <a routerLink="/" class="navbar-brand" (click)="isMenuOpen() ? toggleMenu() : null" aria-label="Torna alla homepage di ArtAround" tabindex="0">ArtAround</a>
 
   <!-- DESKTOP: Voci di navigazione centrali -->
   <div class="navbar-links desktop-only">
     @for (item of navItems; track item.path) {
       @if (item.path.includes(".html")) {
-        <a [href]="item.path" class="nav-link"> {{ item.name }} </a>
+        <a [href]="item.path" class="nav-link" tabindex="0"> {{ item.name }} </a>
       } @else {
-        <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link"> {{ item.name }} </a>
+        <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link" tabindex="0"> {{ item.name }} </a>
       }
     }
   </div>
@@ -22,8 +22,8 @@
   <!-- AZIONI DESTRA -->
   <div class="navbar-actions">
     <!-- ICONA SCANSIONE QR CODE (Sempre visibile) -->
-    <button (click)="isScannerOpen.set(true)" class="nav-icon-btn" title="Scansiona QR Code">
-      <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+    <button (click)="isScannerOpen.set(true)" class="nav-icon-btn" title="Scansiona QR Code" aria-label="Scansiona QR Code" tabindex="0">
+      <svg aria-hidden="true" class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
         <path d="M120-520v-320h320v320H120Zm80-80h160v-160H200v160Zm-80 480v-320h320v320H120Zm80-80h160v-160H200v160Zm320-320v-320h320v320H520Zm80-80h160v-160H600v160Zm160 480v-80h80v80h-80ZM520-360v-80h80v80h-80Zm80 80v-80h80v80h-80Zm-80 80v-80h80v80h-80Zm80 80v-80h80v80h-80Zm80-80v-80h80v80h-80Zm0-160v-80h80v80h-80Zm80 80v-80h80v80h-80Z"/>
       </svg>
     </button>
@@ -37,11 +37,11 @@
     </div>
 
     <!-- AVATAR LOGIN (Sempre visibile) -->
-    <a [routerLink]="['/login']" [queryParams]="authService.isLoggedIn() || router.url.startsWith('/login') ? null : { returnUrl: router.url }" class="nav-icon-btn">
+    <a [routerLink]="['/login']" [queryParams]="authService.isLoggedIn() || router.url.startsWith('/login') ? null : { returnUrl: router.url }" class="nav-icon-btn" [attr.aria-label]="authService.isLoggedIn() ? 'Profilo utente ' + (authService.currentUser()?.name || '') : 'Accedi o registrati'" tabindex="0">
       @if (profilePictureUrl()) {
-        <img [src]="profilePictureUrl()" (error)="onImageError()" alt="Foto profilo" class="nav-avatar" />
+        <img [src]="profilePictureUrl()" (error)="onImageError()" alt="Foto profilo utente" class="nav-avatar" />
       } @else {
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg aria-hidden="true" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
@@ -52,13 +52,13 @@
 
 <!-- SIDEBAR / DRAWER LATERALE DA SINISTRA -->
 @if (isMenuOpen()) {
-  <div class="drawer-backdrop mobile-only" (click)="toggleMenu()"></div>
+  <div class="drawer-backdrop mobile-only" (click)="toggleMenu()" aria-hidden="true"></div>
 
-  <div class="side-drawer mobile-only">
+  <aside id="mobile-side-drawer" class="side-drawer mobile-only" role="dialog" aria-modal="true" aria-label="Menu di navigazione mobile">
     <div class="drawer-header">
       <span class="drawer-title">ArtAround</span>
-      <button class="nav-icon-btn" (click)="toggleMenu()" aria-label="Chiudi menu">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button class="nav-icon-btn" (click)="toggleMenu()" aria-label="Chiudi menu di navigazione" tabindex="0">
+        <svg aria-hidden="true" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 6L6 18M6 6l12 12"/>
         </svg>
       </button>
@@ -67,9 +67,9 @@
     <div class="drawer-links">
       @for (item of navItems; track item.path) {
         @if (item.path.includes(".html")) {
-          <a [href]="item.path" (click)="toggleMenu()" class="drawer-link"> {{ item.name }} </a>
+          <a [href]="item.path" (click)="toggleMenu()" class="drawer-link" tabindex="0"> {{ item.name }} </a>
         } @else {
-          <a [routerLink]="item.path" (click)="toggleMenu()" class="drawer-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a [routerLink]="item.path" (click)="toggleMenu()" class="drawer-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" tabindex="0">
             {{ item.name }}
           </a>
         }
@@ -86,7 +86,7 @@
         <app-theme-toggle-button></app-theme-toggle-button>
       </div>
     </div>
-  </div>
+  </aside>
 }
 
 @if (isScannerOpen()) {

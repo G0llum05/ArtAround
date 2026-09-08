@@ -1,10 +1,10 @@
-<main class="page-container">
+<main class="page-container" aria-label="Personalizzazione della visita">
   <header class="page-header">
     <h1 class="page-title">Personalizza la tua Visita</h1>
     <p class="page-subtitle">Raccontaci un po' di te e delle tue passioni, per creare un'esperienza museale su misura per te.</p>
   </header>
 
-  <form [formGroup]="formVisit" class="form-grid">
+  <form [formGroup]="formVisit" class="form-grid" aria-label="Modulo filtri di personalizzazione della visita">
 
     <!-- Museo -->
     <section class="card card-museo">
@@ -25,27 +25,27 @@
       <header class="card-header">
         <h2 class="card-title">Chi sei?</h2>
       </header>
-      <div class="role-grid">
-        <button type="button" class="role-btn" [class.active]="formVisit.get('chiSei')?.value === 'Bambino'" (click)="setRuolo('Bambino')">
-          <svg class=role-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+      <div class="role-grid" role="group" aria-label="Selezione profilo utente">
+        <button type="button" class="role-btn" [class.active]="formVisit.get('chiSei')?.value === 'Bambino'" [attr.aria-pressed]="formVisit.get('chiSei')?.value === 'Bambino'" (click)="setRuolo('Bambino')" aria-label="Profilo Bambino" tabindex="0">
+          <svg class="role-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
             <path d="M371.5-273Q323-306 300-360h360q-23 54-71.5 87T480-240q-60 0-108.5-33Zm-27-161.5Q330-449 330-470t14.5-35.5Q359-520 380-520t35.5 14.5Q430-491 430-470t-14.5 35.5Q401-420 380-420t-35.5-14.5Zm200 0Q530-449 530-470t14.5-35.5Q559-520 580-520t35.5 14.5Q630-491 630-470t-14.5 35.5Q601-420 580-420t-35.5-14.5ZM480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-32 5-62t16-59l80 14q-11 25-16 51.5t-5 55.5q0 117 81.5 198.5T480-160q117 0 198.5-81.5T760-440q0-16-2-31.5t-5-30.5q-81-9-150-48T485-651l70-41q32 37 72.5 63t88.5 39q-25-39-61.5-68.5T573-704l84-50q83 47 133 129.5T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80ZM200-615l413-155q-32-26-70-39.5T463-823q-95 0-169.5 57.5T200-615Zm-64 110q-7-20-11.5-41t-4.5-43q0-91 51-163t129-112q-2-4-2.5-7.5t-.5-8.5q0-17 11.5-28.5T337-920q14 0 24 8t14 20q22-5 43.5-8t44.5-3q67 0 127.5 26T697-802l122-46 28 75-711 268Zm271-188Z"/>
           </svg>
           Bambino
         </button>
-        <button type="button" class="role-btn" [class.active]="formVisit.get('chiSei')?.value === 'Studente'" (click)="setRuolo('Studente')">
-          <svg class="role-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <button type="button" class="role-btn" [class.active]="formVisit.get('chiSei')?.value === 'Studente'" [attr.aria-pressed]="formVisit.get('chiSei')?.value === 'Studente'" (click)="setRuolo('Studente')" aria-label="Profilo Studente" tabindex="0">
+          <svg class="role-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
             <path d="M480-120 200-272v-240L40-600l440-240 440 240v320h-80v-276l-80 44v240L480-120Zm0-332 274-148-274-148-274 148 274 148Zm0 241 200-108v-151L480-360 280-470v151l200 108Zm0-241Zm0 90Zm0 0Z"/>
           </svg>
           Studente
         </button>
-        <button type="button" class="role-btn" [class.active]="formVisit.get('chiSei')?.value === 'Adulto'" (click)="setRuolo('Adulto')">
-          <svg class="role-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <button type="button" class="role-btn" [class.active]="formVisit.get('chiSei')?.value === 'Adulto'" [attr.aria-pressed]="formVisit.get('chiSei')?.value === 'Adulto'" (click)="setRuolo('Adulto')" aria-label="Profilo Adulto" tabindex="0">
+          <svg class="role-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
             <path d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
           </svg>
           Adulto
         </button>
-        <button type="button" class="role-btn" [class.active]="formVisit.get('chiSei')?.value === 'Specialista'" (click)="setRuolo('Specialista')">
-          <svg class="role-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <button type="button" class="role-btn" [class.active]="formVisit.get('chiSei')?.value === 'Specialista'" [attr.aria-pressed]="formVisit.get('chiSei')?.value === 'Specialista'" (click)="setRuolo('Specialista')" aria-label="Profilo Specialista" tabindex="0">
+          <svg class="role-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
             <path d="m387-412 35-114-92-74h114l36-112 36 112h114l-93 74 35 114-92-71-93 71ZM240-40v-309q-38-42-59-96t-21-115q0-134 93-227t227-93q134 0 227 93t93 227q0 61-21 115t-59 96v309l-240-80-240 80Zm410-350q70-70 70-170t-70-170q-70-70-170-70t-170 70q-70 70-70 170t70 170q70 70 170 70t170-70ZM320-159l160-41 160 41v-124q-35 20-75.5 31.5T480-240q-44 0-84.5-11.5T320-283v124Zm160-62Z"/>
           </svg>
           Specialista
@@ -62,11 +62,14 @@
         </div>
       </header>
 
-      <div class="chips-group" [class.any-active]="isInterestDefault">
+      <div class="chips-group" [class.any-active]="isInterestDefault" role="group" aria-label="Filtro per interessi">
         <!-- Chip "Qualsiasi" (Reset visivo) -->
         <button type="button" class="chip chip-qualsiasi"
                 [class.active]="isInterestDefault"
-                (click)="toggleInteresse('Qualsiasi')">
+                [attr.aria-pressed]="isInterestDefault"
+                (click)="toggleInteresse('Qualsiasi')"
+                aria-label="Qualsiasi interesse"
+                tabindex="0">
           Qualsiasi
         </button>
 
@@ -74,15 +77,18 @@
         @for (interesse of interestsList(); track interesse) {
           <button type="button" class="chip"
                   [class.active]="formVisit.get('interessi')?.value.includes(interesse)"
+                  [attr.aria-pressed]="formVisit.get('interessi')?.value.includes(interesse)"
                   [class.partial]="partialInterestsList().includes(interesse)"
-                  (click)="toggleInteresse(interesse)">
+                  (click)="toggleInteresse(interesse)"
+                  [attr.aria-label]="'Interesse: ' + interesse"
+                  tabindex="0">
             {{ interesse }}
           </button>
         }
       </div>
 
       <!-- Immagine decorativa in fondo alla card come in foto solo su desktop -->
-      <img class="image" src = "/assets/images/place_holder.jpg">
+      <img class="image" src="/assets/images/place_holder.jpg" alt="" aria-hidden="true">
     </section>
 
     <!-- 4. Durata -->
@@ -92,9 +98,9 @@
         <strong class="duration-value"> {{currentDuration()}} </strong>
       </header>
       <div class="slider-container">
-        <span class="slider-label">1h</span>
-        <input type="range" class="custom-slider" min="1" max="8" step="0.5" formControlName="durata">
-        <span class="slider-label">8h+</span>
+        <span class="slider-label" aria-hidden="true">1h</span>
+        <input type="range" class="custom-slider" min="1" max="8" step="0.5" formControlName="durata" aria-label="Durata stimata della visita in ore" tabindex="0">
+        <span class="slider-label" aria-hidden="true">8h+</span>
       </div>
     </section>
 
@@ -103,27 +109,36 @@
       <header class="card-header">
         <h2 class="card-title">Opzioni aggiuntive</h2>
       </header>
-      <div class="chips-group">
+      <div class="chips-group" role="group" aria-label="Opzioni aggiuntive visita">
         <button type="button" class="chip svg-chip"
                 [class.active]="formVisit.get('accessibile')?.value"
-                (click)="formVisit.patchValue({accessibile: !formVisit.get('accessibile')?.value})">
-          <svg class="small-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                [attr.aria-pressed]="formVisit.get('accessibile')?.value"
+                (click)="formVisit.patchValue({accessibile: !formVisit.get('accessibile')?.value})"
+                aria-label="Solo percorsi accessibili"
+                tabindex="0">
+          <svg class="small-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
             <path d="M423.5-743.5Q400-767 400-800t23.5-56.5Q447-880 480-880t56.5 23.5Q560-833 560-800t-23.5 56.5Q513-720 480-720t-56.5-23.5ZM680-80v-200H480q-33 0-56.5-23.5T400-360v-240q0-33 23.5-56.5T480-680q24 0 41.5 10.5T559-636q55 66 99.5 90.5T760-520v80q-53 0-107-23t-93-55v138h120q33 0 56.5 23.5T760-300v220h-80Zm-280 0q-83 0-141.5-58.5T200-280q0-72 45.5-127T360-476v82q-35 14-57.5 44.5T280-280q0 50 35 85t85 35q39 0 69.5-22.5T514-240h82q-14 69-69 114.5T400-80Z"/>
           </svg>
           Accessibile
         </button>
         <button type="button" class="chip svg-chip money-chip"
                 [class.active]="formVisit.get('gratuito')?.value"
-                (click)="formVisit.patchValue({gratuito: !formVisit.get('gratuito')?.value})">
-          <svg class="small-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                [attr.aria-pressed]="formVisit.get('gratuito')?.value"
+                (click)="formVisit.patchValue({gratuito: !formVisit.get('gratuito')?.value})"
+                aria-label="Solo visite gratuite"
+                tabindex="0">
+          <svg class="small-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
             <path d="M574-618q-12-30-35.5-47T482-682q-18 0-35 5t-31 19l-58-58q14-14 38-25.5t44-14.5v-84h80v82q45 9 79 36.5t51 71.5l-76 32ZM792-56 608-240q-15 15-41 24.5T520-204v84h-80v-86q-56-14-93.5-51T292-350l80-32q12 42 40.5 72t75.5 30q18 0 33-4.5t29-13.5L56-792l56-56 736 736-56 56Z"/>
           </svg>
           Gratuito
         </button>
         <button type="button" class="chip svg-chip verified-chip"
                 [class.active]="formVisit.get('verificata')?.value"
-                (click)="formVisit.patchValue({verificata: !formVisit.get('verificata')?.value})">
-          <svg class="small-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                [attr.aria-pressed]="formVisit.get('verificata')?.value"
+                (click)="formVisit.patchValue({verificata: !formVisit.get('verificata')?.value})"
+                aria-label="Solo visite verificate dal museo"
+                tabindex="0">
+          <svg class="small-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
             <path d="m344-60-76-128-144-32 14-148-98-112 98-112-14-148 144-32 76-128 136 58 136-58 76 128 144 32-14 148 98 112-98 112 14 148-144 32-76 128-136-58-136 58Zm34-102 102-44 104 44 56-96 110-26-10-112 74-84-74-86 10-112-110-24-58-96-102 44-104-44-56 96-110 24 10 112-74 86 74 84-10 114 110 24 58 96Zm102-318Zm-42 142 226-226-56-58-170 170-86-84-56 56 142 142Z"/>
           </svg>
           Verificata

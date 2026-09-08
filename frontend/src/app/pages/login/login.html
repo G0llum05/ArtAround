@@ -31,8 +31,8 @@
                 class="user-avatar"
               />
             } @else {
-              <div class="user-avatar user-avatar-placeholder" title="Nessuna foto profilo">
-                <svg class="avatar-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <div class="user-avatar user-avatar-placeholder" title="Nessuna foto profilo" role="img" aria-label="Nessuna foto profilo presente">
+                <svg aria-hidden="true" class="avatar-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
@@ -45,8 +45,9 @@
                 (click)="toggleUploadMode()"
                 title="Modifica immagine profilo"
                 aria-label="Modifica immagine profilo"
+                tabindex="0"
               >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                   <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                 </svg>
               </button>
@@ -59,11 +60,11 @@
           <div class="propic-upload-container">
             <div class="upload-box-header">
               <span class="upload-box-title">Nuova immagine profilo</span>
-              <button type="button" class="btn-close-upload" (click)="cancelPropicUpload()" title="Chiudi">✕</button>
+              <button type="button" class="btn-close-upload" (click)="cancelPropicUpload()" title="Chiudi caricamento immagine" aria-label="Chiudi caricamento immagine profilo" tabindex="0">✕</button>
             </div>
 
             @if (uploadError()) {
-              <div class="upload-error-msg">
+              <div class="upload-error-msg" role="alert">
                 <span>{{ uploadError() }}</span>
               </div>
             }
@@ -87,6 +88,8 @@
                 class="btn-upload-cancel"
                 (click)="cancelPropicUpload()"
                 [disabled]="isUploadingPropic()"
+                aria-label="Annulla caricamento immagine profilo"
+                tabindex="0"
               >
                 Annulla
               </button>
@@ -95,6 +98,8 @@
                 class="btn-upload-save"
                 (click)="savePropic()"
                 [disabled]="!selectedFile() || isUploadingPropic()"
+                aria-label="Salva nuova immagine profilo"
+                tabindex="0"
               >
                 {{ isUploadingPropic() ? 'Caricamento...' : 'Salva' }}
               </button>
@@ -120,8 +125,8 @@
         </div>
       </div>
 
-      <button (click)="onLogout()" class="btn-submit btn-logout" type="button">
-        <svg class="logout-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button (click)="onLogout()" class="btn-submit btn-logout" type="button" aria-label="Effettua il logout dal profilo" tabindex="0">
+        <svg aria-hidden="true" class="logout-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
           <polyline points="16 17 21 12 16 7"></polyline>
           <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -131,12 +136,12 @@
 
     } @else {
       <!-- SEZIONE LOGIN / REGISTRAZIONE CLASSICA -->
-        <!-- Selettore Modalità -->
-      <div class="auth-toggle">
-        <button (click)="toggleMode(true)" [class.active]="isLoginMode()" class="toggle-btn" type="button">
+      <!-- Selettore Modalità -->
+      <div class="auth-toggle" role="group" aria-label="Selezione modalità autenticazione">
+        <button (click)="toggleMode(true)" [class.active]="isLoginMode()" [attr.aria-pressed]="isLoginMode()" class="toggle-btn" type="button" aria-label="Modalità accedi" tabindex="0">
           Accedi
         </button>
-        <button (click)="toggleMode(false)" [class.active]="!isLoginMode()" class="toggle-btn" type="button">
+        <button (click)="toggleMode(false)" [class.active]="!isLoginMode()" [attr.aria-pressed]="!isLoginMode()" class="toggle-btn" type="button" aria-label="Modalità registrati" tabindex="0">
           Registrati
         </button>
       </div>
@@ -149,36 +154,36 @@
       </header>
 
 
-      <form (ngSubmit)="onSubmit()" [formGroup]="authForm" class="auth-form">
+      <form (ngSubmit)="onSubmit()" [formGroup]="authForm" class="auth-form" aria-label="Modulo di autenticazione">
         <!-- Campo Nome e Cognome e Genere (Solo Registrazione) -->
         @if (!isLoginMode()) {
           <div class="form-group">
             <label class="form-label" for="name">Nome</label>
             <div class="input-wrapper">
-              <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+              <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path
                   d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
               </svg>
-              <input class="form-input" formControlName="name" id="name" placeholder="Nome" type="text">
+              <input class="form-input" formControlName="name" id="name" placeholder="Nome" type="text" tabindex="0" aria-required="true" aria-label="Nome">
             </div>
           </div>
           <div class="form-group">
             <label class="form-label" for="surname">Cognome</label>
             <div class="input-wrapper">
-              <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+              <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path
                   d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
               </svg>
-              <input class="form-input" formControlName="surname" id="surname" placeholder="Cognome" type="text">
+              <input class="form-input" formControlName="surname" id="surname" placeholder="Cognome" type="text" tabindex="0" aria-required="true" aria-label="Cognome">
             </div>
           </div>
           <div class="form-group">
             <label class="form-label" for="gender">Genere</label>
             <div class="input-wrapper">
-              <svg class="input-icon" mlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000" aria-hidden="true">
                 <path d="M367-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q560-607 560-640t-23.5-56.5Q513-720 480-720t-56.5 23.5Q400-673 400-640t23.5 56.5Q447-560 480-560t56.5-23.5ZM480-640Zm0 400Z"/>
               </svg>
-              <select class="form-input form-select" formControlName="gender" id="gender">
+              <select class="form-input form-select" formControlName="gender" id="gender" tabindex="0" aria-required="true" aria-label="Seleziona genere">
                 <option value="f">Femminile (F)</option>
                 <option value="m">Maschile (M)</option>
                 <option value="other">Preferisco non precisarlo</option>
@@ -190,11 +195,11 @@
         <div class="form-group">
           <label class="form-label" for="email">Email</label>
           <div class="input-wrapper">
-            <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+            <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path
                 d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/>
             </svg>
-            <input class="form-input" formControlName="email" id="email" placeholder="you@example.com" type="email">
+            <input class="form-input" formControlName="email" id="email" placeholder="you@example.com" type="email" tabindex="0" aria-required="true" aria-label="Indirizzo email">
           </div>
         </div>
 
@@ -202,24 +207,24 @@
           <div class="label-row">
             <label class="form-label" for="password">Password</label>
             @if (isLoginMode()) {
-              <a class="forgot-link" href="/TODO()">Forgot Password?</a>
+              <a class="forgot-link" href="/TODO()" aria-label="Recupera password dimenticata" tabindex="0">Forgot Password?</a>
             }
           </div>
           <div class="input-wrapper">
-            <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+            <svg class="input-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path
                 d="M223.5-423.5Q200-447 200-480t23.5-56.5Q247-560 280-560t56.5 23.5Q360-513 360-480t-23.5 56.5Q313-400 280-400t-56.5-23.5ZM280-240q-100 0-170-70T40-480q0-100 70-170t170-70q67 0 121.5 33t86.5 87h352l120 120-180 180-80-60-80 60-85-60h-47q-32 54-86.5 87T280-240Zm0-80q56 0 98.5-34t56.5-86h125l58 41 82-61 71 55 75-75-40-40H435q-14-52-56.5-86T280-640q-66 0-113 47t-47 113q0 66 47 113t113 47Z"/>
             </svg>
-            <input class="form-input" formControlName="password" id="password" placeholder="••••••••" type="password">
+            <input class="form-input" formControlName="password" id="password" placeholder="••••••••" type="password" tabindex="0" aria-required="true" aria-label="Password">
           </div>
         </div>
 
         @if(!isLoginMode()){
-          <button [disabled]="isSubmitting() || authForm.invalid" class="btn-submit" type="submit">
+          <button [disabled]="isSubmitting() || authForm.invalid" [attr.aria-label]="isSubmitting() ? 'Invio in corso...' : 'Registrati'" class="btn-submit" type="submit" tabindex="0">
             {{ isSubmitting() ? 'Invio in corso...' : 'Registrati' }}
           </button>
         } @else {
-          <button [disabled]="isSubmitting() || !(authForm.get('email')?.valid && authForm.get('password')?.valid)" class="btn-submit" type="submit">
+          <button [disabled]="isSubmitting() || !(authForm.get('email')?.valid && authForm.get('password')?.valid)" [attr.aria-label]="isSubmitting() ? 'Accesso in corso...' : 'Accedi'" class="btn-submit" type="submit" tabindex="0">
             {{ isSubmitting() ? 'Accesso in corso...' : 'Accedi' }}
           </button>
         }
@@ -227,19 +232,19 @@
 
         <footer class="auth-footer">
           {{ isLoginMode() ? 'Nuovo su ArtAround?' : 'Hai già un account?' }}
-          <a (click)="toggleMode(!isLoginMode())" class="signup-link">
+          <a (click)="toggleMode(!isLoginMode())" (keydown.enter)="toggleMode(!isLoginMode())" (keydown.space)="toggleMode(!isLoginMode()); $event.preventDefault()" [attr.aria-label]="isLoginMode() ? 'Passa alla registrazione' : 'Passa alla schermata di accesso'" class="signup-link" role="button" tabindex="0">
             {{ isLoginMode() ? 'Registrati' : 'Accedi' }}
           </a>
         </footer>
       </form>
 
-      <div class="divider">
+      <div class="divider" role="separator" aria-label="Separatore metodi di accesso">
         <span>continua con</span>
       </div>
 
       <div class="social-grid">
-        <button (click)="googleLogin()" class="btn-social" type="button">
-          <svg class="social-icon" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        <button (click)="googleLogin()" class="btn-social" type="button" aria-label="Accedi con account Google" tabindex="0">
+          <svg class="social-icon" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
               fill="#4285F4"/>

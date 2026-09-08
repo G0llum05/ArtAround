@@ -1,4 +1,4 @@
-<div class="carousel-container">
+<div class="carousel-container" role="region" aria-roledescription="carousel" aria-label="Visite consigliate">
   <header class="results-header">
     <h2 class="results-title"> Visite </h2>
     <p class="results-subtitle">
@@ -10,17 +10,17 @@
 
     <!-- Freccia Sinistra -->
     @if (items() && items().length > 1) {
-      <button (click)="prev()" aria-label="Precedente" class="nav-arrow prev-arrow" type="button">
-        <svg fill="currentColor" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
+      <button (click)="prev()" aria-label="Diapositiva precedente" class="nav-arrow prev-arrow" type="button" tabindex="0">
+        <svg aria-hidden="true" fill="currentColor" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
           <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
         </svg>
       </button>
     }
 
     <!-- Viewport del carosello -->
-    <div (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()" class="carousel-viewport">
+    <div (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()" class="carousel-viewport" aria-live="polite">
       @if (isLoading()) {
-        <div class="carousel-slide skeleton-slide">
+        <div class="carousel-slide skeleton-slide" aria-hidden="true">
           <div class="carousel-overlay skeleton-overlay">
             <div class="skeleton skeleton-badge"></div>
             <div class="slide-content" style="width: 100%;">
@@ -34,7 +34,7 @@
         <div [class.no-transition]="isInstant()" [style.transform]="'translateX(-' + (currentIndex() * 100) + '%)'"
              class="carousel-track">
           @for (item of extendedItems(); track item.id || $index) {
-            <div [style.background-image]="'url(' + getImageUrl(item) + ')'" class="carousel-slide">
+            <div [style.background-image]="'url(' + getImageUrl(item) + ')'" class="carousel-slide" role="group" aria-roledescription="slide" [attr.aria-label]="item.title">
               <div class="carousel-overlay">
                 <app-badges-list
                   [disableFriendly]="item.disableFriendly || false"
@@ -44,17 +44,17 @@
                 <div class="slide-content">
                   <div class="badges-wrapper">
                     @if (item.isClosingSoon) {
-                      <span class="badge badge-alert">
+                      <span class="badge badge-alert" aria-label="Chiude tra poco">
                       Chiude tra poco
                     </span>
                     }
                     @if (item.isNew) {
-                      <span class="badge badge-nuovo">
+                      <span class="badge badge-nuovo" aria-label="Nuova visita">
                       New
                     </span>
                     }
                     @if (item.price == 0) {
-                      <span class="badge badge-free">
+                      <span class="badge badge-free" aria-label="Visita gratuita">
                       Free
                     </span>
                     }
@@ -62,9 +62,9 @@
                   <h3 class="slide-title">{{ item.title }}</h3>
                   <p class="slide-desc">{{ item.description }}</p>
 
-                  <button (click)="learnMore(item.id)" class="btn-primary" type="button">
+                  <button (click)="learnMore(item.id)" class="btn-primary" type="button" [attr.aria-label]="'Scopri di più su ' + item.title" tabindex="0">
                     SCOPRI DI PIÙ
-                    <svg class="btn-icon" fill="currentColor" height="20px" viewBox="0 -960 960 960"
+                    <svg aria-hidden="true" class="btn-icon" fill="currentColor" height="20px" viewBox="0 -960 960 960"
                          width="20px" xmlns="http://www.w3.org/2000/svg">
                       <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
                     </svg>
@@ -78,8 +78,8 @@
     </div>
     <!-- Freccia Destra -->
     @if (items() && items().length > 1) {
-      <button (click)="next()" aria-label="Successivo" class="nav-arrow next-arrow" type="button">
-        <svg fill="currentColor" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
+      <button (click)="next()" aria-label="Diapositiva successiva" class="nav-arrow next-arrow" type="button" tabindex="0">
+        <svg aria-hidden="true" fill="currentColor" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
           <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
         </svg>
       </button>
@@ -89,14 +89,16 @@
 
   <!-- Puntini di navigazione (Dots) -->
   @if (items() && items().length > 1) {
-    <div class="carousel-dots">
+    <div class="carousel-dots" role="tablist" aria-label="Selettore diapositive">
       @for (item of items(); track $index) {
         <button
           (click)="goTo($index)"
-          [attr.aria-label]="'Vai alla diapositiva ' + ($index + 1)"
+          [attr.aria-label]="'Vai alla diapositiva ' + ($index + 1) + ' di ' + items().length"
+          [attr.aria-current]="(currentIndex() % items().length) === $index ? 'true' : null"
           [class.active]="(currentIndex() % items().length) === $index"
           class="dot"
-          type="button">
+          type="button"
+          tabindex="0">
         </button>
       }
     </div>

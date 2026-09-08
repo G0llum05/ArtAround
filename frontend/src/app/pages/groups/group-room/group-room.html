@@ -1,24 +1,24 @@
-<main class="room-container">
+<main class="room-container" aria-label="Stanza di attesa per la visita di gruppo">
 
   <!-- STATO CARICAMENTO -->
   @if (isLoading()) {
-    <div class="loading-state">
-      <div class="spinner-lg"></div>
+    <div class="loading-state" role="status" aria-live="polite">
+      <div class="spinner-lg" aria-hidden="true"></div>
       <p class="loading-text">Preparazione della stanza di gruppo...</p>
     </div>
   }
 
   <!-- STATO ERRORE -->
   @else if (errorMessage()) {
-    <div class="room-card error-card">
-      <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <div class="room-card error-card" role="alert">
+      <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <circle cx="12" cy="12" r="10"></circle>
         <line x1="12" y1="8" x2="12" y2="12"></line>
         <line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
       <h2 class="error-title">Errore nella Stanza</h2>
       <p class="error-desc">{{ errorMessage() }}</p>
-      <a [routerLink]="['/groups']" class="btn btn-primary">Torna alla Sezione Gruppi</a>
+      <a [routerLink]="['/groups']" class="btn btn-primary" aria-label="Torna alla sezione gruppi" tabindex="0">Torna alla Sezione Gruppi</a>
     </div>
   }
 
@@ -29,7 +29,7 @@
     <header class="room-header">
       <div class="room-badge-row">
         <span class="room-badge">
-          <span class="pulse-dot"></span>
+          <span class="pulse-dot" aria-hidden="true"></span>
           Sala d'Attesa Live
         </span>
         @if (isTeacher()) {
@@ -47,20 +47,20 @@
     </header>
 
     <!-- BOX PIN CONDIVISIONE (MOBILE FIRST & HIGHLIGHTED) -->
-    <section class="pin-showcase-card">
+    <section class="pin-showcase-card" aria-label="Condivisione codice PIN">
       <span class="pin-label">Codice PIN della Stanza</span>
       
       <div class="pin-display-row">
         <span class="pin-code">{{ session()?.sessionCode }}</span>
         
-        <button type="button" class="btn-copy-pin" (click)="copyPin()" [class.copied]="copied()" title="Copia PIN">
+        <button type="button" class="btn-copy-pin" (click)="copyPin()" [class.copied]="copied()" [attr.aria-label]="copied() ? 'Codice PIN copiato negli appunti' : 'Copia codice PIN negli appunti'" title="Copia PIN" tabindex="0">
           @if (copied()) {
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
             <span>Copiato!</span>
           } @else {
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
@@ -75,10 +75,10 @@
     </section>
 
     @if (isTeacher()) {
-      <section class="quiz-config-card">
+      <section class="quiz-config-card" aria-label="Configurazione quiz finale">
         <div class="quiz-config-header">
           <div class="quiz-config-icon-wrap">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
               <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -94,7 +94,7 @@
             <p class="quiz-config-desc">Genera automaticamente un quiz al termine del tour per verificare l'apprendimento degli studenti.</p>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" [checked]="includeQuiz()" (change)="includeQuiz.set(!includeQuiz())">
+            <input type="checkbox" [checked]="includeQuiz()" (change)="includeQuiz.set(!includeQuiz())" aria-label="Includi quiz finale interattivo AI" tabindex="0">
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -106,7 +106,7 @@
     }
 
     <!-- LISTA PARTECIPANTI CONNESSI IN TEMPO REALE -->
-    <section class="participants-section">
+    <section class="participants-section" role="region" aria-label="Elenco partecipanti collegati">
       <div class="participants-header">
         <h2 class="participants-title">
           <span>Partecipanti Collegati</span>
@@ -115,18 +115,18 @@
         
         @if (socketService.isConnected()) {
           <span class="live-status-badge">
-            <span class="status-indicator online"></span>
+            <span class="status-indicator online" aria-hidden="true"></span>
             Live
           </span>
         }
       </div>
 
-      <div class="participants-list">
+      <div class="participants-list" role="list" tabindex="0" aria-label="Lista partecipanti">
         
         <!-- DOCENTE / HOST -->
         @if (session()?.teacher) {
-          <div class="participant-item host-item">
-            <div class="participant-avatar host-avatar">
+          <div class="participant-item host-item" role="listitem">
+            <div class="participant-avatar host-avatar" aria-hidden="true">
               D
             </div>
             <div class="participant-info">
@@ -135,14 +135,14 @@
               </span>
               <span class="participant-role-tag">Docente (Host)</span>
             </div>
-            <span class="status-indicator online" title="Online"></span>
+            <span class="status-indicator online" title="Online" aria-label="Stato: Online"></span>
           </div>
         }
 
         <!-- STUDENTI COLLEGATI -->
         @for (p of studentParticipants(); track p.userId || p.id || p.email) {
-          <div class="participant-item" [class.offline]="p.isOnline === false">
-            <div class="participant-avatar">
+          <div class="participant-item" [class.offline]="p.isOnline === false" role="listitem">
+            <div class="participant-avatar" aria-hidden="true">
               {{ (p.name || p.email || 'S').charAt(0).toUpperCase() }}
             </div>
             <div class="participant-info">
@@ -156,15 +156,16 @@
               [class.online]="p.isOnline !== false"
               [class.offline]="p.isOnline === false"
               [title]="p.isOnline !== false ? 'Online' : 'Uscito / Non attivo'"
+              [attr.aria-label]="p.isOnline !== false ? 'Stato: Online' : 'Stato: Uscito / Non attivo'"
             ></span>
           </div>
         }
 
         <!-- STATO VUOTO (NESSUNO STUDENTE ANCORA) -->
         @if (studentParticipants().length === 0) {
-          <div class="empty-participants">
+          <div class="empty-participants" role="status">
             <div class="waiting-icon-wrap">
-              <svg class="waiting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="waiting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="9" cy="7" r="4"></circle>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -187,30 +188,32 @@
             class="btn btn-primary btn-start-tour"
             (click)="startGroupVisit()"
             [disabled]="isStarting()"
+            [attr.aria-label]="isStarting() ? 'Avvio in corso...' : 'Inizia visita di gruppo'"
+            tabindex="0"
           >
             @if (isStarting()) {
-              <div class="spinner-sm"></div>
+              <div class="spinner-sm" aria-hidden="true"></div>
               <span>Avvio in corso...</span>
             } @else {
-              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
               </svg>
               <span>Inizia Visita di Gruppo</span>
             }
           </button>
           
-          <button type="button" class="btn btn-outline" (click)="leaveRoom()">
+          <button type="button" class="btn btn-outline" (click)="leaveRoom()" aria-label="Esci dalla stanza di gruppo" tabindex="0">
             Esci dalla Stanza
           </button>
         </div>
       } @else {
         <div class="student-actions">
-          <div class="student-waiting-box">
-            <div class="pulse-spinner"></div>
+          <div class="student-waiting-box" role="status">
+            <div class="pulse-spinner" aria-hidden="true"></div>
             <span>Tutto pronto! In attesa che l'insegnante avvii il tour...</span>
           </div>
 
-          <button type="button" class="btn btn-outline" (click)="leaveRoom()">
+          <button type="button" class="btn btn-outline" (click)="leaveRoom()" aria-label="Esci dalla stanza di gruppo" tabindex="0">
             Esci dalla Stanza
           </button>
         </div>

@@ -247,7 +247,7 @@ async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap }) 
   console.log('[Seed Assets] All seed images processed and attached successfully.');
 }
 
-async function runSeed({ isStandalone = false } = {}) {
+async function runSeed({ isStandalone = false, force = false } = {}) {
   let connectedLocally = false;
   try {
     if (mongoose.connection.readyState !== 1) {
@@ -260,6 +260,19 @@ async function runSeed({ isStandalone = false } = {}) {
       await mongoose.connect(MONGO_URI, options);
       connectedLocally = true;
       console.log('[Seed] Database connection established successfully.');
+    }
+
+    if (!force) {
+      const museumCount = await Museum.countDocuments();
+      const userCount = await User.countDocuments();
+      if (museumCount > 0 || userCount > 0) {
+        console.log(`[Seed] Database already populated (${museumCount} museum(s), ${userCount} user(s) found). Skipping seed.`);
+        return {
+          success: true,
+          skipped: true,
+          message: 'Database already populated. Skipping seed.'
+        };
+      }
     }
 
     const seedData = await loadAllSeedData();
@@ -329,7 +342,7 @@ async function runSeed({ isStandalone = false } = {}) {
 
     // Insert Items
     console.log('[Seed] Inserting items...');
-    const ALLOWED_LANGS = ['it', 'en', 'fr', 'es', 'de', 'cn', 'ru'];
+    const ALLOWED_LANGS = ['it', 'en', 'fr', 'es', 'de', 'pt', 'cn', 'ru'];
     const ALLOWED_TONES = ['infantile', 'simple', 'medium', 'technical'];
     const ALLOWED_LENGTHS = [15, 30, 60];
 
@@ -560,7 +573,8 @@ async function runSeed({ isStandalone = false } = {}) {
 }
 
 if (require.main === module) {
-  runSeed({ isStandalone: true })
+  const force = process.argv.includes('--force') || process.env.FORCE_SEED === 'true';
+  runSeed({ isStandalone: true, force })
     .then(() => process.exit(0))
     .catch((err) => {
       console.error('[Seed CLI Error]:', err);

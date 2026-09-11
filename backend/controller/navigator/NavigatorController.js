@@ -3,6 +3,7 @@ const NavigatorService = require('../../service/NavigatorService');
 const ResponsiveVoiceService = require('../../service/ResponsiveVoiceService');
 const NavigatorMapper = require('../../data/mapper/NavigatorMapper');
 const Sanitizer = require('../../utils/Sanitizer');
+const NavigatorMessages = require('../../utils/NavigatorMessages');
 
 class NavigatorController {
 
@@ -54,10 +55,13 @@ class NavigatorController {
       res.end();
     } catch (err) {
       console.error('[NavigatorController Error]:', err);
+      const lang = req.body?.language || 'it';
+      const userFacingError = NavigatorMessages.getMessage('generic_error', lang);
       res.write(JSON.stringify({
         type: 'ERROR',
         success: false,
-        error: err.message || 'Errore durante l\'elaborazione'
+        error: userFacingError,
+        technicalDetails: err.message
       }) + '\n');
       res.end();
     }

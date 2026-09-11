@@ -65,6 +65,9 @@ class ResponsiveVoiceService {
       case 'ru':
         voice = 'Russian Female';
         break;
+      case 'pt':
+        voice = 'Portuguese Female';
+        break;
       default:
         voice = 'Italian Female';
     }
@@ -80,6 +83,7 @@ class ResponsiveVoiceService {
     else if (cleanLang.includes('fr') || cleanLang.includes('fra')) cleanLang = 'fr';
     else if (cleanLang.includes('sp') || cleanLang.includes('es')) cleanLang = 'es';
     else if (cleanLang.includes('de')) cleanLang = 'de';
+    else if (cleanLang.includes('pt')) cleanLang = 'pt';
     else if (cleanLang.includes('cn') || cleanLang.includes('zh')) cleanLang = 'zh-CN';
     else if (cleanLang.includes('ru') || cleanLang.includes('rus')) cleanLang = 'ru';
     else cleanLang = 'it';

@@ -1,0 +1,82 @@
+{
+  "generic_error": {
+    "it": "Si è verificato un errore. Per favore, riprova.",
+    "en": "An error occurred. Please try again.",
+    "es": "Se ha producido un error. Por favor, inténtalo de nuevo.",
+    "fr": "Une erreur s'est produite. Veuillez réessayer.",
+    "de": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "pt": "Ocorreu um erro. Por favor, tente novamente.",
+    "cn": "发生错误，请重试。",
+    "ru": "Произошла ошибка. Пожалуйста, попробуйте снова."
+  },
+  "group_student_navigation_restricted": {
+    "it": "In questa visita di gruppo la navigazione tra le tappe è guidata dal docente. Puoi farmi domande sull'opera corrente o chiedere informazioni sui servizi del museo.",
+    "en": "In this group tour, navigation between stops is guided by the teacher. You can ask questions about the current artwork or ask for museum services.",
+    "es": "En esta visita grupal la navegación entre las etapas está guiada por el docente. Puedes hacerme preguntas sobre la obra actual o pedir información sobre los servicios del museo.",
+    "fr": "Dans cette visite de groupe, la navigation entre les étapes est guidée par l'enseignant. Vous pouvez me poser des questions sur l'œuvre actuelle ou vous renseigner sur les services du musée.",
+    "de": "Bei dieser Gruppenführung wird die Navigation zwischen den Stationen von der Lehrkraft gesteuert. Sie können Fragen zum aktuellen Kunstwerk oder zu den Museumsdiensten stellen.",
+    "pt": "Nesta visita de grupo, a navegação entre as etapas é guiada pelo professor. Pode fazer-me perguntas sobre a obra atual ou pedir informações sobre os serviços do museu.",
+    "cn": "在本次团体参观中，路线由老师带领。您可以向我提问关于当前艺术品的问题，或咨询博物馆的服务设施。",
+    "ru": "В этой групповой экскурсии переход между экспонатами координирует преподаватель. Вы можете задать мне вопросы о текущем произведении искусства или узнать об услугах музея."
+  },
+  "single_artwork_no_tour": {
+    "it": "Stai consultando questa singola opera al di fuori di un itinerario. Puoi chiedermi maggiori approfondimenti o dettagli sull'autore.",
+    "en": "You are currently viewing this artwork individually outside a tour. You can ask for more details or information about the artist.",
+    "es": "Estás consultando esta obra individual fuera de un itinerario. Puedes pedirme más detalles o información sobre el autor.",
+    "fr": "Vous consultez cette œuvre individuellement en dehors d'un parcours. Vous pouvez me demander plus de détails ou des informations sur l'artiste.",
+    "de": "Sie betrachten dieses Kunstwerk einzeln außerhalb einer Führung. Sie können nach weiteren Details oder Informationen über den Künstler fragen.",
+    "pt": "Está a consultar esta obra individualmente fora de um itinerário. Pode pedir-me mais detalhes ou informações sobre o autor.",
+    "cn": "您目前正在单独浏览此艺术品，不在任何路线上。您可以向我了解更多细节或关于作者的信息。",
+    "ru": "Вы просматриваете этот отдельный экспонат вне маршрута. Вы можете запросить дополнительную информацию или сведения об авторе."
+  },
+  "tour_already_at_last": {
+    "it": "Sei già all'ultima opera della visita. Puoi chiedermi approfondimenti su questa tappa o informazioni sul museo.",
+    "en": "You are already at the last artwork of the tour. You can ask for more details about this stop or information about the museum.",
+    "es": "Ya estás en la última obra de la visita. Puedes pedirme más detalles sobre esta parada o información sobre el museo.",
+    "fr": "Vous êtes déjà à la dernière œuvre de la visite. Vous pouvez me demander des précisions sur cette étape ou des informations sur le musée.",
+    "de": "Sie befinden sich bereits beim letzten Kunstwerk der Führung. Sie können nach weiteren Details zu dieser Station oder Informationen über das Museum fragen.",
+    "pt": "Já se encontra na última obra da visita. Pode pedir-me mais detalhes sobre esta paragem ou informações sobre o museu.",
+    "cn": "您已经到达本次参观的最后一处展品。您可以向我了解本展品的详情，或咨询有关博物馆的信息。",
+    "ru": "Вы уже находитесь у последнего произведения экскурсии. Вы можете запросить подробности об этой остановке или информацию о музее."
+  },
+  "tour_already_at_first": {
+    "it": "Sei già alla prima opera della visita.",
+    "en": "You are already at the first artwork of the tour.",
+    "es": "Ya estás en la primera obra de la visita.",
+    "fr": "Vous êtes déjà à la première œuvre de la visite.",
+    "de": "Sie befinden sich bereits beim ersten Kunstwerk der Führung.",
+    "pt": "Já se encontra na primeira obra da visita.",
+    "cn": "您已经位于本次参观的第一件展品处。",
+    "ru": "Вы уже находитесь у первого экспоната экскурсии."
+  },
+  "no_artist_info": {
+    "it": "Non ci sono informazioni registrate sull'autore per l'opera \"{{title}}\".",
+    "en": "There is no recorded information about the artist for the artwork \"{{title}}\".",
+    "es": "No hay información registrada sobre el autor para la obra \"{{title}}\".",
+    "fr": "Il n'y a aucune information enregistrée sur l'artiste pour l'œuvre « {{title}} ».",
+    "de": "Für das Kunstwerk „{{title}}“ sind keine Informationen über den Künstler hinterlegt.",
+    "pt": "Não existem informações registadas sobre o autor da obra \"{{title}}\".",
+    "cn": "暂无关于艺术品“{{title}}”创作者的登记信息。",
+    "ru": "Нет зарегистрированной информации об авторе произведения «{{title}}»."
+  },
+  "unknown_action": {
+    "it": "Non posso rispondere a questa richiesta. Posso guidarti tra le opere, raccontarti la loro storia e l'artista, o darti informazioni sul museo e i suoi servizi.",
+    "en": "I cannot answer this request. I can guide you through the artworks, explain their history and artist, or provide information about the museum and its services.",
+    "es": "No puedo responder a esta solicitud. Puedo guiarte por las obras, explicar su historia y artista, o darte información sobre el museo e i suoi servizi.",
+    "fr": "Je ne peux pas répondre à cette demande. Je peux vous guider à travers les œuvres, vous expliquer leur histoire et leur artiste, ou vous renseigner sur le musée et ses services.",
+    "de": "Ich kann diese Anfrage leider nicht beantworten. Ich kann Sie durch die Kunstwerke führen, deren Geschichte und Künstler erklären oder Auskunft über das Museum und seine Dienste geben.",
+    "pt": "Não posso responder a este pedido. Posso guiá-lo pelas obras, explicar a história e o autor, ou fornecer informações sobre o museu e os seus serviços.",
+    "cn": "我无法回答此请求。我可以为您导览艺术品、讲解其历史与创作者，或提供博物馆及其服务设施的信息。",
+    "ru": "Я не могу ответить на этот запрос. Я могу провести вас по произведениям, рассказать об их истории и авторе или предоставить информацию о музее и его услугах."
+  },
+  "poi_not_found": {
+    "it": "Il servizio o punto di interesse richiesto non è presente nel museo \"{{museum}}\".",
+    "en": "The requested point of interest or service is not available at the museum \"{{museum}}\".",
+    "es": "El servicio o punto de interés solicitado no está disponible en el museo \"{{museum}}\".",
+    "fr": "Le point d'intérêt ou service demandé n'est pas disponible au musée « {{museum}} ».",
+    "de": "Der gewünschte Service oder Orientierungspunkt ist im Museum „{{museum}}“ nicht verfügbar.",
+    "pt": "O serviço ou ponto de interesse solicitado não está disponível no museu \"{{museum}}\".",
+    "cn": "博物馆“{{museum}}”未提供所请求的兴趣点或服务设施。",
+    "ru": "Запрошенная услуга или пункт интереса отсутствуют в музее «{{museum}}»."
+  }
+}

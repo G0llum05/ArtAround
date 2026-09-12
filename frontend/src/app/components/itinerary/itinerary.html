@@ -3,19 +3,17 @@
     <li class="itinerary-step"
         [class.completed]="item.completed"
         [class.current]="item.isCurrent"
-        [attr.aria-current]="item.isCurrent ? 'step' : null">
+        (click)="clickedInterestOfIndex(i)"
+        (keydown.enter)="clickedInterestOfIndex(i)"
+        (keydown.space)="clickedInterestOfIndex(i); $event.preventDefault()"
+        [attr.role]="readOnly() ? null : 'button'"
+        [attr.tabindex]="readOnly() ? null : 0"
+        [attr.aria-current]="item.isCurrent ? 'step' : null"
+        [attr.aria-label]="'Tappa ' + (i + 1) + ': ' + item.title + (item.completed ? ' (completata)' : item.isCurrent ? ' (in corso)' : '')">
 
       <!-- Parte grafica: Pallino e Linea verticale -->
       <div class="step-indicator-wrapper">
-        <div
-          class="step-circle"
-          (click)="clickedInterestOfIndex(i)"
-          (keydown.enter)="clickedInterestOfIndex(i)"
-          (keydown.space)="clickedInterestOfIndex(i); $event.preventDefault()"
-          [attr.role]="readOnly() ? null : 'button'"
-          [attr.tabindex]="readOnly() ? null : 0"
-          [attr.aria-label]="'Tappa ' + (i + 1) + ': ' + item.title + (item.completed ? ' (completata)' : item.isCurrent ? ' (in corso)' : '')"
-        >
+        <div class="step-circle">
           @if (item.completed) {
             <!-- Icona spunta per i completati -->
             <svg aria-hidden="true" class="step-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>

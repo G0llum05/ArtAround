@@ -297,14 +297,27 @@
 .action-row {
   display: flex;
   flex-wrap: wrap;
-  flex-grow: 1;
   gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.action-row .btn {
+  height: 2.75rem;
+  min-height: 2.75rem;
+  max-height: 2.75rem;
 }
 
 .services-row {
   display: flex;
   gap: var(--spacing-sm);
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.services-row .chip {
+  height: 2.25rem;
+  min-height: 2.25rem;
+  max-height: 2.25rem;
 }
 
 /*  IL LAYOUT DESKTOP (Griglia Infallibile) */
@@ -390,8 +403,18 @@
   }
 
   .area-actions .card-body {
-    flex-direction: column; /* Impila Dimmi di più sopra i bottoni piccoli */
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-md);
+  }
+
+  .navigator-grid.chat-is-collapsed .area-actions {
+    height: auto;
+    align-self: start;
+  }
+
+  .navigator-grid.chat-is-collapsed .area-actions .card-body {
+    justify-content: flex-start;
   }
 
   /* 4. ITINERARIO CARD */
@@ -449,6 +472,7 @@
 .flex-fill { flex: 1; }
 
 .btn {
+  min-height: 2.75rem;
   padding: 0.6rem 1.4rem;
   border-radius: var(--radius-default);
   font-weight: 500;

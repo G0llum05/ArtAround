@@ -3,9 +3,7 @@ const NavigatorService = require('../../service/NavigatorService');
 const ResponsiveVoiceService = require('../../service/ResponsiveVoiceService');
 const NavigatorMapper = require('../../data/mapper/NavigatorMapper');
 const Sanitizer = require('../../utils/Sanitizer');
-
-// TODO GLOBALE -> DTO di req e res per TUTTI i metodi
-
+const NavigatorMessages = require('../../utils/NavigatorMessages');
 
 class NavigatorController {
 
@@ -57,10 +55,13 @@ class NavigatorController {
       res.end();
     } catch (err) {
       console.error('[NavigatorController Error]:', err);
+      const lang = req.body?.language || 'it';
+      const userFacingError = NavigatorMessages.getMessage('generic_error', lang);
       res.write(JSON.stringify({
         type: 'ERROR',
         success: false,
-        error: err.message || 'Errore durante l\'elaborazione'
+        error: userFacingError,
+        technicalDetails: err.message
       }) + '\n');
       res.end();
     }
@@ -84,7 +85,6 @@ class NavigatorController {
         return res.status(400).json({ success: false, error: 'Parametro text mancante.' });
       }
 
-      // 1. Tenta sintesi sicura backend via ResponsiveVoiceService
       try {
         const audioBuffer = await ResponsiveVoiceService.synthesizeAudioBuffer(text, lang);
         res.setHeader('Content-Type', 'audio/mpeg');
@@ -95,37 +95,6 @@ class NavigatorController {
         console.warn('[NavigatorController] ResponsiveVoiceService TTS warning, fallback a Google TTS:', rvErr.message);
       }
 
-      // // 2. Fallback a Google TTS service
-      // let cleanLang = (lang || 'it').toLowerCase();
-      // if (cleanLang.includes('en') || cleanLang.includes('us')) cleanLang = 'en';
-      // else if (cleanLang.includes('fr') || cleanLang.includes('fra')) cleanLang = 'fr';
-      // else if (cleanLang.includes('sp') || cleanLang.includes('es')) cleanLang = 'es';
-      // else if (cleanLang.includes('de')) cleanLang = 'de';
-      // else if (cleanLang.includes('cn') || cleanLang.includes('zh')) cleanLang = 'zh-CN';
-      // else if (cleanLang.includes('ru') || cleanLang.includes('rus')) cleanLang = 'ru';
-      // else cleanLang = 'it';
-      //
-      // const trimmedText = text.trim().substring(0, 300);
-      //
-      // const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(trimmedText)}&tl=${cleanLang}&client=tw-ob`;
-      //
-      // const response = await fetch(googleTtsUrl, {
-      //   headers: {
-      //     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-      //   }
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error(`Google TTS Service Error: status ${response.status}`);
-      // }
-
-      // const audioArrayBuffer = await response.arrayBuffer();
-      // const audioBuffer = Buffer.from(audioArrayBuffer);
-      //
-      // res.setHeader('Content-Type', 'audio/mpeg');
-      // res.setHeader('Content-Length', audioBuffer.length);
-      // res.setHeader('Cache-Control', 'public, max-age=86400');
-      // return res.send(audioBuffer);
     } catch (err) {
       console.error('[NavigatorController TTS Error]:', err);
       return res.status(500).json({

@@ -292,11 +292,12 @@ class AuthController {
    */
   async triggerSeed(req, res) {
     try {
+      const force = req.query.force === 'true' || req.body?.force === true;
       const { runSeed } = require('../../scripts/seedDatabase');
-      const result = await runSeed({ isStandalone: false });
+      const result = await runSeed({ isStandalone: false, force });
       return res.status(200).json({
         type: 'success',
-        message: 'Database popolato con successo coi dati di seed!',
+        message: result.skipped ? 'Database già popolato. Usa ?force=true per forzare il re-seed.' : 'Database popolato con successo coi dati di seed!',
         data: result
       });
     } catch (error) {

@@ -259,8 +259,8 @@
           (clickedOnItineraryStep)="changeItineraryStep($event)"
         ></app-itinerary>
         @if(isGroup()) {
-          <button type="button" class="btn btn-primary flex-fill" (click)="endGroupVisit()" aria-label="Termina visita di gruppo" tabindex="0">
-            Termina visita di gruppo
+          <button type="button" class="btn btn-primary flex-fill" (click)="endGroupVisit()" [attr.aria-label]="isTeacher() ? 'Termina visita di gruppo' : 'Esci dalla visita di gruppo'" tabindex="0">
+            {{ isTeacher() ? 'Termina visita di gruppo' : 'Esci dalla visita' }}
           </button>
         } @else {
           <button type="button" class="btn btn-primary flex-fill" (click)="endVisit()" aria-label="Termina visita" tabindex="0">

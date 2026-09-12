@@ -220,7 +220,9 @@ export class Navigator implements OnDestroy {
         const code = params['sessionCode'].toUpperCase().trim();
         this.sessionCode.set(code);
         this.isGroup.set(true);
-        const isTeacherUser = params['isTeacher'] === 'true';
+        const role = this.authService.userRole();
+        const isTeacherRole = role === 'teacher' || role === 'museumstaff' || role === 'admin';
+        const isTeacherUser = params['isTeacher'] === 'true' || isTeacherRole;
         this.isTeacher.set(isTeacherUser);
 
         if (!isTeacherUser) {
@@ -830,7 +832,9 @@ export class Navigator implements OnDestroy {
   }
   
   endVisit(): void {
-    confirm("Terminando la visita perderai tutti i progressi. Sei Sicuro?")
+    if (!window.confirm('Terminando la visita perderai tutti i progressi. Sei sicuro?')) {
+      return;
+    }
     this.stopAudio();
 
     this.isQuizModalOpen.set(false);
@@ -840,17 +844,31 @@ export class Navigator implements OnDestroy {
   }
 
   endGroupVisit(): void {
+    const isTeacher = this.isTeacher();
+    const confirmMessage = isTeacher
+      ? 'Sei sicuro di voler terminare la visita di gruppo per tutta la classe?'
+      : 'Sei sicuro di voler uscire dalla visita di gruppo?';
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
     const code = this.sessionCode();
     this.stopAudio();
 
     this.isQuizModalOpen.set(false);
 
     if (code) {
-      this.socketService.endSession(code, '')
-        .finally(() => {
-          this.socketService.disconnect();
-          this.router.navigate(['/']);
-        });
+      if (isTeacher) {
+        this.socketService.endSession(code, '')
+          .finally(() => {
+            this.socketService.disconnect();
+            this.router.navigate(['/']);
+          });
+      } else {
+        this.socketService.leaveRoom(code);
+        this.router.navigate(['/']);
+      }
     } else {
       this.socketService.disconnect();
       this.router.navigate(['/']);

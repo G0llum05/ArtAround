@@ -9,6 +9,7 @@ const ItemMapper = require('../data/mapper/ItemMapper');
 const ArtworkMapper = require('../data/mapper/ArtworkMapper');
 const Sanitizer = require('../utils/Sanitizer');
 const GroqSTTService = require('./GroqSTTService');
+const NavigatorMessages = require('../utils/NavigatorMessages');
 
 
 class NavigatorService {
@@ -51,7 +52,14 @@ class NavigatorService {
 
     if (isGroup && !isTeacher) {
       if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
-        return 'In questa visita di gruppo la navigazione tra le tappe è guidata dal docente. Puoi farmi domande sull\'opera corrente o chiedere informazioni sui servizi del museo.';
+        return {
+          text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
+          currentArtworkIndex: currentArtworkIndex || 0,
+          itemAction: 'EXPLAIN_ITEM',
+          tone,
+          language,
+          length
+        };
       }
     }
 
@@ -68,7 +76,7 @@ class NavigatorService {
         return await this.cultureInfoHandler(userQuery, museumId, visitId, currentArtworkIndex, tone, length, language, artworkId);
       case 'UNKNOWN_ACTION':
         return {
-          text: this.getUnmappableActionMessage(language),
+          text: NavigatorMessages.getMessage('unknown_action', language),
           currentArtworkIndex: currentArtworkIndex || 0,
           itemAction: null,
           tone,
@@ -116,11 +124,8 @@ class NavigatorService {
     }
 
     if (!visitId && artworkId && (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM')) {
-      const singleMsg = language === 'en'
-        ? "You are currently viewing this artwork individually outside a tour. You can ask for more details or information about the artist."
-        : "Stai consultando questa singola opera al di fuori di un itinerario. Puoi chiedermi maggiori approfondimenti o dettagli sull'autore.";
       return {
-        text: singleMsg,
+        text: NavigatorMessages.getMessage('single_artwork_no_tour', language),
         currentArtworkIndex: 0,
         itemAction: 'EXPLAIN_ITEM',
         tone,
@@ -132,8 +137,8 @@ class NavigatorService {
     if (isGroup && !isTeacher) {
       if (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM') {
         return {
-          text: 'In questa visita di gruppo la navigazione è guidata dal docente. Puoi chiedermi maggiori informazioni sull\'opera attuale o curiosità sul museo.',
-          currentArtworkIndex: currentArtworkIndex,
+          text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
+          currentArtworkIndex: currentArtworkIndex || 0,
           itemAction: 'EXPLAIN_ITEM',
           tone,
           language,
@@ -191,11 +196,8 @@ class NavigatorService {
   static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null) {
     if (!visitId && artworkId) {
       if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
-        const singleMsg = language === 'en'
-          ? "You are currently viewing this artwork individually outside a tour. You can ask for more details or information about the artist."
-          : "Stai consultando questa singola opera al di fuori di un itinerario. Puoi chiedermi maggiori approfondimenti o dettagli sull'autore.";
         return {
-          text: singleMsg,
+          text: NavigatorMessages.getMessage('single_artwork_no_tour', language),
           currentArtworkIndex: 0,
           itemAction: 'EXPLAIN_ITEM',
           tone: tone,
@@ -221,14 +223,28 @@ class NavigatorService {
     switch (itemAction) {
       case 'NEXT_ITEM':
         if (currentArtworkIndex >= steps.length - 1) {
-          throw new Error('Sei già all\'ultima opera della visita.');
+          return {
+            text: NavigatorMessages.getMessage('tour_already_at_last', language),
+            currentArtworkIndex,
+            itemAction: 'EXPLAIN_ITEM',
+            tone,
+            language,
+            length
+          };
         }
         targetIndex = currentArtworkIndex + 1;
         break;
 
       case 'PREVIOUS_ITEM':
         if (currentArtworkIndex <= 0) {
-          throw new Error('Sei già alla prima opera della visita.');
+          return {
+            text: NavigatorMessages.getMessage('tour_already_at_first', language),
+            currentArtworkIndex,
+            itemAction: 'EXPLAIN_ITEM',
+            tone,
+            language,
+            length
+          };
         }
         targetIndex = currentArtworkIndex - 1;
         break;
@@ -259,7 +275,6 @@ class NavigatorService {
   }
 
 
-  // TODO CHECK è possibile che ci sia bisogno di fixare gli item e come vengono presi
   static async getOrGenerateItem(visitId, targetIndex, tone, length, language, tellMeMore) {
     const steps = await this.getVisitSteps(visitId);
 
@@ -278,27 +293,22 @@ class NavigatorService {
       throw new Error(`Opera con ID "${step.artwork}" non trovata.`);
     }
 
-    // TODO CHECK c'è anche da fare il tellMeMore che è un item a parte, se c'è si prende quello, altrimenti si genera con l'llm
     if (tellMeMore && step.tellMeMore) {
       const tellMeMoreItem = await Item.findById(step.tellMeMore).exec();
       if (tellMeMoreItem) {
-        console.log(`\n\x1b[32m✅ [DEBUG SERVICE] Item "Tell Me More" trovato nel DB per opera "${step.artwork}" con tono "${tone}", lingua "${language}" e lunghezza "${length}".\x1b[0m\n`);
         return tellMeMoreItem;
       }
     } else {
       for (const stepItemId of step.items) {
         // controllo se c'è item giusto già ritoranto nella struttura
         const stepItem = await Item.findById(stepItemId).exec();
-        console.log(`\n\x1b[34m🔍 [DEBUG SERVICE] Item trovato: ID: "${stepItemId}", Tono: "${stepItem?.tone}", Lingua: "${stepItem?.language}", Lunghezza: "${stepItem?.length}"\x1b[0m\n`);
         if (stepItem && stepItem.tone === tone && stepItem.language === language && stepItem.length === length) {
-          console.log(`\n\x1b[32m✅ [DEBUG SERVICE] Item trovato nel DB per opera "${step.artwork}" con tono "${tone}", lingua "${language}" e lunghezza "${length}".\x1b[0m\n`);
           return stepItem;
         }
       }
       // controllo per item non messi da esterni nella visita
       const matchingItem = await this.getItem(artwork, tone, language, length);
       if (matchingItem) {
-        console.log(`\n\x1b[32m✅ [DEBUG SERVICE] Item trovato nel DB per opera "${artwork.title}" con tono "${tone}", lingua "${language}" e lunghezza "${length}".\x1b[0m\n`);
         return matchingItem;
       }
     }
@@ -306,7 +316,6 @@ class NavigatorService {
     // Se item non trovato ricicliamo il testo esistente di item sinonimi
     const rawExistingSimilarItem = this.getAvailableContentIfExists(artwork, tone, language, length);
     const existingSimilarItem = ItemMapper.toItemLLMRequestDTO(rawExistingSimilarItem);
-    console.log(`\n\x1b[33m⚠️ [DEBUG SERVICE] Nessun item esatto trovato per opera "${artwork.title}" con tono "${tone}", lingua "${language}" e lunghezza "${length}".\x1b[0m\n`);
 
     const artworkContext = ArtworkMapper.toArtworkLLMRequestDTO(artwork);
 
@@ -374,7 +383,16 @@ class NavigatorService {
       const POI = museum.pointsOfInterest.find(p => p.type === targetPoiType);
 
       if (!POI) {
-        throw new Error(`Punto di interesse di tipo "${targetPoiType}" non trovato nel museo "${museum.name}".`);
+        return {
+          text: NavigatorMessages.getMessage('poi_not_found', language, { poi: targetPoiType, museum: museum.name }),
+          currentArtworkIndex: currentArtworkIndex || 0,
+          itemAction: null,
+          targetArtist: null,
+          targetPoiType: targetPoiType,
+          tone,
+          language,
+          length
+        };
       }
 
       resultText = await LLMService.nonItemPOI(museum.name, POI, language, tone);
@@ -408,7 +426,7 @@ class NavigatorService {
       }
 
       if (!artist) {
-        resultText = `Non ci sono informazioni registrate sull'autore per l'opera "${artwork.title}".`;
+        resultText = NavigatorMessages.getMessage('no_artist_info', language, { title: artwork.title || '' });
       } else {
         resultText = await LLMService.nonItemArtistInfo(artist, artwork, tone, length, language);
       }
@@ -581,20 +599,7 @@ class NavigatorService {
   }
 
   static getUnmappableActionMessage(language = 'it') {
-    const lang = (language || 'it').toLowerCase();
-    switch (lang) {
-      case 'en':
-        return "I cannot answer this request. I can guide you through the artworks, explain their history and artist, or provide information about the museum and its services.";
-      case 'es':
-        return "No puedo responder a esta solicitud. Puedo guiarte por las obras, explicar su historia y artista, o darte información sobre el museo y sus servicios.";
-      case 'fr':
-        return "Je ne peux pas répondre à cette demande. Je peux vous guider à travers les œuvres, vous expliquer leur histoire et leur artiste, ou vous renseigner sur le musée et ses services.";
-      case 'de':
-        return "Ich kann diese Anfrage leider nicht beantworten. Ich kann Sie durch die Kunstwerke führen, deren Geschichte und Künstler erklären oder Auskunft über das Museum und seine Dienste geben.";
-      case 'it':
-      default:
-        return "Non posso rispondere a questa richiesta. Posso guidarti tra le opere, raccontarti la loro storia e l'artista, o darti informazioni sul museo e i suoi servizi.";
-    }
+    return NavigatorMessages.getMessage('unknown_action', language);
   }
 }
 

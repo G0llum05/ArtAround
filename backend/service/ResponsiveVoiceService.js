@@ -11,7 +11,7 @@ class ResponsiveVoiceService {
 
     const rvApiKey = process.env.RESPONSIVEVOICE_API_KEY;
     const rvSecret = process.env.NODE_ENV === 'production'
-      ? process.env.RESPONSIVEVOICE_API_SECRET
+      ? process.env.RESPONSIVEVOICE_SECRET
       : process.env.RESPONSIVEVOICE_LOCAL_SECRET;
 
     if (rvApiKey && rvSecret) {

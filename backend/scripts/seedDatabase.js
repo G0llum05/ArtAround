@@ -78,7 +78,7 @@ async function loadAllSeedData() {
 /**
  * Processa e carica le immagini da assets/seed tramite UploadService
  */
-async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap }) {
+async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap, completeVisitMap = {} }) {
   console.log('\n[Seed Assets] Starting image upload and processing via UploadService...');
 
   const assetsMuseumsDir = path.join(__dirname, '../assets/museums');
@@ -154,6 +154,30 @@ async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap }) 
             console.log(`[Seed Assets] Loaded museum cover for "${museumKey}" -> ${url}`);
           } catch (err) {
             console.error(`[Seed Assets] Error uploading museum cover "${file}" for "${museumKey}":`, err.message);
+          }
+        }
+      }
+
+      // Se il museo ha una visita completa generata (>= 10 opere), assegna esplicitamente l'immagine meta del museo
+      const completeVisitId = completeVisitMap[museumKey];
+      if (completeVisitId) {
+        const updatedMuseum = await Museum.findById(museumId);
+        if (updatedMuseum?.assets?.images && updatedMuseum.assets.images.length > 0) {
+          await Visit.findByIdAndUpdate(completeVisitId, {
+            'assets.images': updatedMuseum.assets.images
+          });
+          console.log(`[Seed Assets] Explicitly assigned museum meta image(s) to complete visit (${completeVisitId}) for "${museumKey}".`);
+
+          // Sincronizzazione filesystem: copia i file meta nella directory della visita
+          try {
+            const museumMetaDir = path.join(assetsMuseumsDir, museumId.toString(), 'meta');
+            const visitMetaDir = path.join(assetsMuseumsDir, museumId.toString(), 'visit', completeVisitId.toString(), 'meta');
+            if (fs.existsSync(museumMetaDir)) {
+              await fsExtra.ensureDir(visitMetaDir);
+              await fsExtra.copy(museumMetaDir, visitMetaDir);
+            }
+          } catch (fsErr) {
+            console.warn(`[Seed Assets] Warning copying meta files to complete visit directory:`, fsErr.message);
           }
         }
       }
@@ -491,9 +515,76 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
 
     // 7. Insert Museums
     console.log('[Seed] Inserting museum(s)...');
+    const completeVisitMap = {};
+
     for (const museumData of seedData.museums) {
       const museumVisitIds = (museumData.visits || []).map(k => visitMap[k]).filter(Boolean);
       const museumArtworkIds = (museumData.artworks || []).map(k => artworkMap[k]).filter(Boolean);
+
+      // Crea la visita completa
+      if (museumArtworkIds.length) {
+        console.log(`[Seed] Museum "${museumData.name}" has ${museumArtworkIds.length} artworks (>= 10). Creating complete visit...`);
+
+        // Risoluzione creatore (staff del museo o da visite esistenti)
+        let creatorId = null;
+        if (museumVisitIds.length > 0) {
+          const firstVisitDoc = await Visit.findById(museumVisitIds[0]);
+          if (firstVisitDoc?.creator) {
+            creatorId = firstVisitDoc.creator;
+          }
+        }
+        if (!creatorId) {
+          const staffUser = await User.findOne({ role: 'museumstaff' });
+          creatorId = staffUser ? staffUser._id : Object.values(userMap)[0];
+        }
+
+        // Recupero dettagli opere per defaultItems e correnti artistiche
+        const artworkDocs = await Artwork.find({ _id: { $in: museumArtworkIds } });
+        const artworkDocsMap = new Map(artworkDocs.map(a => [a._id.toString(), a]));
+
+        // Costruzione degli step contenenti tutte le opere del museo (completa)
+        const completeSteps = museumArtworkIds.map(artId => {
+          const artDoc = artworkDocsMap.get(artId.toString());
+          return {
+            artwork: artId,
+            items: (artDoc?.defaultItems && artDoc.defaultItems.length > 0) ? artDoc.defaultItems : [],
+            tellMeMore: null
+          };
+        });
+
+        const currents = Array.from(new Set(artworkDocs.flatMap(a => a.artisticCurrents || [])));
+        const categories = Array.from(new Set(['Collezione Completa', 'Capolavori', ...currents]));
+        const count = museumArtworkIds.length;
+
+        const completeVisit = new Visit({
+          title: `Visita Completa - ${museumData.name}`,
+          description: `Percorso completo che racchiude tutte le ${count} opere d'arte esposte presso ${museumData.name}.`,
+          price: museumData.ticketInfo?.prices?.[0]?.price ?? 20,
+          license: 'Standard',
+          creator: creatorId,
+          steps: completeSteps,
+          minDuration: count * 8,
+          maxDuration: count * 12,
+          isActive: true,
+          availability: { always: true },
+          weeklySchedule: museumData.openingHours || [],
+          disableFriendly: museumData.accessibility?.disableFriendly ?? true,
+          requirements: museumData.requirements || 'Percorso completo di tutte le opere esposte nel museo.',
+          categories: categories,
+          likesCount: 150,
+          views: { total: 1000, weekly: 150 },
+          isVerified: true,
+          assets: {
+            images: []
+          }
+        });
+
+        const savedCompleteVisit = await completeVisit.save();
+        museumVisitIds.push(savedCompleteVisit._id);
+        completeVisitMap[museumData.key] = savedCompleteVisit._id;
+        visitMap[`${museumData.key}_complete`] = savedCompleteVisit._id;
+        console.log(`[Seed] Created complete visit "${savedCompleteVisit.title}" (${savedCompleteVisit._id}) with ${completeSteps.length} artworks.`);
+      }
 
       const museum = new Museum({
         name: museumData.name,
@@ -557,7 +648,20 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
     }
 
     // 8. Process and Upload Seed Assets
-    await uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap });
+    await uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap, completeVisitMap });
+
+    // Verifica finale che l'immagine meta della visita completa sia esplicitamente quella meta del museo
+    for (const [museumKey, completeVisitId] of Object.entries(completeVisitMap)) {
+      const museumId = museumMap[museumKey];
+      if (!museumId) continue;
+      const museumDoc = await Museum.findById(museumId);
+      if (museumDoc?.assets?.images && museumDoc.assets.images.length > 0) {
+        await Visit.findByIdAndUpdate(completeVisitId, {
+          'assets.images': museumDoc.assets.images
+        });
+        console.log(`[Seed] Confirmed complete visit (${completeVisitId}) meta image explicitly matches museum "${museumDoc.name}" meta image.`);
+      }
+    }
 
     console.log('[Seed] Complete! Database populated cleanly with all entities and assets.');
     return { success: true, message: 'Database populated cleanly with all entities and assets.' };

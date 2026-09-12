@@ -2,5 +2,10 @@
   <!-- IL NOSTRO PONTE: Inseriamo il tag Vanilla -->
   <!-- (messaggio-da-vanilla) è il nome del CustomEvent che abbiamo definito nel file .js -->
   <!-- [attr.routes] obbliga angular ad usare setAttribute('route', ...) e quindi a creare un nuovo attributo e non a cercare fare quelli esistenti -->
-  <mkt-router [attr.user-id]="authService.currentUser()?.userId" [attr.user-role]="authService.userRole()" [attr.route]="router.url" (angular-navigate)="navigateTo($event)"></mkt-router>
+  <mkt-router 
+              [attr.user-id]="authService.currentUser()?.userId"
+              [attr.user-role]="authService.userRole()"
+              [attr.route]="currentRoute()"
+              (angular-navigate)="navigateTo($event)">
+  </mkt-router>
 </main>

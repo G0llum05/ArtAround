@@ -64,6 +64,49 @@ export class LanguageSelector {
     }
   }
 
+  private hasGoogleTranslateCookie(): boolean {
+    return document.cookie
+      .split(';')
+      .some((item) => {
+        const name = item.split('=')[0].trim();
+        return name.toLowerCase().includes('googtrans');
+      });
+  }
+
+  private deleteGoogleTranslateCookie() {
+    const cookieNames = ['googtrans'];
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const name = cookie.split('=')[0].trim();
+      if (name.toLowerCase().includes('googtrans') && !cookieNames.includes(name)) {
+        cookieNames.push(name);
+      }
+    }
+
+    const host = window.location.hostname;
+    const hostParts = host.split('.');
+    const domains: string[] = ['', host, `.${host}`];
+
+    // Se l'host ha sottodomini (es. site252623.tw.cs.unibo.it), include anche i domini superiori
+    for (let i = 0; i < hostParts.length - 1; i++) {
+      const d = hostParts.slice(i).join('.');
+      domains.push(d);
+      domains.push(`.${d}`);
+    }
+
+    const paths = ['/', ''];
+
+    for (const name of cookieNames) {
+      for (const domain of domains) {
+        for (const path of paths) {
+          const domainAttr = domain ? `domain=${domain};` : '';
+          const pathAttr = path ? `path=${path};` : '';
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; ${pathAttr} ${domainAttr}`;
+        }
+      }
+    }
+  }
+
   selectLanguage(lang: string) {
     if (!isPlatformBrowser(this.platformId)) return;
 
@@ -72,15 +115,22 @@ export class LanguageSelector {
       return;
     }
 
+    // Se è già presente un cookie del tipo Google Translate, viene eliminato
+    if (this.hasGoogleTranslateCookie()) {
+      this.deleteGoogleTranslateCookie();
+    }
+
     if (lang === SOURCE_LANG) {
-      // Torna alla lingua originale: rimuove il cookie di traduzione
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=${location.hostname}; path=/;`;
+      // Torna alla lingua originale: assicura la completa rimozione del cookie
+      this.deleteGoogleTranslateCookie();
+      this.currentLang.set(SOURCE_LANG);
     } else {
       document.cookie = `googtrans=/${SOURCE_LANG}/${lang}; path=/;`;
       document.cookie = `googtrans=/${SOURCE_LANG}/${lang}; domain=${location.hostname}; path=/;`;
+      this.currentLang.set(lang);
     }
 
+    this.closeDropdown();
     document.body.classList.remove('page-ready');
     setTimeout(() => window.location.reload(), 1000);
   }

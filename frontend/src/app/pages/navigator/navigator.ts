@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal, DestroyRef } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, OnDestroy, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -36,7 +36,7 @@ const settingsKey = 'navigatorSettings'
   templateUrl: './navigator.html',
   styleUrl: './navigator.css'
 })
-export class Navigator {
+export class Navigator implements OnDestroy {
   private navigatorService = inject(NavigatorService);
   private visitService = inject(VisitService);
   private museumService = inject(MuseumService);
@@ -279,7 +279,7 @@ export class Navigator {
     });
   }
 
-  private loadMuseumData(mId: string): void {
+  private loadMuseumData  (mId: string): void {
     if (!mId || typeof mId !== 'string' || mId.length !== 24) return;
     this.museumService.getById(mId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
@@ -424,6 +424,15 @@ export class Navigator {
       this.currentAudio = null;
     }
     this.isPlaying.set(false);
+  }
+
+  ngOnDestroy(): void {
+    this.stopAudio();
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      try {
+        this.mediaRecorder.stop();
+      } catch (e) {}
+    }
   }
 
   async executeCommand(extraParams: Partial<NavigatorRequest> = {}, audioBlob?: Blob): Promise<void> {
@@ -659,10 +668,11 @@ export class Navigator {
   }
 
   async toggleDictation(): Promise<void> {
-    //TODO dictation
+    this.stopAudio();
     if (!this.isDictating()) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        this.stopAudio();
         this.mediaRecorder = new MediaRecorder(stream);
         this.audioChunks = [];
 

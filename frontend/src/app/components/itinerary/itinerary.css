@@ -21,7 +21,7 @@
 /* --- SINGOLO STEP (Pallino + Testo) --- */
 .itinerary-step {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 1rem;
   position: relative;
   cursor: pointer;
@@ -63,11 +63,13 @@
   align-items: center;
   position: relative;
   flex-shrink: 0;
+  width: 32px;
 }
 
 .step-circle {
   width: 32px;
   height: 32px;
+  flex-shrink: 0;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -85,7 +87,7 @@
 .step-line {
   width: 3px;
   flex-grow: 1;
-  min-height: 4.5rem; /* Altezza minima del collegamento tra un punto e l'altro */
+  min-height: 2.5rem;
   background-color: var(--outline-variant, #e0e0e0);
   margin: 4px 0;
   position: relative;
@@ -139,8 +141,15 @@
   flex-direction: column;
   gap: 2px;
   padding-top: 4px; /* Allinea otticamente il testo al centro del cerchio da 32px */
+  padding-bottom: 1.5rem;
   transition: opacity 0.3s ease;
   color: var(--on-surface);
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.itinerary-step:last-child .step-content {
+  padding-bottom: 0.5rem;
 }
 
 .item-title {

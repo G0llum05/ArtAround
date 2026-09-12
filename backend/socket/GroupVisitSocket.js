@@ -7,11 +7,20 @@ let io = null;
 
 // Mappa in-memory per tracciare l'ascolto audio degli studenti: sessionCode -> Map<userId, { userId, name, status, stepIndex, updatedAt }>
 const sessionAudioProgress = new Map();
+// Mappa in-memory per tracciare l'ID del docente di ciascuna sessione: sessionCode -> teacherId
+const sessionTeachers = new Map();
 
-function getSessionAudioSummary(sessionCode, currentStepIndex = 0) {
+function getSessionAudioSummary(sessionCode, currentStepIndex = 0, fallbackTeacherId = null) {
   const code = sessionCode?.toUpperCase().trim();
   const sessionMap = sessionAudioProgress.get(code) || new Map();
-  const allEntries = Array.from(sessionMap.values());
+  const teacherId = (fallbackTeacherId || sessionTeachers.get(code))?.toString();
+
+  // Rimuovi esplicitamente il docente dalla mappa degli studenti qualora presente
+  if (teacherId && sessionMap.has(teacherId)) {
+    sessionMap.delete(teacherId);
+  }
+
+  const allEntries = Array.from(sessionMap.values()).filter(s => !teacherId || s.userId?.toString() !== teacherId);
   const students = allEntries.filter(s => s.stepIndex === currentStepIndex);
 
   const completedCount = students.filter(s => s.status === 'completed').length;
@@ -29,6 +38,26 @@ function getSessionAudioSummary(sessionCode, currentStepIndex = 0) {
     notStartedCount,
     students
   };
+}
+
+async function isSessionTeacher(sessionCode, user) {
+  if (!user) return false;
+  if (user.role === 'teacher' || user.role === 'museumstaff' || user.role === 'admin') {
+    return true;
+  }
+  const code = sessionCode?.toUpperCase().trim();
+  if (!code) return false;
+  let teacherId = sessionTeachers.get(code);
+  if (!teacherId) {
+    try {
+      const session = await GroupVisit.findOne({ sessionCode: code }).select('teacher').lean();
+      if (session?.teacher) {
+        teacherId = (session.teacher._id || session.teacher).toString();
+        sessionTeachers.set(code, teacherId);
+      }
+    } catch (e) {}
+  }
+  return Boolean(teacherId && user.id && teacherId.toString() === user.id.toString());
 }
 
 /**
@@ -102,6 +131,17 @@ function initGroupVisitSocket(httpServer) {
           await GroupVisitService.setParticipantOnlineStatus(sessionCode, user.id, true);
           const updatedSession = await GroupVisitService.getSessionByCode(sessionCode);
 
+          // Memorizza il docente della sessione
+          const sessionTeacherId = (updatedSession?.teacher?.id || updatedSession?.teacher?._id || updatedSession?.teacher)?.toString();
+          if (sessionTeacherId) {
+            sessionTeachers.set(sessionCode.toUpperCase().trim(), sessionTeacherId);
+          }
+
+          const isTeacher = user.role === 'teacher' || 
+                            user.role === 'museumstaff' || 
+                            user.role === 'admin' || 
+                            (sessionTeacherId && sessionTeacherId === user.id.toString());
+
           // Broadcast lista completa aggiornata a tutta la stanza
           if (updatedSession?.participants) {
             io.to(room).emit('participants:updated', updatedSession.participants);
@@ -117,12 +157,13 @@ function initGroupVisitSocket(httpServer) {
 
           // Gestione monitoraggio ascolto audio
           const currentStep = updatedSession?.currentStepIndex || 0;
-          if (user.role !== 'teacher' && user.role !== 'admin') {
-            let sessionMap = sessionAudioProgress.get(sessionCode.toUpperCase().trim());
-            if (!sessionMap) {
-              sessionMap = new Map();
-              sessionAudioProgress.set(sessionCode.toUpperCase().trim(), sessionMap);
-            }
+          let sessionMap = sessionAudioProgress.get(sessionCode.toUpperCase().trim());
+          if (!sessionMap) {
+            sessionMap = new Map();
+            sessionAudioProgress.set(sessionCode.toUpperCase().trim(), sessionMap);
+          }
+
+          if (!isTeacher) {
             const studentName = `${user.name || ''} ${user.surname || ''}`.trim() || user.email;
             if (!sessionMap.has(user.id)) {
               sessionMap.set(user.id, {
@@ -133,11 +174,15 @@ function initGroupVisitSocket(httpServer) {
                 updatedAt: new Date()
               });
             }
-            const summary = getSessionAudioSummary(sessionCode, currentStep);
+            const summary = getSessionAudioSummary(sessionCode, currentStep, sessionTeacherId);
             io.to(room).emit('session:students-audio-status', summary);
           } else {
-            // Se è il docente che entra, invia subito il riepilogo corrente dello stato audio
-            const summary = getSessionAudioSummary(sessionCode, currentStep);
+            // Se è il docente che entra, assicuriamoci che non sia presente nella mappa degli studenti
+            if (sessionMap.has(user.id)) {
+              sessionMap.delete(user.id);
+            }
+            // Invia subito il riepilogo corrente dello stato audio al docente
+            const summary = getSessionAudioSummary(sessionCode, currentStep, sessionTeacherId);
             socket.emit('session:students-audio-status', summary);
           }
 
@@ -322,8 +367,16 @@ function initGroupVisitSocket(httpServer) {
 
           // Reimposta lo stato di ascolto di tutti gli studenti per la nuova tappa
           const sessionMap = sessionAudioProgress.get(code);
+          const teacherId = sessionTeachers.get(code);
           if (sessionMap) {
+            if (teacherId && sessionMap.has(teacherId)) {
+              sessionMap.delete(teacherId);
+            }
             for (const [sId, progress] of sessionMap.entries()) {
+              if (teacherId && sId.toString() === teacherId.toString()) {
+                sessionMap.delete(sId);
+                continue;
+              }
               sessionMap.set(sId, {
                 ...progress,
                 status: 'not_started',
@@ -355,11 +408,23 @@ function initGroupVisitSocket(httpServer) {
       /**
        * Studente aggiorna il proprio stato di ascolto audio (listening | completed | paused | not_started)
        */
-      socket.on('student:audio-status', ({ sessionCode, stepIndex, status }) => {
+      socket.on('student:audio-status', async ({ sessionCode, stepIndex, status }) => {
         try {
           const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
           if (!code) return;
           const room = `session:${code}`;
+
+          const isTeacher = await isSessionTeacher(code, user);
+          if (isTeacher) {
+            // Un docente non deve mai essere registrato tra gli studenti
+            let sessionMap = sessionAudioProgress.get(code);
+            if (sessionMap && sessionMap.has(user.id)) {
+              sessionMap.delete(user.id);
+              const summary = getSessionAudioSummary(code, stepIndex || 0);
+              io.to(room).emit('session:students-audio-status', summary);
+            }
+            return;
+          }
 
           let sessionMap = sessionAudioProgress.get(code);
           if (!sessionMap) {
@@ -633,6 +698,9 @@ function initGroupVisitSocket(httpServer) {
             museumId
           });
 
+          sessionAudioProgress.delete(code);
+          sessionTeachers.delete(code);
+
           if (typeof callback === 'function') callback({ success: true, museumId });
         } catch (err) {
           if (typeof callback === 'function') callback({ success: false, error: err.message });
@@ -748,6 +816,12 @@ function initGroupVisitSocket(httpServer) {
               const updatedSession = await GroupVisitService.getSessionByCode(socket.sessionCode);
               if (updatedSession?.participants) {
                 io.to(room).emit('participants:updated', updatedSession.participants);
+              }
+              let sessionMap = sessionAudioProgress.get(socket.sessionCode);
+              if (sessionMap && sessionMap.has(user.id)) {
+                sessionMap.delete(user.id);
+                const summary = getSessionAudioSummary(socket.sessionCode, updatedSession?.currentStepIndex || 0);
+                io.to(room).emit('session:students-audio-status', summary);
               }
             } catch (e) {}
 

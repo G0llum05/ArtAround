@@ -34,7 +34,7 @@
 
     @if(isMapOpen()) {
       <app-map
-        (closeMap)="isMapOpen.set(false)"
+        (closeMap)="closeMap()"
         [museum]="currentMuseum() || currentArtwork()?.museum"
       >
       </app-map>

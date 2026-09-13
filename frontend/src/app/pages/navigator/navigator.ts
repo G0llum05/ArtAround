@@ -420,12 +420,39 @@ export class Navigator implements OnDestroy {
 
   private lastAudioUrl: string | null = null;
 
-  private stopAudio(): void {
+  stopAudio(): void {
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio = null;
     }
     this.isPlaying.set(false);
+  }
+  
+  startAudio(): void {
+    if (this.isPlaying()) return;
+
+    if (!this.currentAudio && this.lastAudioUrl) {
+      this.initAudioElement(this.lastAudioUrl);
+    }
+
+    const audio = this.currentAudio;
+    if (!audio) return;
+
+    const savedTime = this.audioCurrentTime();
+    const dur = this.audioDuration();
+    if (savedTime > 0 && (!dur || savedTime < dur - 0.5)) {
+      audio.currentTime = savedTime;
+    }
+
+    this.isPlaying.set(true);
+    audio.play().then(() => {
+      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+        this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
+      }
+    }).catch(err => {
+      console.warn('Playback audio non consentito dal browser:', err);
+      this.isPlaying.set(false);
+    });
   }
 
   ngOnDestroy(): void {
@@ -711,6 +738,11 @@ export class Navigator implements OnDestroy {
   openMap(): void {
     this.stopAudio();
     this.isMapOpen.set(true);
+  }
+
+  closeMap(): void {
+    this.isMapOpen.set(false);
+    this.startAudio();
   }
 
   tellMeMore(): void {

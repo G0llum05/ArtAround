@@ -64,9 +64,9 @@
           <h3 class="card-title" id="duration-setting-label">Durata della spiegazione</h3>
           <p class="card-desc">Quanto vuoi che sia dettagliata la guida?</p>
           <div class="chips-group" role="group" aria-labelledby="duration-setting-label">
-            <button type="button" class="chip" [class.active]="settings().duration === 15" [attr.aria-pressed]="settings().duration === 15" aria-label="Durata spiegazione: Poco, circa 15 secondi" tabindex="0" (click)="setDuration(15)">Poco</button>
+            <button type="button" class="chip" [class.active]="settings().duration === 15" [attr.aria-pressed]="settings().duration === 15" aria-label="Durata spiegazione: Corta, circa 15 secondi" tabindex="0" (click)="setDuration(15)">Corta</button>
             <button type="button" class="chip" [class.active]="settings().duration === 30" [attr.aria-pressed]="settings().duration === 30" aria-label="Durata spiegazione: Normale, circa 30 secondi" tabindex="0" (click)="setDuration(30)">Normale</button>
-            <button type="button" class="chip" [class.active]="settings().duration === 60" [attr.aria-pressed]="settings().duration === 60" aria-label="Durata spiegazione: Abbastanza, circa 60 secondi" tabindex="0" (click)="setDuration(60)">Abbastanza</button>
+            <button type="button" class="chip" [class.active]="settings().duration === 60" [attr.aria-pressed]="settings().duration === 60" aria-label="Durata spiegazione: Lunga, circa 60 secondi" tabindex="0" (click)="setDuration(60)">Lunga</button>
           </div>
         </div>
       </section>

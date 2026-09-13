@@ -78,5 +78,25 @@
     "pt": "O serviço ou ponto de interesse solicitado não está disponível no museu \"{{museum}}\".",
     "cn": "博物馆“{{museum}}”未提供所请求的兴趣点或服务设施。",
     "ru": "Запрошенная услуга или пункт интереса отсутствуют в музее «{{museum}}»."
+  },
+  "max_duration_reached": {
+    "it": "Questa è la lunghezza massima possibile, prova ad aumentare la complessità.",
+    "en": "This is the maximum possible length, try increasing the complexity.",
+    "es": "Esta es la longitud máxima posible, intenta aumentar la complejidad.",
+    "fr": "C'est la longueur maximale possible, essayez d'augmenter la complexité.",
+    "de": "Dies ist die maximal mögliche Länge, versuchen Sie, die Komplexität zu erhöhen.",
+    "pt": "Esta é a duração máxima possível, tente aumentar a complexidade.",
+    "cn": "这已是最大长度，请尝试提高复杂度。",
+    "ru": "Это максимально возможная длина, попробуйте увеличить сложность."
+  },
+  "max_length_reached": {
+    "it": "Questa è la lunghezza massima possibile, prova ad aumentare la complessità.",
+    "en": "This is the maximum possible length, try increasing the complexity.",
+    "es": "Esta es la longitud máxima posible, intenta aumentar la complejidad.",
+    "fr": "C'est la longueur maximale possible, essayez d'augmenter la complexité.",
+    "de": "Dies ist die maximal mögliche Länge, versuchen Sie, die Komplexität zu erhöhen.",
+    "pt": "Esta é a duração máxima possível, tente aumentar a complexidade.",
+    "cn": "这已是最大长度，请尝试提高复杂度。",
+    "ru": "Это максимально возможная длина, попробуйте увеличить сложность."
   }
 }

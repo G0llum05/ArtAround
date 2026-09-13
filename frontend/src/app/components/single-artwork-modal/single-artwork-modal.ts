@@ -119,6 +119,13 @@ export class SingleArtworkModal {
           this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
           this.currentSubtitle.set(reply);
 
+          if (chunk.data?.length !== undefined && chunk.data?.length !== null) {
+            const l = Number(chunk.data.length);
+            if (!isNaN(l)) {
+              this.currentSettings.update(curr => ({ ...curr, duration: l }));
+            }
+          }
+
           const audioData = chunk.data?.audio;
           if (audioData) {
             this.lastAudioUrl = audioData;

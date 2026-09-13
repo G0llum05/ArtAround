@@ -131,8 +131,8 @@
 
   grid-template-areas:
     "media"
-    "actions"
     "chat"
+    "actions"
     "itinerary";
 }
 

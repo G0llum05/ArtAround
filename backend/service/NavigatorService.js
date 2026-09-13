@@ -194,6 +194,25 @@ class NavigatorService {
   }
 
   static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null) {
+    let effectiveLength = Sanitizer.sanitizeLength(length) || 30;
+
+    if (itemAction === 'TELL_ME_MORE') {
+      if (effectiveLength >= 60) {
+        return {
+          text: NavigatorMessages.getMessage('max_duration_reached', language),
+          currentArtworkIndex: (!visitId && artworkId) ? 0 : (currentArtworkIndex || 0),
+          itemAction: 'EXPLAIN_ITEM',
+          tone: tone,
+          language: language,
+          length: 60
+        };
+      }
+
+      // Aumenta di 1 classe la durata (15 -> 30, 30 -> 60)
+      effectiveLength = effectiveLength < 30 ? 30 : 60;
+      length = effectiveLength;
+    }
+
     if (!visitId && artworkId) {
       if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
         return {
@@ -253,13 +272,13 @@ class NavigatorService {
         targetIndex = currentArtworkIndex;
         break;
 
-      default:
-        throw new Error(`Azione item non riconosciuta: "${itemAction}".`);
-
       case 'TELL_ME_MORE':
         targetIndex = currentArtworkIndex;
         tellMeMore = true;
         break;
+
+      default:
+        throw new Error(`Azione item non riconosciuta: "${itemAction}".`);
     }
 
     const item = await this.getOrGenerateItem(visitId, targetIndex, tone, length, language, tellMeMore);
@@ -293,24 +312,24 @@ class NavigatorService {
       throw new Error(`Opera con ID "${step.artwork}" non trovata.`);
     }
 
-    if (tellMeMore && step.tellMeMore) {
+    if (tellMeMore && step.tellMeMore && length >= 60) {
       const tellMeMoreItem = await Item.findById(step.tellMeMore).exec();
       if (tellMeMoreItem) {
         return tellMeMoreItem;
       }
-    } else {
-      for (const stepItemId of step.items) {
-        // controllo se c'è item giusto già ritoranto nella struttura
-        const stepItem = await Item.findById(stepItemId).exec();
-        if (stepItem && stepItem.tone === tone && stepItem.language === language && stepItem.length === length) {
-          return stepItem;
-        }
+    }
+
+    for (const stepItemId of step.items) {
+      // controllo se c'è item giusto già ritornato nella struttura
+      const stepItem = await Item.findById(stepItemId).exec();
+      if (stepItem && stepItem.tone === tone && stepItem.language === language && stepItem.length === length) {
+        return stepItem;
       }
-      // controllo per item non messi da esterni nella visita
-      const matchingItem = await this.getItem(artwork, tone, language, length);
-      if (matchingItem) {
-        return matchingItem;
-      }
+    }
+    // controllo per item non messi da esterni nella visita
+    const matchingItem = await this.getItem(artwork, tone, language, length);
+    if (matchingItem) {
+      return matchingItem;
     }
 
     // Se item non trovato ricicliamo il testo esistente di item sinonimi
@@ -344,11 +363,9 @@ class NavigatorService {
       throw new Error(`Opera con ID "${artworkId}" non trovata.`);
     }
 
-    if (!tellMeMore) {
-      const matchingItem = await this.getItem(artwork, tone, language, length);
-      if (matchingItem) {
-        return matchingItem;
-      }
+    const matchingItem = await this.getItem(artwork, tone, language, length);
+    if (matchingItem) {
+      return matchingItem;
     }
 
     const rawExistingSimilarItem = this.getAvailableContentIfExists(artwork, tone, language, length);

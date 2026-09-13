@@ -92,7 +92,7 @@ class LLMService {
     try {
       let prompt = promptHandler('generalContext', { museum: artworkContext.museum, language });
       if (tellMeMore) {
-        prompt += promptHandler('tellMeMore');
+        prompt += promptHandler('tellMeMore', { length, artworkContext: artworkContext?.title || '' });
       }
       if (existingSimilarItem) {
         prompt += promptHandler('existingSimilarItem', {

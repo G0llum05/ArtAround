@@ -606,3 +606,29 @@
     width: 100%;
   }
 }
+
+/* --- SLIDER DURATA --- */
+.mkt-slider-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+}
+
+.mkt-slider-label {
+  font-size: var(--body-md-size);
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}
+
+.mkt-custom-slider {
+  flex: 1;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.mkt-duration-value {
+  color: var(--primary);
+  font-weight: var(--headline-md-weight);
+  font-size: 1rem;
+}

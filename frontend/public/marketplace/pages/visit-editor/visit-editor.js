@@ -12,13 +12,31 @@ export class MktVisitEditor extends HTMLElement {
       image: '',
       price: 0,
       pricingType: 'free',
-      duration: '',
+      duration: 1.5,
       isDisableFriendly: false,
       license: 'Standard Copyright',
       visit: [],
       selectedArtwork: null,
     };
     this.userId = null;
+  }
+
+  get durationInHours() {
+    if (typeof this.state.duration === 'number') return this.state.duration;
+    if (!this.state.duration) return 1.5;
+    const mins = this.parseDurationToMinutes(this.state.duration);
+    return mins > 0 ? mins / 60 : 1.5;
+  }
+
+  formatDuration(val) {
+    const num = parseFloat(val) || 0.5;
+    const hours = Math.floor(num);
+    const mins = Math.round((num - hours) * 60);
+    let str = '';
+    if (hours > 0) str += `${hours}h`;
+    if (mins > 0) str += (str ? ` ${mins}m` : `${mins}m`);
+    if (num >= 8) str += '+';
+    return str || '30m';
   }
 
   static get observedAttributes() {
@@ -124,7 +142,7 @@ export class MktVisitEditor extends HTMLElement {
     this.state.image = '';
     this.state.price = 0;
     this.state.pricingType = 'free';
-    this.state.duration = '';
+    this.state.duration = 1.5;
     this.state.isDisableFriendly = false;
     this.state.license = 'Standard Copyright';
     this.state.selectedArtwork = null;
@@ -412,8 +430,15 @@ export class MktVisitEditor extends HTMLElement {
           ></mkt-image-uploader> <!-- Uppy Upload-->
         </div>
         <div class="mkt-details-section">
-          <label class="mkt-field-label" for="input-tour-duration">Durata Stimata</label>
-          <input type="text" class="mkt-input" id="input-tour-duration" value="${this.state.duration}" placeholder="es. 1h 30m">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+            <label class="mkt-field-label" for="slider-tour-duration" style="margin-bottom: 0;">Durata Stimata</label>
+            <strong class="mkt-duration-value" id="tour-duration-value">${this.formatDuration(this.durationInHours)}</strong>
+          </div>
+          <div class="mkt-slider-container">
+            <span class="mkt-slider-label">30m</span>
+            <input type="range" class="mkt-custom-slider" min="0.5" max="8" step="0.5" id="slider-tour-duration" value="${this.durationInHours}">
+            <span class="mkt-slider-label">8h+</span>
+          </div>
         </div>
         <div class="mkt-details-section">
           <label class="mkt-field-label" for="input-tour-license">Licenza dei Contenuti</label>
@@ -452,7 +477,7 @@ export class MktVisitEditor extends HTMLElement {
               <span class="mkt-pricing-subtitle">Aggiunta a pagamento</span>
                <div class="mkt-price-input-group ${this.state.pricingType === 'free' ? 'mkt-disabled' : ''}">
                    <span class="mkt-currency-symbol">€</span>
-               <input type="number" class="mkt-price-input" id="input-tour-price" step="0.50" value="${this.state.price}" ${this.state.pricingType === 'free' ? 'disabled' : ''} placeholder="0.00">
+               <input type="number" class="mkt-price-input" id="input-tour-price" min="0" step="0.50" value="${this.state.price}" ${this.state.pricingType === 'free' ? 'disabled' : ''} placeholder="0.00">
                </div>
             </label>
           </div>
@@ -476,9 +501,17 @@ export class MktVisitEditor extends HTMLElement {
     if (descInput)
       descInput.addEventListener('input', (e) => (this.state.description = e.target.value));
 
-    const durationInput = this.querySelector('#input-tour-duration');
-    if (durationInput)
-      durationInput.addEventListener('input', (e) => (this.state.duration = e.target.value));
+    const durationSlider = this.querySelector('#slider-tour-duration');
+    const durationValueEl = this.querySelector('#tour-duration-value');
+    if (durationSlider) {
+      durationSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value) || 0.5;
+        this.state.duration = val;
+        if (durationValueEl) {
+          durationValueEl.textContent = this.formatDuration(val);
+        }
+      });
+    }
 
     const licenseSelect = this.querySelector('#input-tour-license');
     if (licenseSelect)
@@ -518,9 +551,20 @@ export class MktVisitEditor extends HTMLElement {
     });
 
     if (priceInput) {
+      priceInput.addEventListener('keydown', (e) => {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+          e.preventDefault();
+        }
+      });
       priceInput.addEventListener(
         'input',
-        (e) => (this.state.price = parseFloat(e.target.value) || 0),
+        (e) => {
+          let val = parseFloat(e.target.value);
+          if (isNaN(val) || val < 0) {
+            val = 0;
+          }
+          this.state.price = val;
+        },
       );
     }
 
@@ -538,26 +582,30 @@ export class MktVisitEditor extends HTMLElement {
     }
   }
 
-  parseDurationToMinutes(durationStr) {
-    if (!durationStr) return 0;
+  parseDurationToMinutes(durationVal) {
+    if (!durationVal && durationVal !== 0) return 90;
+    if (typeof durationVal === 'number') {
+      return Math.round(durationVal * 60);
+    }
 
-    const str = durationStr.toLowerCase().trim();
+    const str = String(durationVal).toLowerCase().trim();
 
-    const hoursMatch = str.match(/(\d+)\s*(h|ora|ore)/);
-    const hours = hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
+    const hoursMatch = str.match(/(\d+(?:\.\d+)?)\s*(h|ora|ore)/);
+    const hours = hoursMatch ? parseFloat(hoursMatch[1]) : 0;
 
     // Cerchiamo i numeri seguiti da m, min, minuto o minuti
     const minutesMatch = str.match(/(\d+)\s*(m|min|minut[oi])/);
     const minutes = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
 
-    let totalMinutes = hours * 60 + minutes;
+    let totalMinutes = Math.round(hours * 60) + minutes;
 
-    // Fallback: se l'utente ha scritto solo un numero puro (es. "90") assumiamo siano minuti
-    if (totalMinutes === 0 && /^\d+$/.test(str)) {
-      totalMinutes = parseInt(str, 10);
+    // Fallback: se è solo un numero puro
+    if (totalMinutes === 0 && /^\d+(\.\d+)?$/.test(str)) {
+      const num = parseFloat(str);
+      totalMinutes = num <= 24 ? Math.round(num * 60) : Math.round(num);
     }
 
-    return totalMinutes;
+    return totalMinutes || 90;
   }
 
   getEffectiveUserId() {

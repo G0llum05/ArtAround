@@ -7,7 +7,7 @@ mkt-badges-list {
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 10;
+  z-index: 2;
   pointer-events: none; /* Permette i click attraverso il contenitore vuoto */
 }
 

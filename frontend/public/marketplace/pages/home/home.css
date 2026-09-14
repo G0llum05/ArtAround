@@ -15,7 +15,12 @@ mkt-home-input-fields {
   margin-top: 0;
   margin-bottom: calc(-1 * var(--spacing-md));
   position: relative;
-  z-index: 10;
+  z-index: 20;
+}
+
+mkt-home-input-fields.mkt-drawer-is-open,
+mkt-home-input-fields:has(.mkt-drawer-open) {
+  z-index: 2000;
 }
 
 /* --- BENVENUTO --- */

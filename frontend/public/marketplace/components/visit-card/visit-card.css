@@ -9,6 +9,8 @@ mkt-visit-card {
 }
 
 .mkt-visit-card-container {
+  position: relative;
+  isolation: isolate;
   background-color: var(--surface);
   border: 0.0625rem solid var(--outline-variant);
   border-radius: var(--radius-lg);

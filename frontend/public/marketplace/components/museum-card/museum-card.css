@@ -6,11 +6,11 @@ mkt-museum-card {
   height: 22rem;
   width: 100%;
   max-width: 18rem;
-  z-index: 10;
 }
 
 .mkt-museum-card-container {
   position: relative;
+  isolation: isolate;
   background-color: var(--surface);
   border: 0.0625rem solid var(--outline-variant);
   border-radius: var(--radius-lg);

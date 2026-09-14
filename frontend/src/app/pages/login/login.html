@@ -2,7 +2,6 @@
   <main class="auth-card" [class.auth-card-logged]="authService.isLoggedIn()">
 
     @if (authService.isLoggedIn()) {
-      <!-- SEZIONE UTENTE LOGGATO -->
       <header class="auth-header profile-header">
         <h1 class="auth-title">Area Personale</h1>
         @switch(authService.currentUser()?.gender) {
@@ -18,8 +17,19 @@
         }
       </header>
 
-      <!-- TABS NAVIGAZIONE PROFILO -->
       <nav class="profile-tabs-nav" role="tablist" aria-label="Sezioni del profilo">
+        <button
+          type="button"
+          role="tab"
+          class="profile-tab-btn"
+          [class.active]="activeProfileTab() === 'info'"
+          [attr.aria-selected]="activeProfileTab() === 'info'"
+          (click)="setProfileTab('info')"
+          aria-label="Dati personali"
+        >
+          Dati
+        </button>
+
         <button
           type="button"
           role="tab"
@@ -29,14 +39,7 @@
           (click)="setProfileTab('created')"
           aria-label="Visite create"
         >
-          <div class="tab-top-row">
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 20h9"></path>
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-            </svg>
-            <span class="tab-count-badge">{{ createdVisits().length }}</span>
-          </div>
-          <span class="tab-text">Visite Create</span>
+          Create
         </button>
 
         <button
@@ -48,33 +51,7 @@
           (click)="setProfileTab('purchased')"
           aria-label="Visite acquistate"
         >
-          <div class="tab-top-row">
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-            <span class="tab-count-badge">{{ purchasedVisits().length }}</span>
-          </div>
-          <span class="tab-text">Visite Acquistate</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          class="profile-tab-btn"
-          [class.active]="activeProfileTab() === 'info'"
-          [attr.aria-selected]="activeProfileTab() === 'info'"
-          (click)="setProfileTab('info')"
-          aria-label="Dati personali"
-        >
-          <div class="tab-top-row">
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </div>
-          <span class="tab-text">Dati Personali</span>
+          Acquistate
         </button>
       </nav>
 

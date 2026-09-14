@@ -184,6 +184,7 @@ export class MktHomeInputFields extends HTMLElement {
 
   openDrawer() {
     this.isDrawerOpen = true;
+    this.classList.add('mkt-drawer-is-open');
     const drawer = this.querySelector('#mkt-filters-drawer');
     const backdrop = this.querySelector('#mkt-drawer-backdrop');
     if (drawer) drawer.classList.add('mkt-drawer-open');
@@ -193,6 +194,7 @@ export class MktHomeInputFields extends HTMLElement {
 
   closeDrawer() {
     this.isDrawerOpen = false;
+    this.classList.remove('mkt-drawer-is-open');
     const drawer = this.querySelector('#mkt-filters-drawer');
     const backdrop = this.querySelector('#mkt-drawer-backdrop');
     if (drawer) drawer.classList.remove('mkt-drawer-open');
@@ -201,6 +203,7 @@ export class MktHomeInputFields extends HTMLElement {
   }
 
   render() {
+    this.classList.toggle('mkt-drawer-is-open', Boolean(this.isDrawerOpen));
     const activeFilters = this.getActiveFiltersList();
     const count = this.activeFiltersCount;
 

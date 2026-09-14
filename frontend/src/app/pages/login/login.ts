@@ -38,7 +38,7 @@ export class Login implements OnInit {
   returnUrl = signal<string>('/');
 
   // Profile Visits & Tabs
-  activeProfileTab = signal<'created' | 'purchased' | 'info'>('created');
+  activeProfileTab = signal<'created' | 'purchased' | 'info'>('info');
   createdVisits = signal<VisitHomePresentationResponse[]>([]);
   purchasedVisits = signal<VisitHomePresentationResponse[]>([]);
   isLoadingVisits = signal<boolean>(false);
@@ -85,7 +85,7 @@ export class Login implements OnInit {
         this.returnUrl.set(params['returnUrl']);
         try {
           localStorage.setItem('artaround_returnUrl', params['returnUrl']);
-        } catch (e) {}
+        } catch (e) { }
       } else {
         const saved = localStorage.getItem('artaround_returnUrl');
         if (saved && !saved.startsWith('/login')) {
@@ -122,7 +122,7 @@ export class Login implements OnInit {
     let target = this.returnUrl() || localStorage.getItem('artaround_returnUrl') || '/';
     try {
       localStorage.removeItem('artaround_returnUrl');
-    } catch (e) {}
+    } catch (e) { }
 
     if (!target || target === '/login' || target.startsWith('/login?')) {
       target = '/';
@@ -279,7 +279,7 @@ export class Login implements OnInit {
     if (returnTarget && !returnTarget.startsWith('/login')) {
       try {
         localStorage.setItem('artaround_returnUrl', returnTarget);
-      } catch (e) {}
+      } catch (e) { }
     }
     this.authService.googleLogin();
   }

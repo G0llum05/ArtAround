@@ -368,18 +368,16 @@
 
 .profile-tab-btn {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
-  padding: 0.5rem 0.25rem 0.625rem;
+  padding: 0.625rem 0.25rem;
   width: 100%;
   min-width: 0;
   border: none;
   background: transparent;
   color: var(--on-surface-variant);
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   border-radius: var(--radius-default) var(--radius-default) 0 0;
   cursor: pointer;
@@ -387,6 +385,7 @@
   transition: all 0.2s ease;
   box-sizing: border-box;
   text-align: center;
+  white-space: nowrap;
 }
 
 .profile-tab-btn:hover {
@@ -410,49 +409,6 @@
   border-radius: 0.125rem 0.125rem 0 0;
 }
 
-.tab-top-row {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-}
-
-.tab-icon {
-  width: 1.125rem;
-  height: 1.125rem;
-  flex-shrink: 0;
-}
-
-.tab-text {
-  display: block;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  white-space: normal;
-  word-break: normal;
-}
-
-.tab-count-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.125rem;
-  height: 1.125rem;
-  padding: 0 0.3125rem;
-  border-radius: var(--radius-full);
-  background-color: var(--surface-variant);
-  color: var(--on-surface-variant);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  line-height: 1;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.profile-tab-btn.active .tab-count-badge {
-  background-color: var(--primary);
-  color: var(--on-primary, #ffffff);
-}
-
 @media (min-width: 48rem) {
   .profile-tabs-nav {
     display: flex;
@@ -463,19 +419,8 @@
 
   .profile-tab-btn {
     width: auto;
-    flex-direction: row;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
+    padding: 0.625rem 1.25rem;
     font-size: var(--body-md-size);
-  }
-
-  .tab-top-row {
-    display: contents;
-  }
-
-  .tab-text {
-    font-size: var(--body-md-size);
-    white-space: nowrap;
   }
 }
 
@@ -947,11 +892,11 @@
 
 @media (max-width: 36rem) {
   .profile-tabs-nav {
-    gap: 0.125rem;
+    gap: 0.25rem;
   }
   .profile-tab-btn {
-    padding: 0.5rem 0.125rem 0.625rem;
-    font-size: 0.75rem;
+    padding: 0.5rem 0.25rem 0.625rem;
+    font-size: 0.875rem;
   }
   .tab-action-bar {
     flex-direction: column;

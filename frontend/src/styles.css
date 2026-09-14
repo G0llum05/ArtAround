@@ -122,7 +122,14 @@ html.high-contrast {
   --surface-variant: #ffffff;
   --on-surface: #000000;
   --on-surface-variant: #000000;
-  --primary: #b30000; /* Un rosso molto più scuro per staccare sul bianco */
+
+  --primary: #900000;
+  --on-primary: #ffffff;
+  --secondary: #00008b;
+  --on-secondary: #ffffff;
+  --tertiary: #005a00;
+  --error: #cc0000;
+
   --outline: #000000;
   --outline-variant: #000000;
 }
@@ -133,13 +140,21 @@ html.high-contrast[data-theme="dark"] {
   --surface-variant: #000000;
   --on-surface: #ffffff;
   --on-surface-variant: #ffffff;
+
   --primary: #ffff00;
+  --on-primary: #000000;
+  --secondary: #00ffff;
+  --on-secondary: #000000;
+  --tertiary: #ff9900;
+  --error: #ff5555;
+
   --outline: #ffffff;
   --outline-variant: #ffffff;
 }
 
 html.high-contrast * {
   box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 /* BASE STYLES & RESET */

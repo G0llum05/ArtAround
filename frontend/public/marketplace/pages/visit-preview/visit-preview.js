@@ -323,12 +323,20 @@ export class MktVisitPreview extends HTMLElement {
         };
         localStorage.setItem('navigatorSettings', JSON.stringify(navigatorSettings));
 
+        let returnRoute = '';
+        try {
+          returnRoute = sessionStorage.getItem('mkt_return_route') || '';
+        } catch (e) {}
+
+        const fromMuseum = returnRoute.includes('/museum/') || returnRoute.startsWith('/marketplace/museum');
+
         const navEvent = new CustomEvent('angular-navigate', {
           detail: {
             destination: 'navigator',
             queryParams: {
               visitId: visitId,
-              ...(validMuseumId ? { museumId: validMuseumId } : {})
+              ...(validMuseumId ? { museumId: validMuseumId } : {}),
+              ...(fromMuseum ? { openSettings: 'true' } : {})
             }
           },
           bubbles: true,

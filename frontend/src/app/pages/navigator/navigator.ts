@@ -198,6 +198,9 @@ export class Navigator implements OnDestroy {
 
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => {
       let initialStep = 0;
+      if (params['openSettings'] === 'true' || params['openSettings'] === true) {
+        this.isSettingsOpen.set(true);
+      }
       if (params['step'] !== undefined && params['step'] !== null) {
         const parsed = parseInt(params['step'], 10);
         if (!isNaN(parsed) && parsed >= 0) {

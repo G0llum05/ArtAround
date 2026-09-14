@@ -26,6 +26,19 @@ class UserController {
         }
     }
 
+    static async getPurchasedVisitsById(req, res) {
+        try {
+            const userId = req.params.id;
+            const result = UserService.getPurchasedVisits(userId);
+            if (!result) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            res.status(200).json(result.map(visit => VisitMapper.toVisitResponsePresentation(visit)));
+        } catch (e) {
+            res.status(500).json( { message: error.message });
+        }
+    }
+
     static async createUser(req, res) {
         try {
             const userRequestDTO = new UserRequestDTO(

@@ -9,6 +9,9 @@ router.get('/', UserController.getAllUsers);
 // GET user by ID
 router.get('/:id', UserController.getUserById);
 
+// GET purchased visits by an user
+router.get('/:id/purchased', UserController.getPurchasedVisitsById);
+
 // CREATE a new user
 router.post('/', UserController.createUser);
 

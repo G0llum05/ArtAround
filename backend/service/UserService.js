@@ -47,6 +47,12 @@ class UserService {
         ).lean();
     }
 
+    static async getPurchasedVisits(userId) {
+        return await User.findById(userId)
+        .populate('purchasedVisits')
+        .lean();
+    }
+
     static async deleteUser(id) {
         return await User.findByIdAndDelete(id).lean();
     }

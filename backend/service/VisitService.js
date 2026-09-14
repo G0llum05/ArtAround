@@ -331,6 +331,21 @@ class VisitService {
     const diffInDays = (now - createdAt) / (1000 * 60 * 60 * 24);
     return diffInDays <= 30;
   }
+
+  static async getVisitsByCreator(userId) {
+    return await Visit.find({ creator: userId })
+      .populate('creator', 'name surname email')
+      .lean();
+  }
+
+  static async deleteVisit(visitId) {
+    const deleted = await Visit.findByIdAndDelete(visitId);
+    if (!deleted) return null;
+    await Museum.updateMany({ visits: visitId }, { $pull: { visits: visitId } });
+    const User = require('../data/model/User');
+    await User.updateMany({ purchasedVisits: visitId }, { $pull: { purchasedVisits: visitId } });
+    return deleted;
+  }
 }
 
 module.exports = VisitService;

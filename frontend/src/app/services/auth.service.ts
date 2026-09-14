@@ -108,6 +108,35 @@ export class AuthService {
     return this.accessToken() || localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }
 
+  updateUserProfile(userId: string, data: { name?: string; surname?: string; gender?: string }): Observable<any> {
+    return this.http.patch<any>(`${environment.apiUrl}/user/${userId}`, data).pipe(
+      tap(updatedUser => {
+        const current = this._currentUser();
+        if (current) {
+          const newName = updatedUser?.name !== undefined ? updatedUser.name : (data.name ?? current.name);
+          const newSurname = updatedUser?.surname !== undefined ? updatedUser.surname : (data.surname ?? current.surname);
+          const newGender = updatedUser?.gender !== undefined ? updatedUser.gender : (data.gender ?? current.gender);
+          this._currentUser.set({
+            ...current,
+            name: newName,
+            surname: newSurname,
+            gender: newGender
+          });
+        }
+      })
+    );
+  }
+
+  updateCurrentUser(partial: Partial<AuthResponse>): void {
+    const current = this._currentUser();
+    if (current) {
+      this._currentUser.set({
+        ...current,
+        ...partial
+      });
+    }
+  }
+
   updateUserProfilePicture(url: string, orientation: ImageOrientation = 'square'): void {
     const current = this._currentUser();
     if (current) {

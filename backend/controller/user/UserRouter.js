@@ -12,11 +12,16 @@ router.get('/:id', UserController.getUserById);
 // GET purchased visits by an user
 router.get('/:id/purchased', UserController.getPurchasedVisitsById);
 
+// GET created visits by an user
+router.get('/:id/created', UserController.getCreatedVisitsById);
+router.get('/:id/created-visits', UserController.getCreatedVisitsById);
+
 // CREATE a new user
 router.post('/', UserController.createUser);
 
-// UPDATE a user by ID (PATCH for partial update)
+// UPDATE a user by ID (PATCH/PUT for update)
 router.patch('/:id', UserController.updateUser);
+router.put('/:id', UserController.updateUser);
 
 // PURCHASE a visit
 router.post('/:id/purchase-visit', UserController.purchaseVisit);

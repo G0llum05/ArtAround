@@ -49,5 +49,15 @@ export class VisitService {
     return this.http.post<MuseumResponse>(`${this.apiUrl}`, visit);
   }
 
+  getPurchasedVisits(userId: string): Observable<VisitHomePresentationResponse[]> {
+    return this.http.get<VisitHomePresentationResponse[]>(`${environment.apiUrl}/user/${userId}/purchased`);
+  }
 
+  getCreatedVisits(userId: string): Observable<VisitHomePresentationResponse[]> {
+    return this.http.get<VisitHomePresentationResponse[]>(`${environment.apiUrl}/user/${userId}/created`);
+  }
+
+  delete(visitId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${visitId}`);
+  }
 }

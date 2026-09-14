@@ -160,6 +160,29 @@ class VisitController {
       res.status(500).json({ message: 'Error creating visit', error: error.message });
     }
   }
+
+  static async getVisitsByCreator(req, res) {
+    try {
+      const userId = req.params.userId || req.params.id;
+      const visits = await VisitService.getVisitsByCreator(userId);
+      res.status(200).json(visits.map(v => VisitMapper.toVisitResponsePresentation(v)));
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving visits by creator', error: error.message });
+    }
+  }
+
+  static async deleteVisit(req, res) {
+    try {
+      const visitId = req.params.id;
+      const deletedVisit = await VisitService.deleteVisit(visitId);
+      if (!deletedVisit) {
+        return res.status(404).json({ message: 'Visita non trovata' });
+      }
+      res.status(200).json({ message: 'Visita eliminata con successo', id: visitId });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting visit', error: error.message });
+    }
+  }
 }
 
 module.exports = VisitController;

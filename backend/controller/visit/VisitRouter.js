@@ -32,4 +32,10 @@ router.post('/:id/purchase', VisitController.purchaseVisit);
 // Corrisponde a POST /api/visits/
 router.post('/', VisitController.createVisit);
 
+// GET /creator/:userId
+router.get('/creator/:userId', VisitController.getVisitsByCreator);
+
+// DELETE /:id
+router.delete('/:id', VisitController.deleteVisit);
+
 module.exports = router;

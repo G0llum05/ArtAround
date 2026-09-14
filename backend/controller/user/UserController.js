@@ -1,5 +1,7 @@
 const UserService = require('../../service/UserService');
 const UserMapper = require('../../data/mapper/UserMapper');
+const VisitMapper = require('../../data/mapper/VisitMapper');
+const VisitService = require('../../service/VisitService');
 const { UserRequestDTO } = require('../../data/model/dto/UserDTO');
 
 class UserController {
@@ -29,13 +31,24 @@ class UserController {
     static async getPurchasedVisitsById(req, res) {
         try {
             const userId = req.params.id;
-            const result = UserService.getPurchasedVisits(userId);
-            if (!result) {
+            const user = await UserService.getPurchasedVisits(userId);
+            if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
-            res.status(200).json(result.map(visit => VisitMapper.toVisitResponsePresentation(visit)));
-        } catch (e) {
-            res.status(500).json( { message: error.message });
+            const visits = (user.purchasedVisits || []).filter(Boolean);
+            res.status(200).json(visits.map(visit => VisitMapper.toVisitResponsePresentation(visit)));
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    static async getCreatedVisitsById(req, res) {
+        try {
+            const userId = req.params.id;
+            const visits = await VisitService.getVisitsByCreator(userId);
+            res.status(200).json(visits.map(visit => VisitMapper.toVisitResponsePresentation(visit)));
+        } catch (error) {
+            res.status(500).json({ message: error.message });
         }
     }
 
@@ -59,12 +72,36 @@ class UserController {
 
     static async updateUser(req, res) {
         try {
-            const updatedUser = await UserService.updateUser(req.params.id, req.body);
+            const updatePayload = {};
+            if (req.body.name !== undefined) {
+                const name = String(req.body.name).trim();
+                if (!name) return res.status(400).json({ message: 'Il nome non può essere vuoto' });
+                updatePayload.name = name;
+            }
+            if (req.body.surname !== undefined) {
+                const surname = String(req.body.surname).trim();
+                if (!surname) return res.status(400).json({ message: 'Il cognome non può essere vuoto' });
+                updatePayload.surname = surname;
+            }
+            if (req.body.gender !== undefined) {
+                if (!['m', 'f', 'other'].includes(req.body.gender)) {
+                    return res.status(400).json({ message: 'Genere non valido' });
+                }
+                updatePayload.gender = req.body.gender;
+            }
+            if (req.body.preferences !== undefined) {
+                updatePayload.preferences = req.body.preferences;
+            }
+
+            const updatedUser = await UserService.updateUser(req.params.id, updatePayload);
             if (!updatedUser) {
                 return res.status(404).json({ message: 'User not found' });
             }
             const userResponseDTO = UserMapper.toUserResponseDTO(updatedUser);
-            res.status(200).json(userResponseDTO);
+            res.status(200).json({
+                ...userResponseDTO,
+                userId: updatedUser._id.toString()
+            });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }

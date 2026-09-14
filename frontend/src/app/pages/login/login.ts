@@ -1,20 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit, signal, viewChild, computed } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, viewChild, computed, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; //per la disiscrizione dagli observable
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { VerifyCodeModal } from '../../components/verify-code-modal/verify-code-modal';
 import { UserRequest } from '../../models/user.model';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { UploadService } from '../../services/upload.service';
+import { VisitService } from '../../services/visit.service';
+import { VisitHomePresentationResponse } from '../../models/visit.model';
 import { ImageUploader, AppUppyFile } from '../../components/image-uploader/image-uploader';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, VerifyCodeModal, ImageUploader],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, VerifyCodeModal, ImageUploader, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -25,6 +27,7 @@ export class Login implements OnInit {
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
   private uploadService = inject(UploadService);
+  private visitService = inject(VisitService);
   readonly authService = inject(AuthService);
 
   isLoginMode = signal<boolean>(true);
@@ -34,12 +37,27 @@ export class Login implements OnInit {
   isSubmitting = signal<boolean>(false);
   returnUrl = signal<string>('/');
 
+  // Profile Visits & Tabs
+  activeProfileTab = signal<'created' | 'purchased' | 'info'>('created');
+  createdVisits = signal<VisitHomePresentationResponse[]>([]);
+  purchasedVisits = signal<VisitHomePresentationResponse[]>([]);
+  isLoadingVisits = signal<boolean>(false);
+
   // Profile Picture Upload State
   readonly imageUploader = viewChild<ImageUploader>(ImageUploader);
   showUploadMode = signal<boolean>(false);
   isUploadingPropic = signal<boolean>(false);
   selectedFile = signal<File | null>(null);
   uploadError = signal<string | null>(null);
+
+  // Profile Settings Edit State
+  isEditingProfile = signal<boolean>(false);
+  isUpdatingProfile = signal<boolean>(false);
+  editProfileForm: FormGroup = this.fb.group({
+    name: ['', Validators.required],
+    surname: ['', Validators.required],
+    gender: ['other', Validators.required]
+  });
 
   authForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -48,6 +66,18 @@ export class Login implements OnInit {
     password: ['', [Validators.required, Validators.minLength(8)]],
     gender: ['other']
   });
+
+  constructor() {
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user?.userId) {
+        this.loadUserVisits();
+      } else {
+        this.createdVisits.set([]);
+        this.purchasedVisits.set([]);
+      }
+    }, { allowSignalWrites: true });
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -278,10 +308,74 @@ export class Login implements OnInit {
         break;
       case 'other':
       default:
-        label = 'other';
+        label = 'Preferisco non precisarlo';
         break;
     }
     return label;
+  }
+
+  // --- GESTIONE MODIFICA DATI UTENTE ---
+  startEditProfile(): void {
+    const user = this.authService.currentUser();
+    if (!user) return;
+    this.editProfileForm.reset({
+      name: user.name || '',
+      surname: user.surname || '',
+      gender: user.gender || 'other'
+    });
+    this.isEditingProfile.set(true);
+  }
+
+  cancelEditProfile(): void {
+    this.isEditingProfile.set(false);
+  }
+
+  saveEditProfile(): void {
+    if (this.editProfileForm.invalid) {
+      this.editProfileForm.markAllAsTouched();
+      return;
+    }
+    const user = this.authService.currentUser();
+    const userId = user?.userId || (user as any)?.id || (user as any)?._id;
+    if (!userId) {
+      this.alertService.error('Sessione utente non valida.');
+      return;
+    }
+
+    const { name, surname, gender } = this.editProfileForm.value;
+    const cleanName = name?.trim() || '';
+    const cleanSurname = surname?.trim() || '';
+    this.isUpdatingProfile.set(true);
+
+    this.authService.updateUserProfile(userId, {
+      name: cleanName,
+      surname: cleanSurname,
+      gender
+    }).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        this.isUpdatingProfile.set(false);
+        this.isEditingProfile.set(false);
+        this.authService.updateCurrentUser({
+          name: cleanName,
+          surname: cleanSurname,
+          gender: gender
+        });
+        this.editProfileForm.reset({
+          name: cleanName,
+          surname: cleanSurname,
+          gender
+        });
+        this.alertService.success('Dati personali aggiornati con successo!');
+      },
+      error: (err) => {
+        this.isUpdatingProfile.set(false);
+        console.error('Errore aggiornamento profilo:', err);
+        const msg = err.error?.message || 'Errore durante l\'aggiornamento del profilo.';
+        this.alertService.error(msg);
+      }
+    });
   }
 
   // --- GESTIONE FOTO PROFILO ---
@@ -370,5 +464,104 @@ export class Login implements OnInit {
         this.alertService.error(errMsg);
       }
     });
+  }
+
+  loadUserVisits(): void {
+    const user = this.authService.currentUser();
+    const userId = user?.userId;
+    if (!userId) return;
+
+    this.isLoadingVisits.set(true);
+    let pending = 2;
+    const checkDone = () => {
+      pending--;
+      if (pending <= 0) {
+        this.isLoadingVisits.set(false);
+      }
+    };
+
+    this.visitService.getCreatedVisits(userId).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (visits) => {
+        this.createdVisits.set(visits || []);
+        checkDone();
+      },
+      error: (err) => {
+        console.warn('Errore recupero visite create:', err);
+        checkDone();
+      }
+    });
+
+    this.visitService.getPurchasedVisits(userId).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (visits) => {
+        this.purchasedVisits.set(visits || []);
+        checkDone();
+      },
+      error: (err) => {
+        console.warn('Errore recupero visite acquistate:', err);
+        checkDone();
+      }
+    });
+  }
+
+  setProfileTab(tab: 'created' | 'purchased' | 'info'): void {
+    this.activeProfileTab.set(tab);
+    if ((tab === 'created' || tab === 'purchased') && this.authService.isLoggedIn()) {
+      this.loadUserVisits();
+    }
+  }
+
+  onDeleteVisit(visit: VisitHomePresentationResponse): void {
+    if (!visit?.id) return;
+    const confirmed = window.confirm(`Sei sicuro di voler eliminare la visita "${visit.title}"? L'azione è irreversibile.`);
+    if (!confirmed) return;
+
+    this.visitService.delete(visit.id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        this.createdVisits.update(list => list.filter(v => v.id !== visit.id));
+        this.alertService.success(`Visita "${visit.title}" eliminata con successo.`);
+      },
+      error: (err) => {
+        console.error('Errore durante l\'eliminazione della visita:', err);
+        const msg = err.error?.message || 'Errore durante l\'eliminazione della visita.';
+        this.alertService.error(msg);
+      }
+    });
+  }
+
+  onEditVisit(visit: VisitHomePresentationResponse): void {
+    this.alertService.show(`La funzionalità di modifica per "${visit.title}" sarà disponibile a breve.`, 'warning');
+  }
+
+  onViewVisit(visitId: string): void {
+    this.router.navigate(['/marketplace/visit/search', visitId]);
+  }
+
+  onStartVisit(visitId: string): void {
+    this.router.navigate(['/navigator'], { queryParams: { visitId } });
+  }
+
+  formatDuration(duration?: number): string {
+    if (!duration) return 'Durata libera';
+    if (duration >= 60) {
+      const h = Math.floor(duration / 60);
+      const m = duration % 60;
+      return m > 0 ? `${h}h ${m}m` : `${h}h`;
+    }
+    return `${duration}m`;
+  }
+
+  getVisitImageUrl(visit: VisitHomePresentationResponse): string {
+    if (visit?.assets?.images && visit.assets.images.length > 0) {
+      const img = visit.assets.images[0];
+      if (typeof img === 'string') return img;
+      if (typeof img === 'object' && img?.url) return img.url;
+    }
+    return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600';
   }
 }

@@ -33,10 +33,7 @@ class UserService {
     }
 
     static async updateUser(id, updateData) {
-        // When updating, you should also handle password hashing if the password is changed.
-        // Also consider if you want to map updateData from a DTO.
-        return await User.findByIdAndUpdate(id, updateData);
-        // return await User.findByIdAndUpdate(id, updateData, { new: true }).lean();
+        return await User.findByIdAndUpdate(id, { $set: updateData }, { new: true });
     }
 
     static async purchaseVisit(userId, visitId) {

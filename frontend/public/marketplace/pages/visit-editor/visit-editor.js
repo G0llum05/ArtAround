@@ -477,7 +477,7 @@ export class MktVisitEditor extends HTMLElement {
               <span class="mkt-pricing-subtitle">Aggiunta a pagamento</span>
                <div class="mkt-price-input-group ${this.state.pricingType === 'free' ? 'mkt-disabled' : ''}">
                    <span class="mkt-currency-symbol">€</span>
-               <input type="number" class="mkt-price-input" id="input-tour-price" min="0" step="0.50" value="${this.state.price}" ${this.state.pricingType === 'free' ? 'disabled' : ''} placeholder="0.00">
+               <input type="text" inputmode="decimal" class="mkt-price-input" id="input-tour-price" value="${this.state.pricingType === 'free' ? '0.00' : (this.state.price > 0 ? this.state.price : '')}" ${this.state.pricingType === 'free' ? 'disabled' : ''} placeholder="0.00" autocomplete="off">
                </div>
             </label>
           </div>
@@ -544,6 +544,7 @@ export class MktVisitEditor extends HTMLElement {
           } else {
             priceInput.disabled = false;
             priceGroup.classList.remove('mkt-disabled');
+            priceInput.value = this.state.price > 0 ? this.state.price : '';
             priceInput.focus();
           }
         }
@@ -552,20 +553,65 @@ export class MktVisitEditor extends HTMLElement {
 
     if (priceInput) {
       priceInput.addEventListener('keydown', (e) => {
-        if (['e', 'E', '+', '-'].includes(e.key)) {
-          e.preventDefault();
+        // Consenti combinazioni di comandi (Ctrl+A, Ctrl+C, Ctrl+V, etc.)
+        if (e.ctrlKey || e.metaKey) {
+          return;
+        }
+
+        // Tasti di controllo e navigazione permessi
+        const allowedControlKeys = [
+          'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+          'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+          'Home', 'End'
+        ];
+        if (allowedControlKeys.includes(e.key)) {
+          return;
+        }
+
+        // Consenti solo cifre da 0 a 9
+        if (e.key >= '0' && e.key <= '9') {
+          return;
+        }
+
+        // Consenti separatore decimale (. o ,) solo una volta
+        if (e.key === '.' || e.key === ',') {
+          if (!priceInput.value.includes('.') && !priceInput.value.includes(',')) {
+            return;
+          }
+        }
+
+        // Blocca qualsiasi altro carattere (lettere, simboli, spazio, ecc.)
+        e.preventDefault();
+      });
+
+      priceInput.addEventListener('input', (e) => {
+        let raw = e.target.value.replace(/,/g, '.');
+        // Rimuove qualsiasi carattere che non sia cifra o punto
+        raw = raw.replace(/[^0-9.]/g, '');
+        const parts = raw.split('.');
+        if (parts.length > 2) {
+          raw = parts[0] + '.' + parts.slice(1).join('');
+        }
+        if (parts.length === 2 && parts[1].length > 2) {
+          raw = parts[0] + '.' + parts[1].slice(0, 2);
+        }
+        e.target.value = raw;
+        this.state.price = parseFloat(raw) || 0;
+      });
+
+      priceInput.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+        let clean = text.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+        const parts = clean.split('.');
+        if (parts.length > 2) {
+          clean = parts[0] + '.' + parts.slice(1).join('');
+        }
+        if (clean) {
+          priceInput.value = clean;
+          this.state.price = parseFloat(clean) || 0;
         }
       });
-      priceInput.addEventListener(
-        'input',
-        (e) => {
-          let val = parseFloat(e.target.value);
-          if (isNaN(val) || val < 0) {
-            val = 0;
-          }
-          this.state.price = val;
-        },
-      );
     }
 
     const coverUploader = this.querySelector('#visit-cover-uploader');

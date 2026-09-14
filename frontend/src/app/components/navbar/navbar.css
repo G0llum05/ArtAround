@@ -181,7 +181,7 @@
 }
 
 /* --- DESKTOP STYLES --- */
-@media (min-width: 48rem) {
+@media (min-width: 60rem) {
   /* Nasconde elementi mobile senza usare !important */
   .mobile-only,
   .nav-icon-btn.mobile-only {

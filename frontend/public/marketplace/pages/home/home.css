@@ -12,7 +12,10 @@
 
 mkt-home-input-fields {
   display: block;
-  margin-top: calc(-1 * var(--spacing-lg)); /* Avvicina i controlli tirandoli verso l'alto */
+  margin-top: 0;
+  margin-bottom: calc(-1 * var(--spacing-md));
+  position: relative;
+  z-index: 10;
 }
 
 /* --- BENVENUTO --- */
@@ -79,16 +82,17 @@ mkt-home-input-fields {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: var(--radius-full);
-  background-color: var(--surface-variant);
+  background-color: var(--secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: var(--spacing-md);
-  color: var(--secondary);
+  color: var(--on-secondary);
 }
 
 .mkt-create-visit-card .mkt-card-icon-wrapper {
-  color: var(--primary);
+  background-color: var(--primary);
+  color: var(--on-primary);
 }
 
 .mkt-top-icon {
@@ -201,40 +205,44 @@ mkt-home-input-fields {
     gap: var(--spacing-md);
   }
 
+  /* Layout Orizzontale Mobile (Icona a sinistra, Testo in centro, Freccia a destra) */
   .mkt-large-card {
     padding: var(--spacing-md);
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    column-gap: var(--spacing-sm);
-    row-gap: var(--spacing-sm);
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Centra verticalmente */
+    gap: var(--spacing-md);
     min-height: auto;
   }
 
-  .mkt-card-icon-wrapper {
-    grid-column: 1 / 3;
-    grid-row: 1;
+  /* Gestione icona di sinistra */
+  .mkt-large-card .mkt-card-icon-wrapper {
     margin-bottom: 0;
+    flex-shrink: 0;
+    border-radius: var(--radius-full); /* Rende l'icona un quadrato smussato in mobile */
   }
 
+  /* Colonna centrale con i testi (Assicurati che nell'HTML h2 e p siano dentro <div class="mkt-large-card-content">) */
   .mkt-large-card-content {
-    grid-column: 1 / 2;
-    grid-row: 2;
-  }
-
-  .mkt-large-card .mkt-arrow {
-    grid-column: 2 / 3;
-    grid-row: 2;
-    align-self: end;
-    margin: 0;
+    flex-grow: 1; /* Prende tutto lo spazio disponibile spingendo la freccia a destra */
+    display: flex;
+    flex-direction: column;
   }
 
   .mkt-large-card h2 {
     font-size: var(--headline-md-size);
-    margin: 0 0 var(--spacing-xs) 0;
+    margin: 0 0 0.15rem 0;
   }
 
   .mkt-large-card p {
     font-size: var(--body-md-size);
+    margin: 0;
+  }
+
+  /* Freccia di destra */
+  .mkt-large-card .mkt-arrow {
+    margin: 0;
+    align-self: center; /* Allinea la freccia al centro dell'asse verticale */
+    flex-shrink: 0;
   }
 }

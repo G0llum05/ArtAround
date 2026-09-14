@@ -10,7 +10,7 @@
   font-size: var(--body-lg-size);
 }
 
-/* Container Principale */
+/* --- CONTAINER PRINCIPALE --- */
 .home-container {
   flex-grow: 1;
   width: 100%;
@@ -18,7 +18,7 @@
   padding: var(--margin-mobile);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   box-sizing: border-box;
   margin: 0 auto;
 }
@@ -29,7 +29,7 @@
   }
 }
 
-/* BENVENUTO */
+/* --- BENVENUTO --- */
 .hero-title {
   font-family: var(--font-serif);
   font-size: var(--headline-xl-size);
@@ -42,7 +42,7 @@
   margin: 0;
 }
 
-/* CARDS GENERALI */
+/* --- CARDS GENERALI --- */
 .card {
   background-color: var(--surface);
   border: 1px solid var(--secondary);
@@ -54,6 +54,10 @@
   color: inherit;
   display: flex;
   flex-direction: column;
+}
+
+.visit-card {
+  border-color: var(--primary);
 }
 
 .card:hover {
@@ -81,23 +85,14 @@
   margin: 0;
 }
 
-/* GESTIONE SVG */
+/* --- GESTIONE SVG --- */
 .card-svg {
   width: 1.5rem;
   height: 1.5rem;
-  color: var(--secondary);
   fill: currentColor;
   display: inline-block;
   vertical-align: middle;
-  transition: transform 0.2s ease, fill 0.2s ease;
-}
-
-.large-card.visit-card .card-svg{
-  color: var(--primary);
-}
-
-.card:hover .card-svg {
-  transform: scale(1.1);
+  transition: fill 0.2s ease;
 }
 
 .small-svg {
@@ -108,7 +103,56 @@
   vertical-align: middle;
 }
 
-/* VISITA ATTIVA + QUICK ACTIONS */
+/* --- ICONE ROTONDE (.quick-icon) --- */
+.quick-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-md);
+  background-color: var(--secondary);
+  color: var(--on-secondary);
+
+  /* FIX RENDERING: Forza il browser a trattare icona e sfondo come un unico livello */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Colori specifici per la prima card (Pianifica Visita) */
+.visit-card .quick-icon {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+/* Blocca qualsiasi transizione indesiderata sull'SVG interno */
+.quick-icon svg,
+.quick-icon .card-svg,
+.quick-icon .small-svg {
+  transition: fill 0.2s ease !important;
+  transform: translateZ(0) !important; /* Disabilita i movimenti propri dell'SVG */
+}
+
+/* --- EFFETTI HOVER UNIVERSALI --- */
+/* Applica l'hover a tutte le varianti di card in modo uniforme */
+.card:hover .quick-icon,
+.large-card:hover .quick-icon,
+.quick-card:hover .quick-icon {
+  transform: scale(1.1) translateZ(0); /* translateZ(0) aiuta la fluidità */
+}
+
+/* Spostamento freccia laterale */
+.card:hover .arrow,
+.quick-card:hover .arrow,
+.large-card:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* --- VISITA ATTIVA --- */
 .active-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -167,6 +211,7 @@
   letter-spacing: var(--label-md-tracking);
 }
 
+/* --- BOTTONI --- */
 .btn-container {
   margin-top: var(--spacing-lg);
 }
@@ -200,7 +245,6 @@
   color: var(--on-primary);
 }
 
-/* Icona migliorata dentro il link */
 .btn-icon {
   width: 1.25rem;
   height: 1.25rem;
@@ -209,7 +253,7 @@
   vertical-align: middle;
 }
 
-/* Azioni Rapide laterali (Usando il colore --secondary ardesia per dare carattere) */
+/* --- AZIONI RAPIDE LATERALI --- */
 .quick-stack {
   display: flex;
   flex-direction: column;
@@ -234,22 +278,15 @@
   margin: 0;
 }
 
-.quick-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--radius-full);
-  background-color: var(--surface-variant);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: var(--spacing-md);
-  color: var(--secondary); /* Sfrutta il blu-ardesia del design system */
-}
-
 .arrow {
   margin-top: auto;
   align-self: flex-end;
   transition: transform 0.2s ease;
+  color: var(--secondary);
+}
+
+.visit-card .arrow {
+  color: var(--primary);
 }
 
 .quick-card:hover .arrow,
@@ -257,7 +294,7 @@
   transform: translateX(4px);
 }
 
-/* LAYOUT 2: SENZA VISITA ATTIVA */
+/* --- LAYOUT 2: SENZA VISITA ATTIVA --- */
 .empty-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -270,40 +307,29 @@
   }
 }
 
-/* --- MOBILE: Layout Grid Ultra-Compatto --- */
+/* --- MOBILE: CARDS GRANDI --- */
 .large-card {
   padding: var(--spacing-md);
-  display: grid;
-  grid-template-columns: 1fr auto; /* Testo a sinistra, freccia a destra */
-  row-gap: var(--spacing-sm);
-  min-height: auto; /* Rimpicciolisce la card al minimo assoluto */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-height: auto;
 }
 
-/* Forziamo l'icona rotonda a stare da sola nella riga superiore */
 .large-card .quick-icon {
-  grid-column: 1 / 3;
   margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 .large-card-content {
-  grid-column: 1 / 2;
-}
-
-/* Allineiamo la freccia in basso a destra */
-.large-card .arrow {
-  grid-column: 2 / 3;
-  align-self: end; /* Si aggancia all'ultima riga del testo */
-  margin: 0; /* Annulla il margin-top originale */
-}
-
-.large-card.card.visit-card {
-  border: 1px solid var(--primary);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .large-card h2 {
-  font-family: var(--font-serif);
-  font-size: var(--headline-md-size);
-  margin: 0 0 var(--spacing-sm) 0;
+  margin: 0 0 0.15rem 0;
 }
 
 .large-card p {
@@ -312,15 +338,24 @@
   margin: 0;
 }
 
+.large-card .arrow {
+  margin: 0;
+  align-self: center;
+  flex-shrink: 0;
+}
 
-/* --- DESKTOP: Ritorna al layout spazioso --- */
+/* --- DESKTOP: CARDS GRANDI --- */
 @media (min-width: 48rem) {
   .large-card {
     padding: var(--spacing-xl);
-    display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: flex-start;
     min-height: 14rem;
+  }
+
+  .large-card .quick-icon {
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--radius-full);
   }
 
   .large-card .arrow {
@@ -337,6 +372,7 @@
   }
 }
 
+/* --- UTILITY TESTO DISPLAY --- */
 .text-desktop { display: none; }
 .text-mobile { display: block; }
 
@@ -345,7 +381,7 @@
   .text-mobile { display: none; }
 }
 
-/* CAROSELLO PER LE MOSTRE CONSIGLIATE */
+/* --- CAROSELLO MOSTRE --- */
 .section-carousel {
   display: flex;
   flex-direction: column;
@@ -367,7 +403,7 @@
   font-size: var(--headline-md-size);
 }
 
-/* Badge di stato */
+/* --- BADGE STATO --- */
 .badge {
   position: absolute;
   top: 1rem;

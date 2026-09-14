@@ -31,16 +31,16 @@
 /* GLOBAL VARIABLES */
 :root, [data-theme="light"] {
   /* Colors: Light Mode */
-  --primary: #9f3d25;
+  --primary: #94321a;
   --on-primary: #ffffff;
-  --secondary: #345a76;
-  --on-secondary: #f6f5f5;
+  --secondary: #1e293b;
+  --on-secondary: #ffffff;
   --tertiary: #B58B39;
   --error: #ba1a1a;
 
-  --background: #fbf9f4;
-  --surface: #f7f5f0;
-  --surface-variant: #eae8e3;
+  --background: #f4efe6;
+  --surface: #f6f4ec;
+  --surface-variant: #f4efe6;
 
   --on-surface: #1b1c19;
   --on-surface-variant: #57423d;
@@ -99,7 +99,7 @@
   /* Colors: Dark Mode */
   --primary: #b85138;
   --on-primary: #ffffff;
-  --secondary: #6a8b9f;
+  --secondary: #485f8d;
   --on-secondary: #ffffff;
   --tertiary: #d1a751;
   --error: #ff5449;

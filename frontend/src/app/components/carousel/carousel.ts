@@ -22,6 +22,10 @@ export class Carousel implements OnInit, OnDestroy {
   private timer: any;
   private animationTimer: any;
 
+  // Variabili per gestire lo swipe su mobile
+  private touchStartX = 0;
+  private touchEndX = 0;
+
   private readonly router = inject(Router);
 
   // Lista virtuale con il primo elemento duplicato in fondo
@@ -132,5 +136,31 @@ export class Carousel implements OnInit, OnDestroy {
   getImageUrl(item: VisitHomePresentationResponse): string {
     const place_holder = '/assets/images/place_holder.jpg\''
     return item.assets?.images?.find(image => image.orientation=="landscape")?.url || place_holder;
+  }
+
+  //Swipe
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.changedTouches[0].screenX;
+    this.stopAutoPlay();
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    this.touchEndX = event.changedTouches[0].screenX;
+  }
+
+  onTouchEnd(): void {
+    this.handleSwipe();
+    this.startAutoPlay();
+  }
+
+  private handleSwipe(): void {
+    const swipeThreshold = 50; // Minimo scorrimento in pixel richiesto
+    const diff = this.touchStartX - this.touchEndX;
+
+    if (diff > swipeThreshold) {
+      this.next(); // Swipe verso sinistra
+    } else if (diff < -swipeThreshold) {
+      this.prev(); // Swipe verso destra
+    }
   }
 }

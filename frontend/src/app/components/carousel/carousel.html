@@ -1,14 +1,10 @@
 <div class="carousel-container" role="region" aria-roledescription="carousel" aria-label="Visite consigliate">
   <header class="results-header">
-    <h2 class="results-title"> Visite </h2>
-    <p class="results-subtitle">
-      Le più viste e amate
-    </p>
+    <h2 class="results-title">Visite</h2>
+    <p class="results-subtitle">Le più viste e amate</p>
   </header>
 
   <div class="carousel-wrapper">
-
-    <!-- Freccia Sinistra -->
     @if (items() && items().length > 1) {
       <button (click)="prev()" aria-label="Diapositiva precedente" class="nav-arrow prev-arrow" type="button" tabindex="0">
         <svg aria-hidden="true" fill="currentColor" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
@@ -17,8 +13,10 @@
       </button>
     }
 
-    <!-- Viewport del carosello -->
-    <div (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()" class="carousel-viewport" aria-live="polite">
+    <div (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()"
+         (touchstart)="onTouchStart($event)" (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd()"
+         class="carousel-viewport" aria-live="polite">
+
       @if (isLoading()) {
         <div class="carousel-slide skeleton-slide" aria-hidden="true">
           <div class="carousel-overlay skeleton-overlay">
@@ -31,52 +29,85 @@
           </div>
         </div>
       } @else {
-        <div [class.no-transition]="isInstant()" [style.transform]="'translateX(-' + (currentIndex() * 100) + '%)'"
-             class="carousel-track">
+        <div [class.no-transition]="isInstant()" [style.transform]="'translateX(-' + (currentIndex() * 100) + '%)'" class="carousel-track">
           @for (item of extendedItems(); track item.id || $index) {
-            <div [style.background-image]="'url(' + getImageUrl(item) + ')'" class="carousel-slide" role="group" aria-roledescription="slide" [attr.aria-label]="item.title">
-              <div class="carousel-overlay">
-                <app-badges-list
-                  [disableFriendly]="item.disableFriendly || false"
-                  [verified]="item.isVerified || false"
-                ></app-badges-list>
-                <!-- Contenuto in sovra-impressione (Badge, Titolo, Descrizione, Pulsante) -->
-                <div class="slide-content">
-                  <div class="badges-wrapper">
-                    @if (item.isClosingSoon) {
-                      <span class="badge badge-alert" aria-label="Chiude tra poco">
-                      Chiude tra poco
-                    </span>
-                    }
-                    @if (item.isNew) {
-                      <span class="badge badge-nuovo" aria-label="Nuova visita">
-                      New
-                    </span>
-                    }
-                    @if (item.price == 0) {
-                      <span class="badge badge-free" aria-label="Visita gratuita">
-                      Free
-                    </span>
-                    }
-                  </div>
-                  <h3 class="slide-title">{{ item.title }}</h3>
-                  <p class="slide-desc">{{ item.description }}</p>
+            <div class="carousel-slide" role="group" aria-roledescription="slide" [attr.aria-label]="item.title">
 
-                  <button (click)="learnMore(item.id)" class="btn-primary" type="button" [attr.aria-label]="'Scopri di più su ' + item.title" tabindex="0">
-                    SCOPRI DI PIÙ
-                    <svg aria-hidden="true" class="btn-icon" fill="currentColor" height="20px" viewBox="0 -960 960 960"
-                         width="20px" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
-                    </svg>
-                  </button>
-                </div>
+              <div class="slide-image-wrapper">
+                <img [src]="getImageUrl(item)" [alt]="item.title" class="slide-image">
               </div>
+
+              <div class="carousel-overlay">
+                <app-badges-list [disableFriendly]="item.disableFriendly || false" [verified]="item.isVerified || false"></app-badges-list>
+
+                <div class="badges-wrapper">
+                  @if (item.isClosingSoon) {
+                    <span class="badge badge-alert" aria-label="Chiude tra poco">Chiude tra poco</span>
+                  }
+                  @if (item.isNew) {
+                    <span class="badge badge-nuovo" aria-label="Nuova visita">New</span>
+                  }
+                  @if (item.price == 0) {
+                    <span class="badge badge-free" aria-label="Visita gratuita">Free</span>
+                  }
+                </div>
+
+                <div class="slide-content">
+                  <div class="slide-text-wrapper">
+                    <h3 class="slide-title">{{ item.title }}</h3>
+                    <p class="slide-desc">{{ item.description }}</p>
+                  </div>
+                  <div class="slide-action-area">
+                    <button (click)="learnMore(item.id)" class="btn-primary" type="button" [attr.aria-label]="'Scopri di più su ' + item.title" tabindex="0">
+                      SCOPRI DI PIÙ
+                      <svg aria-hidden="true" class="btn-icon" fill="currentColor" height="20px" viewBox="0 -960 960 960" width="20px" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- PUNTINI DESKTOP (Scorrono con le slide) -->
+              @if (items() && items().length > 1) {
+                <div class="carousel-dots desktop-dots" role="tablist" aria-label="Selettore diapositive">
+                  @for (dot of items(); track dot.id || $index; let dotIndex = $index) {
+                    <button
+                      (click)="goTo(dotIndex)"
+                      [attr.aria-label]="'Vai alla diapositiva ' + (dotIndex + 1) + ' di ' + items().length"
+                      [attr.aria-current]="(currentIndex() % items().length) === dotIndex ? 'true' : null"
+                      [class.active]="(currentIndex() % items().length) === dotIndex"
+                      class="dot"
+                      type="button"
+                      tabindex="0">
+                    </button>
+                  }
+                </div>
+              }
             </div>
           }
         </div>
       }
+
+      <!-- PUNTINI MOBILE (Fissi nel viewport, non scorrono) -->
+      @if (items() && items().length > 1) {
+        <div class="carousel-dots mobile-dots" role="tablist" aria-label="Selettore diapositive">
+          @for (dot of items(); track dot.id || $index; let dotIndex = $index) {
+            <button
+              (click)="goTo(dotIndex)"
+              [attr.aria-label]="'Vai alla diapositiva ' + (dotIndex + 1) + ' di ' + items().length"
+              [attr.aria-current]="(currentIndex() % items().length) === dotIndex ? 'true' : null"
+              [class.active]="(currentIndex() % items().length) === dotIndex"
+              class="dot"
+              type="button"
+              tabindex="0">
+            </button>
+          }
+        </div>
+      }
     </div>
-    <!-- Freccia Destra -->
+
     @if (items() && items().length > 1) {
       <button (click)="next()" aria-label="Diapositiva successiva" class="nav-arrow next-arrow" type="button" tabindex="0">
         <svg aria-hidden="true" fill="currentColor" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
@@ -84,23 +115,5 @@
         </svg>
       </button>
     }
-
   </div>
-
-  <!-- Puntini di navigazione (Dots) -->
-  @if (items() && items().length > 1) {
-    <div class="carousel-dots" role="tablist" aria-label="Selettore diapositive">
-      @for (item of items(); track $index) {
-        <button
-          (click)="goTo($index)"
-          [attr.aria-label]="'Vai alla diapositiva ' + ($index + 1) + ' di ' + items().length"
-          [attr.aria-current]="(currentIndex() % items().length) === $index ? 'true' : null"
-          [class.active]="(currentIndex() % items().length) === $index"
-          class="dot"
-          type="button"
-          tabindex="0">
-        </button>
-      }
-    </div>
-  }
 </div>

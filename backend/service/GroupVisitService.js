@@ -399,6 +399,10 @@ class GroupVisitService {
       throw new Error('Sessione di gruppo non trovata.');
     }
 
+    if (leaderId && session.teacher.toString() !== leaderId.toString()) {
+      throw new Error('Solo il docente titolare di questa visita può avviare il quiz.');
+    }
+
     const Quiz = require('../data/model/Quiz');
     const quiz = await Quiz.findById(quizId);
     if (!quiz) {
@@ -427,6 +431,10 @@ class GroupVisitService {
     }
     if (!session) {
       throw new Error('Sessione di gruppo non trovata.');
+    }
+
+    if (leaderId && session.teacher.toString() !== leaderId.toString()) {
+      throw new Error('Solo il docente titolare di questa visita può concludere il quiz.');
     }
 
     session.quizState = 'completed';

@@ -20,6 +20,7 @@ import { MuseumResponse } from '../../models/museum.model';
 import { NavigatorRequest } from '../../models/navigator.model';
 import { ActiveVisitService } from '../../services/active-visit.service';
 import { AuthService } from '../../services/auth.service';
+import { GroupService } from '../../services/group.service';
 import { GroupSocketService } from '../../services/group-socket.service';
 import { MuseumService } from '../../services/museum.service';
 import { NavigatorService, StreamChunk } from '../../services/navigator.service';
@@ -41,6 +42,7 @@ export class Navigator implements OnDestroy {
   private navigatorService = inject(NavigatorService);
   private visitService = inject(VisitService);
   private museumService = inject(MuseumService);
+  private groupService = inject(GroupService);
   protected socketService = inject(GroupSocketService);
   protected authService = inject(AuthService);
   private quizService = inject(QuizService);
@@ -228,19 +230,41 @@ export class Navigator implements OnDestroy {
         const code = params['sessionCode'].toUpperCase().trim();
         this.sessionCode.set(code);
         this.isGroup.set(true);
-        const role = this.authService.userRole();
-        const isTeacherRole = role === 'teacher' || role === 'museumstaff' || role === 'admin';
-        const isTeacherUser = params['isTeacher'] === 'true' || isTeacherRole;
-        this.isTeacher.set(isTeacherUser);
 
-        if (!isTeacherUser) {
-          this.messages.set([
-            {
-              sender: 'ai',
-              text: 'Benvenuto alla visita di gruppo! La navigazione è sincronizzata e guidata dal tuo docente. Puoi ascoltare la guida, approfondire l\'opera corrente o chiedere informazioni sui servizi del museo.'
+        // Di base nessun utente è docente al comando finché la titolarità della sessione non è accertata
+        this.isTeacher.set(false);
+
+        // Verifica server-side dell'autorità: solo l'utente il cui ID corrisponde a session.teacher è docente al comando
+        this.groupService.getSessionByCode(code).subscribe({
+          next: (res) => {
+            const sessionData = res.data || res;
+            const user: any = this.authService.currentUser();
+            const myId = (user?.userId || user?.id || user?._id)?.toString();
+            const teacher = sessionData?.teacher;
+            const teacherId = (teacher?.id || teacher?._id || teacher)?.toString();
+            const isOwnerTeacher = Boolean(myId && teacherId && myId === teacherId);
+            this.isTeacher.set(isOwnerTeacher);
+
+            if (!isOwnerTeacher) {
+              // Notifica subito lo stato di presenza/ascolto al docente
+              const currentStatus = this.isPlaying() ? 'listening' : 'not_started';
+              this.socketService.sendAudioStatus(code, this.currentItineraryStepIndex(), currentStatus);
+
+              if (this.messages().length === 0) {
+                this.messages.set([
+                  {
+                    sender: 'ai',
+                    text: 'Benvenuto alla visita di gruppo! La navigazione è sincronizzata e guidata dal tuo docente. Puoi ascoltare la guida, approfondire l\'opera corrente o chiedere informazioni sui servizi del museo.'
+                  }
+                ]);
+              }
             }
-          ]);
-        }
+          },
+          error: (err) => {
+            console.warn('[Navigator] Impossibile verificare titolarità sessione:', err);
+            this.isTeacher.set(false);
+          }
+        });
 
         // Connetti WebSocket se non già connesso
         this.socketService.connect(code);
@@ -259,6 +283,10 @@ export class Navigator implements OnDestroy {
 
             this.currentItineraryStepIndex.set(data.stepIndex);
             this.itemIsArtwork.set(true);
+
+            // Notifica subito al docente che lo studente/partecipante è sulla nuova tappa (not_started)
+            this.socketService.sendAudioStatus(code, data.stepIndex, 'not_started');
+
             this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: data.stepIndex });
           }
         });

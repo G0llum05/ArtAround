@@ -15,13 +15,14 @@ function getSessionAudioSummary(sessionCode, currentStepIndex = 0, fallbackTeach
   const sessionMap = sessionAudioProgress.get(code) || new Map();
   const teacherId = (fallbackTeacherId || sessionTeachers.get(code))?.toString();
 
-  // Rimuovi esplicitamente il docente dalla mappa degli studenti qualora presente
+  // Rimuovi esplicitamente il docente titolare dalla mappa degli studenti
   if (teacherId && sessionMap.has(teacherId)) {
     sessionMap.delete(teacherId);
   }
 
+  const currentStep = Number(currentStepIndex) || 0;
   const allEntries = Array.from(sessionMap.values()).filter(s => !teacherId || s.userId?.toString() !== teacherId);
-  const students = allEntries.filter(s => s.stepIndex === currentStepIndex);
+  const students = allEntries.filter(s => (Number(s.stepIndex) || 0) === currentStep);
 
   const completedCount = students.filter(s => s.status === 'completed').length;
   const listeningCount = students.filter(s => s.status === 'listening').length;
@@ -30,7 +31,7 @@ function getSessionAudioSummary(sessionCode, currentStepIndex = 0, fallbackTeach
   const totalStudents = students.length;
 
   return {
-    stepIndex: currentStepIndex,
+    stepIndex: currentStep,
     totalStudents,
     completedCount,
     listeningCount,
@@ -40,24 +41,29 @@ function getSessionAudioSummary(sessionCode, currentStepIndex = 0, fallbackTeach
   };
 }
 
-async function isSessionTeacher(sessionCode, user) {
-  if (!user) return false;
-  if (user.role === 'teacher' || user.role === 'museumstaff' || user.role === 'admin') {
-    return true;
-  }
-  const code = sessionCode?.toUpperCase().trim();
-  if (!code) return false;
+async function isSessionTeacher(sessionCodeOrId, user) {
+  if (!user || !user.id) return false;
+  const identifier = sessionCodeOrId?.toString().trim();
+  if (!identifier) return false;
+
+  const code = identifier.toUpperCase();
   let teacherId = sessionTeachers.get(code);
   if (!teacherId) {
     try {
-      const session = await GroupVisit.findOne({ sessionCode: code }).select('teacher').lean();
+      let query = { sessionCode: code };
+      if (mongoose.Types.ObjectId.isValid(identifier)) {
+        query = { $or: [{ sessionCode: code }, { _id: identifier }] };
+      }
+      const session = await GroupVisit.findOne(query).select('teacher sessionCode').lean();
       if (session?.teacher) {
         teacherId = (session.teacher._id || session.teacher).toString();
-        sessionTeachers.set(code, teacherId);
+        if (session.sessionCode) {
+          sessionTeachers.set(session.sessionCode.toUpperCase().trim(), teacherId);
+        }
       }
     } catch (e) {}
   }
-  return Boolean(teacherId && user.id && teacherId.toString() === user.id.toString());
+  return Boolean(teacherId && teacherId.toString() === user.id.toString());
 }
 
 /**
@@ -137,10 +143,7 @@ function initGroupVisitSocket(httpServer) {
             sessionTeachers.set(sessionCode.toUpperCase().trim(), sessionTeacherId);
           }
 
-          const isTeacher = user.role === 'teacher' || 
-                            user.role === 'museumstaff' || 
-                            user.role === 'admin' || 
-                            (sessionTeacherId && sessionTeacherId === user.id.toString());
+          const isTeacher = Boolean(sessionTeacherId && user.id && sessionTeacherId === user.id.toString());
 
           // Broadcast lista completa aggiornata a tutta la stanza
           if (updatedSession?.participants) {
@@ -163,17 +166,34 @@ function initGroupVisitSocket(httpServer) {
             sessionAudioProgress.set(sessionCode.toUpperCase().trim(), sessionMap);
           }
 
+          // Assicura che tutti i partecipanti registrati (eccetto il docente titolare) siano presenti in sessionMap
+          if (updatedSession?.participants && Array.isArray(updatedSession.participants)) {
+            for (const p of updatedSession.participants) {
+              const pId = (p.user?._id || p.user?.id || p.user || p.userId)?.toString();
+              if (pId && (!sessionTeacherId || pId !== sessionTeacherId) && p.isOnline !== false) {
+                if (!sessionMap.has(pId)) {
+                  sessionMap.set(pId, {
+                    userId: pId,
+                    name: p.name || p.email || 'Partecipante',
+                    status: 'not_started',
+                    stepIndex: currentStep,
+                    updatedAt: new Date()
+                  });
+                }
+              }
+            }
+          }
+
           if (!isTeacher) {
             const studentName = `${user.name || ''} ${user.surname || ''}`.trim() || user.email;
-            if (!sessionMap.has(user.id)) {
-              sessionMap.set(user.id, {
-                userId: user.id,
-                name: studentName,
-                status: 'not_started',
-                stepIndex: currentStep,
-                updatedAt: new Date()
-              });
-            }
+            const existing = sessionMap.get(user.id);
+            sessionMap.set(user.id, {
+              userId: user.id,
+              name: studentName,
+              status: existing?.status || 'not_started',
+              stepIndex: existing?.stepIndex !== undefined ? existing.stepIndex : currentStep,
+              updatedAt: new Date()
+            });
             const summary = getSessionAudioSummary(sessionCode, currentStep, sessionTeacherId);
             io.to(room).emit('session:students-audio-status', summary);
           } else {
@@ -189,7 +209,7 @@ function initGroupVisitSocket(httpServer) {
           let studentQuiz = updatedSession.activeQuiz;
           let mySubmission = null;
 
-          if (updatedSession.activeQuiz && (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin')) {
+          if (updatedSession.activeQuiz && !isTeacher) {
             const QuizService = require('../service/QuizService');
             const isCompleted = updatedSession.quizState === 'completed';
             const rawQuizId = updatedSession.activeQuiz._id || updatedSession.activeQuiz.id || updatedSession.activeQuiz;
@@ -280,11 +300,12 @@ function initGroupVisitSocket(httpServer) {
        */
       socket.on('teacher:start-session', async ({ sessionCode, sessionId }, callback) => {
         try {
-          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') {
-            throw new Error('Solo il docente, lo staff del museo o un amministratore può avviare la visita.');
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          const authorized = await isSessionTeacher(code || sessionId, user);
+          if (!authorized) {
+            throw new Error('Solo il docente titolare di questa visita può avviare la sessione.');
           }
 
-          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
           if (!code) {
             throw new Error('Codice sessione mancante.');
           }
@@ -322,6 +343,10 @@ function initGroupVisitSocket(httpServer) {
             allowQuestions: updated.settings?.allowQuestions ?? true
           });
 
+          // Invia subito il riepilogo iniziale dello stato audio per la tappa 0
+          const summary = getSessionAudioSummary(code, updated.currentStepIndex || 0, user.id);
+          io.to(room).emit('session:students-audio-status', summary);
+
           if (typeof callback === 'function') {
             callback({
               success: true,
@@ -341,11 +366,12 @@ function initGroupVisitSocket(httpServer) {
        */
       socket.on('teacher:step-change', async ({ sessionCode, sessionId, stepIndex, activeItem }, callback) => {
         try {
-          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') {
-            throw new Error('Solo il docente o lo staff del museo può cambiare tappa.');
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          const authorized = await isSessionTeacher(code || sessionId, user);
+          if (!authorized) {
+            throw new Error('Solo il docente titolare di questa visita può cambiare tappa.');
           }
 
-          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
           if (!code) {
             throw new Error('Codice sessione mancante.');
           }
@@ -433,7 +459,7 @@ function initGroupVisitSocket(httpServer) {
           }
 
           const studentName = `${user.name || ''} ${user.surname || ''}`.trim() || user.email;
-          const step = typeof stepIndex === 'number' ? stepIndex : 0;
+          const step = typeof stepIndex === 'number' ? stepIndex : (parseInt(stepIndex, 10) || 0);
           sessionMap.set(user.id, {
             userId: user.id,
             name: studentName,
@@ -455,11 +481,12 @@ function initGroupVisitSocket(httpServer) {
        */
       socket.on('teacher:toggle-lock', async ({ sessionCode, sessionId, isLocked }, callback) => {
         try {
-          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') {
-            throw new Error('Solo il docente o lo staff del museo può modificare i permessi di navigazione.');
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          const authorized = await isSessionTeacher(code || sessionId, user);
+          if (!authorized) {
+            throw new Error('Solo il docente titolare di questa visita può modificare i permessi di navigazione.');
           }
 
-          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
           if (!code) throw new Error('Codice sessione mancante.');
           const room = `session:${code}`;
 
@@ -483,11 +510,13 @@ function initGroupVisitSocket(httpServer) {
       /**
        * Docente invia una trasmissione audio / testo TTS condiviso
        */
-      socket.on('teacher:broadcast-audio', ({ sessionCode, text, language, audioUrl }) => {
+      socket.on('teacher:broadcast-audio', async ({ sessionCode, text, language, audioUrl }) => {
         try {
-          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') return;
-          if (!sessionCode) return;
-          const room = `session:${sessionCode.toUpperCase().trim()}`;
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          const authorized = await isSessionTeacher(code, user);
+          if (!authorized) return;
+          if (!code) return;
+          const room = `session:${code}`;
           io.to(room).emit('session:audio-play', {
             text,
             language,
@@ -661,8 +690,13 @@ function initGroupVisitSocket(httpServer) {
        */
       socket.on('teacher:resolve-question', async ({ sessionCode, sessionId, questionId, status }, callback) => {
         try {
-          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') return;
-          const room = `session:${sessionCode.toUpperCase().trim()}`;
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          const authorized = await isSessionTeacher(code || sessionId, user);
+          if (!authorized) {
+            if (typeof callback === 'function') callback({ success: false, error: 'Solo il docente titolare della visita può gestire le domande.' });
+            return;
+          }
+          const room = `session:${code}`;
           const result = await GroupVisitService.updateQuestionStatus(sessionId, user.id, questionId, status);
 
           io.to(room).emit('session:question-resolved', result);
@@ -674,8 +708,12 @@ function initGroupVisitSocket(httpServer) {
 
       socket.on('teacher:end-session', async ({ sessionCode, sessionId }, callback) => {
         try {
-          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') return;
           const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          const authorized = await isSessionTeacher(code || sessionId, user);
+          if (!authorized) {
+            if (typeof callback === 'function') callback({ success: false, error: 'Solo il docente titolare della visita può terminare la sessione.' });
+            return;
+          }
           if (!code) return;
           const room = `session:${code}`;
 
@@ -709,11 +747,12 @@ function initGroupVisitSocket(httpServer) {
 
       socket.on('teacher:start-quiz', async ({ sessionCode, sessionId, quizId }, callback) => {
         try {
-          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') {
-            throw new Error('Solo il docente o lo staff può avviare il quiz.');
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          const authorized = await isSessionTeacher(code || sessionId, user);
+          if (!authorized) {
+            throw new Error('Solo il docente titolare della visita può avviare il quiz.');
           }
 
-          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
           if (!code) throw new Error('Codice sessione mancante.');
           const room = `session:${code}`;
 
@@ -778,11 +817,12 @@ function initGroupVisitSocket(httpServer) {
 
       socket.on('teacher:end-quiz', async ({ sessionCode, sessionId }, callback) => {
         try {
-          if (user.role !== 'teacher' && user.role !== 'museumstaff' && user.role !== 'admin') {
-            throw new Error('Solo il docente o lo staff può concludere il quiz.');
+          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
+          const authorized = await isSessionTeacher(code || sessionId, user);
+          if (!authorized) {
+            throw new Error('Solo il docente titolare della visita può concludere il quiz.');
           }
 
-          const code = (sessionCode || socket.sessionCode)?.toUpperCase().trim();
           if (!code) throw new Error('Codice sessione mancante.');
           const room = `session:${code}`;
 

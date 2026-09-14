@@ -32,10 +32,11 @@ export class GroupRoom implements OnInit, OnDestroy {
   activeQuizId = signal<string | null>(null);
 
   isTeacher = computed(() => {
-    const role = this.authService.userRole();
-    const currentUserId = this.authService.currentUser()?.userId;
-    const teacherId = this.session()?.teacher?.id || this.session()?.teacher?._id;
-    return role === 'admin' || role === 'teacher' || role === 'museumstaff' || (currentUserId && currentUserId === teacherId);
+    const u: any = this.authService.currentUser();
+    const currentUserId = (u?.userId || u?.id || u?._id)?.toString();
+    const teacher = this.session()?.teacher;
+    const teacherId = (teacher?.id || teacher?._id || teacher)?.toString();
+    return Boolean(currentUserId && teacherId && currentUserId === teacherId);
   });
 
   studentParticipants = computed(() => {

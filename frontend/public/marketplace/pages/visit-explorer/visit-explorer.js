@@ -7,6 +7,7 @@ export class MktVisitExplorer extends HTMLElement {
     super();
     this.state = {
       museumId: '',
+      searchQuery: '',
       chiSei: 'Adulto',
       interessi: [],
       durata: 2,
@@ -105,6 +106,16 @@ export class MktVisitExplorer extends HTMLElement {
 
   get filteredVisits() {
     let list = [...(this.allMuseumVisit || [])];
+
+    // Filtro per ricerca testuale
+    if (this.state.searchQuery && this.state.searchQuery.trim()) {
+      const q = this.state.searchQuery.toLowerCase().trim();
+      list = list.filter(v =>
+        (v.title || '').toLowerCase().includes(q) ||
+        (v.description || '').toLowerCase().includes(q) ||
+        (v.categories || []).some(c => (c || '').toLowerCase().includes(q))
+      );
+    }
 
     // Filtro per interessi (se l'utente ha selezionato dei filtri specifici)
     if (this.state.interessi.length > 0) {
@@ -242,12 +253,26 @@ export class MktVisitExplorer extends HTMLElement {
         </header>
 
         <form class="mkt-form-grid">
-          <!-- 1. Museo -->
+          <!-- 1. Museo e Visita -->
           <section class="mkt-card mkt-card-museo">
             <header class="mkt-card-header">
               <h2 class="mkt-card-title">Scegli il museo</h2>
             </header>
             <mkt-input-search-visit id="museum-search"></mkt-input-search-visit>
+
+            <div style="margin-top: 1rem; border-top: 1px dashed var(--outline-variant); padding-top: 0.75rem;">
+              <label for="search-visit-keyword-input" style="font-size: var(--label-md-size); font-weight: 600; color: var(--on-surface-variant); display: block; margin-bottom: 0.35rem;">
+                Oppure cerca direttamente per titolo o tema della visita
+              </label>
+              <input
+                type="text"
+                class="mkt-custom-select"
+                id="search-visit-keyword-input"
+                placeholder="Cerca per titolo o tema (es. Rinascimento, Guida...)"
+                value="${this.state.searchQuery || ''}"
+                autocomplete="off"
+              />
+            </div>
           </section>
 
           <!-- 2. Chi Sei -->
@@ -369,6 +394,13 @@ export class MktVisitExplorer extends HTMLElement {
     const btnAccessibile = this.querySelector('#btn-accessibile');
     const btnGratuito = this.querySelector('#btn-gratuito');
     const btnVerificata = this.querySelector('#btn-verificata');
+
+    const searchVisitInput = this.querySelector('#search-visit-keyword-input');
+    if (searchVisitInput) {
+      searchVisitInput.addEventListener('input', (e) => {
+        this.updateState('searchQuery', e.target.value);
+      });
+    }
 
     if (btnAccessibile) btnAccessibile.addEventListener('click', () => this.updateState('accessibile', !this.state.accessibile));
     if (btnGratuito) btnGratuito.addEventListener('click', () => this.updateState('gratuito', !this.state.gratuito));

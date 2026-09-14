@@ -6,8 +6,17 @@ import {MuseumService} from "../../services/museum.service.js";
 export class MktHome extends HTMLElement {
   constructor() {
     super();
-    this.activeFilter = ['all'];
     this.searchQuery = '';
+    this.filters = {
+      scope: 'all',
+      freeOnly: false,
+      paidOnly: false,
+      verified: false,
+      newOnly: false,
+      disableFriendly: false,
+      duration: 'all',
+      selectedCategories: []
+    };
     this.routes = window.location.pathname;
 
     this.allTop10Visits = [];
@@ -17,54 +26,68 @@ export class MktHome extends HTMLElement {
 
   async connectedCallback() {
     this.render();
-    const museumsTrack = this.querySelector('#mkt-museums-track');
-    const top10VisitsTrack = this.querySelector('#mkt-top10-visits-track');
-    const allVisitsTrack = this.querySelector('#mkt-all-visits-track');
+    this.setupEventListeners();
 
-    try{
+    try {
       this.allTop10Visits = await VisitService.getTop10VisitPresentation() || [];
-      top10VisitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allTop10Visits);
     } catch(error) {
       console.error("Errore nel recupero della top 10", error);
     }
 
-    try{
+    try {
       this.allVisits = await VisitService.getAllVisits() || [];
-      allVisitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allVisits);
     } catch(error) {
       console.error("Errore nel recupero delle visite", error);
     }
 
-    try{
+    try {
       this.allMuseums = await MuseumService.getAllHomePresentationMuseums() || [];
-      museumsTrack.innerHTML = this.getMuseumsHtml();
     } catch(error) {
       console.error("Errore nel recupero dei musei:", error);
     }
 
-    this.render();
-    this.setupEventListeners();
+    // Passa le categorie rilevate dalle visite al componente dei controlli
+    const allCategories = [...new Set([...this.allTop10Visits, ...this.allVisits].flatMap(v => v.categories || []))].filter(Boolean);
+    const controls = this.querySelector('#mkt-controls');
+    if (controls && typeof controls.setAvailableCategories === 'function' && allCategories.length > 0) {
+      controls.setAvailableCategories(allCategories);
+    }
+
+    this.updateAllTracks();
   }
 
   getMuseumsHtml() {
+    if (this.filters.scope === 'visits') {
+      return '';
+    }
+
     if (!this.allMuseums || this.allMuseums.length === 0) {
       return `<p class="mkt-empty-text">Nessun museo trovato.</p>`;
     }
 
+    const query = (this.searchQuery || '').toLowerCase().trim();
     const filteredMuseums = this.allMuseums.filter(museum => {
-      const query = this.searchQuery.toLowerCase();
-      const matchName = (museum.name || '').toLowerCase().includes(query);
-      const matchCity = (museum.city || '').toLowerCase().includes(query);
-      return matchName || matchCity;
+      if (query) {
+        const matchName = (museum.name || '').toLowerCase().includes(query);
+        const matchCity = (museum.city || '').toLowerCase().includes(query);
+        const matchDesc = (museum.description || '').toLowerCase().includes(query);
+        if (!matchName && !matchCity && !matchDesc) return false;
+      }
+
+      if (this.filters.disableFriendly && !museum.disableFriendly) {
+        return false;
+      }
+
+      return true;
     });
 
     if (filteredMuseums.length === 0) {
-      return `<p class="mkt-empty-text">Nessun museo trovato.</p>`;
+      return `<p class="mkt-empty-text">Nessun museo trovato con i filtri selezionati.</p>`;
     }
 
     return filteredMuseums.map(museum => {
       const assets = museum.assets || [];
-      const imageUrl = getImageUrl(assets, "landscape")
+      const imageUrl = getImageUrl(assets, "landscape");
       return `
         <mkt-museum-card
           data-title="${museum.name || ''}"
@@ -80,21 +103,55 @@ export class MktHome extends HTMLElement {
   }
 
   getFilteredVisitsHtml(allVisits) {
-    let filteredVisits = [...allVisits];
-    if (!this.activeFilter.includes('all')) {
-      filteredVisits = filteredVisits.filter(visit => {
-        return this.activeFilter.every(filter => {
-          if (filter === 'new') return visit.isNew;
-          if (filter === 'free') return visit.price == 0;
-          if (filter === 'verified') return visit.isVerified;
-          if (filter === 'disable-friendly') return visit.disableFriendly;
-          return false;
-        });
-      });
+    if (this.filters.scope === 'museums') {
+      return '';
     }
 
-    if (filteredVisits.length <= 0) {
-      return `<p class="mkt-empty-text">Nessuna visita trovata per questo filtro.</p>`;
+    if (!allVisits || allVisits.length === 0) {
+      return `<p class="mkt-empty-text">Nessuna visita disponibile.</p>`;
+    }
+
+    const query = (this.searchQuery || '').toLowerCase().trim();
+
+    const filteredVisits = allVisits.filter(visit => {
+      // 1. Ricerca testuale unificata
+      if (query) {
+        const matchTitle = (visit.title || '').toLowerCase().includes(query);
+        const matchDesc = (visit.description || '').toLowerCase().includes(query);
+        const matchCats = (visit.categories || []).some(c => (c || '').toLowerCase().includes(query));
+        if (!matchTitle && !matchDesc && !matchCats) return false;
+      }
+
+      // 2. Filtro Prezzo
+      if (this.filters.freeOnly && Number(visit.price) !== 0) return false;
+      if (this.filters.paidOnly && Number(visit.price) <= 0) return false;
+
+      // 3. Filtro Caratteristiche & Qualità
+      if (this.filters.disableFriendly && !visit.disableFriendly) return false;
+      if (this.filters.verified && !visit.isVerified) return false;
+      if (this.filters.newOnly && !visit.isNew) return false;
+
+      // 4. Filtro Durata (in minuti)
+      if (this.filters.duration === 'short') {
+        if (!visit.duration || visit.duration > 60) return false;
+      } else if (this.filters.duration === 'medium') {
+        if (!visit.duration || visit.duration <= 60 || visit.duration > 120) return false;
+      } else if (this.filters.duration === 'long') {
+        if (!visit.duration || visit.duration <= 120) return false;
+      }
+
+      // 5. Filtro Categorie / Argomenti
+      if (this.filters.selectedCategories && this.filters.selectedCategories.length > 0) {
+        const visitCats = visit.categories || [];
+        const matchesCategory = this.filters.selectedCategories.some(cat => visitCats.includes(cat));
+        if (!matchesCategory) return false;
+      }
+
+      return true;
+    });
+
+    if (filteredVisits.length === 0) {
+      return `<p class="mkt-empty-text">Nessuna visita trovata con i filtri selezionati.</p>`;
     }
 
     return filteredVisits.map(visit => {
@@ -113,6 +170,36 @@ export class MktHome extends HTMLElement {
         </mkt-visit-card>
       `;
     }).join("\n");
+  }
+
+  updateAllTracks() {
+    const museumsSection = this.querySelector('#mkt-museums-section');
+    const top10Section = this.querySelector('#mkt-top10-section');
+    const allVisitsSection = this.querySelector('#mkt-all-visits-section');
+
+    const museumsTrack = this.querySelector('#mkt-museums-track');
+    const top10visitsTrack = this.querySelector('#mkt-top10-visits-track');
+    const allVisitsTrack = this.querySelector('#mkt-all-visits-track');
+
+    if (museumsSection) {
+      museumsSection.style.display = this.filters.scope === 'visits' ? 'none' : 'flex';
+    }
+    if (top10Section) {
+      top10Section.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
+    }
+    if (allVisitsSection) {
+      allVisitsSection.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
+    }
+
+    if (museumsTrack && this.filters.scope !== 'visits') {
+      museumsTrack.innerHTML = this.getMuseumsHtml();
+    }
+    if (top10visitsTrack && this.filters.scope !== 'museums') {
+      top10visitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allTop10Visits);
+    }
+    if (allVisitsTrack && this.filters.scope !== 'museums') {
+      allVisitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allVisits);
+    }
   }
 
   render() {
@@ -157,11 +244,11 @@ export class MktHome extends HTMLElement {
           </div>
         </section>
 
-        <!-- COMPONENTE INPUT -->
+        <!-- COMPONENTE CONTROLLI CON RICERCA E TENDINA FILTRI -->
         <mkt-home-input-fields id="mkt-controls"></mkt-home-input-fields>
 
         <!-- I NOSTRI MUSEI -->
-        <section class="mkt-category-section">
+        <section class="mkt-category-section" id="mkt-museums-section">
           <h2 class="mkt-category-title">I Nostri Musei</h2>
           <div class="mkt-horizontal-track" id="mkt-museums-track">
             ${this.getMuseumsHtml()}
@@ -169,7 +256,7 @@ export class MktHome extends HTMLElement {
         </section>
 
         <!-- VISITE IN EVIDENZA -->
-        <section class="mkt-category-section">
+        <section class="mkt-category-section" id="mkt-top10-section">
           <h2 class="mkt-category-title">Visite in Evidenza</h2>
           <div class="mkt-horizontal-track" id="mkt-top10-visits-track">
             ${this.getFilteredVisitsHtml(this.allTop10Visits)}
@@ -177,8 +264,8 @@ export class MktHome extends HTMLElement {
         </section>
 
         <!-- TUTTE LE VISITE -->
-        <section class="mkt-category-section">
-          <h2 class="mkt-category-title">Visite in Evidenza</h2>
+        <section class="mkt-category-section" id="mkt-all-visits-section">
+          <h2 class="mkt-category-title">Tutte le Visite</h2>
           <div class="mkt-horizontal-track" id="mkt-all-visits-track">
             ${this.getFilteredVisitsHtml(this.allVisits)}
           </div>
@@ -189,29 +276,27 @@ export class MktHome extends HTMLElement {
 
   setupEventListeners() {
     const controls = this.querySelector('#mkt-controls');
-    const museumsTrack = this.querySelector('#mkt-museums-track');
-    const top10visitsTrack = this.querySelector('#mkt-top10-visits-track');
-    const allVisitsTrack = this.querySelector('#mkt-all-visits-track');
 
     if (controls) {
       // Ascolta il cambiamento nella barra di ricerca
       controls.addEventListener('search-change', (e) => {
         this.searchQuery = e.detail.query;
-        if (museumsTrack) museumsTrack.innerHTML = this.getMuseumsHtml();
+        this.updateAllTracks();
       });
 
-      // Ascolta il cambiamento nei filtri a pillola
+      // Ascolta il cambiamento nei filtri (sia rapidi che da tendina)
       controls.addEventListener('filter-change', (e) => {
-        this.activeFilter = e.detail.activeFilter;
-        if (top10visitsTrack) top10visitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allTop10Visits);
-        if (allVisitsTrack) allVisitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allVisits);
+        if (e.detail.filters) {
+          this.filters = e.detail.filters;
+        }
+        this.updateAllTracks();
       });
     }
 
     const btnSearch = this.querySelector('#mkt-btn-search-visits');
     const btnCreate = this.querySelector('#mkt-btn-create-visit');
 
-    if(btnSearch) goTo(btnSearch,`/marketplace/visit/search`, null)
-    if(btnCreate) goTo(btnCreate, `/marketplace/visit/create`, null);
+    if (btnSearch) goTo(btnSearch, `/marketplace/visit/search`, null);
+    if (btnCreate) goTo(btnCreate, `/marketplace/visit/create`, null);
   }
 }

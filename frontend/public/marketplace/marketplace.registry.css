@@ -14,3 +14,14 @@
 @import url('components/badges-list/badges-list.css');
 @import url('./components/museum-card/museum-card.css');
 @import url('./components/visit-card/visit-card.css');
+
+
+mkt-router:not(:defined){
+  opacity: 0;
+  visibility: hidden;
+}
+
+mkt-router{
+  opacity: 1;
+  visibility: visible;
+}

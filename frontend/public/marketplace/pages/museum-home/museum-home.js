@@ -99,7 +99,7 @@ export class MktMuseumHome extends HTMLElement {
               <svg xmlns="http://www.w3.org/2000/svg" height="1.1rem" viewBox="0 -960 960 960" width="1.1rem" fill="currentColor">
                  <path d="M423.5-743.5Q400-767 400-800t23.5-56.5Q447-880 480-880t56.5 23.5Q560-833 560-800t-23.5 56.5Q513-720 480-720t-56.5-23.5ZM680-80v-200H480q-33 0-56.5-23.5T400-360v-240q0-33 23.5-56.5T480-680q24 0 41.5 10.5T559-636q55 66 99.5 90.5T760-520v80q-53 0-107-23t-93-55v138h120q33 0 56.5 23.5T760-300v220h-80Zm-280 0q-83 0-141.5-58.5T200-280q0-72 45.5-127T360-476v82q-35 14-57.5 44.5T280-280q0 50 35 85t85 35q39 0 69.5-22.5T514-240h82q-14 69-69 114.5T400-80Z"/>
               </svg>
-              Disable Friendly
+              Accessibile per disabili
             </div>
           ` : ''}
         </header>
@@ -156,12 +156,12 @@ export class MktMuseumHome extends HTMLElement {
           <article class="mkt-info-card mkt-services-area">
             <h3 class="mkt-info-card-title">Servizi</h3>
             <div class="mkt-services-grid-sidebar">
-              ${this.museumData.services.hasToilette ? `<div class="mkt-service-item">Toilets</div>` : ''}
-              ${this.museumData.services.hasElevator ? `<div class="mkt-service-item">Elevators</div>` : ''}
-              ${this.museumData.services.hasAudioGuide ? `<div class="mkt-service-item">Audio Guides</div>` : ''}
-              ${this.museumData.services.hasBar ? `<div class="mkt-service-item">Cafe/Rest.</div>` : ''}
-              ${this.museumData.services.hasWifi ? `<div class="mkt-service-item">Free Wi-Fi</div>` : ''}
-              ${this.museumData.services.hasCloakroom ? `<div class="mkt-service-item">Cloakroom</div>` : ''}
+              ${this.museumData.services?.hasToilette ? `<div class="mkt-service-item">Servizi igienici</div>` : ''}
+              ${this.museumData.services?.hasElevator ? `<div class="mkt-service-item">Ascensori</div>` : ''}
+              ${this.museumData.services?.hasAudioGuide ? `<div class="mkt-service-item">Audioguide</div>` : ''}
+              ${this.museumData.services?.hasBar ? `<div class="mkt-service-item">Bar / Ristorante</div>` : ''}
+              ${this.museumData.services?.hasWifi ? `<div class="mkt-service-item">Wi-Fi gratuito</div>` : ''}
+              ${this.museumData.services?.hasCloakroom ? `<div class="mkt-service-item">Guardaroba</div>` : ''}
             </div>
           </article>
 
@@ -200,21 +200,21 @@ export class MktMuseumHome extends HTMLElement {
               Accessibilità
             </h2>
             <ul class="mkt-check-list">
-              ${this.museumData.accessibility.wheelchairAccessible ? `
+              ${this.museumData.accessibility?.wheelchairAccessible ? `
                 <li class="mkt-check-item">
-                  Fully wheelchair accessible
+                  Accessibile in sedia a rotelle
                 </li>` : ''}
-              ${this.museumData.accessibility.childFriendly ? `
+              ${this.museumData.accessibility?.childFriendly ? `
                 <li class="mkt-check-item">
-                  Child friendly environment
+                  Adatto ai bambini
                 </li>` : ''}
-              ${this.museumData.accessibility.tactilePaths ? `
+              ${this.museumData.accessibility?.tactilePaths ? `
                 <li class="mkt-check-item">
-                  Tactile paths included
+                  Percorsi tattili inclusi
                 </li>` : ''}
-              ${this.museumData.accessibility.brailleSignage ? `
+              ${this.museumData.accessibility?.brailleSignage ? `
                 <li class="mkt-check-item">
-                  Braille signage available
+                  Segnaletica in Braille disponibile
                 </li>` : ''}
             </ul>
           </article>

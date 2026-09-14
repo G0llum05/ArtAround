@@ -92,7 +92,7 @@ export class Navigator implements OnDestroy {
   isSettingsOpen = signal<boolean>(false);
   isMapOpen = signal<boolean>(false);
   isLoading = signal<boolean>(false);
-  isChatCollapsed = signal<boolean>(false);
+  isChatCollapsed = signal<boolean>(true);
 
 
   // contesto
@@ -765,6 +765,13 @@ export class Navigator implements OnDestroy {
     this.messages.update(msgs => [...msgs, { sender: 'user', text: `Dove si trova: ${label}?`, type: 'text' }]);
     this.stopAudio();
     this.executeCommand({ targetPoiType: poiType });
+  }
+
+  scrollToItinerary(): void {
+    const el = document.getElementById('itinerary');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   changeItineraryStep(index: number): void {

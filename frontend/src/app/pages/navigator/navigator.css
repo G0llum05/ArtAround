@@ -146,22 +146,29 @@
   border-color: var(--primary);
 }
 
+.area-media.artwork-mode .progress-fill {
+  background: linear-gradient(to right, var(--primary), var(--tertiary));
+}
+
 .area-media.artist-mode {
   border-color: var(--secondary);
 }
 
 /* Accenti interni alla card area-media per artista */
-.area-media.artist-mode .progress-fill {
-  background-color: var(--secondary);
+.area-media.artist-mode .progress-fill,
+.area-media.artist-mode .progress-track .progress-fill {
+  background: linear-gradient(to right, var(--secondary), var(--tertiary));
 }
 
 .area-media.artist-mode .btn-play {
   background-color: var(--secondary);
+  border-color: var(--secondary);
   color: var(--on-secondary);
 }
 
 .area-media.artist-mode .btn-play:hover {
   background-color: var(--secondary);
+  border-color: var(--secondary);
   color: var(--on-secondary);
 }
 
@@ -456,7 +463,7 @@
 
 .progress-fill {
   height: 100%;
-  background-color: var(--primary, var(--tertiary));
+  background: linear-gradient(to right, var(--primary), var(--tertiary));
   border-radius: var(--radius-full);
   transition: width 0.1s linear;
 }

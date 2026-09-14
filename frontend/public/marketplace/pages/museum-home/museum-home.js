@@ -170,24 +170,30 @@ export class MktMuseumHome extends HTMLElement {
             <h2 class="mkt-section-title">Descrizione</h2>
             <p class="mkt-desc-text">${this.museumData.description}</p>
             <div class="mkt-contact-list">
+              ${this.museumData.contact?.phone ? `
               <div class="mkt-contact-row">
                 <svg xmlns="http://www.w3.org/2000/svg" height="1rem" viewBox="0 -960 960 960" width="1rem" fill="currentColor">
-                  <path d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5T524-281l98-97q9-9 19-11.5t27-1.5l140 26q13 2 22.5 13t9.5 25v162q0-18-12 30-30 12Z"/>
+                  <path d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5T524-281l98-97q9-9 19-11.5t27-1.5l140 26q13 2 22.5 13t9.5 25v162q0 18-12 30t-30 12Z"/>
                 </svg>
                 <a href="tel:${this.museumData.contact.phone}"><span>${this.museumData.contact.phone}</span></a>
               </div>
+              ` : ''}
+              ${this.museumData.contact?.email ? `
               <div class="mkt-contact-row">
                 <svg xmlns="http://www.w3.org/2000/svg" height="1rem" viewBox="0 -960 960 960" width="1rem" fill="currentColor">
                   <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/>
                 </svg>
                 <a href="mailto:${this.museumData.contact.email}"><span>${this.museumData.contact.email}</span></a>
               </div>
+              ` : ''}
+              ${this.museumData.contact?.website ? `
               <div class="mkt-contact-row">
                 <svg xmlns="http://www.w3.org/2000/svg" height="1rem" viewBox="0 -960 960 960" width="1rem" fill="currentColor">
                    <path xmlns="http://www.w3.org/2000/svg" d="M325-111.5q-73-31.5-127.5-86t-86-127.5Q80-398 80-480.5t31.5-155q31.5-72.5 86-127t127.5-86Q398-880 480.5-880t155 31.5q72.5 31.5 127 86t86 127Q880-563 880-480.5T848.5-325q-31.5 73-86 127.5t-127 86Q563-80 480.5-80T325-111.5ZM480-162q26-36 45-75t31-83H404q12 44 31 83t45 75Zm-104-16q-18-33-31.5-68.5T322-320H204q29 50 72.5 87t99.5 55Zm208 0q56-18 99.5-55t72.5-87H638q-9 38-22.5 73.5T584-178ZM170-400h136q-3-20-4.5-39.5T300-480q0-21 1.5-40.5T306-560H170q-5 20-7.5 39.5T160-480q0 21 2.5 40.5T170-400Zm216 0h188q3-20 4.5-39.5T580-480q0-21-1.5-40.5T574-560H386q-3 20-4.5 39.5T380-480q0 21 1.5 40.5T386-400Zm268 0h136q5-20 7.5-39.5T800-480q0-21-2.5-40.5T790-560H654q3 20 4.5 39.5T660-480q0 21-1.5 40.5T654-400Zm-16-240h118q-29-50-72.5-87T584-782q18 33 31.5 68.5T638-640Zm-234 0h152q-12-44-31-83t-45-75q-26 36-45 75t-31 83Zm-200 0h118q9-38 22.5-73.5T376-782q-56 18-99.5 55T204-640Z"/>
                 </svg>
                 <a href="${this.museumData.contact.website}"><span>${this.museumData.contact.website}</span></a>
               </div>
+              ` : ''}
             </div>
           </article>
 

@@ -19,6 +19,7 @@ import { ArtworkResponse } from '../../models/artwork.model';
 import { MuseumResponse } from '../../models/museum.model';
 import { NavigatorRequest } from '../../models/navigator.model';
 import { ActiveVisitService } from '../../services/active-visit.service';
+import { ArtworkService } from '../../services/artwork.service';
 import { AuthService } from '../../services/auth.service';
 import { GroupService } from '../../services/group.service';
 import { GroupSocketService } from '../../services/group-socket.service';
@@ -42,11 +43,12 @@ export class Navigator implements OnDestroy {
   private navigatorService = inject(NavigatorService);
   private visitService = inject(VisitService);
   private museumService = inject(MuseumService);
+  private artworkService = inject(ArtworkService);
   private groupService = inject(GroupService);
   protected socketService = inject(GroupSocketService);
   protected authService = inject(AuthService);
   private quizService = inject(QuizService);
-  private activeVisitService = inject(ActiveVisitService);
+  protected activeVisitService = inject(ActiveVisitService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
@@ -99,8 +101,8 @@ export class Navigator implements OnDestroy {
 
 
   // contesto
-  museumId = signal<string>('650c1f1e1c9d440000a1b2c3');
-  visitId = signal<string>('650c1f1e1c9d440000a1b2c4');
+  museumId = signal<string>('');
+  visitId = signal<string>('');
   currentMuseum = signal<MuseumResponse | null>(null);
 
   // Visite di gruppo
@@ -218,9 +220,16 @@ export class Navigator implements OnDestroy {
         this.museumId.set(params['museumId']);
         this.loadMuseumData(params['museumId']);
       }
-      if (params['visitId']) {
-        this.visitId.set(params['visitId']);
-        this.loadVisitData(params['visitId'], initialStep);
+      const vId = params['visitId'];
+      const artworkId = params['artworkId'];
+      const isVirtual = (vId && vId.startsWith('virtual_')) || (this.activeVisitService.isSingleArtworkMode() && artworkId);
+
+      if (isVirtual || artworkId) {
+        const targetArtId = artworkId || (this.activeVisitService.activeItinerary()[0]?.id);
+        this.loadSingleArtworkVisit(targetArtId, vId);
+      } else if (vId) {
+        this.visitId.set(vId);
+        this.loadVisitData(vId, initialStep);
       } else {
         this.currentItineraryStepIndex.set(initialStep);
         this.activeVisitService.setActiveVisit(this.visitId(), this.museumId(), this.itinerary(), initialStep);
@@ -330,7 +339,7 @@ export class Navigator implements OnDestroy {
   }
 
   private loadVisitData(vId: string, initialStep: number = 0): void {
-    this.quizService.getQuizzesByVisit(vId).pipe(takeUntilDestroyed()).subscribe({
+    this.quizService.getQuizzesByVisit(vId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => this.availableQuizzes.set(res.data || []),
       error: () => {}
     });
@@ -348,7 +357,7 @@ export class Navigator implements OnDestroy {
     this.audioCurrentTime.set(0);
     this.audioDuration.set(0);
 
-    this.visitService.getById(vId).pipe(takeUntilDestroyed()).subscribe({
+    this.visitService.getById(vId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (visitData: any) => {
         let loadedArtworks = DUMMY_ITINERARY_ARTWORKS;
         const rawSteps = visitData?.steps || visitData?.visits || [];
@@ -401,6 +410,117 @@ export class Navigator implements OnDestroy {
     });
   }
 
+  private loadSingleArtworkVisit(artworkId?: string, visitIdParam?: string): void {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isPlaying.set(false);
+    this.audioCurrentTime.set(0);
+    this.audioDuration.set(0);
+    this.itemIsArtwork.set(true);
+    this.currentItineraryStepIndex.set(0);
+
+    this.messages.set([
+      { sender: 'ai', text: 'Benvenuto! Sono la tua guida virtuale per quest\'opera. Come posso aiutarti?' }
+    ]);
+
+    const virtualId = visitIdParam || `virtual_single_${artworkId || 'artwork'}`;
+    this.visitId.set(virtualId);
+
+    // 1. Verifichiamo se l'opera è già registrata nell'ActiveVisitService (sessionStorage) con immagine valida reale
+    const cachedItinerary = this.activeVisitService.activeItinerary();
+    const firstArt = cachedItinerary[0];
+    const cachedImageUrl = firstArt?.assets?.images?.[0]?.url;
+    const hasRealCachedImage = Boolean(cachedImageUrl && !cachedImageUrl.includes('place_holder.jpg'));
+    const isMatchingCached = cachedItinerary.length === 1 &&
+      (!artworkId || firstArt.id === artworkId || (firstArt as any)._id === artworkId) &&
+      hasRealCachedImage;
+
+    if (isMatchingCached) {
+      const artwork = cachedItinerary[0];
+      this.itinerary.set([artwork]);
+      const artId = artwork.id || (artwork as any)._id;
+      const mId = typeof artwork.museum === 'object' && artwork.museum !== null
+        ? ((artwork.museum as any)._id || (artwork.museum as any).id || '')
+        : (typeof artwork.museum === 'string' ? artwork.museum : '');
+      if (mId) {
+        this.museumId.set(mId);
+        this.loadMuseumData(mId);
+      }
+      this.executeCommand({
+        itemAction: 'EXPLAIN_ITEM',
+        currentArtworkIndex: 0,
+        artworkId: artId
+      });
+      return;
+    }
+
+    // 2. Se non presente in cache o ricaricata da URL esterno, carichiamo via ArtworkService
+    if (artworkId) {
+      this.artworkService.getById(artworkId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (artwork: any) => {
+          if (artwork) {
+            const rawImages = artwork.assets?.images || (artwork as any).images || [];
+            const formattedImages = rawImages.length > 0
+              ? rawImages
+              : ((artwork as any).imageUrl ? [{ url: (artwork as any).imageUrl, orientation: 'landscape' }] : []);
+
+            const formattedArtwork: ArtworkResponse = {
+              id: artwork.id || artwork._id || artworkId,
+              title: artwork.title || 'Opera',
+              description: artwork.description || '',
+              startYear: artwork.startYear || 0,
+              endYear: artwork.endYear || 0,
+              artists: artwork.artists || [],
+              museum: artwork.museum || ({} as any),
+              location: artwork.location || { room: 'Sala Principale', floor: 'Piano Terra', build: 'Museo' },
+              dimensions: artwork.dimensions || { height: 0, width: 0, depth: 0, unit: 'cm' },
+              artisticCurrents: artwork.artisticCurrents || [],
+              details: artwork.details || { subjects: [], colors: [], places: [], objectType: 'Opera', materials: [], technique: [] },
+              copyOf: null as any,
+              falsificationOf: null as any,
+              isActive: artwork.isActive ?? true,
+              isPrivate: artwork.isPrivate ?? false,
+              qrCode: artwork.qrCode || `QR-${artworkId}`,
+              assets: formattedImages.length > 0
+                ? { images: formattedImages }
+                : { images: [{ url: '/assets/images/place_holder.jpg', orientation: 'landscape' }] }
+            };
+            this.activeVisitService.setVirtualSingleArtworkVisit(formattedArtwork);
+            this.itinerary.set([formattedArtwork]);
+            const artId = formattedArtwork.id;
+            const mId = typeof formattedArtwork.museum === 'object' && formattedArtwork.museum !== null
+              ? ((formattedArtwork.museum as any)._id || (formattedArtwork.museum as any).id || '')
+              : (typeof formattedArtwork.museum === 'string' ? formattedArtwork.museum : '');
+            if (mId) {
+              this.museumId.set(mId);
+              this.loadMuseumData(mId);
+            }
+            this.executeCommand({
+              itemAction: 'EXPLAIN_ITEM',
+              currentArtworkIndex: 0,
+              artworkId: artId
+            });
+          }
+        },
+        error: (err) => {
+          console.warn('Recupero opera singola fallito, fallback su dummy:', err);
+          const fallback = DUMMY_ITINERARY_ARTWORKS.find(a =>
+            a.id === artworkId || a.qrCode === artworkId || a.title.toLowerCase().includes(artworkId?.toLowerCase() || '')
+          ) || DUMMY_ITINERARY_ARTWORKS[0];
+          this.activeVisitService.setVirtualSingleArtworkVisit(fallback);
+          this.itinerary.set([fallback]);
+          this.executeCommand({
+            itemAction: 'EXPLAIN_ITEM',
+            currentArtworkIndex: 0,
+            artworkId: fallback.id
+          });
+        }
+      });
+    }
+  }
+
   // Sottotitoli
   currentSubtitle = signal<string>("Nel dipinto possiamo notare i dettagli delle vesti dorate...");
 
@@ -438,9 +558,11 @@ export class Navigator implements OnDestroy {
 
   displayImageUrl = computed<string>(() => {
     if (this.itemIsArtwork()) {
-      return this.currentArtwork()?.assets?.images?.[0]?.url || '/assets/images/place_holder.jpg';
+      const art = this.currentArtwork();
+      return art?.assets?.images?.[0]?.url || (art as any)?.images?.[0]?.url || (art as any)?.imageUrl || '/assets/images/place_holder.jpg';
     }
-    return this.currentArtist()?.assets?.images?.[0]?.url || '/assets/images/place_holder.jpg';
+    const artist = this.currentArtist();
+    return artist?.assets?.images?.[0]?.url || (artist as any)?.images?.[0]?.url || (artist as any)?.imageUrl || '/assets/images/place_holder.jpg';
   });
 
   displayImageAlt = computed<string>(() => {
@@ -508,9 +630,15 @@ export class Navigator implements OnDestroy {
       extraParams.currentArtworkIndex = this.currentItineraryStepIndex();
     }
 
+    const curArt = this.currentArtwork();
+    const isSingleMode = this.activeVisitService.isSingleArtworkMode() || (this.visitId()?.startsWith('virtual_') ?? false) || !!extraParams.artworkId;
+    const singleArtId = isSingleMode && curArt ? (curArt.id || (curArt as any)._id) : undefined;
+    const effectiveArtworkId = extraParams.artworkId || singleArtId;
+
     const request: NavigatorRequest = {
-      museumId: this.museumId(),
-      visitId: this.visitId(),
+      museumId: this.museumId() || undefined,
+      visitId: isSingleMode ? undefined : (this.visitId() || undefined),
+      artworkId: effectiveArtworkId,
       currentArtworkIndex: this.currentItineraryStepIndex(),
       language: settings.language,
       tone: settings.tone,
@@ -520,6 +648,10 @@ export class Navigator implements OnDestroy {
       sessionCode: this.sessionCode() || undefined,
       ...extraParams
     };
+
+    if (isSingleMode) {
+      delete request.visitId;
+    }
 
     this.isLoading.set(true);
 
@@ -567,8 +699,31 @@ export class Navigator implements OnDestroy {
           // Aggiorna lo stato opera vs artista se indicato dalla risposta o dai parametri
           if (chunk.data?.targetArtist || extraParams.targetArtist) {
             this.itemIsArtwork.set(false);
-          } else if (chunk.data?.itemAction || extraParams.itemAction || targetIndex !== null) {
+          } else if (chunk.data?.itemAction || extraParams.itemAction || targetIndex !== null || chunk.data?.targetArtwork || chunk.data?.artwork) {
             this.itemIsArtwork.set(true);
+          }
+
+          // Aggiorna l'opera d'arte e le sue immagini se ricevute dal flusso del navigator
+          if (chunk.data?.artwork) {
+            const returnedArtwork = chunk.data.artwork;
+            this.itinerary.update(currentList => {
+              if (!currentList || currentList.length === 0) return [returnedArtwork];
+              const idx = this.currentItineraryStepIndex();
+              const existing = currentList[idx] || currentList[0];
+              const returnedImages = returnedArtwork.assets?.images || [];
+              const hasNewImages = returnedImages.length > 0 && !returnedImages[0].url.includes('place_holder.jpg');
+              const merged: ArtworkResponse = {
+                ...existing,
+                ...returnedArtwork,
+                assets: hasNewImages ? returnedArtwork.assets : existing.assets
+              };
+              const copy = [...currentList];
+              copy[idx] = merged;
+              return copy;
+            });
+            if (this.activeVisitService.isSingleArtworkMode() && this.itinerary().length > 0) {
+              this.activeVisitService.setVirtualSingleArtworkVisit(this.itinerary()[0]);
+            }
           }
 
           // Aggiorna eventuali impostazioni modificate a voce
@@ -907,13 +1062,16 @@ export class Navigator implements OnDestroy {
   }
   
   endVisit(): void {
-    if (!window.confirm('Terminando la visita perderai tutti i progressi. Sei sicuro?')) {
+    const confirmMsg = this.activeVisitService.isSingleArtworkMode()
+      ? 'Terminando l\'esplorazione uscirai dal navigatore. Sei sicuro?'
+      : 'Terminando la visita perderai tutti i progressi. Sei sicuro?';
+    if (!window.confirm(confirmMsg)) {
       return;
     }
     this.stopAudio();
 
     this.isQuizModalOpen.set(false);
-    
+    this.activeVisitService.clearActiveVisit();
     this.socketService.disconnect();
     this.router.navigate(['/marketplace']);
   }
@@ -932,6 +1090,7 @@ export class Navigator implements OnDestroy {
     this.stopAudio();
 
     this.isQuizModalOpen.set(false);
+    this.activeVisitService.clearActiveVisit();
 
     if (code) {
       if (isTeacher) {

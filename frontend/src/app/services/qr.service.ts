@@ -84,7 +84,15 @@ export class QrService {
     }
 
     if (artwork) {
-      this.singleArtworkModalService.open(artwork);
+      const virtualVisit = this.activeVisitService.setVirtualSingleArtworkVisit(artwork);
+      const mId = this.activeVisitService.activeMuseumId() || '';
+      await this.router.navigate(['/navigator'], {
+        queryParams: {
+          artworkId: artwork.id,
+          visitId: virtualVisit.id,
+          ...(mId ? { museumId: mId } : {})
+        }
+      });
       return true;
     }
 

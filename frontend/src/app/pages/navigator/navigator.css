@@ -75,6 +75,24 @@
   letter-spacing: 0.05em;
 }
 
+.single-artwork-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background-color: var(--surface-variant);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.qr-pill-icon {
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
 .live-indicator {
   width: 8px;
   height: 8px;

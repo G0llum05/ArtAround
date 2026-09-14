@@ -76,6 +76,10 @@ class NavigatorResponseDTO {
       this.text = result;
       this.currentArtworkIndex = null;
       this.itemAction = null;
+      this.targetArtist = null;
+      this.targetArtwork = null;
+      this.artwork = null;
+      this.imageUrl = null;
       this.tone = null;
       this.language = null;
       this.length = null;
@@ -84,6 +88,9 @@ class NavigatorResponseDTO {
       this.currentArtworkIndex = result?.currentArtworkIndex !== undefined ? result.currentArtworkIndex : null;
       this.itemAction = result?.itemAction || null;
       this.targetArtist = result?.targetArtist || null;
+      this.targetArtwork = result?.targetArtwork || null;
+      this.artwork = result?.artwork || null;
+      this.imageUrl = result?.imageUrl || result?.artwork?.assets?.images?.[0]?.url || null;
       this.tone = result?.tone || null;
       this.language = result?.language || null;
       this.length = result?.length !== undefined ? result.length : null;

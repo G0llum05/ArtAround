@@ -10,6 +10,9 @@ export interface NavigatorResponseData {
   currentArtworkIndex?: number | null;
   itemAction?: string | null;
   targetArtist?: string | null;
+  targetArtwork?: string | null;
+  artwork?: any;
+  imageUrl?: string | null;
   tone?: string | null;
   language?: string | null;
   length?: number | null;
@@ -39,7 +42,7 @@ export class NavigatorService {
     if (request.museumId) {
       formData.append('museumId', request.museumId);
     }
-    if (request.visitId) {
+    if (request.visitId && !request.visitId.startsWith('virtual_')) {
       formData.append('visitId', request.visitId);
     }
     if (request.artworkId) {

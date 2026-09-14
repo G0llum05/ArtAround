@@ -45,8 +45,15 @@ class NavigatorService {
     if (!museumId && artworkId) {
       let query = mongoose.Types.ObjectId.isValid(artworkId) ? { $or: [{ _id: artworkId }, { qrCode: artworkId }] } : { qrCode: artworkId };
       const art = await Artwork.findOne(query).lean();
-      if (art && art.museum) {
-        museumId = art.museum.toString();
+      if (art) {
+        if (art.museum) {
+          museumId = art.museum.toString();
+        } else {
+          const mus = await Museum.findOne({ artworks: art._id }).lean();
+          if (mus) {
+            museumId = mus._id.toString();
+          }
+        }
       }
     }
 
@@ -225,13 +232,26 @@ class NavigatorService {
         };
       }
       const item = await this.getOrGenerateItemForArtwork(artworkId, tone, length, language, itemAction === 'TELL_ME_MORE');
+      let query = mongoose.Types.ObjectId.isValid(artworkId) ? { $or: [{ _id: artworkId }, { qrCode: artworkId }] } : { qrCode: artworkId };
+      const artworkDoc = await Artwork.findOne(query).populate('artists').populate('defaultItems').lean();
+      let artworkData = null;
+      if (artworkDoc) {
+        if (!artworkDoc.museum) {
+          const museum = await Museum.findOne({ artworks: artworkDoc._id }).lean();
+          if (museum) artworkDoc.museum = museum._id.toString();
+        }
+        artworkData = ArtworkMapper.toArtworkResponseDTO(artworkDoc);
+      }
       return {
         text: item.description ? item.description : '',
         currentArtworkIndex: 0,
         itemAction: itemAction,
         tone: tone,
         language: language,
-        length: length
+        length: length,
+        targetArtwork: artworkId,
+        artwork: artworkData,
+        imageUrl: artworkData?.assets?.images?.[0]?.url || null
       };
     }
 
@@ -282,6 +302,14 @@ class NavigatorService {
     }
 
     const item = await this.getOrGenerateItem(visitId, targetIndex, tone, length, language, tellMeMore);
+    let stepArtworkData = null;
+    const currentStepArtId = steps[targetIndex]?.artwork;
+    if (currentStepArtId) {
+      const stepArtDoc = await Artwork.findById(currentStepArtId).populate('artists').lean();
+      if (stepArtDoc) {
+        stepArtworkData = ArtworkMapper.toArtworkResponseDTO(stepArtDoc);
+      }
+    }
 
     return {
       text: item.description ? item.description : '',
@@ -289,7 +317,10 @@ class NavigatorService {
       itemAction: itemAction,
       tone: tone,
       language: language,
-      length: length
+      length: length,
+      targetArtwork: currentStepArtId ? currentStepArtId.toString() : null,
+      artwork: stepArtworkData,
+      imageUrl: stepArtworkData?.assets?.images?.[0]?.url || null
     };
   }
 

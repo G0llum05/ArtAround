@@ -20,8 +20,8 @@ class ArtworkMapper {
       artworkModel.isActive,
       artworkModel.isPrivate,
       artworkModel.qrCode,
-      artworkModel.images,
-      artworkModel.items
+      artworkModel.assets || (artworkModel.images ? { images: artworkModel.images } : { images: [] }),
+      artworkModel.items || artworkModel.defaultItems || []
     );
   }
 
@@ -59,8 +59,8 @@ class ArtworkMapper {
       isActive: dto.isActive,
       isPrivate: dto.isPrivate,
       qrCode: dto.qrCode,
-      images: dto.images,
-      items: Array.isArray(dto.items) ? dto.items.filter(id => id && typeof id === 'string' && id.trim() !== "") : dto.items
+      assets: dto.assets || (dto.images ? { images: dto.images } : { images: [] }),
+      defaultItems: Array.isArray(dto.items) ? dto.items.filter(id => id && typeof id === 'string' && id.trim() !== "") : dto.items
     };
   }
   static toArtworkLLMRequestDTO(artworkModel) {

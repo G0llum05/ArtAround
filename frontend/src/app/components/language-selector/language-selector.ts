@@ -6,7 +6,7 @@ export interface LanguageType {
   name: string;
 }
 
-const SUPPORTED_LANGUAGES: LanguageType[] = [
+export const SUPPORTED_LANGUAGES: LanguageType[] = [
   { value: 'it', name: '🇮🇹 Italiano' },
   { value: 'en', name: '🇬🇧 English' },
   { value: 'es', name: '🇪🇸 Español' },
@@ -14,6 +14,30 @@ const SUPPORTED_LANGUAGES: LanguageType[] = [
   { value: 'de', name: '🇩🇪 Deutsch' },
   { value: 'pt', name: '🇵🇹 Português' },
 ];
+
+export function getActiveLanguage(): string {
+  const supported = ['it', 'en', 'es', 'fr', 'de', 'pt'];
+  if (typeof document !== 'undefined') {
+    try {
+      const match = document.cookie.match(/(^|;) ?googtrans=([^;]*)(;|$)/);
+      if (match && match[2]) {
+        const parts = match[2].split('/');
+        const target = parts[2] ? parts[2].toLowerCase() : '';
+        if (supported.includes(target)) {
+          return target;
+        }
+      }
+    } catch (e) {}
+
+    try {
+      const htmlLang = (document.documentElement.lang || '').toLowerCase().slice(0, 2);
+      if (supported.includes(htmlLang)) {
+        return htmlLang;
+      }
+    } catch (e) {}
+  }
+  return 'it';
+}
 
 // Lingua originale del sito: è quella da cui Google Translate parte per tradurre
 const SOURCE_LANG = 'it';
@@ -36,15 +60,7 @@ export class LanguageSelector {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      // Legge il cookie di Google per capire in che lingua siamo già
-      const match = document.cookie.match(/(^|;) ?googtrans=([^;]*)(;|$)/);
-      if (match && match[2]) {
-        const parts = match[2].split('/'); // es. "" "it" "en" -> ['', 'it', 'en']
-        const target = parts[2];
-        if (target && this.languages.some((l) => l.value === target)) {
-          this.currentLang.set(target);
-        }
-      }
+      this.currentLang.set(getActiveLanguage());
     }
   }
 

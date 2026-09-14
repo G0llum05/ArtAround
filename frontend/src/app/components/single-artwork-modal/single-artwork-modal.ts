@@ -6,6 +6,7 @@ import { NavigatorService, StreamChunk } from '../../services/navigator.service'
 import { NavigatorRequest } from '../../models/navigator.model';
 import { ToneType, UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
 import { ChatMessage } from '../../models/appModel/chatMessage';
+import { getActiveLanguage } from '../language-selector/language-selector';
 
 const settingsKey = 'navigatorSettings';
 
@@ -32,7 +33,7 @@ export class SingleArtworkModal {
 
   currentSettings = signal<UserNavigatorSettings>({
     tone: 'adulto',
-    language: 'it',
+    language: getActiveLanguage(),
     duration: 30
   });
 
@@ -56,12 +57,16 @@ export class SingleArtworkModal {
   private audioChunks: Blob[] = [];
 
   constructor() {
+    const activeLang = getActiveLanguage();
     const saved = localStorage.getItem(settingsKey);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         this.currentSettings.update(curr => ({ ...curr, ...parsed }));
       } catch {}
+    }
+    if (activeLang) {
+      this.currentSettings.update(curr => ({ ...curr, language: activeLang }));
     }
 
     effect(() => {

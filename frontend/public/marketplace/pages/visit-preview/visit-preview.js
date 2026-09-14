@@ -316,9 +316,34 @@ export class MktVisitPreview extends HTMLElement {
         const isValidObjectId = (str) => typeof str === 'string' && /^[0-9a-fA-F]{24}$/.test(str.trim());
         const validMuseumId = isValidObjectId(museumId) ? museumId.trim() : (isValidObjectId(this.state?.museumId) ? this.state.museumId.trim() : '');
 
+        const getActiveLanguage = () => {
+          const supported = ['it', 'en', 'es', 'fr', 'de', 'pt'];
+          try {
+            const match = document.cookie.match(/(^|;) ?googtrans=([^;]*)(;|$)/);
+            if (match && match[2]) {
+              const parts = match[2].split('/');
+              const target = parts[2] ? parts[2].toLowerCase() : '';
+              if (supported.includes(target)) {
+                return target;
+              }
+            }
+          } catch (e) {}
+
+          try {
+            const htmlLang = (document.documentElement.lang || '').toLowerCase().slice(0, 2);
+            if (supported.includes(htmlLang)) {
+              return htmlLang;
+            }
+          } catch (e) {}
+
+          return 'it';
+        };
+
+        const activeLang = getActiveLanguage();
+
         const navigatorSettings = {
           tone: tone,
-          language: 'it',
+          language: activeLang,
           duration: 30
         };
         localStorage.setItem('navigatorSettings', JSON.stringify(navigatorSettings));

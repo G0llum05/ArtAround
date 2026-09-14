@@ -10,6 +10,7 @@ import { GroupChat } from '../../components/group-chat/group-chat';
 import { Itinerary } from '../../components/itinerary/itinerary';
 import { Map } from '../../components/map/map';
 import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
+import { getActiveLanguage } from '../../components/language-selector/language-selector';
 import { QuizModal } from '../../components/quiz-modal/quiz-modal';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 import { UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
@@ -110,7 +111,7 @@ export class Navigator implements OnDestroy {
   //Setting
   currentSettings = signal<UserNavigatorSettings>({
     tone: 'adulto',
-    language: 'it',
+    language: getActiveLanguage(),
     duration: 30
   });
 
@@ -143,10 +144,14 @@ export class Navigator implements OnDestroy {
   constructor() {
     this.loadMuseumData(this.museumId());
 
+    const activeLang = getActiveLanguage();
     const saved = localStorage.getItem(settingsKey);
     if (saved) {
       const parsed = JSON.parse(saved);
       this.currentSettings.update(current => ({ ...current, ...parsed })); //così se i dati non sono completi si completano
+    }
+    if (activeLang) {
+      this.currentSettings.update(current => ({ ...current, language: activeLang }));
     }
 
     effect(() => {

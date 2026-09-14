@@ -6,6 +6,7 @@ import { AuthService } from '../../../services/auth.service';
 import { GroupService } from '../../../services/group.service';
 import { GroupSocketService } from '../../../services/group-socket.service';
 import { QuizService } from '../../../services/quiz.service';
+import { getActiveLanguage } from '../../../components/language-selector/language-selector';
 
 @Component({
   selector: 'app-group-room',
@@ -187,7 +188,7 @@ export class GroupRoom implements OnInit, OnDestroy {
           numberOfQuestions: 5,
           difficulty: 'medium',
           targetAge: 'studente',
-          language: 'it'
+          language: getActiveLanguage()
         }));
       } catch (quizErr) {
         console.warn('[GroupRoom] Generazione quiz in background non bloccante:', quizErr);

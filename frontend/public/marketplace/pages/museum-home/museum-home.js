@@ -55,6 +55,14 @@ export class MktMuseumHome extends HTMLElement {
     }).join(' '); // Unisce i vari slot con uno spazio (es: "8-10 12-18")
   }
 
+  getWeeklyStandard() {
+    if (!this.museumData?.openingHours) return [];
+    if (Array.isArray(this.museumData.openingHours)) {
+      return this.museumData.openingHours[0]?.weeklyStandard || [];
+    }
+    return this.museumData.openingHours?.weeklyStandard || [];
+  }
+
   getVisitsHtml() {
     return this.museumVisits.map(visit => {
       const imageUrl = getImageUrl(visit?.assets, "landscape");
@@ -143,12 +151,16 @@ export class MktMuseumHome extends HTMLElement {
           <article class="mkt-info-card mkt-hours-area">
             <h3 class="mkt-info-card-title">Orari</h3>
             <div class="mkt-info-list">
-              ${this.museumData?.openingHours?.weeklyStandard?.map(o => `
-                <div class="mkt-info-row">
-                  <span>${nomiGiorni[o.day]}</span>
-                  <span>${o?.closed ? 'Chiuso' : this.formattaSlots(o.slots)}</span>
-                </div>
-              `).join('') || 'Sconosciuti'}
+              ${(() => {
+                const weekly = this.getWeeklyStandard();
+                if (!weekly || weekly.length === 0) return '<div class="mkt-info-row"><span>Sconosciuti</span></div>';
+                return weekly.map(o => `
+                  <div class="mkt-info-row">
+                    <span>${nomiGiorni[o.day]}</span>
+                    <span>${o?.closed ? 'Chiuso' : this.formattaSlots(o.slots)}</span>
+                  </div>
+                `).join('');
+              })()}
             </div>
           </article>
 

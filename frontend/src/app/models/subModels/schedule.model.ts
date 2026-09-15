@@ -1,22 +1,22 @@
-interface OpeningWindow {
-    startTime: string,
-    endTime: string
+export interface OpeningWindow {
+  startTime: string;
+  endTime: string;
 }
 
-interface VisitingHours {
-    day: number,
-    slots: OpeningWindow[],
-    closed: boolean;
+export interface VisitingHours {
+  day: number;
+  slots: OpeningWindow[];
+  closed: boolean;
 }
 
-interface Exception {
-    date: Date,
-    slots: OpeningWindow[],
-    closed: boolean,
-    reason: string
+export interface Exception {
+  date: Date;
+  slots: OpeningWindow[];
+  closed: boolean;
+  reason: string;
 }
 
 export interface Schedule {
-    weeklyStandard: VisitingHours[],
-    exceptions: Exception[]
+  weeklyStandard: VisitingHours[];
+  exceptions: Exception[];
 }

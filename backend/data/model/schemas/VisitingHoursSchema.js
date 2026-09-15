@@ -28,11 +28,11 @@ const ScheduleSchema = new mongoose.Schema({
     type: [VisitingHoursSchema],
     validate: [
       {
-        validator: (v) => v.length <= 7,
+        validator: (v) => !v || v.length <= 7,
         message: "Massimo 7 giorni, patacca!"
       },
       {
-        validator: (v) => new Set(v.map(d => d.day)).size === v.length,
+        validator: (v) => !v || new Set(v.map(d => d.day)).size === v.length,
         message: "Giorni duplicati rilevati nella settimana standard."
       }
     ]
@@ -42,21 +42,40 @@ const ScheduleSchema = new mongoose.Schema({
     type: [ExceptionSchema],
     validate: {
       validator: function(v) {
-        // Controllo che non ci siano due eccezioni per lo stesso giorno (Y-M-D)
-        const dates = v.map(e => e.date.toISOString().split('T')[0]);
+        if (!v || v.length === 0) return true;
+        const dates = v.map(e => {
+          if (!e.date) return '';
+          const d = e.date instanceof Date ? e.date : new Date(e.date);
+          return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+        });
         return new Set(dates).size === dates.length;
       },
       message: "Hai inserito due eccezioni per la stessa data!"
     }
   }
-});
+}, { _id: false });
 
-// TODO: Da spostare in service (Inserimento)
 // Middleware per tenere tutto in ordine (opzionale ma consigliato)
-ScheduleSchema.pre('save', function(next) {
-  if (this.weeklyStandard) this.weeklyStandard.sort((a, b) => a.day - b.day);
-  if (this.exceptions) this.exceptions.sort((a, b) => a.date - b.date);
-  next();
+ScheduleSchema.pre('save', function() {
+  if (this.weeklyStandard && Array.isArray(this.weeklyStandard)) {
+    this.weeklyStandard.sort((a, b) => a.day - b.day);
+  }
+  if (this.exceptions && Array.isArray(this.exceptions)) {
+    this.exceptions.sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
 });
 
-const Schedule = mongoose.model('Schedule', ScheduleSchema);
+ScheduleSchema.pre('validate', function() {
+  if (this.weeklyStandard && Array.isArray(this.weeklyStandard)) {
+    this.weeklyStandard.sort((a, b) => a.day - b.day);
+  }
+  if (this.exceptions && Array.isArray(this.exceptions)) {
+    this.exceptions.sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
+});
+
+module.exports = ScheduleSchema;
+module.exports.ScheduleSchema = ScheduleSchema;
+module.exports.VisitingHoursSchema = VisitingHoursSchema;
+module.exports.OpeningWindowSchema = OpeningWindowSchema;
+module.exports.ExceptionSchema = ExceptionSchema;

@@ -37,6 +37,10 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
     catchError((error: HttpErrorResponse) => {
       // Se l'errore è 401 e non stiamo già effettuando una chiamata di login o refresh
       if ((error.status === 401) && !isRefreshReq && !isLoginReq) {
+        if (!token && !authService.getAccessToken()) {
+          return throwError(() => error);
+        }
+
         if (!isRefreshing) {
           isRefreshing = true;
           refreshTokenSubject.next(null);
@@ -51,7 +55,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
             catchError((refreshError) => {
               isRefreshing = false;
               refreshTokenSubject.next(null);
-              authService.logout();
+              authService.logout().subscribe({ error: () => {} });
               return throwError(() => refreshError);
             })
           );

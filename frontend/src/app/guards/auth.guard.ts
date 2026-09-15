@@ -16,15 +16,19 @@ export const authGuard: CanActivateFn = async (route, state) => {
     return true;
   }
 
-  // Se l'utente non è autenticato, reindirizza alla pagina di login salvando la rotta di destinazione
-  try {                                                                                                                                                                               
-    await firstValueFrom(authService.refreshToken());                                                                                                                                 
-    return true;                                                                                                                                                                      
-  } catch {                                                                                                                                                                           
-    // In caso di errore/scadenza, reindirizza restituendo direttamente l'UrlTree                                                                                                  
-    return router.createUrlTree(['/login'], {                                                                                                                                         
-      queryParams: { returnUrl: state.url }                                                                                                                                           
-    });                                                                                                                                                                               
-  } 
+  if (authService.getAccessToken()) {
+    try {
+      await firstValueFrom(authService.refreshToken());
+      return true;
+    } catch {
+      return router.createUrlTree(['/login'], {
+        queryParams: { returnUrl: state.url }
+      });
+    }
+  }
+
+  return router.createUrlTree(['/login'], {
+    queryParams: { returnUrl: state.url }
+  }); 
 
 };

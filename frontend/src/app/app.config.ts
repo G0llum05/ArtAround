@@ -29,6 +29,9 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAppInitializer(() => {
       const authService = inject(AuthService);
+      if (!authService.getAccessToken()) {
+        return Promise.resolve(null);
+      }
       return firstValueFrom(authService.refreshToken()).catch(() => null);
     }),
   ],

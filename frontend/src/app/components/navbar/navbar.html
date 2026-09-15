@@ -90,5 +90,9 @@
 }
 
 @if (isScannerOpen()) {
-  <app-qr-scanner (closeScanner)="isScannerOpen.set(false)"></app-qr-scanner>
+  @defer {
+    <app-qr-scanner (closeScanner)="isScannerOpen.set(false)"></app-qr-scanner>
+  } @loading {
+    <div class="loading-scanner">Caricamento fotocamera in corso...</div>
+  }
 }

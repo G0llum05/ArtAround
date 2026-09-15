@@ -1,54 +1,45 @@
 import { Routes } from '@angular/router';
-import { Home } from './pages/home/home';
-import { PageNotFound } from './pages/page-not-found/page-not-found';
-import { Visit } from './pages/visit/visit';
-import { Contacts } from './pages/contacts/contacts';
-import { Login } from './pages/login/login';
-import { Navigator } from './pages/navigator/navigator';
-import { Marketplace } from './pages/marketplace/marketplace';
-import { Groups } from './pages/groups/groups';
-import { GroupRoom } from './pages/groups/group-room/group-room';
 
 export const routes: Routes = [
   {
     path: '',
-    component: Home
+    loadComponent: () => import('./pages/home/home').then(m => m.Home)
   },
   {
     path: 'groups',
-    component: Groups
+    loadComponent: () => import('./pages/groups/groups').then(m => m.Groups)
   },
   {
     path: 'groups/room/:code',
-    component: GroupRoom
+    loadComponent: () => import('./pages/groups/group-room/group-room').then(m => m.GroupRoom)
   },
   {
     path: 'groups/room',
-    component: GroupRoom
+    loadComponent: () => import('./pages/groups/group-room/group-room').then(m => m.GroupRoom)
   },
   {
     path: 'marketplace',
     children: [
       {
         path: '**',
-        component: Marketplace
+        loadComponent: () => import('./pages/marketplace/marketplace').then(m => m.Marketplace)
       },
     ],
   },
   {
     path: 'contacts',
-    component: Contacts,
+    loadComponent: () => import('./pages/contacts/contacts').then(m => m.Contacts)
   },
   {
     path: 'login',
-    component: Login
+    loadComponent: () => import('./pages/login/login').then(m => m.Login)
   },
   {
     path: 'navigator',
-    component: Navigator
+    loadComponent: () => import('./pages/navigator/navigator').then(m => m.Navigator)
   },
   {
     path: '**',
-    component: PageNotFound
+    loadComponent: () => import('./pages/page-not-found/page-not-found').then(m => m.PageNotFound)
   }
 ];

@@ -776,8 +776,6 @@
 }
 
 .btn-delete {
-  background-color: rgba(186, 26, 26, 0.08);
-  border-color: rgba(186, 26, 26, 0.2);
   color: var(--error, #ba1a1a);
 }
 

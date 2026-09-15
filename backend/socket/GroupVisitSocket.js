@@ -129,18 +129,44 @@ function initGroupVisitSocket(httpServer) {
             return;
           }
 
-          const room = `session:${sessionCode.toUpperCase().trim()}`;
+          const cleanCode = sessionCode.toUpperCase().trim();
+          const session = await GroupVisit.findOne({ sessionCode: cleanCode }).populate('teacher', 'name surname email');
+          if (!session) {
+            if (typeof callback === 'function') callback({ success: false, error: 'Sessione di visita non trovata.' });
+            return;
+          }
+
+          if (session.status === 'completed' || session.status === 'cancelled') {
+            if (typeof callback === 'function') callback({ success: false, error: 'Questa sessione di visita si è già conclusa.' });
+            return;
+          }
+
+          const sessionTeacherId = (session.teacher?._id || session.teacher?.id || session.teacher)?.toString();
+          const isTeacher = Boolean(sessionTeacherId && user.id && sessionTeacherId === user.id.toString());
+          const isExistingParticipant = session.participants && session.participants.some(p => {
+            const pId = (p.user?._id || p.user?.id || p.user || p.userId)?.toString();
+            return pId && pId === user.id.toString();
+          });
+
+          // Se la visita è già avviata e l'utente non è il docente né uno studente già presente nella sala d'attesa
+          if ((session.status === 'in_progress' || session.status === 'paused') && !isTeacher && !isExistingParticipant) {
+            if (typeof callback === 'function') {
+              callback({ success: false, error: 'La visita di gruppo è già stata avviata e non accetta nuovi partecipanti.' });
+            }
+            return;
+          }
+
+          const room = `session:${cleanCode}`;
           socket.join(room);
-          socket.sessionCode = sessionCode.toUpperCase().trim();
+          socket.sessionCode = cleanCode;
 
           // Registra l'ingresso nel DB
-          await GroupVisitService.setParticipantOnlineStatus(sessionCode, user.id, true);
-          const updatedSession = await GroupVisitService.getSessionByCode(sessionCode);
+          await GroupVisitService.setParticipantOnlineStatus(cleanCode, user.id, true);
+          const updatedSession = await GroupVisitService.getSessionByCode(cleanCode, user.id);
 
           // Memorizza il docente della sessione
-          const sessionTeacherId = (updatedSession?.teacher?.id || updatedSession?.teacher?._id || updatedSession?.teacher)?.toString();
           if (sessionTeacherId) {
-            sessionTeachers.set(sessionCode.toUpperCase().trim(), sessionTeacherId);
+            sessionTeachers.set(cleanCode, sessionTeacherId);
           }
 
           const isTeacher = Boolean(sessionTeacherId && user.id && sessionTeacherId === user.id.toString());

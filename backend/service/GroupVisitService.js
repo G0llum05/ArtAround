@@ -109,7 +109,7 @@ class GroupVisitService {
   /**
    * Cerca una sessione attiva tramite codice PIN (per lo studente)
    */
-  static async getSessionByCode(sessionCode) {
+  static async getSessionByCode(sessionCode, userId = null) {
     if (!sessionCode) {
       throw new Error('Codice sessione mancante.');
     }
@@ -129,6 +129,20 @@ class GroupVisitService {
       throw new Error('Questa sessione di visita si è già conclusa.');
     }
 
+    // Se la visita è già avviata (in_progress o paused), non consentire l'accesso a utenti esterni
+    if (userId && (session.status === 'in_progress' || session.status === 'paused')) {
+      const teacherId = (session.teacher?._id || session.teacher?.id || session.teacher)?.toString();
+      const isTeacher = Boolean(teacherId && teacherId === userId.toString());
+      const isExistingParticipant = session.participants && session.participants.some(p => {
+        const pId = (p.user?._id || p.user?.id || p.user || p.userId)?.toString();
+        return pId && pId === userId.toString();
+      });
+
+      if (!isTeacher && !isExistingParticipant) {
+        throw new Error('La visita di gruppo è già stata avviata e non consente l\'accesso a nuovi partecipanti.');
+      }
+    }
+
     return GroupVisitMapper.toGroupVisitResponseDTO(session);
   }
 
@@ -145,6 +159,17 @@ class GroupVisitService {
 
     if (session.status === 'completed' || session.status === 'cancelled') {
       throw new Error('Questa sessione di visita si è già conclusa.');
+    }
+
+    const isTeacher = session.teacher && session.teacher.toString() === studentId.toString();
+    const isExistingParticipant = session.participants && session.participants.some(p => {
+      const pId = (p.user?._id || p.user?.id || p.user || p.userId)?.toString();
+      return pId && pId === studentId.toString();
+    });
+
+    // Se la visita è in_progress o paused, blocca l'accesso a nuovi utenti esterni
+    if ((session.status === 'in_progress' || session.status === 'paused') && !isTeacher && !isExistingParticipant) {
+      throw new Error('La visita di gruppo è già stata avviata e non consente l\'accesso a nuovi partecipanti.');
     }
 
     const student = await User.findById(studentId);
@@ -168,21 +193,24 @@ class GroupVisitService {
     );
 
     if (updateExisting.matchedCount === 0) {
-      await GroupVisit.updateOne(
-        { _id: session._id },
-        {
-          $push: {
-            participants: {
-              user: studentId,
-              name: fullName,
-              email: student.email,
-              joinedAt: now,
-              isOnline: true,
-              lastSeen: now
+      // Aggiungi come nuovo partecipante solo se la sessione è ancora in sala d'attesa (waiting)
+      if (session.status === 'waiting') {
+        await GroupVisit.updateOne(
+          { _id: session._id },
+          {
+            $push: {
+              participants: {
+                user: studentId,
+                name: fullName,
+                email: student.email,
+                joinedAt: now,
+                isOnline: true,
+                lastSeen: now
+              }
             }
           }
-        }
-      );
+        );
+      }
     }
 
     return await this.getSessionById(session._id);
@@ -345,7 +373,7 @@ class GroupVisitService {
     if (!sessionCode || !userId) return;
 
     const cleanCode = sessionCode.toUpperCase().trim();
-    const session = await GroupVisit.findOne({ sessionCode: cleanCode }, 'teacher');
+    const session = await GroupVisit.findOne({ sessionCode: cleanCode }, 'teacher status');
     if (!session) return;
 
     // Se è il docente titolare, non occorre registrarlo come studente partecipante
@@ -365,7 +393,8 @@ class GroupVisitService {
       }
     );
 
-    if (updateResult.matchedCount === 0 && isOnline) {
+    // Inserisci nella lista partecipanti solo se la sessione è ancora in sala d'attesa (waiting)
+    if (updateResult.matchedCount === 0 && isOnline && session.status === 'waiting') {
       const user = await User.findById(userId);
       if (user) {
         await GroupVisit.updateOne(

@@ -281,8 +281,14 @@ export class Navigator implements OnDestroy {
             }
           },
           error: (err) => {
-            console.warn('[Navigator] Impossibile verificare titolarità sessione:', err);
+            console.warn('[Navigator] Impossibile verificare titolarità sessione o accesso negato:', err);
             this.isTeacher.set(false);
+            if (err.status === 400 || err.status === 404 || err.status === 403) {
+              const msg = err.error?.message || 'Accesso non consentito a questa sessione di gruppo.';
+              window.alert(msg);
+              this.socketService.disconnect();
+              this.router.navigate(['/groups']);
+            }
           }
         });
 

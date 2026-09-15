@@ -39,7 +39,8 @@ class GroupVisitController {
        #swagger.summary = 'Cerca una sessione attiva tramite codice PIN'
     */
     try {
-      const session = await GroupVisitService.getSessionByCode(req.params.code);
+      const userId = req.user?.id || req.user?._id;
+      const session = await GroupVisitService.getSessionByCode(req.params.code, userId);
       res.status(200).json({
         type: 'success',
         data: session

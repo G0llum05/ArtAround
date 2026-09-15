@@ -8,9 +8,9 @@ import { debounceTime, skip } from 'rxjs/operators';
 import { Chat } from '../../components/chat/chat';
 import { GroupChat } from '../../components/group-chat/group-chat';
 import { Itinerary } from '../../components/itinerary/itinerary';
+import { getActiveLanguage } from '../../components/language-selector/language-selector';
 import { Map } from '../../components/map/map';
 import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
-import { getActiveLanguage } from '../../components/language-selector/language-selector';
 import { QuizModal } from '../../components/quiz-modal/quiz-modal';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 import { UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
@@ -21,8 +21,8 @@ import { NavigatorRequest } from '../../models/navigator.model';
 import { ActiveVisitService } from '../../services/active-visit.service';
 import { ArtworkService } from '../../services/artwork.service';
 import { AuthService } from '../../services/auth.service';
-import { GroupService } from '../../services/group.service';
 import { GroupSocketService } from '../../services/group-socket.service';
+import { GroupService } from '../../services/group.service';
 import { MuseumService } from '../../services/museum.service';
 import { NavigatorService, StreamChunk } from '../../services/navigator.service';
 import { QuizService } from '../../services/quiz.service';
@@ -90,6 +90,10 @@ export class Navigator implements OnDestroy {
   isQuizModalOpen = signal<boolean>(false);
   isGeneratingQuiz = signal<boolean>(false);
   availableQuizzes = signal<any[]>([]);
+  isQuizActive = computed<boolean>(() => {
+    const state = this.socketService.quizState();
+    return this.isQuizModalOpen() || (!!this.socketService.activeQuiz() && state !== 'not_started');
+  });
 
   // Stati UI
   isPlaying = signal<boolean>(false);
@@ -163,7 +167,7 @@ export class Navigator implements OnDestroy {
     });
 
     effect(() => {
-      if (this.isQuizModalOpen()) {
+      if (this.isQuizActive()) {
         if (this.currentAudio) {
           this.currentAudio.pause();
           this.currentAudio = null;
@@ -171,6 +175,7 @@ export class Navigator implements OnDestroy {
         this.isPlaying.set(false);
         this.audioCurrentTime.set(0);
         this.audioDuration.set(0);
+        this.isGroupChatOpen.set(false);
       }
     });
 

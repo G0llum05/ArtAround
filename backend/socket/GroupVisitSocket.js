@@ -169,8 +169,6 @@ function initGroupVisitSocket(httpServer) {
             sessionTeachers.set(cleanCode, sessionTeacherId);
           }
 
-          const isTeacher = Boolean(sessionTeacherId && user.id && sessionTeacherId === user.id.toString());
-
           // Broadcast lista completa aggiornata a tutta la stanza
           if (updatedSession?.participants) {
             io.to(room).emit('participants:updated', updatedSession.participants);

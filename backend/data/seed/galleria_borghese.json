@@ -134,15 +134,21 @@
       "visit_borghese_marmi_bernini",
       "visit_borghese_luce_caravaggio",
       "visit_borghese_raffaello_canova",
-      "visit_borghese_scipione_pinacoteca"
+      "visit_borghese_scipione_pinacoteca",
+      "visit_borghese_grand_tour"
     ],
     "artworks": [
       "artwork_borghese_paolina_canova",
       "artwork_borghese_apollo_dafne",
+      "artwork_borghese_david_bernini",
       "artwork_borghese_ratto_proserpina",
+      "artwork_borghese_enea_anchise",
+      "artwork_borghese_fanciullo_canestra",
+      "artwork_borghese_bacchino_malato",
       "artwork_borghese_davide_golia",
+      "artwork_borghese_deposizione_raffaello",
       "artwork_borghese_amor_sacro_profano",
-      "artwork_borghese_deposizione_raffaello"
+      "artwork_borghese_dama_liocorno"
     ],
     "pointsOfInterest": [
       {
@@ -192,6 +198,19 @@
         "Barocco Romano",
         "Scultura Monumentale in Marmo",
         "Architettura del Seicento"
+      ],
+      "assets": {
+        "images": []
+      }
+    },
+    {
+      "key": "artist_pietro_bernini",
+      "name": "Pietro",
+      "surname": "Bernini",
+      "artisticCurrents": [
+        "Manierismo",
+        "Scultura Tardo-Cinquecentesca",
+        "Scuola Fiorentina e Napoletana"
       ],
       "assets": {
         "images": []
@@ -303,6 +322,41 @@
       "key": "item_borghese_deposizione_simple",
       "description": "Questa bellissima e commovente pala d'altare fu dipinta dal grande maestro Raffaello nel 1507. Mostra i discepoli che trasportano il corpo di Gesù con un movimento pieno di forza e di emozione, mentre Maria Maddalena gli stringe la mano in un momento di grande affetto.",
       "tone": "simple",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_borghese_david_bernini_medium",
+      "description": "Scolpito tra il 1623 e il 1624 per il Cardinale Scipione Borghese, il David di Gian Lorenzo Bernini segna una rivoluzione epocale nella storia della scultura. A differenza del David riflessivo di Donatello o di quello concentrato prima dell'azione di Michelangelo, Bernini immortala l'eroe biblico nel culmine della rotazione dinamica, mentre tende la fionda e fissa con sguardo truce e labbra serrate il gigante Golia. La straordinaria torsione elicoidale del corpo rompe i confini dello spazio rinascimentale, coinvolgendo direttamente lo spettatore nella traiettoria del lancio.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_borghese_enea_anchise_medium",
+      "description": "Eseguito tra il 1618 e il 1619 dal ventenne Gian Lorenzo Bernini con la collaborazione del padre Pietro, 'Enea, Anchise e Ascanio' rappresenta la prima grande commissione monumentale per la villa pinciana. Ispirata al secondo libro dell'Eneide di Virgilio, l'opera illustra le tre età dell'uomo nella drammatica fuga da Troia in fiamme: l'anziano Anchise reca i Penati sulle spalle del vigoroso figlio Enea, mentre il piccolo Ascanio segue con la fiaccola sacra. Spicca il magistrale contrasto tra la pelle cadente dell'anziano e la muscolatura tesa dell'eroe.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_borghese_fanciullo_canestra_medium",
+      "description": "Dipinto intorno al 1593-1594 durante i primi anni romani di Caravaggio, il 'Fanciullo con canestra di frutta' è una delle più celebri e poetiche opere giovanili del maestro lombardo. Il giovane modello, forse l'amico e allievo Mario Minniti, offre una pesante cesta di vimini ricolma di frutta autunnale: fichi spaccati, grappoli d'uva velati di pruina, pesche e foglie parzialmente appassite e intaccate da parassiti. L'opera è un trionfo di realismo ottico e un'intensa allegoria della fugacità della giovinezza e della bellezza (vanitas).",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_borghese_bacchino_malato_medium",
+      "description": "L'Autoritratto in veste di Bacco, universalmente noto come 'Bacchino malato' (1593-1594), fu dipinto da Caravaggio durante la convalescenza successiva a un grave ricovero all'Ospedale della Consolazione a Roma. Il colorito ceruleo e pallido della pelle, le labbra esangui e lo sguardo febbrile testimoniano il vissuto autobiografico dell'artista, che si ritrae allo specchio spogliando il dio classico del vino di ogni idealizzazione mitologica per renderlo un uomo fragile, terreno e vulnerabile.",
+      "tone": "medium",
+      "length": 60,
+      "language": "it"
+    },
+    {
+      "key": "item_borghese_dama_liocorno_medium",
+      "description": "Dipinta da Raffaello Sanzio intorno al 1505-1506 durante il suo fecondo soggiorno fiorentino, la 'Dama con liocorno' testimonia la profonda fascinazione del giovane maestro per i ritratti di Leonardo da Vinci, in particolare per l'impostazione compositiva della Gioconda. La nobile fanciulla, dallo sguardo limpido e sereno, regge in grembo un piccolo unicorno candido, leggendaria creatura mitologica simbolo universale di purezza verginale e fedeltà coniugale.",
+      "tone": "medium",
       "length": 60,
       "language": "it"
     }
@@ -633,6 +687,285 @@
       },
       "defaultItems": [
         "item_borghese_deposizione_simple"
+      ]
+    },
+    {
+      "key": "artwork_borghese_david_bernini",
+      "title": "David",
+      "startYear": 1623,
+      "endYear": 1624,
+      "artists": [
+        "artist_bernini"
+      ],
+      "location": {
+        "room": "Sala II - Sala del David",
+        "floor": "Piano Terreno",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 170,
+        "width": 100,
+        "depth": 85,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Barocco Romano",
+        "Scultura Barocca in Marmo"
+      ],
+      "details": {
+        "subjects": [
+          "David biblico",
+          "Fionda con pietra",
+          "Armatura deposta di re Saul",
+          "Arpa con testa d'aquila"
+        ],
+        "colors": [
+          "Marmo bianco di Carrara"
+        ],
+        "places": [
+          "Roma"
+        ],
+        "objectType": "Statua monumentale a tutto tondo a forte torsione dinamica",
+        "materials": [
+          "Marmo statutario di Carrara"
+        ],
+        "techniques": [
+          "Intaglio del marmo a forte tensione muscolare ed espressione psicologica realistica"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-007",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_borghese_david_bernini_medium"
+      ]
+    },
+    {
+      "key": "artwork_borghese_enea_anchise",
+      "title": "Enea, Anchise e Ascanio",
+      "startYear": 1618,
+      "endYear": 1619,
+      "artists": [
+        "artist_bernini",
+        "artist_pietro_bernini"
+      ],
+      "location": {
+        "room": "Sala VI - Sala del Gladiatore",
+        "floor": "Piano Terreno",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 220,
+        "width": 90,
+        "depth": 80,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Tardo Manierismo",
+        "Primo Barocco Romano"
+      ],
+      "details": {
+        "subjects": [
+          "Enea che fugge da Troia",
+          "Anchise con i Penati sacri",
+          "Ascanio fanciullo",
+          "Eneide di Virgilio"
+        ],
+        "colors": [
+          "Marmo bianco di Carrara"
+        ],
+        "places": [
+          "Roma"
+        ],
+        "objectType": "Gruppo scultoreo monumentale piramidale a tre figure",
+        "materials": [
+          "Marmo di Carrara"
+        ],
+        "techniques": [
+          "Scultura a tutto tondo con resa anatomica differenziata per le tre età della vita"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-008",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_borghese_enea_anchise_medium"
+      ]
+    },
+    {
+      "key": "artwork_borghese_fanciullo_canestra",
+      "title": "Fanciullo con canestra di frutta",
+      "startYear": 1593,
+      "endYear": 1594,
+      "artists": [
+        "artist_caravaggio"
+      ],
+      "location": {
+        "room": "Sala VIII - Sala di Caravaggio",
+        "floor": "Piano Terreno",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 70,
+        "width": 67,
+        "depth": 4,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Primo Barocco",
+        "Caravaggismo Giovanile",
+        "Natura Morta Realista"
+      ],
+      "details": {
+        "subjects": [
+          "Giovane fanciullo",
+          "Canestra di vimini con frutta",
+          "Uva, fichi, mele e foglie appassite",
+          "Allegoria della Vanitas"
+        ],
+        "colors": [
+          "Tonalità calde dorate",
+          "Luce naturale laterale",
+          "Verde e porpora dei frutti"
+        ],
+        "places": [
+          "Roma"
+        ],
+        "objectType": "Dipinto a olio su tela",
+        "materials": [
+          "Colori a olio su tela di lino"
+        ],
+        "techniques": [
+          "Resa ottica analitica della natura morta e pittura dal naturale a luce diretta"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-009",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_borghese_fanciullo_canestra_medium"
+      ]
+    },
+    {
+      "key": "artwork_borghese_bacchino_malato",
+      "title": "Autoritratto in veste di Bacco (Bacchino malato)",
+      "startYear": 1593,
+      "endYear": 1594,
+      "artists": [
+        "artist_caravaggio"
+      ],
+      "location": {
+        "room": "Sala VIII - Sala di Caravaggio",
+        "floor": "Piano Terreno",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 67,
+        "width": 53,
+        "depth": 4,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Barocco",
+        "Caravaggismo",
+        "Pittura di Genere e Autoritratto"
+      ],
+      "details": {
+        "subjects": [
+          "Bacco giovane",
+          "Autoritratto di Caravaggio",
+          "Grappolo d'uva bianca e nera",
+          "Pesche sul piano di pietra"
+        ],
+        "colors": [
+          "Incarnato pallido e ceruleo",
+          "Tonalità terrose e verdastre",
+          "Fondo neutro scuro"
+        ],
+        "places": [
+          "Roma"
+        ],
+        "objectType": "Dipinto a olio su tela",
+        "materials": [
+          "Pittura a olio su tela di canapa"
+        ],
+        "techniques": [
+          "Pittura a specchio con resa introspettiva psicologica e contrasti di luce radente"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-010",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_borghese_bacchino_malato_medium"
+      ]
+    },
+    {
+      "key": "artwork_borghese_dama_liocorno",
+      "title": "Dama con liocorno",
+      "startYear": 1505,
+      "endYear": 1506,
+      "artists": [
+        "artist_raffaello"
+      ],
+      "location": {
+        "room": "Sala IX - Sala di Raffaello",
+        "floor": "Primo Piano (Pinacoteca)",
+        "building": "Villa Borghese Pinciana"
+      },
+      "dimensions": {
+        "height": 65,
+        "width": 51,
+        "depth": 5,
+        "unit": "cm"
+      },
+      "artisticCurrents": [
+        "Rinascimento Maturo",
+        "Scuola Fiorentina di Raffaello"
+      ],
+      "details": {
+        "subjects": [
+          "Giovane nobildonna",
+          "Piccolo liocorno simbolo di castità",
+          "Ciondolo con rubino e perla a goccia",
+          "Paesaggio con loggiato"
+        ],
+        "colors": [
+          "Rosso rubino",
+          "Azzurro cielo e verde collinare",
+          "Biondo dorato dei capelli"
+        ],
+        "places": [
+          "Firenze / Roma"
+        ],
+        "objectType": "Dipinto a olio su tavola trasportato su tela",
+        "materials": [
+          "Pittura a olio su tela (originariamente tavola di pioppo)"
+        ],
+        "techniques": [
+          "Composizione a tre quarti di derivazione leonardesca con finissimo disegno preparatorio"
+        ]
+      },
+      "isActive": true,
+      "isPrivate": false,
+      "qrCode": "QR-BORGHESE-ROMA-011",
+      "assets": {
+        "images": []
+      },
+      "defaultItems": [
+        "item_borghese_dama_liocorno_medium"
       ]
     }
   ],
@@ -1088,6 +1421,169 @@
         },
         {
           "artwork": "artwork_borghese_paolina_canova",
+          "items": []
+        }
+      ]
+    },
+    {
+      "key": "visit_borghese_grand_tour",
+      "title": "Grand Tour di Galleria Borghese: I Dieci Capolavori Assoluti da Bernini a Caravaggio",
+      "description": "L'itinerario monumentale e completo che attraversa tutti i grandi capolavori della Galleria Borghese: dalle statue marmoree cariche di tensione dinamica di Gian Lorenzo Bernini al drammatico chiaroscuro di Caravaggio, fino alla grazia neoclassica di Canova e ai vertici pittorici di Raffaello e Tiziano.",
+      "price": 25,
+      "creator": "borghese_staff",
+      "minDuration": 90,
+      "maxDuration": 120,
+      "isActive": true,
+      "availability": {
+        "always": true
+      },
+      "weeklySchedule": [
+        {
+          "weeklyStandard": [
+            {
+              "day": 0,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:30"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 1,
+              "slots": [],
+              "closed": true
+            },
+            {
+              "day": 2,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:30"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 3,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:30"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 4,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:30"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 5,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:30"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            },
+            {
+              "day": 6,
+              "slots": [
+                {
+                  "startTime": "09:30",
+                  "endTime": "11:30"
+                },
+                {
+                  "startTime": "15:00",
+                  "endTime": "17:00"
+                }
+              ],
+              "closed": false
+            }
+          ],
+          "exceptions": []
+        }
+      ],
+      "disableFriendly": true,
+      "requirements": "La visita copre sia il piano terra scultoreo che la pinacoteca al primo piano. Consigliate calzature comode.",
+      "categories": [
+        "Barocco",
+        "Rinascimento",
+        "Scultura",
+        "Neoclassicismo"
+      ],
+      "assets": {
+        "images": []
+      },
+      "isVerified": true,
+      "visits": [
+        {
+          "artwork": "artwork_borghese_paolina_canova",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_david_bernini",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_apollo_dafne",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_ratto_proserpina",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_enea_anchise",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_fanciullo_canestra",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_bacchino_malato",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_davide_golia",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_deposizione_raffaello",
+          "items": []
+        },
+        {
+          "artwork": "artwork_borghese_amor_sacro_profano",
           "items": []
         }
       ]

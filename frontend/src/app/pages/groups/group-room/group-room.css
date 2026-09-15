@@ -260,11 +260,12 @@
   background-color: var(--surface-variant);
   color: var(--on-surface);
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: var(--label-md-size);
   font-weight: 700;
-  padding: 0.0625rem 0.4375rem;
+  padding: 0rem 0.6rem;
   border-radius: var(--radius-full);
   border: 0.0625rem solid var(--outline-variant);
+
 }
 
 .live-status-badge {
@@ -445,7 +446,7 @@
 .quiz-config-title {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: var(--body-md-size);
   font-weight: 700;
   color: var(--on-surface);
 }

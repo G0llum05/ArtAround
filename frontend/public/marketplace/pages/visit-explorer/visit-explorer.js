@@ -51,8 +51,7 @@ export class MktVisitExplorer extends HTMLElement {
         }
         this.allMuseumVisit = await MuseumService.getAllMuseumVisits(this.state.museumId);
         const interests = this.allMuseumVisit?.flatMap(visit => visit.categories || []) || [];
-        this.allInterests = [...new Set(interests)].filter(Boolean);
-        this.allInterests.length = 10; //tronco se ci soon troppi interessi
+        this.allInterests = [...new Set(interests)].filter(Boolean).slice(0, 10);
       } else {
         this.allMuseumVisit = await VisitService.getAllVisits() || [];
         this.allInterests = [];
@@ -407,7 +406,7 @@ export class MktVisitExplorer extends HTMLElement {
         try {
           this.allMuseumVisit = await MuseumService.getAllMuseumVisits(id);
           const cats = this.allMuseumVisit?.flatMap(visit => visit.categories || []) || [];
-          this.allInterests = [...new Set(cats)].filter(Boolean);
+          this.allInterests = [...new Set(cats)].filter(Boolean).slice(0, 10);
           this.updateGrid();
         } catch (error) {
           console.error("Errore nel recupero delle visite del museo:", error);

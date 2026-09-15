@@ -1,6 +1,7 @@
 :host {
   display: block;
   width: 100%;
+  min-height: 90vh;
 }
 
 /* ==========================================================================
@@ -452,13 +453,15 @@
 }
 
 .badge-ai {
-  font-size: 0.7rem;
+  position: relative;
+  font-size: var(--label-md-size);
   font-weight: 700;
   text-transform: uppercase;
   background-color: var(--tertiary, var(--surface-variant));
   color: var(--on-secondary, var(--primary));
-  padding: 0.2rem 0.6rem;
+  padding: 0rem 0.6rem;
   border-radius: var(--radius-full);
+  left: 1rem;
 }
 
 .quiz-config-desc {

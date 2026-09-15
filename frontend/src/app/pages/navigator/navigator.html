@@ -302,7 +302,7 @@
     ></app-quiz-modal>
   }
 
-  @if (isGroup()) {
+  @if (isGroup() && !isQuizActive()) {
     <button
       type="button"
       class="btn-lateral-group-chat"

@@ -8,9 +8,9 @@ import { debounceTime, filter, skip } from 'rxjs/operators';
 import { Chat } from '../../components/chat/chat';
 import { GroupChat } from '../../components/group-chat/group-chat';
 import { Itinerary } from '../../components/itinerary/itinerary';
+import { getActiveLanguage } from '../../components/language-selector/language-selector';
 import { Map } from '../../components/map/map';
 import { NavigatorSettings } from '../../components/navigator-settings/navigator-settings';
-import { getActiveLanguage } from '../../components/language-selector/language-selector';
 import { QuizModal } from '../../components/quiz-modal/quiz-modal';
 import { ChatMessage } from '../../models/appModel/chatMessage';
 import { UserNavigatorSettings } from '../../models/appModel/userNavigatorSettings';
@@ -21,8 +21,8 @@ import { NavigatorRequest } from '../../models/navigator.model';
 import { ActiveVisitService } from '../../services/active-visit.service';
 import { ArtworkService } from '../../services/artwork.service';
 import { AuthService } from '../../services/auth.service';
-import { GroupService } from '../../services/group.service';
 import { GroupSocketService } from '../../services/group-socket.service';
+import { GroupService } from '../../services/group.service';
 import { MuseumService } from '../../services/museum.service';
 import { NavigatorService, StreamChunk } from '../../services/navigator.service';
 import { QuizService } from '../../services/quiz.service';
@@ -90,6 +90,10 @@ export class Navigator implements OnDestroy {
   isQuizModalOpen = signal<boolean>(false);
   isGeneratingQuiz = signal<boolean>(false);
   availableQuizzes = signal<any[]>([]);
+  isQuizActive = computed<boolean>(() => {
+    const state = this.socketService.quizState();
+    return this.isQuizModalOpen() || (!!this.socketService.activeQuiz() && state !== 'not_started');
+  });
 
   // Stati UI
   isPlaying = signal<boolean>(false);
@@ -177,6 +181,7 @@ export class Navigator implements OnDestroy {
     effect(() => {
       if (this.isQuizModalOpen()) {
         this.stopAudio();
+        this.isGroupChatOpen.set(false);
       }
     });
 
@@ -322,7 +327,7 @@ export class Navigator implements OnDestroy {
     });
   }
 
-  private loadMuseumData  (mId: string): void {
+  private loadMuseumData(mId: string): void {
     if (!mId || typeof mId !== 'string' || mId.length !== 24) return;
     this.museumService.getById(mId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
@@ -330,14 +335,14 @@ export class Navigator implements OnDestroy {
           this.currentMuseum.set(data);
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
   private loadVisitData(vId: string, initialStep: number = 0): void {
     this.quizService.getQuizzesByVisit(vId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => this.availableQuizzes.set(res.data || []),
-      error: () => {}
+      error: () => { }
     });
 
     this.messages.set([
@@ -572,7 +577,7 @@ export class Navigator implements OnDestroy {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       try {
         this.mediaRecorder.stop();
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
@@ -599,12 +604,12 @@ export class Navigator implements OnDestroy {
             audio.currentTime = 0;
             audio.removeAttribute('src');
             audio.load();
-          } catch (e) {}
+          } catch (e) { }
         }).catch(() => {
           try {
             audio.removeAttribute('src');
             audio.load();
-          } catch (e) {}
+          } catch (e) { }
         });
         this.playPromise = null;
       } else {
@@ -613,7 +618,7 @@ export class Navigator implements OnDestroy {
           audio.currentTime = 0;
           audio.removeAttribute('src');
           audio.load();
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   }
@@ -626,7 +631,7 @@ export class Navigator implements OnDestroy {
           if (!this.isPlaying()) {
             this.currentAudio?.pause();
           }
-        }).catch(() => {});
+        }).catch(() => { });
       } else {
         this.currentAudio.pause();
       }
@@ -651,7 +656,7 @@ export class Navigator implements OnDestroy {
     if (savedTime > 0 && (!dur || savedTime < dur - 0.5)) {
       try {
         audio.currentTime = savedTime;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     this.isPlaying.set(true);
@@ -661,7 +666,7 @@ export class Navigator implements OnDestroy {
       if (this.isDestroyed || this.currentAudio !== audio) {
         try {
           audio.pause();
-        } catch (e) {}
+        } catch (e) { }
         return;
       }
       this.isPlaying.set(true);
@@ -897,7 +902,7 @@ export class Navigator implements OnDestroy {
         const newTime = percent * dur;
         try {
           this.currentAudio.currentTime = newTime;
-        } catch (e) {}
+        } catch (e) { }
         this.audioCurrentTime.set(newTime);
       }
     }
@@ -960,7 +965,7 @@ export class Navigator implements OnDestroy {
         if (this.isDestroyed || this.currentAudio !== audio) {
           try {
             audio.pause();
-          } catch (e) {}
+          } catch (e) { }
           return;
         }
         this.isPlaying.set(true);
@@ -1165,7 +1170,7 @@ export class Navigator implements OnDestroy {
       this.isGeneratingQuiz.set(false);
     }
   }
-  
+
   endVisit(): void {
     const confirmMsg = this.activeVisitService.isSingleArtworkMode()
       ? 'Terminando l\'esplorazione uscirai dal navigatore. Sei sicuro?'

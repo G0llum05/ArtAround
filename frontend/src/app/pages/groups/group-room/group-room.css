@@ -8,7 +8,7 @@
    ========================================================================== */
 .room-container {
   width: 100%;
-  max-width: 44rem;
+  max-width: 70rem;
   margin: 0 auto;
   padding: var(--spacing-lg) var(--margin-mobile);
   box-sizing: border-box;

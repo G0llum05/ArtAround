@@ -1,6 +1,6 @@
+import { getImageUrl } from '../../services/images.services.js';
 import { MuseumService } from "../../services/museum.service.js";
 import { VisitService } from "../../services/visit.service.js";
-import { getImageUrl } from '../../services/images.services.js';
 
 export class MktVisitExplorer extends HTMLElement {
   constructor() {
@@ -25,7 +25,7 @@ export class MktVisitExplorer extends HTMLElement {
   saveState() {
     try {
       sessionStorage.setItem('mkt_visit_explorer_state', JSON.stringify(this.state));
-    } catch (e) {}
+    } catch (e) { }
   }
 
   async connectedCallback() {
@@ -35,7 +35,7 @@ export class MktVisitExplorer extends HTMLElement {
         const parsed = JSON.parse(saved);
         this.state = { ...this.state, ...parsed };
       }
-    } catch (e) {}
+    } catch (e) { }
 
     this.render();
     this.setupEventListeners();
@@ -188,11 +188,11 @@ export class MktVisitExplorer extends HTMLElement {
     this.updateGrid();
   }
 
-  updateGrid(){
+  updateGrid() {
     const visitGrid = this.querySelector("#results-container");
     if (!visitGrid) return;
 
-    if(this.loadingVisit){
+    if (this.loadingVisit) {
       visitGrid.innerHTML = `<mkt-skeleton-card-grid></mkt-skeleton-card-grid>`;
       return;
     }
@@ -260,20 +260,6 @@ export class MktVisitExplorer extends HTMLElement {
               <h2 class="mkt-card-title">Scegli il museo</h2>
             </header>
             <mkt-input-search-visit id="museum-search"></mkt-input-search-visit>
-
-            <div style="margin-top: 1rem; border-top: 1px dashed var(--outline-variant); padding-top: 0.75rem;">
-              <label for="search-visit-keyword-input" style="font-size: var(--label-md-size); font-weight: 600; color: var(--on-surface-variant); display: block; margin-bottom: 0.35rem;">
-                Oppure cerca direttamente per titolo o tema della visita
-              </label>
-              <input
-                type="text"
-                class="mkt-custom-select"
-                id="search-visit-keyword-input"
-                placeholder="Cerca per titolo o tema (es. Rinascimento, Guida...)"
-                value="${this.state.searchQuery || ''}"
-                autocomplete="off"
-              />
-            </div>
           </section>
 
           <!-- 2. Chi Sei -->

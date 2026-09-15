@@ -87,8 +87,16 @@ async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap, co
   // Pulizia e preparazione directory operative
   await fsExtra.ensureDir(assetsMuseumsDir);
   await fsExtra.ensureDir(assetsArtistsDir);
-  await fsExtra.emptyDir(assetsMuseumsDir);
-  await fsExtra.emptyDir(assetsArtistsDir);
+  try {
+    await fsExtra.emptyDir(assetsMuseumsDir);
+  } catch (err) {
+    console.warn('[Seed Assets] Could not empty museums directory, continuing:', err.message);
+  }
+  try {
+    await fsExtra.emptyDir(assetsArtistsDir);
+  } catch (err) {
+    console.warn('[Seed Assets] Could not empty artists directory, continuing:', err.message);
+  }
 
   // Caricamento Immagini Artisti (Decentralizzati)
   const seedArtistsDir = path.join(__dirname, '../assets/seed/artists');
@@ -269,6 +277,166 @@ async function uploadSeedAssets({ artistMap, museumMap, visitMap, artworkMap, co
   }
 
   console.log('[Seed Assets] All seed images processed and attached successfully.');
+}
+
+/**
+ * Crea orari di apertura realistici e diversificati per i musei
+ */
+function createMuseumOpeningHours(name = '', index = 0) {
+  const closedDay = (index % 3 === 0) ? 1 : (index % 3 === 1 ? 1 : 3); // lunedì o mercoledì
+  const openMorning = (index % 2 === 0) ? '08:30' : '09:00';
+  const closeEvening = (index % 2 === 0) ? '19:00' : '19:30';
+
+  const weeklyStandard = [0, 1, 2, 3, 4, 5, 6].map(day => {
+    if (day === closedDay) {
+      return { day, slots: [], closed: true };
+    }
+    if (day === 5) {
+      // Venerdì apertura prolungata
+      return {
+        day,
+        slots: [{ startTime: openMorning, endTime: '22:00' }],
+        closed: false
+      };
+    }
+    if (day === 0 || day === 6) {
+      // Weekend
+      return {
+        day,
+        slots: [{ startTime: '09:00', endTime: '20:00' }],
+        closed: false
+      };
+    }
+    return {
+      day,
+      slots: [{ startTime: openMorning, endTime: closeEvening }],
+      closed: false
+    };
+  });
+
+  const exceptions = [
+    { date: new Date('2026-12-25'), slots: [], closed: true, reason: 'Natale' },
+    { date: new Date('2026-12-26'), slots: [{ startTime: '10:00', endTime: '18:00' }], closed: false, reason: 'Santo Stefano' },
+    { date: new Date('2027-01-01'), slots: [], closed: true, reason: 'Capodanno' },
+    { date: new Date('2026-05-01'), slots: [], closed: true, reason: 'Festa dei Lavoratori' },
+    { date: new Date('2026-08-15'), slots: [{ startTime: '09:00', endTime: '14:00' }], closed: false, reason: 'Ferragosto' }
+  ];
+
+  return [{ weeklyStandard, exceptions }];
+}
+
+/**
+ * Crea fasce orarie settimanali realistiche per le visite guidate
+ */
+function createVisitWeeklySchedule(title = '', index = 0, museumOpeningHours = null) {
+  let closedDays = new Set([1]); // default lunedì
+  if (Array.isArray(museumOpeningHours) && museumOpeningHours[0]?.weeklyStandard) {
+    closedDays = new Set(
+      museumOpeningHours[0].weeklyStandard
+        .filter(d => d.closed || !d.slots || d.slots.length === 0)
+        .map(d => d.day)
+    );
+  }
+
+  const slotVariant = index % 3;
+
+  const weeklyStandard = [0, 1, 2, 3, 4, 5, 6].map(day => {
+    if (closedDays.has(day)) {
+      return { day, slots: [], closed: true };
+    }
+
+    let slots = [];
+    if (slotVariant === 0) {
+      slots = [
+        { startTime: '10:00', endTime: '11:30' },
+        { startTime: '14:30', endTime: '16:00' },
+        { startTime: '16:30', endTime: '18:00' }
+      ];
+    } else if (slotVariant === 1) {
+      slots = [
+        { startTime: '09:30', endTime: '10:45' },
+        { startTime: '11:15', endTime: '12:30' },
+        { startTime: '15:00', endTime: '16:15' },
+        { startTime: '16:45', endTime: '18:00' }
+      ];
+    } else {
+      slots = [
+        { startTime: '11:00', endTime: '12:30' },
+        { startTime: '15:30', endTime: '17:00' },
+        { startTime: '17:30', endTime: '19:00' }
+      ];
+    }
+
+    if (day === 5 || day === 6) {
+      slots.push({ startTime: '19:15', endTime: '20:30' });
+    }
+
+    return { day, slots, closed: false };
+  });
+
+  const exceptions = [
+    { date: new Date('2026-12-25'), slots: [], closed: true, reason: 'Chiusura Festività Natalizie' },
+    { date: new Date('2027-01-01'), slots: [], closed: true, reason: 'Chiusura Capodanno' },
+    { date: new Date('2026-08-15'), slots: [{ startTime: '10:00', endTime: '11:30' }], closed: false, reason: 'Tour Speciale Ferragosto' }
+  ];
+
+  return [{ weeklyStandard, exceptions }];
+}
+
+/**
+ * Normalizza e valida uno Schedule esistente da JSON o genera fallback
+ */
+function normalizeSchedule(scheduleInput, fallbackGenerator) {
+  if (!scheduleInput || !Array.isArray(scheduleInput) || scheduleInput.length === 0) {
+    return fallbackGenerator();
+  }
+
+  const fallback = fallbackGenerator();
+
+  const normalized = scheduleInput.map(sched => {
+    if (!sched || typeof sched !== 'object') return null;
+
+    let weeklyStandard = sched.weeklyStandard;
+    if (!Array.isArray(weeklyStandard) || weeklyStandard.length === 0) {
+      weeklyStandard = fallback[0].weeklyStandard;
+    } else {
+      const existingDays = new Map(weeklyStandard.map(d => [d.day, d]));
+      weeklyStandard = [0, 1, 2, 3, 4, 5, 6].map(day => {
+        if (existingDays.has(day)) {
+          const item = existingDays.get(day);
+          const slots = (item.slots || []).map(s => ({
+            startTime: String(s.startTime || '09:00'),
+            endTime: String(s.endTime || '18:00')
+          }));
+          return {
+            day,
+            slots,
+            closed: Boolean(item.closed ?? (slots.length === 0))
+          };
+        }
+        return { day, slots: [], closed: true };
+      });
+    }
+
+    let exceptions = sched.exceptions;
+    if (!Array.isArray(exceptions) || exceptions.length === 0) {
+      exceptions = fallback[0].exceptions;
+    } else {
+      exceptions = exceptions.map(exc => ({
+        date: exc.date ? new Date(exc.date) : new Date(),
+        slots: (exc.slots || []).map(s => ({
+          startTime: String(s.startTime || '09:00'),
+          endTime: String(s.endTime || '18:00')
+        })),
+        closed: Boolean(exc.closed ?? (exc.slots?.length === 0)),
+        reason: exc.reason || 'Festività / Chiusura Speciale'
+      }));
+    }
+
+    return { weeklyStandard, exceptions };
+  }).filter(Boolean);
+
+  return normalized.length > 0 ? normalized : fallback;
 }
 
 async function runSeed({ isStandalone = false, force = false } = {}) {
@@ -455,6 +623,7 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
 
     // Insert Visits
     console.log('[Seed] Inserting visits...');
+    let visitIndex = 0;
     for (const visitData of seedData.visits) {
       if (visitMap[visitData.key]) continue;
       const creatorId = userMap[visitData.creator];
@@ -485,6 +654,15 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
         return { url: img.url || '', orientation: img.orientation || 'landscape' };
       });
 
+      // Recupera il museo padre per allineare orari e giorni di chiusura
+      const parentMuseum = seedData.museums.find(m => (m.visits || []).includes(visitData.key));
+      const parentMuseumOpeningHours = parentMuseum ? normalizeSchedule(parentMuseum.openingHours, () => createMuseumOpeningHours(parentMuseum.name)) : null;
+
+      const weeklySchedule = normalizeSchedule(
+        visitData.weeklySchedule,
+        () => createVisitWeeklySchedule(visitData.title, visitIndex, parentMuseumOpeningHours)
+      );
+
       const visit = new Visit({
         title: visitData.title,
         description: visitData.description,
@@ -495,8 +673,8 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
         minDuration: visitData.minDuration,
         maxDuration: visitData.maxDuration,
         isActive: visitData.isActive ?? true,
-        availability: visitData.availability,
-        weeklySchedule: visitData.weeklySchedule,
+        availability: visitData.availability || { always: true },
+        weeklySchedule: weeklySchedule,
         disableFriendly: visitData.disableFriendly ?? true,
         requirements: visitData.requirements,
         categories: visitData.categories || [],
@@ -510,16 +688,23 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
 
       const savedVisit = await visit.save();
       visitMap[visitData.key] = savedVisit._id;
+      visitIndex++;
     }
     console.log(`[Seed] Inserted ${Object.keys(visitMap).length} visit(s).`);
 
     // 7. Insert Museums
     console.log('[Seed] Inserting museum(s)...');
     const completeVisitMap = {};
+    let museumIndex = 0;
 
     for (const museumData of seedData.museums) {
       const museumVisitIds = (museumData.visits || []).map(k => visitMap[k]).filter(Boolean);
       const museumArtworkIds = (museumData.artworks || []).map(k => artworkMap[k]).filter(Boolean);
+
+      const normalizedOpeningHours = normalizeSchedule(
+        museumData.openingHours,
+        () => createMuseumOpeningHours(museumData.name, museumIndex)
+      );
 
       // Crea la visita completa
       if (museumArtworkIds.length) {
@@ -556,6 +741,12 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
         const categories = Array.from(new Set(['Collezione Completa', 'Capolavori', ...currents]));
         const count = museumArtworkIds.length;
 
+        const completeWeeklySchedule = createVisitWeeklySchedule(
+          `Visita Completa - ${museumData.name}`,
+          0,
+          normalizedOpeningHours
+        );
+
         const completeVisit = new Visit({
           title: `Visita Completa - ${museumData.name}`,
           description: `Percorso completo che racchiude tutte le ${count} opere d'arte esposte presso ${museumData.name}.`,
@@ -567,7 +758,7 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
           maxDuration: count * 12,
           isActive: true,
           availability: { always: true },
-          weeklySchedule: museumData.openingHours || [],
+          weeklySchedule: completeWeeklySchedule,
           disableFriendly: museumData.accessibility?.disableFriendly ?? true,
           requirements: museumData.requirements || 'Percorso completo di tutte le opere esposte nel museo.',
           categories: categories,
@@ -595,7 +786,7 @@ async function runSeed({ isStandalone = false, force = false } = {}) {
         actualCapacity: museumData.actualCapacity || 0,
         visits: museumVisitIds,
         artworks: museumArtworkIds,
-        openingHours: museumData.openingHours,
+        openingHours: normalizedOpeningHours,
         ticketInfo: museumData.ticketInfo,
         isActive: museumData.isActive ?? true,
         requirements: museumData.requirements,

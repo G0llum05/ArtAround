@@ -456,7 +456,7 @@
   text-transform: uppercase;
   background-color: var(--tertiary, var(--surface-variant));
   color: var(--on-secondary, var(--primary));
-  padding: 0.125rem 0.375rem;
+  padding: 0.2rem 0.6rem;
   border-radius: var(--radius-full);
 }
 
@@ -617,9 +617,18 @@
   to { transform: rotate(360deg); }
 }
 
-/* ==========================================================================
-   TABLET & DESKTOP (BREAKPOINT >= 33.75rem / 540px)
-   ========================================================================== */
+/* --- UTILITY TESTO DISPLAY --- */
+.text-desktop { display: none; }
+.text-mobile { display: block; }
+
+@media (min-width: 48rem) {
+  .text-desktop { display: block; }
+  .text-mobile { display: none; }
+}
+
+
+/* TABLET & DESKTOP (BREAKPOINT >= 33.75rem / 540px) */
+
 @media (min-width: 33.75rem) {
   .room-container {
     padding: var(--spacing-xl) var(--spacing-lg);

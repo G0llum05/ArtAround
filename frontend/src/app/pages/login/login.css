@@ -717,7 +717,7 @@
 }
 
 .card-actions .btn-delete {
-  grid-column: 1 / -1;
+  grid-column: 0 / 1;
 }
 
 .card-actions.card-actions-purchased {

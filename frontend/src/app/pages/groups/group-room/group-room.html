@@ -24,7 +24,7 @@
 
   <!-- STANZA CARICATA CON SUCCESSO -->
   @else if (session()) {
-    
+
     <!-- INTESTAZIONE VISITA -->
     <header class="room-header">
       <div class="room-badge-row">
@@ -38,7 +38,7 @@
       </div>
 
       <h1 class="visit-title">{{ session()?.visit?.title || session()?.title || 'Visita Guidata' }}</h1>
-      
+
       @if (session()?.visit?.museum?.name || session()?.museumName) {
         <p class="museum-name">
           {{ session()?.visit?.museum?.name || session()?.museumName }}
@@ -49,10 +49,10 @@
     <!-- BOX PIN CONDIVISIONE (MOBILE FIRST & HIGHLIGHTED) -->
     <section class="pin-showcase-card" aria-label="Condivisione codice PIN">
       <span class="pin-label">Codice PIN della Stanza</span>
-      
+
       <div class="pin-display-row">
         <span class="pin-code">{{ session()?.sessionCode }}</span>
-        
+
         <button type="button" class="btn-copy-pin" (click)="copyPin()" [class.copied]="copied()" [attr.aria-label]="copied() ? 'Codice PIN copiato negli appunti' : 'Copia codice PIN negli appunti'" title="Copia PIN" tabindex="0">
           @if (copied()) {
             <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
@@ -112,7 +112,7 @@
           <span>Partecipanti Collegati</span>
           <span class="count-pill">{{ onlineCount() }}</span>
         </h2>
-        
+
         @if (socketService.isConnected()) {
           <span class="live-status-badge">
             <span class="status-indicator online" aria-hidden="true"></span>
@@ -122,7 +122,7 @@
       </div>
 
       <div class="participants-list" role="list" tabindex="0" aria-label="Lista partecipanti">
-        
+
         <!-- DOCENTE / HOST -->
         @if (session()?.teacher) {
           <div class="participant-item host-item" role="listitem">
@@ -201,7 +201,7 @@
               <span>Inizia Visita di Gruppo</span>
             }
           </button>
-          
+
           <button type="button" class="btn btn-outline" (click)="leaveRoom()" aria-label="Esci dalla stanza di gruppo" tabindex="0">
             Esci dalla Stanza
           </button>

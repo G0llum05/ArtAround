@@ -269,8 +269,8 @@
 
 .role-badge {
   background-color: var(--surface-variant);
-  border: 0.0625rem solid var(--outline-variant);
-  color: var(--secondary);
+  border: 0.0625rem solid var(--tertiary);
+  color: var(--tertiary);
   font-size: var(--label-md-size);
   font-weight: 700;
   text-transform: uppercase;

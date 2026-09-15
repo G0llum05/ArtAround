@@ -202,23 +202,7 @@ class NavigatorService {
 
   static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null) {
     let effectiveLength = Sanitizer.sanitizeLength(length) || 30;
-
-    if (itemAction === 'TELL_ME_MORE') {
-      if (effectiveLength >= 60) {
-        return {
-          text: NavigatorMessages.getMessage('max_duration_reached', language),
-          currentArtworkIndex: (!visitId && artworkId) ? 0 : (currentArtworkIndex || 0),
-          itemAction: 'EXPLAIN_ITEM',
-          tone: tone,
-          language: language,
-          length: 60
-        };
-      }
-
-      // Aumenta di 1 classe la durata (15 -> 30, 30 -> 60)
-      effectiveLength = effectiveLength < 30 ? 30 : 60;
-      length = effectiveLength;
-    }
+    length = effectiveLength;
 
     if (!visitId && artworkId) {
       if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {

@@ -89,10 +89,11 @@ export class NavigatorService {
   async sendCommand(
     request: NavigatorRequest,
     audioBlob?: Blob,
-    onChunk?: (chunk: StreamChunk) => void
+    onChunk?: (chunk: StreamChunk) => void,
+    signal?: AbortSignal
   ): Promise<void> {
     const formData = this.createFormData(request, audioBlob);
-    await this.sendNavigatorCommandStream(formData, onChunk || (() => {}));
+    await this.sendNavigatorCommandStream(formData, onChunk || (() => {}), signal);
   }
 
   getTTSAudioUrl(text: string, lang: string = 'it'): string {
@@ -101,12 +102,14 @@ export class NavigatorService {
 
   async sendNavigatorCommandStream(
     formData: FormData,
-    onChunk: (chunk: StreamChunk) => void
+    onChunk: (chunk: StreamChunk) => void,
+    signal?: AbortSignal
   ): Promise<void> {
     const response = await fetch(this.apiUrl, {
       method: 'POST',
       body: formData,
-      credentials: 'include'
+      credentials: 'include',
+      signal
     });
 
     if (!response.ok && !response.body) {
@@ -121,24 +124,36 @@ export class NavigatorService {
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || ''; // Tiene l'eventuale riga incompleta
-
-      for (const line of lines) {
-        if (line.trim()) {
+    try {
+      while (true) {
+        if (signal?.aborted) {
           try {
-            const parsedChunk: StreamChunk = JSON.parse(line);
-            onChunk(parsedChunk);
-          } catch (e) {
-            console.error('Errore parsing chunk JSON:', e);
+            await reader.cancel();
+          } catch {}
+          break;
+        }
+
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Tiene l'eventuale riga incompleta
+
+        for (const line of lines) {
+          if (signal?.aborted) break;
+          if (line.trim()) {
+            try {
+              const parsedChunk: StreamChunk = JSON.parse(line);
+              onChunk(parsedChunk);
+            } catch (e) {
+              console.error('Errore parsing chunk JSON:', e);
+            }
           }
         }
       }
+    } finally {
+      reader.releaseLock();
     }
   }
 }

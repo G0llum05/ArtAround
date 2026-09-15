@@ -59,7 +59,7 @@ const museumSchema = new mongoose.Schema({
 
   isActive: Boolean,
 
-  // --- SERVIZI & INFRASTRUTTURE DEL MUSEO ---
+  // servizi & infrastrutture del museo
   services: {
     hasToilette: { type: Boolean, default: true },
     hasDisabledToilette: { type: Boolean, default: true },
@@ -77,7 +77,7 @@ const museumSchema = new mongoose.Schema({
     hasCloakroom: { type: Boolean, default: false }
   },
 
-  // --- ACCESSIBILITÀ & TARGET ---
+  // accessibilità & target
   accessibility: {
     disableFriendly: { type: Boolean, default: true },
     wheelchairAccessible: { type: Boolean, default: true },
@@ -89,23 +89,23 @@ const museumSchema = new mongoose.Schema({
     notes: String
   },
 
-  // --- MAPPATURA PUNTI DI INTERESSE PER NAVIGATOR ---
+  // mappatura punti di interesse per navigator
   pointsOfInterest: [pointOfInterestSchema],
 
-  // --- PIANI DELLO SPAZIO ESPOSITIVO ---
+  // piani dello spazio espositivo
   floors: [{
-    level: Number,       // es. 0 per Piano Terra, 1 per Primo Piano, -1 per Seminterrato
-    name: String,        // es. "Piano Terra", "Piano Nobile"
+    level: Number,       // 0, 1...
+    name: String,        // piano terra, primo piano...
     description: String
   }],
 
-  // --- TRASPORTI E PARCHEGGIO ---
+  // trasporti e parcheggio
   transportInfo: {
     publicTransport: String,
     parkingDetails: String
   },
 
-  // --- MOSTRE TEMPORANEE ED EVENTI SPECIALI ---
+  // mostre temporanee ed eventi speciali
   eventsAndExhibitions: {
     specialEvents: [String],
     temporaryExhibitions: [String]

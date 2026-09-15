@@ -115,7 +115,7 @@
 }
 
 .mkt-btn-start-visit:hover {
-  background-color: var(--primary-hover, #7e2f1e);
+  background-color: var(--primary, #7e2f1e);
   transform: translateY(-1px);
   box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.2);
 }
@@ -347,6 +347,8 @@
   flex-direction: column;
   gap: 0;
   position: relative;
+  padding-bottom: 1rem;
+  overflow-y: auto;
 }
 
 .mkt-timeline-item {
@@ -457,5 +459,9 @@
 
   .mkt-itinerary-header {
     position: static;
+  }
+
+  .mkt-itinerary-content {
+    background-color: red;
   }
 }

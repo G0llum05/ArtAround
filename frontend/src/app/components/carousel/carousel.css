@@ -144,14 +144,14 @@ app-badges-list {
 .slide-title {
   font-family: var(--font-serif, serif);
   font-size: clamp(1.3rem, 2.5vw, 2.25rem);
-  color: #ffffff;
+  color: var(--on-secondary);
   margin: 0;
   font-weight: 600;
   line-height: 1.2;
 }
 .slide-desc {
   font-size: clamp(0.8rem, 1vw, 1rem);
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--on-secondary);
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;

@@ -2,6 +2,7 @@
   display: block;
   height: 100%;
   width: 100%;
+  overflow-y: hidden;
 }
 
 /* --- CONTENITORE PRINCIPALE --- */
@@ -13,9 +14,10 @@
   gap: 0; /* Lo spazio è gestito dai singoli step per far passare la linea */
   overflow-y: auto;
   margin: 0;
-  padding: 0.5rem;
+  padding: 1rem;
   list-style: none;
   box-sizing: border-box;
+  z-index: 1;
 }
 
 /* --- SINGOLO STEP (Pallino + Testo) --- */
@@ -26,6 +28,7 @@
   position: relative;
   cursor: pointer;
   user-select: none;
+  z-index: 2;
 }
 
 .itinerary-container.readonly-mode .itinerary-step {

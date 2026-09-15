@@ -50,8 +50,9 @@ export class MktVisitExplorer extends HTMLElement {
           searchComp.setAttribute('data-selected-id', this.state.museumId);
         }
         this.allMuseumVisit = await MuseumService.getAllMuseumVisits(this.state.museumId);
-        const cats = this.allMuseumVisit?.flatMap(visit => visit.categories || []) || [];
-        this.allInterests = [...new Set(cats)].filter(Boolean);
+        const interests = this.allMuseumVisit?.flatMap(visit => visit.categories || []) || [];
+        this.allInterests = [...new Set(interests)].filter(Boolean);
+        this.allInterests.length = 10; //tronco se ci soon troppi interessi
       } else {
         this.allMuseumVisit = await VisitService.getAllVisits() || [];
         this.allInterests = [];

@@ -266,7 +266,7 @@
       }
     },
     {
-      "key": "artist_apollonio_atene",
+      "key": "artist_apollonio_di_atene",
       "name": "Apollonio",
       "surname": "di Atene (figlio di Nestore)",
       "artisticCurrents": [
@@ -278,7 +278,7 @@
       }
     },
     {
-      "key": "artist_melozzo_forli",
+      "key": "artist_melozzo_da_forli",
       "name": "Melozzo",
       "surname": "da Forlì",
       "artisticCurrents": [
@@ -708,7 +708,7 @@
       "startYear": -100,
       "endYear": -50,
       "artists": [
-        "artist_apollonio_atene"
+        "artist_apollonio_di_atene"
       ],
       "location": {
         "room": "Sala delle Muse",
@@ -933,7 +933,7 @@
       "startYear": 1480,
       "endYear": 1480,
       "artists": [
-        "artist_melozzo_forli"
+        "artist_melozzo_da_forli"
       ],
       "location": {
         "room": "Sala IV - Sala del Quattrocento",

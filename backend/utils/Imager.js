@@ -1,5 +1,5 @@
 class Imager {
-    static IMAGE_FORMATS = new Set (['jpg','jpeg','png','webp','gif','bmp','tiff','svg']);
+    static IMAGE_FORMATS = new Set (['jpg','jpeg','png','webp','gif','bmp','tiff','svg','avif','heic','heif']);
     
     static getExt(fileName) {
         if (!fileName || typeof fileName !== 'string') return '';
@@ -31,10 +31,16 @@ class Imager {
                 return 'image/png';
             case 'webp':
                 return 'image/webp';
+            case 'avif':
+                return 'image/avif';
             case 'svg':
                 return 'image/svg+xml';
             case 'gif':
                 return 'image/gif';
+            case 'heic':
+                return 'image/heic';
+            case 'heif':
+                return 'image/heif';
             default:
                 return 'image/jpeg';
         }

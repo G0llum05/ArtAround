@@ -14,16 +14,8 @@ export class MktHomeInputFields extends HTMLElement {
     };
 
     this.isDrawerOpen = false;
-    this.availableCategories = [
-      'Arte Moderna',
-      'Rinascimento',
-      'Archeologia',
-      'Storia',
-      'Architettura',
-      'Pittura',
-      'Scultura',
-      'Scienza'
-    ];
+
+    this.availableCategories = [];
   }
 
   connectedCallback() {
@@ -235,20 +227,9 @@ export class MktHomeInputFields extends HTMLElement {
           <svg class="mkt-filter-icon" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
             <path d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z"/>
           </svg>
-          <span class="mkt-filter-menu-text">Filtri</span>
+          <span class="mkt-filter-menu-text">${count == 0 ? 'Tutti i Filtri' : 'Filtri attivi: '} </span>
           ${count > 0 ? `<span class="mkt-filter-badge-counter">${count}</span>` : ''}
         </button>
-
-        <!-- Filtri rapidi / Pillole veloci (sincronizzati con il pannello) -->
-        <div class="mkt-quick-filters">
-          <button type="button" class="mkt-filter-pill ${count === 0 ? 'mkt-active' : ''}" data-action="clear-all">Tutte</button>
-          <button type="button" class="mkt-filter-pill ${this.state.scope === 'museums' ? 'mkt-active' : ''}" data-action="toggle-scope-museums">Solo Musei</button>
-          <button type="button" class="mkt-filter-pill ${this.state.scope === 'visits' ? 'mkt-active' : ''}" data-action="toggle-scope-visits">Solo Visite</button>
-          <button type="button" class="mkt-filter-pill ${this.state.freeOnly ? 'mkt-active' : ''}" data-action="toggle-free">Gratuite</button>
-          <button type="button" class="mkt-filter-pill ${this.state.disableFriendly ? 'mkt-active' : ''}" data-action="toggle-disable">Accessibile</button>
-          <button type="button" class="mkt-filter-pill ${this.state.verified ? 'mkt-active' : ''}" data-action="toggle-verified">Verificate</button>
-          <button type="button" class="mkt-filter-pill ${this.state.newOnly ? 'mkt-active' : ''}" data-action="toggle-new">Novità</button>
-        </div>
       </div>
 
       <!-- Backdrop per la tendina laterale -->
@@ -258,10 +239,10 @@ export class MktHomeInputFields extends HTMLElement {
       <aside class="mkt-drawer-panel ${this.isDrawerOpen ? 'mkt-drawer-open' : ''}" id="mkt-filters-drawer" role="dialog" aria-label="Menù filtri di ricerca">
         <header class="mkt-drawer-header">
           <div class="mkt-drawer-header-title">
-            <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="var(--primary)">
+            <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="currentColor">
               <path d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z"/>
             </svg>
-            <h2>Filtri</h2>
+            <h2> ${count == 0 ? 'Tutti i Filtri' : 'Filtri: '}</h2>
             ${count > 0 ? `<span class="mkt-drawer-count-badge">${count} attivi</span>` : ''}
           </div>
           <div class="mkt-drawer-header-actions">
@@ -355,13 +336,13 @@ export class MktHomeInputFields extends HTMLElement {
             </div>
             <div class="mkt-chips-grid">
               ${this.availableCategories.map(cat => {
-                const isSelected = this.state.selectedCategories.includes(cat);
-                return `
+      const isSelected = this.state.selectedCategories.includes(cat);
+      return `
                   <button type="button" class="mkt-drawer-chip ${isSelected ? 'mkt-selected' : ''}" data-toggle-cat="${cat}">
                     ${cat}
                   </button>
                 `;
-              }).join('')}
+    }).join('')}
             </div>
           </div>
 

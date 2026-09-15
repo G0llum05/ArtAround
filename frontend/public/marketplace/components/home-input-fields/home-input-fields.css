@@ -28,7 +28,7 @@ mkt-home-input-fields:has(.mkt-drawer-open) {
   display: flex;
   align-items: center;
   flex: 1.5;
-  max-width: 24rem;
+  max-width: 48%;
   min-width: 13rem;
 }
 
@@ -82,37 +82,42 @@ mkt-home-input-fields:has(.mkt-drawer-open) {
 /* --- PULSANTE TENDINA FILTRI --- */
 .mkt-filter-menu-btn {
   box-sizing: border-box;
-  height: 2.5rem;
+  height: 2.75rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: var(--spacing-xs);
   background-color: var(--surface);
   color: var(--on-surface);
   border: 0.0625rem solid var(--outline-variant);
   border-radius: var(--radius-full);
-  padding: 0 1rem;
+  padding: 0 var(--spacing-md);
   font-family: var(--font-sans);
   font-size: var(--label-md-size);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .mkt-filter-menu-btn:hover {
   background-color: var(--surface-variant);
   border-color: var(--primary);
+  color: var(--on-surface);
 }
 
 .mkt-filter-menu-btn.mkt-has-active {
+  background-color: var(--surface-variant);
   border-color: var(--primary);
-  background-color: rgba(0, 0, 0, 0.03);
   color: var(--primary);
 }
 
 .mkt-filter-icon {
+  width: 1.125rem;
+  height: 1.125rem;
   fill: currentColor;
+  flex-shrink: 0;
 }
 
 .mkt-filter-badge-counter {
@@ -121,12 +126,15 @@ mkt-home-input-fields:has(.mkt-drawer-open) {
   justify-content: center;
   background-color: var(--primary);
   color: var(--on-primary);
-  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: var(--label-md-size, 0.75rem);
   font-weight: 700;
-  width: 1.25rem;
+  min-width: 1.25rem;
   height: 1.25rem;
+  padding: 0 0.25rem;
   border-radius: var(--radius-full);
   line-height: 1;
+  box-sizing: border-box;
 }
 
 /* --- FILTRI RAPIDI (Pillole orizzontali) --- */
@@ -230,9 +238,9 @@ mkt-home-input-fields:has(.mkt-drawer-open) {
 
 .mkt-drawer-header-title h2 {
   font-family: var(--font-serif);
-  font-size: 1.35rem;
+  font-size: var(--body-lg-size);
   margin: 0;
-  color: var(--on-surface);
+  color: var(--on-surface-variant);
 }
 
 .mkt-drawer-count-badge {

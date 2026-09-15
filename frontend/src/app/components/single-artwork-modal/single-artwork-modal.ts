@@ -1,6 +1,9 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, inject, signal, computed, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NavigationStart, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SingleArtworkModalService } from '../../services/single-artwork-modal.service';
 import { NavigatorService, StreamChunk } from '../../services/navigator.service';
 import { NavigatorRequest } from '../../models/navigator.model';
@@ -17,9 +20,10 @@ const settingsKey = 'navigatorSettings';
   templateUrl: './single-artwork-modal.html',
   styleUrl: './single-artwork-modal.css'
 })
-export class SingleArtworkModal {
+export class SingleArtworkModal implements OnDestroy {
   protected modalService = inject(SingleArtworkModalService);
   private navigatorService = inject(NavigatorService);
+  private router = inject(Router);
 
   artwork = computed(() => this.modalService.artwork());
 
@@ -55,8 +59,18 @@ export class SingleArtworkModal {
   private lastAudioUrl: string | null = null;
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
+  private commandAbortController: AbortController | null = null;
+  private playPromise: Promise<void> | null = null;
 
   constructor() {
+    // Chiude il modale e spegne l'audio immediatamente se si naviga ad un'altra pagina
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationStart),
+      takeUntilDestroyed()
+    ).subscribe(() => {
+      this.close();
+    });
+
     const activeLang = getActiveLanguage();
     const saved = localStorage.getItem(settingsKey);
     if (saved) {
@@ -83,6 +97,10 @@ export class SingleArtworkModal {
     });
   }
 
+  ngOnDestroy(): void {
+    this.stopAudio();
+  }
+
   close(): void {
     this.stopAudio();
     this.modalService.close();
@@ -90,7 +108,16 @@ export class SingleArtworkModal {
 
   async executeCommand(extraParams: Partial<NavigatorRequest> = {}, audioBlob?: Blob): Promise<void> {
     const art = this.artwork();
-    if (!art) return;
+    if (!art || !this.modalService.isOpen()) return;
+
+    if (this.commandAbortController) {
+      this.commandAbortController.abort();
+      this.commandAbortController = null;
+    }
+    this.stopAudio();
+
+    const abortController = new AbortController();
+    this.commandAbortController = abortController;
 
     const settings = this.currentSettings();
     const artId = (art.id || (art as any)._id || art.qrCode || '').toString();
@@ -106,73 +133,115 @@ export class SingleArtworkModal {
     this.isLoading.set(true);
 
     try {
-      await this.navigatorService.sendCommand(request, audioBlob, (chunk: StreamChunk) => {
-        if (chunk.type === 'TRANSCRIPTION' && chunk.text) {
-          this.messages.update(msgs => {
-            const updated = [...msgs];
-            const lastIndex = updated.length - 1;
-            if (lastIndex >= 0 && updated[lastIndex].sender === 'user') {
-              updated[lastIndex] = { ...updated[lastIndex], text: chunk.text! };
-            } else {
-              updated.push({ sender: 'user', text: chunk.text!, type: 'audio' });
-            }
-            return updated;
-          });
-        } else if (chunk.type === 'FINAL_RESPONSE') {
-          this.isLoading.set(false);
-          const reply = chunk.data?.reply || chunk.data?.text || chunk.text || 'Risposta ricevuta.';
-          this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
-          this.currentSubtitle.set(reply);
+      await this.navigatorService.sendCommand(
+        request,
+        audioBlob,
+        (chunk: StreamChunk) => {
+          if (!this.modalService.isOpen() || abortController.signal.aborted) return;
 
-          if (chunk.data?.length !== undefined && chunk.data?.length !== null) {
-            const l = Number(chunk.data.length);
-            if (!isNaN(l)) {
-              this.currentSettings.update(curr => ({ ...curr, duration: l }));
-            }
-          }
+          if (chunk.type === 'TRANSCRIPTION' && chunk.text) {
+            this.messages.update(msgs => {
+              const updated = [...msgs];
+              const lastIndex = updated.length - 1;
+              if (lastIndex >= 0 && updated[lastIndex].sender === 'user') {
+                updated[lastIndex] = { ...updated[lastIndex], text: chunk.text! };
+              } else {
+                updated.push({ sender: 'user', text: chunk.text!, type: 'audio' });
+              }
+              return updated;
+            });
+          } else if (chunk.type === 'FINAL_RESPONSE') {
+            this.isLoading.set(false);
+            const reply = chunk.data?.reply || chunk.data?.text || chunk.text || 'Risposta ricevuta.';
+            this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
+            this.currentSubtitle.set(reply);
 
-          const audioData = chunk.data?.audio;
-          if (audioData) {
-            this.lastAudioUrl = audioData;
-            this.isPlaying.set(true);
-            this.playAudioSource(audioData);
+            if (chunk.data?.length !== undefined && chunk.data?.length !== null) {
+              const l = Number(chunk.data.length);
+              if (!isNaN(l)) {
+                this.currentSettings.update(curr => ({ ...curr, duration: l }));
+              }
+            }
+
+            const audioData = chunk.data?.audio;
+            if (audioData) {
+              this.lastAudioUrl = audioData;
+              if (this.modalService.isOpen() && !abortController.signal.aborted) {
+                this.playAudioSource(audioData);
+              }
+            }
+          } else if (chunk.type === 'ERROR') {
+            this.isLoading.set(false);
+            const errMsg = chunk.error || 'Errore durante la comunicazione.';
+            this.messages.update(msgs => [...msgs, { sender: 'ai', text: errMsg }]);
           }
-        } else if (chunk.type === 'ERROR') {
-          this.isLoading.set(false);
-          const errMsg = chunk.error || 'Errore durante la comunicazione.';
-          this.messages.update(msgs => [...msgs, { sender: 'ai', text: errMsg }]);
-        }
-      });
+        },
+        abortController.signal
+      );
     } catch (err: any) {
+      if (err?.name === 'AbortError' || abortController.signal.aborted) {
+        return;
+      }
       this.isLoading.set(false);
       const errMsg = err?.message || 'Errore di connessione con il servizio di spiegazione.';
       this.messages.update(msgs => [...msgs, { sender: 'ai', text: errMsg }]);
+    } finally {
+      if (this.commandAbortController === abortController) {
+        this.commandAbortController = null;
+        this.isLoading.set(false);
+      }
     }
   }
 
   tellMeMore(): void {
+    if (this.isLoading()) return;
     this.messages.update(msgs => [...msgs, { sender: 'user', text: "Dimmi di più su quest'opera.", type: 'text' }]);
     this.executeCommand({ itemAction: 'TELL_ME_MORE' });
   }
 
   askAuthor(): void {
+    if (this.isLoading()) return;
     this.messages.update(msgs => [...msgs, { sender: 'user', text: "Parlami dell'autore di quest'opera.", type: 'text' }]);
     this.executeCommand({ targetArtist: 'CURRENT_AUTHOR' });
   }
 
   togglePlay(): void {
-    const willPlay = !this.isPlaying();
-    this.isPlaying.set(willPlay);
+    if (this.isLoading()) return;
 
-    if (willPlay) {
+    if (this.isPlaying()) {
+      this.isPlaying.set(false);
       if (this.currentAudio) {
-        this.currentAudio.play().catch(() => this.isPlaying.set(false));
-      } else if (this.lastAudioUrl) {
-        this.playAudioSource(this.lastAudioUrl);
+        if (this.playPromise) {
+          this.playPromise.then(() => {
+            if (!this.isPlaying()) {
+              this.currentAudio?.pause();
+            }
+          }).catch(() => {});
+        } else {
+          this.currentAudio.pause();
+        }
       }
     } else {
+      if (!this.currentAudio && this.lastAudioUrl) {
+        this.initAudioElement(this.lastAudioUrl);
+      }
       if (this.currentAudio) {
-        this.currentAudio.pause();
+        this.isPlaying.set(true);
+        const audio = this.currentAudio;
+        this.playPromise = audio.play();
+        this.playPromise.then(() => {
+          this.playPromise = null;
+          if (!this.modalService.isOpen() || this.currentAudio !== audio) {
+            try { audio.pause(); } catch (e) {}
+            return;
+          }
+          this.isPlaying.set(true);
+        }).catch(err => {
+          this.playPromise = null;
+          if (this.currentAudio === audio) {
+            this.isPlaying.set(false);
+          }
+        });
       }
     }
   }
@@ -239,45 +308,103 @@ export class SingleArtworkModal {
   }
 
   private initAudioElement(src: string): void {
-    if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio = null;
-    }
-    this.currentAudio = new Audio(src);
-    this.currentAudio.ontimeupdate = () => {
-      if (this.currentAudio) {
-        this.audioCurrentTime.set(this.currentAudio.currentTime);
+    this.stopAudio();
+    const audio = new Audio(src);
+    this.currentAudio = audio;
+
+    audio.ontimeupdate = () => {
+      if (this.currentAudio === audio) {
+        this.audioCurrentTime.set(audio.currentTime);
       }
     };
-    this.currentAudio.onloadedmetadata = () => {
-      if (this.currentAudio) {
-        this.audioDuration.set(this.currentAudio.duration || 0);
+    audio.onloadedmetadata = () => {
+      if (this.currentAudio === audio) {
+        this.audioDuration.set(audio.duration || 0);
       }
     };
-    this.currentAudio.onended = () => {
-      this.isPlaying.set(false);
-      this.audioCurrentTime.set(0);
+    audio.onended = () => {
+      if (this.currentAudio === audio) {
+        this.isPlaying.set(false);
+        this.audioCurrentTime.set(0);
+      }
     };
-    this.currentAudio.onerror = () => this.isPlaying.set(false);
+    audio.onerror = () => {
+      if (this.currentAudio === audio) {
+        this.isPlaying.set(false);
+      }
+    };
   }
 
   private playAudioSource(src: string): void {
+    if (!this.modalService.isOpen()) return;
     this.initAudioElement(src);
     if (this.currentAudio) {
-      this.currentAudio.play().catch(() => this.isPlaying.set(false));
+      const audio = this.currentAudio;
+      this.isPlaying.set(true);
+      this.playPromise = audio.play();
+      this.playPromise.then(() => {
+        this.playPromise = null;
+        if (!this.modalService.isOpen() || this.currentAudio !== audio) {
+          try { audio.pause(); } catch (e) {}
+          return;
+        }
+        this.isPlaying.set(true);
+      }).catch(err => {
+        this.playPromise = null;
+        if (this.currentAudio === audio) {
+          this.isPlaying.set(false);
+        }
+      });
     }
   }
 
   private stopAudio(): void {
-    if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio = null;
+    if (this.commandAbortController) {
+      this.commandAbortController.abort();
+      this.commandAbortController = null;
     }
     this.isPlaying.set(false);
     this.audioCurrentTime.set(0);
     this.audioDuration.set(0);
+
+    if (this.currentAudio) {
+      const audio = this.currentAudio;
+      this.currentAudio = null;
+
+      audio.ontimeupdate = null;
+      audio.onloadedmetadata = null;
+      audio.onended = null;
+      audio.onerror = null;
+
+      if (this.playPromise) {
+        this.playPromise.then(() => {
+          try {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.removeAttribute('src');
+            audio.load();
+          } catch (e) {}
+        }).catch(() => {
+          try {
+            audio.removeAttribute('src');
+            audio.load();
+          } catch (e) {}
+        });
+        this.playPromise = null;
+      } else {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.removeAttribute('src');
+          audio.load();
+        } catch (e) {}
+      }
+    }
+
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      this.mediaRecorder.stop();
+      try {
+        this.mediaRecorder.stop();
+      } catch (e) {}
     }
     this.isDictating.set(false);
   }

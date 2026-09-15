@@ -84,7 +84,7 @@
         <div class="audio-controls">
           @if (!activeVisitService.isSingleArtworkMode()) {
             @if (!isGroup() || isTeacher()) {
-              <button type="button" class="icon-btn" (click)="prevArtwork()" [disabled]="currentItineraryStepIndex() === 0" aria-label="Tappa precedente" tabindex="0">
+              <button type="button" class="icon-btn" (click)="prevArtwork()" [disabled]="isLoading() || currentItineraryStepIndex() === 0" aria-label="Tappa precedente" tabindex="0">
                 <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M860-240 500-480l360-240v480Zm-400 0L100-480l360-240v480Zm-80-240Zm400 0Zm-400 90v-180l-136 90 136 90Zm400 0v-180l-136 90 136 90Z"/></svg>
               </button>
             } @else {
@@ -96,7 +96,7 @@
             }
           }
 
-          <button type="button" class="btn btn-primary btn-play" (click)="togglePlay()" [attr.aria-label]="isPlaying() ? 'Metti in pausa la guida audio' : 'Avvia la guida audio'" tabindex="0">
+          <button type="button" class="btn btn-primary btn-play" (click)="togglePlay()" [disabled]="isLoading()" [attr.aria-label]="isPlaying() ? 'Metti in pausa la guida audio' : 'Avvia la guida audio'" tabindex="0">
             @if(!isPlaying()) {
               <svg class="icon-lg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z"/></svg>
             } @else {
@@ -106,7 +106,7 @@
 
           @if (!activeVisitService.isSingleArtworkMode()) {
             @if (!isGroup() || isTeacher()) {
-              <button type="button" class="icon-btn" (click)="nextArtwork()" [disabled]="currentItineraryStepIndex() >= itinerary().length - 1" aria-label="Tappa successiva" tabindex="0">
+              <button type="button" class="icon-btn" (click)="nextArtwork()" [disabled]="isLoading() || currentItineraryStepIndex() >= itinerary().length - 1" aria-label="Tappa successiva" tabindex="0">
                 <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M100-240v-480l360 240-360 240Zm400 0v-480l360 240-360 240ZM180-480Zm400 0Zm-400 90 136-90-136-90v180Zm400 0 136-90-136-90v180Z"/></svg>
               </button>
             } @else {
@@ -214,16 +214,16 @@
       <div class="card-body">
 
         <div class="action-row">
-          <button type="button" class="btn btn-primary flex-fill" (click)="tellMeMore()" aria-label="Dimmi di più sull'opera" tabindex="0">
+          <button type="button" class="btn btn-primary flex-fill" (click)="tellMeMore()" [disabled]="isLoading()" aria-label="Dimmi di più sull'opera" tabindex="0">
             <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M440-280h80v-240h-80v240Zm68.5-331.5Q520-623 520-640t-11.5-28.5Q497-680 480-680t-28.5 11.5Q440-657 440-640t11.5 28.5Q463-600 480-600t28.5-11.5ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
             Dimmi di più
           </button>
-          <button type="button" class="btn btn-secondary flex-fill" (click)="askAuthor()" aria-label="Informazioni sull'autore" tabindex="0">
+          <button type="button" class="btn btn-secondary flex-fill" (click)="askAuthor()" [disabled]="isLoading()" aria-label="Informazioni sull'autore" tabindex="0">
             <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q64 0 128 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"/></svg>
             Autore
           </button>
           @if (!activeVisitService.isSingleArtworkMode()) {
-            <button type="button" class="btn-secondary btn flex-fill" (click)="openMap()" aria-label="Apri mappa del museo" tabindex="0">
+            <button type="button" class="btn-secondary btn flex-fill" (click)="openMap()" [disabled]="isLoading()" aria-label="Apri mappa del museo" tabindex="0">
               <svg class="card-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
               Mappa
             </button>
@@ -232,19 +232,19 @@
 
         @if (!activeVisitService.isSingleArtworkMode()) {
           <div class="services-row">
-            <button type="button" class="chip" (click)="askPoi('toilette', 'i Bagni')" aria-label="Indicazioni per i bagni" tabindex="0">
+            <button type="button" class="chip" (click)="askPoi('toilette', 'i Bagni')" [disabled]="isLoading()" aria-label="Indicazioni per i bagni" tabindex="0">
               <svg class="card-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
                 <path d="M220-80v-300h-60v-220q0-33 23.5-56.5T240-680h120q33 0 56.5 23.5T440-600v220h-60v300H220Zm23.5-663.5Q220-767 220-800t23.5-56.5Q267-880 300-880t56.5 23.5Q380-833 380-800t-23.5 56.5Q333-720 300-720t-56.5-23.5ZM600-80v-240H480l102-306q8-26 29.5-40t48.5-14q27 0 48.5 14t29.5 40l102 306H720v240H600Zm3.5-663.5Q580-767 580-800t23.5-56.5Q627-880 660-880t56.5 23.5Q740-833 740-800t-23.5 56.5Q693-720 660-720t-56.5-23.5Z"/>
               </svg>
               Bagni
             </button>
-            <button type="button" class="chip" (click)="askPoi('elevator', 'l\'Ascensore')" aria-label="Indicazioni per l'ascensore" tabindex="0">
+            <button type="button" class="chip" (click)="askPoi('elevator', 'l\'Ascensore')" [disabled]="isLoading()" aria-label="Indicazioni per l'ascensore" tabindex="0">
               <svg class="card-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
                 <path d="M280-240h120v-160h40v-100q0-33-23.5-56.5T360-580h-40q-33 0-56.5 23.5T240-500v100h40v160Zm95.5-394.5Q390-649 390-670t-14.5-35.5Q361-720 340-720t-35.5 14.5Q290-691 290-670t14.5 35.5Q319-620 340-620t35.5-14.5ZM520-520h200L620-680 520-520Zm100 240 100-160H520l100 160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0 0v-560 560Z"/>
               </svg>
               Ascensore
             </button>
-            <button type="button" class="chip" (click)="askPoi('exit', 'l\'Uscita')" aria-label="Indicazioni per l'uscita" tabindex="0">
+            <button type="button" class="chip" (click)="askPoi('exit', 'l\'Uscita')" [disabled]="isLoading()" aria-label="Indicazioni per l'uscita" tabindex="0">
               <svg class="card-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
                 <path d="M440-440q17 0 28.5-11.5T480-480q0-17-11.5-28.5T440-520q-17 0-28.5 11.5T400-480q0 17 11.5 28.5T440-440ZM280-120v-80l240-40v-445q0-15-9-27t-23-14l-208-34v-80l220 36q44 8 72 41t28 77v512l-320 54Zm-160 0v-80h80v-560q0-34 23.5-57t56.5-23h400q34 0 57 23t23 57v560h80v80H120Zm160-80h400v-560H280v560Z"/>
               </svg>

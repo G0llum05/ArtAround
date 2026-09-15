@@ -126,6 +126,10 @@ export class Navigator implements OnDestroy {
   isDictating = signal<boolean>(false);
 
   // Audio recording e playback
+  private isDestroyed = false;
+  private commandAbortController: AbortController | null = null;
+  private playPromise: Promise<void> | null = null;
+  private wasPlayingBeforeMap = false;
   private isVoiceUpdatingSettings = false;
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
@@ -148,6 +152,14 @@ export class Navigator implements OnDestroy {
   constructor() {
     this.loadMuseumData(this.museumId());
 
+    // Interrompe immediatamente audio e fetch in-flight se l'utente cambia rotta / sezione
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationStart),
+      takeUntilDestroyed()
+    ).subscribe(() => {
+      this.cleanupAndStopAll();
+    });
+
     const activeLang = getActiveLanguage();
     const saved = localStorage.getItem(settingsKey);
     if (saved) {
@@ -164,13 +176,7 @@ export class Navigator implements OnDestroy {
 
     effect(() => {
       if (this.isQuizModalOpen()) {
-        if (this.currentAudio) {
-          this.currentAudio.pause();
-          this.currentAudio = null;
-        }
-        this.isPlaying.set(false);
-        this.audioCurrentTime.set(0);
-        this.audioDuration.set(0);
+        this.stopAudio();
       }
     });
 
@@ -282,13 +288,7 @@ export class Navigator implements OnDestroy {
         this.socketService.onStepChanged((data) => {
           if (!this.isTeacher() && typeof data?.stepIndex === 'number') {
             console.log('[Navigator] Step sincronizzato dal docente:', data.stepIndex);
-            if (this.currentAudio) {
-              this.currentAudio.pause();
-              this.currentAudio = null;
-            }
-            this.isPlaying.set(false);
-            this.audioCurrentTime.set(0);
-            this.audioDuration.set(0);
+            this.stopAudio();
 
             this.currentItineraryStepIndex.set(data.stepIndex);
             this.itemIsArtwork.set(true);
@@ -303,11 +303,7 @@ export class Navigator implements OnDestroy {
         // Se la sessione viene conclusa dal docente
         this.socketService.onSessionEnded((data: any) => {
           this.isQuizModalOpen.set(false);
-          if (this.currentAudio) {
-            this.currentAudio.pause();
-            this.currentAudio = null;
-          }
-          this.isPlaying.set(false);
+          this.stopAudio();
           this.socketService.disconnect();
           this.router.navigate(['/']);
         });
@@ -349,13 +345,7 @@ export class Navigator implements OnDestroy {
     ]);
     this.itemIsArtwork.set(true);
     this.currentItineraryStepIndex.set(initialStep);
-    if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio = null;
-    }
-    this.isPlaying.set(false);
-    this.audioCurrentTime.set(0);
-    this.audioDuration.set(0);
+    this.stopAudio();
 
     this.visitService.getById(vId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (visitData: any) => {
@@ -411,13 +401,7 @@ export class Navigator implements OnDestroy {
   }
 
   private loadSingleArtworkVisit(artworkId?: string, visitIdParam?: string): void {
-    if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio = null;
-    }
-    this.isPlaying.set(false);
-    this.audioCurrentTime.set(0);
-    this.audioDuration.set(0);
+    this.stopAudio();
     this.itemIsArtwork.set(true);
     this.currentItineraryStepIndex.set(0);
 
@@ -578,16 +562,82 @@ export class Navigator implements OnDestroy {
 
   private lastAudioUrl: string | null = null;
 
-  stopAudio(): void {
-    if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio = null;
+  private cleanupAndStopAll(): void {
+    this.isDestroyed = true;
+    if (this.commandAbortController) {
+      this.commandAbortController.abort();
+      this.commandAbortController = null;
     }
-    this.isPlaying.set(false);
+    this.stopAudio();
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      try {
+        this.mediaRecorder.stop();
+      } catch (e) {}
+    }
   }
-  
+
+  stopAudio(): void {
+    this.isPlaying.set(false);
+    this.audioCurrentTime.set(0);
+    this.audioDuration.set(0);
+
+    if (this.currentAudio) {
+      const audio = this.currentAudio;
+      this.currentAudio = null;
+
+      audio.ontimeupdate = null;
+      audio.onloadedmetadata = null;
+      audio.onended = null;
+      audio.onpause = null;
+      audio.onplay = null;
+      audio.onerror = null;
+
+      if (this.playPromise) {
+        this.playPromise.then(() => {
+          try {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.removeAttribute('src');
+            audio.load();
+          } catch (e) {}
+        }).catch(() => {
+          try {
+            audio.removeAttribute('src');
+            audio.load();
+          } catch (e) {}
+        });
+        this.playPromise = null;
+      } else {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.removeAttribute('src');
+          audio.load();
+        } catch (e) {}
+      }
+    }
+  }
+
+  private pauseAudio(): void {
+    this.isPlaying.set(false);
+    if (this.currentAudio) {
+      if (this.playPromise) {
+        this.playPromise.then(() => {
+          if (!this.isPlaying()) {
+            this.currentAudio?.pause();
+          }
+        }).catch(() => {});
+      } else {
+        this.currentAudio.pause();
+      }
+    }
+    if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+      this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'paused');
+    }
+  }
+
   startAudio(): void {
-    if (this.isPlaying()) return;
+    if (this.isDestroyed || this.isLoading()) return;
 
     if (!this.currentAudio && this.lastAudioUrl) {
       this.initAudioElement(this.lastAudioUrl);
@@ -599,30 +649,53 @@ export class Navigator implements OnDestroy {
     const savedTime = this.audioCurrentTime();
     const dur = this.audioDuration();
     if (savedTime > 0 && (!dur || savedTime < dur - 0.5)) {
-      audio.currentTime = savedTime;
+      try {
+        audio.currentTime = savedTime;
+      } catch (e) {}
     }
 
     this.isPlaying.set(true);
-    audio.play().then(() => {
+    this.playPromise = audio.play();
+    this.playPromise.then(() => {
+      this.playPromise = null;
+      if (this.isDestroyed || this.currentAudio !== audio) {
+        try {
+          audio.pause();
+        } catch (e) {}
+        return;
+      }
+      this.isPlaying.set(true);
       if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
         this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
       }
     }).catch(err => {
-      console.warn('Playback audio non consentito dal browser:', err);
-      this.isPlaying.set(false);
+      this.playPromise = null;
+      if (err.name !== 'AbortError') {
+        console.warn('Playback audio non consentito dal browser o interrotto:', err);
+      }
+      if (this.currentAudio === audio) {
+        this.isPlaying.set(false);
+      }
     });
   }
 
   ngOnDestroy(): void {
-    this.stopAudio();
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      try {
-        this.mediaRecorder.stop();
-      } catch (e) {}
-    }
+    this.cleanupAndStopAll();
   }
 
   async executeCommand(extraParams: Partial<NavigatorRequest> = {}, audioBlob?: Blob): Promise<void> {
+    if (this.isDestroyed) return;
+
+    // Cancella eventuale richiesta e audio precedente in corso
+    if (this.commandAbortController) {
+      this.commandAbortController.abort();
+      this.commandAbortController = null;
+    }
+    this.stopAudio();
+
+    const abortController = new AbortController();
+    this.commandAbortController = abortController;
+
     const settings = this.currentSettings();
 
     // Se è uno studente in visita di gruppo, rimane forzatamente ancorato alla tappa sincronizzata dal docente
@@ -656,144 +729,143 @@ export class Navigator implements OnDestroy {
     this.isLoading.set(true);
 
     try {
-      await this.navigatorService.sendCommand(request, audioBlob, (chunk: StreamChunk) => {
-        if (chunk.type === 'TRANSCRIPTION' && chunk.text) {
-          this.messages.update(msgs => {
-            const updated = [...msgs];
-            const lastIndex = updated.length - 1;
-            if (lastIndex >= 0 && updated[lastIndex].sender === 'user') {
-              updated[lastIndex] = { ...updated[lastIndex], text: chunk.text! };
-            } else {
-              updated.push({ sender: 'user', text: chunk.text!, type: 'audio' });
-            }
-            return updated;
-          });
-        } else if (chunk.type === 'FINAL_RESPONSE') {
-          this.isLoading.set(false);
-          const reply = chunk.data?.reply || chunk.data?.text || chunk.text || 'Risposta ricevuta.';
-          this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
-          this.currentSubtitle.set(reply);
+      await this.navigatorService.sendCommand(
+        request,
+        audioBlob,
+        (chunk: StreamChunk) => {
+          if (this.isDestroyed || abortController.signal.aborted) return;
 
-          // Aggiorna l'indice dell'opera se il comando ha navigato verso un'altra opera
-          let targetIndex: number | null = null;
-          if (chunk.data?.currentArtworkIndex !== undefined && chunk.data?.currentArtworkIndex !== null) {
-            targetIndex = Number(chunk.data.currentArtworkIndex);
-          } else if (chunk.data?.itemAction === 'NEXT_ITEM') {
-            targetIndex = this.currentItineraryStepIndex() + 1;
-          } else if (chunk.data?.itemAction === 'PREVIOUS_ITEM') {
-            targetIndex = this.currentItineraryStepIndex() - 1;
-          }
-
-          if (targetIndex !== null && !isNaN(targetIndex) && targetIndex >= 0 && targetIndex < this.itinerary().length) {
-            if (targetIndex !== this.currentItineraryStepIndex()) {
-              this.currentItineraryStepIndex.set(targetIndex);
-              this.itemIsArtwork.set(true);
-              if (this.isGroup() && this.isTeacher() && this.sessionCode()) {
-                this.socketService.changeStep(this.sessionCode()!, '', targetIndex).catch(err => {
-                  console.warn('Errore broadcast step change da comando vocale:', err);
-                });
-              }
-            }
-          }
-
-          // Aggiorna lo stato opera vs artista se indicato dalla risposta o dai parametri
-          if (chunk.data?.targetArtist || extraParams.targetArtist) {
-            this.itemIsArtwork.set(false);
-          } else if (chunk.data?.itemAction || extraParams.itemAction || targetIndex !== null || chunk.data?.targetArtwork || chunk.data?.artwork) {
-            this.itemIsArtwork.set(true);
-          }
-
-          // Aggiorna l'opera d'arte e le sue immagini se ricevute dal flusso del navigator
-          if (chunk.data?.artwork) {
-            const returnedArtwork = chunk.data.artwork;
-            this.itinerary.update(currentList => {
-              if (!currentList || currentList.length === 0) return [returnedArtwork];
-              const idx = this.currentItineraryStepIndex();
-              const existing = currentList[idx] || currentList[0];
-              const returnedImages = returnedArtwork.assets?.images || [];
-              const hasNewImages = returnedImages.length > 0 && !returnedImages[0].url.includes('place_holder.jpg');
-              const merged: ArtworkResponse = {
-                ...existing,
-                ...returnedArtwork,
-                assets: hasNewImages ? returnedArtwork.assets : existing.assets
-              };
-              const copy = [...currentList];
-              copy[idx] = merged;
-              return copy;
-            });
-            if (this.activeVisitService.isSingleArtworkMode() && this.itinerary().length > 0) {
-              this.activeVisitService.setVirtualSingleArtworkVisit(this.itinerary()[0]);
-            }
-          }
-
-          // Aggiorna eventuali impostazioni modificate a voce
-          if (chunk.data?.tone || chunk.data?.language || chunk.data?.length) {
-            this.isVoiceUpdatingSettings = true;
-            this.currentSettings.update(curr => {
-              const updated = { ...curr };
-              if (chunk.data?.language) updated.language = chunk.data.language;
-              if (chunk.data?.tone) {
-                const t = chunk.data.tone;
-                if (t === 'infantile') updated.tone = 'bambino';
-                else if (t === 'simple') updated.tone = 'studente';
-                else if (t === 'medium') updated.tone = 'adulto';
-                else if (t === 'technical' || t === 'thecnical') updated.tone = 'specialista';
-                else if (['bambino', 'studente', 'adulto', 'specialista'].includes(t)) updated.tone = t as any;
-              }
-              if (chunk.data?.length !== undefined && chunk.data?.length !== null) {
-                const l = Number(chunk.data.length);
-                if (!isNaN(l)) updated.duration = l;
+          if (chunk.type === 'TRANSCRIPTION' && chunk.text) {
+            this.messages.update(msgs => {
+              const updated = [...msgs];
+              const lastIndex = updated.length - 1;
+              if (lastIndex >= 0 && updated[lastIndex].sender === 'user') {
+                updated[lastIndex] = { ...updated[lastIndex], text: chunk.text! };
+              } else {
+                updated.push({ sender: 'user', text: chunk.text!, type: 'audio' });
               }
               return updated;
             });
-            setTimeout(() => {
-              this.isVoiceUpdatingSettings = false;
-            }, 600);
-          }
+          } else if (chunk.type === 'FINAL_RESPONSE') {
+            this.isLoading.set(false);
+            const reply = chunk.data?.reply || chunk.data?.text || chunk.text || 'Risposta ricevuta.';
+            this.messages.update(msgs => [...msgs, { sender: 'ai', text: reply }]);
+            this.currentSubtitle.set(reply);
 
-          const audioData = chunk.data?.audio;
-          if (audioData) {
-            this.lastAudioUrl = audioData;
-            this.isPlaying.set(true);
-            this.playAudioSource(audioData);
+            // Aggiorna l'indice dell'opera se il comando ha navigato verso un'altra opera
+            let targetIndex: number | null = null;
+            if (chunk.data?.currentArtworkIndex !== undefined && chunk.data?.currentArtworkIndex !== null) {
+              targetIndex = Number(chunk.data.currentArtworkIndex);
+            } else if (chunk.data?.itemAction === 'NEXT_ITEM') {
+              targetIndex = this.currentItineraryStepIndex() + 1;
+            } else if (chunk.data?.itemAction === 'PREVIOUS_ITEM') {
+              targetIndex = this.currentItineraryStepIndex() - 1;
+            }
+
+            if (targetIndex !== null && !isNaN(targetIndex) && targetIndex >= 0 && targetIndex < this.itinerary().length) {
+              if (targetIndex !== this.currentItineraryStepIndex()) {
+                this.currentItineraryStepIndex.set(targetIndex);
+                this.itemIsArtwork.set(true);
+                if (this.isGroup() && this.isTeacher() && this.sessionCode()) {
+                  this.socketService.changeStep(this.sessionCode()!, '', targetIndex).catch(err => {
+                    console.warn('Errore broadcast step change da comando vocale:', err);
+                  });
+                }
+              }
+            }
+
+            // Aggiorna lo stato opera vs artista se indicato dalla risposta o dai parametri
+            if (chunk.data?.targetArtist || extraParams.targetArtist) {
+              this.itemIsArtwork.set(false);
+            } else if (chunk.data?.itemAction || extraParams.itemAction || targetIndex !== null || chunk.data?.targetArtwork || chunk.data?.artwork) {
+              this.itemIsArtwork.set(true);
+            }
+
+            // Aggiorna l'opera d'arte e le sue immagini se ricevute dal flusso del navigator
+            if (chunk.data?.artwork) {
+              const returnedArtwork = chunk.data.artwork;
+              this.itinerary.update(currentList => {
+                if (!currentList || currentList.length === 0) return [returnedArtwork];
+                const idx = this.currentItineraryStepIndex();
+                const existing = currentList[idx] || currentList[0];
+                const returnedImages = returnedArtwork.assets?.images || [];
+                const hasNewImages = returnedImages.length > 0 && !returnedImages[0].url.includes('place_holder.jpg');
+                const merged: ArtworkResponse = {
+                  ...existing,
+                  ...returnedArtwork,
+                  assets: hasNewImages ? returnedArtwork.assets : existing.assets
+                };
+                const copy = [...currentList];
+                copy[idx] = merged;
+                return copy;
+              });
+              if (this.activeVisitService.isSingleArtworkMode() && this.itinerary().length > 0) {
+                this.activeVisitService.setVirtualSingleArtworkVisit(this.itinerary()[0]);
+              }
+            }
+
+            // Aggiorna eventuali impostazioni modificate a voce
+            if (chunk.data?.tone || chunk.data?.language || chunk.data?.length) {
+              this.isVoiceUpdatingSettings = true;
+              this.currentSettings.update(curr => {
+                const updated = { ...curr };
+                if (chunk.data?.language) updated.language = chunk.data.language;
+                if (chunk.data?.tone) {
+                  const t = chunk.data.tone;
+                  if (t === 'infantile') updated.tone = 'bambino';
+                  else if (t === 'simple') updated.tone = 'studente';
+                  else if (t === 'medium') updated.tone = 'adulto';
+                  else if (t === 'technical' || t === 'thecnical') updated.tone = 'specialista';
+                  else if (['bambino', 'studente', 'adulto', 'specialista'].includes(t)) updated.tone = t as any;
+                }
+                if (chunk.data?.length !== undefined && chunk.data?.length !== null) {
+                  const l = Number(chunk.data.length);
+                  if (!isNaN(l)) updated.duration = l;
+                }
+                return updated;
+              });
+              setTimeout(() => {
+                this.isVoiceUpdatingSettings = false;
+              }, 600);
+            }
+
+            const audioData = chunk.data?.audio;
+            if (audioData) {
+              this.lastAudioUrl = audioData;
+              if (!this.isDestroyed && !abortController.signal.aborted) {
+                this.playAudioSource(audioData);
+              }
+            }
+          } else if (chunk.type === 'ERROR') {
+            this.isLoading.set(false);
+            const errMsg = chunk.error || 'Errore durante la comunicazione con il server.';
+            this.messages.update(msgs => [...msgs, { sender: 'ai', text: errMsg }]);
           }
-        } else if (chunk.type === 'ERROR') {
-          this.isLoading.set(false);
-          const errMsg = chunk.error || 'Errore durante la comunicazione con il server.';
-          this.messages.update(msgs => [...msgs, { sender: 'ai', text: errMsg }]);
-        }
-      });
+        },
+        abortController.signal
+      );
     } catch (err: any) {
+      if (err?.name === 'AbortError' || abortController.signal.aborted) {
+        return;
+      }
       this.isLoading.set(false);
       const errMsg = err?.message || 'Errore di connessione con il navigatore.';
       this.messages.update(msgs => [...msgs, { sender: 'ai', text: errMsg }]);
+    } finally {
+      if (this.commandAbortController === abortController) {
+        this.commandAbortController = null;
+        this.isLoading.set(false);
+      }
     }
   }
 
   togglePlay(): void {
-    const willPlay = !this.isPlaying();
-    this.isPlaying.set(willPlay);
+    if (this.isLoading()) return;
 
-    if (willPlay) {
-      if (this.currentAudio) {
-        this.currentAudio.play().then(() => {
-          if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
-            this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
-          }
-        }).catch(err => {
-          console.warn('Playback audio non consentito dal browser:', err);
-          this.isPlaying.set(false);
-        });
-      } else if (this.lastAudioUrl) {
-        this.playAudioSource(this.lastAudioUrl);
-      }
+    if (this.isPlaying()) {
+      this.pauseAudio();
     } else {
-      if (this.currentAudio) {
-        this.currentAudio.pause();
-        if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
-          this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'paused');
-        }
-      }
+      this.startAudio();
     }
   }
 
@@ -805,6 +877,7 @@ export class Navigator implements OnDestroy {
   }
 
   seekAudio(event: MouseEvent): void {
+    if (this.isLoading()) return;
     const target = event.currentTarget as HTMLElement;
     if (!target) return;
     const rect = target.getBoundingClientRect();
@@ -822,37 +895,40 @@ export class Navigator implements OnDestroy {
       const dur = this.currentAudio.duration || this.audioDuration() || 0;
       if (dur > 0) {
         const newTime = percent * dur;
-        this.currentAudio.currentTime = newTime;
+        try {
+          this.currentAudio.currentTime = newTime;
+        } catch (e) {}
         this.audioCurrentTime.set(newTime);
       }
     }
   }
 
   private initAudioElement(src: string): void {
-    if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio = null;
-    }
-    this.currentAudio = new Audio(src);
-    this.currentAudio.ontimeupdate = () => {
-      if (this.currentAudio) {
-        this.audioCurrentTime.set(this.currentAudio.currentTime);
+    this.stopAudio();
+    const audio = new Audio(src);
+    this.currentAudio = audio;
+
+    audio.ontimeupdate = () => {
+      if (this.currentAudio === audio) {
+        this.audioCurrentTime.set(audio.currentTime);
       }
     };
-    this.currentAudio.onloadedmetadata = () => {
-      if (this.currentAudio) {
-        this.audioDuration.set(this.currentAudio.duration || 0);
+    audio.onloadedmetadata = () => {
+      if (this.currentAudio === audio) {
+        this.audioDuration.set(audio.duration || 0);
       }
     };
-    this.currentAudio.onended = () => {
-      this.isPlaying.set(false);
-      this.audioCurrentTime.set(0);
-      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
-        this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'completed');
+    audio.onended = () => {
+      if (this.currentAudio === audio) {
+        this.isPlaying.set(false);
+        this.audioCurrentTime.set(0);
+        if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+          this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'completed');
+        }
       }
     };
-    this.currentAudio.onpause = () => {
-      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+    audio.onpause = () => {
+      if (this.currentAudio === audio && this.isGroup() && !this.isTeacher() && this.sessionCode()) {
         const dur = this.audioDuration();
         const cur = this.audioCurrentTime();
         if (cur > 0 && cur < dur - 0.5) {
@@ -860,24 +936,45 @@ export class Navigator implements OnDestroy {
         }
       }
     };
-    this.currentAudio.onplay = () => {
-      if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
+    audio.onplay = () => {
+      if (this.currentAudio === audio && this.isGroup() && !this.isTeacher() && this.sessionCode()) {
         this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
       }
     };
-    this.currentAudio.onerror = () => this.isPlaying.set(false);
+    audio.onerror = () => {
+      if (this.currentAudio === audio) {
+        this.isPlaying.set(false);
+      }
+    };
   }
 
   private playAudioSource(src: string): void {
+    if (this.isDestroyed) return;
     this.initAudioElement(src);
     if (this.currentAudio) {
-      this.currentAudio.play().then(() => {
+      const audio = this.currentAudio;
+      this.isPlaying.set(true);
+      this.playPromise = audio.play();
+      this.playPromise.then(() => {
+        this.playPromise = null;
+        if (this.isDestroyed || this.currentAudio !== audio) {
+          try {
+            audio.pause();
+          } catch (e) {}
+          return;
+        }
+        this.isPlaying.set(true);
         if (this.isGroup() && !this.isTeacher() && this.sessionCode()) {
           this.socketService.sendAudioStatus(this.sessionCode()!, this.currentItineraryStepIndex(), 'listening');
         }
       }).catch(err => {
-        console.warn('Playback audio non consentito dal browser:', err);
-        this.isPlaying.set(false);
+        this.playPromise = null;
+        if (err.name !== 'AbortError') {
+          console.warn('Playback audio non consentito dal browser o interrotto:', err);
+        }
+        if (this.currentAudio === audio) {
+          this.isPlaying.set(false);
+        }
       });
     }
   }
@@ -927,16 +1024,20 @@ export class Navigator implements OnDestroy {
   }
 
   openMap(): void {
-    this.stopAudio();
+    this.wasPlayingBeforeMap = this.isPlaying();
+    this.pauseAudio();
     this.isMapOpen.set(true);
   }
 
   closeMap(): void {
     this.isMapOpen.set(false);
-    this.startAudio();
+    if (this.wasPlayingBeforeMap) {
+      this.startAudio();
+    }
   }
 
   tellMeMore(): void {
+    if (this.isLoading()) return;
     console.log("Richiesta maggiori informazioni sull'opera...");
     this.stopAudio();
     this.itemIsArtwork.set(true);
@@ -945,6 +1046,7 @@ export class Navigator implements OnDestroy {
   }
 
   askAuthor(): void {
+    if (this.isLoading()) return;
     console.log("Richiesta informazioni sull'autore dell'opera...");
     this.stopAudio();
     this.itemIsArtwork.set(false);
@@ -953,6 +1055,7 @@ export class Navigator implements OnDestroy {
   }
 
   askPoi(poiType: string, label: string): void {
+    if (this.isLoading()) return;
     this.messages.update(msgs => [...msgs, { sender: 'user', text: `Dove si trova: ${label}?`, type: 'text' }]);
     this.stopAudio();
     this.executeCommand({ targetPoiType: poiType });
@@ -1005,6 +1108,7 @@ export class Navigator implements OnDestroy {
   }
 
   nextArtwork(): void {
+    if (this.isLoading()) return;
     this.stopAudio();
     if (this.isGroup() && !this.isTeacher()) return;
     const nextIdx = this.currentItineraryStepIndex() + 1;
@@ -1014,6 +1118,7 @@ export class Navigator implements OnDestroy {
   }
 
   prevArtwork(): void {
+    if (this.isLoading()) return;
     this.stopAudio();
     if (this.isGroup() && !this.isTeacher()) return;
     const prevIdx = this.currentItineraryStepIndex() - 1;

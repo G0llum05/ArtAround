@@ -92,7 +92,7 @@ export class Navigator implements OnDestroy {
   availableQuizzes = signal<any[]>([]);
   isQuizActive = computed<boolean>(() => {
     const state = this.socketService.quizState();
-    return this.isQuizModalOpen() || (!!this.socketService.activeQuiz() && state !== 'not_started');
+    return this.isGroup() && (this.isQuizModalOpen() || (!!this.socketService.activeQuiz() && state !== 'not_started'));
   });
 
   // Stati UI
@@ -188,7 +188,7 @@ export class Navigator implements OnDestroy {
     effect(() => {
       const active = this.socketService.activeQuiz();
       const state = this.socketService.quizState();
-      if (active && (state === 'in_progress' || state === 'completed')) {
+      if (this.isGroup() && active && (state === 'in_progress' || state === 'completed')) {
         this.isQuizModalOpen.set(true);
       }
     });
@@ -323,6 +323,12 @@ export class Navigator implements OnDestroy {
           console.log('[Navigator] Quiz finale concluso:', data);
           this.isQuizModalOpen.set(true);
         });
+      } else {
+        this.sessionCode.set(null);
+        this.isGroup.set(false);
+        this.isTeacher.set(false);
+        this.isQuizModalOpen.set(false);
+        this.socketService.disconnect();
       }
     });
   }
@@ -1235,5 +1241,11 @@ export class Navigator implements OnDestroy {
       this.socketService.sendGroupMessage(code, text.trim(), this.currentItineraryStepIndex())
         .catch((err: any) => console.error('[Navigator] Errore invio messaggio stanza:', err));
     }
+  }
+
+  closeQuizModal(): void {
+    this.isQuizModalOpen.set(false);
+    this.socketService.resetSessionState();
+    this.socketService.disconnect();
   }
 }

@@ -38,6 +38,25 @@
   background: var(--surface-variant);
 }
 
+.btn-close-quiz {
+  background: transparent;
+  border: none;
+  color: var(--on-surface-variant, #666);
+  cursor: pointer;
+  padding: var(--spacing-2xs, 4px);
+  border-radius: var(--radius-sm, 6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast, 0.2s ease);
+  margin-left: var(--spacing-sm, 8px);
+}
+
+.btn-close-quiz:hover {
+  background: var(--surface-container-highest, rgba(0, 0, 0, 0.08));
+  color: var(--on-surface, #000);
+}
+
 .quiz-header-content {
   flex: 1;
 }

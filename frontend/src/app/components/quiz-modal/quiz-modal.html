@@ -10,6 +10,12 @@
         <h2 class="quiz-title" id="quiz-modal-title">{{ quiz()?.title || 'Quiz Finale di Verifica' }}</h2>
         <p class="quiz-desc">{{ quiz()?.description || 'Rispondi alle domande sulle opere viste durante la visita.' }}</p>
       </div>
+      <button type="button" class="btn-close-quiz" (click)="close()" aria-label="Chiudi il quiz" tabindex="0">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </header>
 
     <div class="quiz-content">
@@ -213,6 +219,10 @@
           } @else {
             <span>Invia le mie Risposte ({{ answeredCount() }}/{{ quiz()?.questions?.length || 0 }})</span>
           }
+        </button>
+      } @else if (hasSubmitted()) {
+        <button type="button" class="btn btn-secondary w-full" (click)="close()" aria-label="Esci dalla visita" tabindex="0">
+          Esci dalla Visita
         </button>
       }
     </footer>

@@ -298,7 +298,7 @@
       [sessionCode]="sessionCode() || ''"
       [quiz]="socketService.activeQuiz()"
       [totalStudents]="(audioSummary()?.totalStudents) || (socketService.participants().length)"
-      (closeModal)="isQuizModalOpen.set(false)"
+      (closeModal)="closeQuizModal()"
     ></app-quiz-modal>
   }
 

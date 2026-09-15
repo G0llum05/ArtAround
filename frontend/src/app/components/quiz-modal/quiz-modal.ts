@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GroupSocketService } from '../../services/group-socket.service';
+import { ActiveVisitService } from '../../services/active-visit.service';
 import { Quiz, QuizSubmissionAnswer, QuizResult } from '../../models/quiz.model';
 
 @Component({
@@ -14,6 +15,7 @@ import { Quiz, QuizSubmissionAnswer, QuizResult } from '../../models/quiz.model'
 })
 export class QuizModal implements OnInit, OnDestroy {
   protected socketService = inject(GroupSocketService);
+  protected activeVisitService = inject(ActiveVisitService);
   private router = inject(Router);
 
   isTeacher = input<boolean>(false);
@@ -144,31 +146,33 @@ export class QuizModal implements OnInit, OnDestroy {
   }
 
   endVisitAndClose(): void {
+    this.activeVisitService.clearActiveVisit();
+    this.closeModal.emit();
     if (this.isTeacher()) {
       this.socketService.endSession(this.sessionCode(), '')
         .finally(() => {
           this.socketService.disconnect();
-          this.closeModal.emit();
           this.router.navigate(['/']);
         });
     } else {
+      this.socketService.leaveRoom(this.sessionCode());
       this.socketService.disconnect();
-      this.closeModal.emit();
       this.router.navigate(['/']);
     }
   }
 
   close(): void {
+    this.activeVisitService.clearActiveVisit();
+    this.closeModal.emit();
     if (this.isTeacher()) {
       this.socketService.endSession(this.sessionCode(), '')
         .finally(() => {
           this.socketService.disconnect();
-          this.closeModal.emit();
           this.router.navigate(['/']);
         });
     } else {
+      this.socketService.leaveRoom(this.sessionCode());
       this.socketService.disconnect();
-      this.closeModal.emit();
       this.router.navigate(['/']);
     }
   }

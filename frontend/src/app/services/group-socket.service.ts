@@ -542,17 +542,34 @@ export class GroupSocketService {
 
   leaveRoom(sessionCode?: string): void {
     if (this.socket) {
-      this.socket.emit('session:leave', { sessionCode });
+      try {
+        this.socket.emit('session:leave', { sessionCode });
+      } catch (e) {}
       this.disconnect();
+    } else {
+      this.resetSessionState();
     }
+  }
+
+  resetSessionState(): void {
+    this.activeQuiz.set(null);
+    this.quizState.set('not_started');
+    this.studentsAudioSummary.set(null);
+    this.participants.set([]);
+    this.groupMessages.set([]);
+    this.currentStepIndex.set(0);
+    this.isLocked.set(true);
   }
 
   disconnect(): void {
     if (this.socket) {
-      this.socket.disconnect();
+      try {
+        this.socket.disconnect();
+      } catch (e) {}
       this.socket = null;
     }
     this.isConnected.set(false);
+    this.resetSessionState();
   }
 }
 

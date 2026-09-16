@@ -14,7 +14,7 @@ class NavigatorController {
     // header per streaming NDJSON (newline-delimited JSON) per avere la connessione persistente e inviare più chunk di risposta in tempo reale
     res.setHeader('Content-Type', 'application/x-ndjson');
     res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
+    // res.setHeader('Connection', 'keep-alive');
 
     try {
       console.log('[NavigatorController] Received request:', req.body);

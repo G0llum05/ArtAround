@@ -1,7 +1,7 @@
 :host {
   display: block;
   width: 100%;
-  min-height: 100vh;
+  min-height: 90vh;
   background-color: var(--background);
   color: var(--on-surface);
   font-family: var(--font-sans);
@@ -12,7 +12,8 @@
    ========================================================================== */
 .groups-container {
   width: 100%;
-  max-width: 44rem;
+  height: 100%;
+  max-width: 70rem;
   margin: 0 auto;
   padding: var(--spacing-lg) var(--margin-mobile);
   box-sizing: border-box;
@@ -269,8 +270,8 @@
 
 .role-badge {
   background-color: var(--surface-variant);
-  border: 0.0625rem solid var(--outline-variant);
-  color: var(--secondary);
+  border: 0.0625rem solid var(--tertiary);
+  color: var(--tertiary);
   font-size: var(--label-md-size);
   font-weight: 700;
   text-transform: uppercase;

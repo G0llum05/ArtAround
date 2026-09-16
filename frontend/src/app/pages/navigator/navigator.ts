@@ -29,7 +29,6 @@ import { QuizService } from '../../services/quiz.service';
 import { VisitService } from '../../services/visit.service';
 
 import { DUMMY_ITINERARY_ARTWORKS } from './dummy';
-import { TruncatePipe } from '../../pipes/truncate-pipe';
 
 const settingsKey = 'navigatorSettings'
 
@@ -45,7 +44,6 @@ const settingsKey = 'navigatorSettings'
     Map,
     QuizModal,
     GroupChat,
-    TruncatePipe,
   ],
   templateUrl: './navigator.html',
   styleUrl: './navigator.css',

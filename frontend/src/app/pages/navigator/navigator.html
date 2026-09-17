@@ -50,7 +50,11 @@
     <!-- COLONNA 1: IMMAGINE + AUDIO -->
     <section class="card area-media" [class.artist-mode]="!itemIsArtwork()" [class.artwork-mode]="itemIsArtwork()">
       <div class="artwork-img-wrap">
-        <img [src]="displayImageUrl()" [alt]="displayImageAlt()" class="card-img" />
+        <img
+          [src]="displayImageUrl()"
+          [alt]="displayImageAlt()" class="card-img"
+          (error)="$any($event.target).src = 'assets/images/imageComingSoon.jpg'"
+        />
 
         @if (!itemIsArtwork()) {
           <div class="item-type-badge artist-badge">

@@ -20,7 +20,7 @@
   background-color: var(--surface, #fff);
   border-radius: 16px;
   width: 100%;
-  max-width: 900px; /* Leggermente più largo per dare spazio alla mappa */
+  max-width: 90vw; /* Leggermente più largo per dare spazio alla mappa */
   max-height: 92vh;
   display: flex;
   flex-direction: column;

@@ -137,7 +137,7 @@
 
 .visit-title {
   font-family: var(--font-serif);
-  font-size: var(--headline-md-size);
+  font-size: var(--headline-lg-size);
   font-weight: var(--headline-md-weight);
   color: var(--on-surface);
   margin: 0;
@@ -154,7 +154,7 @@
    PIN SHOWCASE CARD (MOBILE FIRST)
    ========================================================================== */
 .pin-showcase-card {
-  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-variant) 100%);
+  background: var(--surface);
   border: 0.09375rem solid var(--primary);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md) var(--spacing-lg);
@@ -166,7 +166,7 @@
 }
 
 .pin-label {
-  font-size: 0.75rem;
+  font-size: var(--body-md-size);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -183,9 +183,9 @@
 
 .pin-code {
   font-family: monospace;
-  font-size: 2rem;
+  font-size: 2.75rem;
   font-weight: 800;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.3rem;
   color: var(--primary);
   line-height: 1;
 }
@@ -217,7 +217,7 @@
 }
 
 .pin-instructions {
-  font-size: 0.8rem;
+  font-size: var(--body-md-size);
   color: var(--on-surface-variant);
   margin: 0.25rem 0 0 0;
   line-height: 1.4;
@@ -249,7 +249,7 @@
 .participants-title {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-size: var(--headline-md-size);
   font-weight: 700;
   color: var(--on-surface);
   display: flex;
@@ -327,7 +327,7 @@
 }
 
 .participant-name {
-  font-size: 0.875rem;
+  font-size: var(--body-md-size);
   font-weight: 600;
   color: var(--on-surface);
   white-space: nowrap;
@@ -336,7 +336,7 @@
 }
 
 .participant-role-tag {
-  font-size: 0.7rem;
+  font-size: var(--label-md-size);
   color: var(--on-surface-variant);
 }
 
@@ -399,7 +399,7 @@
 }
 
 .empty-text {
-  font-size: 0.85rem;
+  font-size: var(--label-md-size);
   color: var(--on-surface-variant);
   margin: 0;
 }
@@ -447,7 +447,7 @@
 .quiz-config-title {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: var(--body-md-size);
+  font-size: var(--headline-md-size);
   font-weight: 700;
   color: var(--on-surface);
 }
@@ -466,7 +466,7 @@
 
 .quiz-config-desc {
   margin: 0.125rem 0 0 0;
-  font-size: 0.8rem;
+  font-size: var(--body-md-size);
   color: var(--on-surface-variant);
   line-height: 1.3;
 }
@@ -598,8 +598,8 @@
 }
 
 .btn-outline {
-  background-color: transparent;
-  border: 0.09375rem solid var(--outline);
+  background-color: var(--surface);
+  border: 0.09375rem solid var(--primary);
   color: var(--on-surface);
 }
 

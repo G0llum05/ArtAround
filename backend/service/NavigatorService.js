@@ -158,7 +158,13 @@ class NavigatorService {
       language = Sanitizer.sanitizeLanguage(response.language) || language;
     }
 
-    if (response.length) {
+    if (response.itemAction === 'TELL_ME_LESS') {
+      if (!response.length || response.length >= length) {
+        length = length > 30 ? 30 : 15;
+      } else {
+        length = Sanitizer.sanitizeLength(response.length) || (length > 30 ? 30 : 15);
+      }
+    } else if (response.length) {
       length = Sanitizer.sanitizeLength(response.length) || length;
     }
 
@@ -203,6 +209,10 @@ class NavigatorService {
   static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null) {
     let effectiveLength = Sanitizer.sanitizeLength(length) || 30;
     length = effectiveLength;
+
+    if (itemAction === 'TELL_ME_LESS') {
+      length = length > 30 ? 30 : 15;
+    }
 
     if (!visitId && artworkId) {
       if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
@@ -279,6 +289,10 @@ class NavigatorService {
       case 'TELL_ME_MORE':
         targetIndex = currentArtworkIndex;
         tellMeMore = true;
+        break;
+
+      case 'TELL_ME_LESS':
+        targetIndex = currentArtworkIndex;
         break;
 
       default:

@@ -120,6 +120,8 @@ async function main() {
       console.log(`  [1] 🖼️  Spiega opera corrente (EXPLAIN_ITEM)`);
       console.log(`  [2] ⏩ Prossima opera (NEXT_ITEM)`);
       console.log(`  [3] ⏪ Opera precedente (PREVIOUS_ITEM)`);
+      console.log(`  [6] 🔉 Dimmi di meno / Riduci spiegazione (TELL_ME_LESS)`);
+      console.log(`  [7] 🔊 Dimmi di più / Approfondisci (TELL_ME_MORE)`);
 
       console.log(`\n${colors.bright}--- AZIONI NON-ITEM DISPONIBILI ---${colors.reset}`);
       console.log(`  [4] 🚻 Richiedi Punto di Interesse (NAVIGATE_POI: toilette, bar, exit, elevator, ticket_office, info_point)`);
@@ -127,7 +129,7 @@ async function main() {
 
       console.log(`\n  [q] ❌ Uscire dal test`);
 
-      const choice = await askQuestion(`\n${colors.gold}${colors.bright}Seleziona azione (1, 2, 3, 4, 5 o q) > ${colors.reset}`);
+      const choice = await askQuestion(`\n${colors.gold}${colors.bright}Seleziona azione (1, 2, 3, 4, 5, 6, 7 o q) > ${colors.reset}`);
       const trimmedChoice = choice.trim().toLowerCase();
 
       if (trimmedChoice === 'q' || trimmedChoice === 'exit') {
@@ -146,6 +148,10 @@ async function main() {
         itemAction = 'NEXT_ITEM';
       } else if (trimmedChoice === '3' || trimmedChoice === 'precedente' || trimmedChoice === 'prev') {
         itemAction = 'PREVIOUS_ITEM';
+      } else if (trimmedChoice === '6' || trimmedChoice === 'meno' || trimmedChoice === 'dimmi di meno') {
+        itemAction = 'TELL_ME_LESS';
+      } else if (trimmedChoice === '7' || trimmedChoice === 'piu' || trimmedChoice === 'più' || trimmedChoice === 'dimmi di più') {
+        itemAction = 'TELL_ME_MORE';
       } else if (trimmedChoice === '4' || trimmedChoice === 'poi') {
         isNonItemAction = true;
         const poiInput = await askQuestion(` 📍 Inserisci POI [toilette/bar/exit/elevator/ticket_office/info_point]: ${colors.reset}`);
@@ -253,6 +259,7 @@ async function main() {
           // Aggiorna l'indice corrente se l'azione di navigazione è andata a buon fine
           if (itemAction === 'NEXT_ITEM') currentArtworkIndex++;
           if (itemAction === 'PREVIOUS_ITEM') currentArtworkIndex--;
+          if (result && result.length) activeLength = result.length;
 
           await printState({
             itemRes: result,

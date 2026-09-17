@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, DestroyRef, effect, inject, OnDestroy, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { debounceTime, filter, skip } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { Chat } from '../../components/chat/chat';
 import { GroupChat } from '../../components/group-chat/group-chat';
 import { Itinerary } from '../../components/itinerary/itinerary';
@@ -152,8 +152,8 @@ export class Navigator implements OnDestroy {
   private playPromise: Promise<void> | null = null;
   private wasPlayingBeforeMap = false;
   private wasPlayingBeforeSettings = false;
-  private isVoiceUpdatingSettings = false;
   private isInitialSettingsPending = false;
+  private snapshotSettings: UserNavigatorSettings | null = null;
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private currentAudio: HTMLAudioElement | null = null;
@@ -225,18 +225,6 @@ export class Navigator implements OnDestroy {
       prevGroupMessagesLength = currentMsgs.length;
     });
 
-    toObservable(this.currentSettings)
-      .pipe(
-        takeUntilDestroyed(), // Chiude il tubo se il componente viene distrutto
-        skip(1), // Opzionale: evita di fare la chiamata API al primo caricamento della pagina (quando legge dal localStorage)
-        debounceTime(400), // Aspetta mezzo secondo di inattività
-      )
-      .subscribe(() => {
-        if (!this.isVoiceUpdatingSettings && !this.isInitialSettingsPending) {
-          this.executeCommand({ itemAction: 'EXPLAIN_ITEM' });
-        }
-      });
-
     this.activeVisitService.stepJumpRequested$.pipe(takeUntilDestroyed()).subscribe((stepIndex) => {
       this.changeItineraryStep(stepIndex);
     });
@@ -246,6 +234,7 @@ export class Navigator implements OnDestroy {
       if (params['openSettings'] === 'true' || params['openSettings'] === true) {
         this.isSettingsOpen.set(true);
         this.isInitialSettingsPending = true;
+        this.snapshotSettings = { ...this.currentSettings() };
       }
       if (params['step'] !== undefined && params['step'] !== null) {
         const parsed = parseInt(params['step'], 10);
@@ -1012,7 +1001,6 @@ export class Navigator implements OnDestroy {
 
             // Aggiorna eventuali impostazioni modificate a voce
             if (chunk.data?.tone || chunk.data?.language || chunk.data?.length) {
-              this.isVoiceUpdatingSettings = true;
               this.currentSettings.update((curr) => {
                 const updated = { ...curr };
                 if (chunk.data?.language) updated.language = chunk.data.language;
@@ -1031,9 +1019,6 @@ export class Navigator implements OnDestroy {
                 }
                 return updated;
               });
-              setTimeout(() => {
-                this.isVoiceUpdatingSettings = false;
-              }, 600);
             }
 
             const audioData = chunk.data?.audio;
@@ -1262,11 +1247,20 @@ export class Navigator implements OnDestroy {
   openSettings(): void {
     this.wasPlayingBeforeSettings = this.isPlaying();
     this.pauseAudio();
+    this.snapshotSettings = { ...this.currentSettings() };
     this.isSettingsOpen.set(true);
   }
 
   closeSettings(): void {
     this.isSettingsOpen.set(false);
+    localStorage.setItem(settingsKey, JSON.stringify(this.currentSettings()));
+
+    const changed =
+      !this.snapshotSettings ||
+      this.currentSettings().tone !== this.snapshotSettings.tone ||
+      this.currentSettings().language !== this.snapshotSettings.language ||
+      this.currentSettings().duration !== this.snapshotSettings.duration;
+
     if (this.isInitialSettingsPending) {
       this.isInitialSettingsPending = false;
       const targetArtId = this.activeVisitService.isSingleArtworkMode()
@@ -1277,6 +1271,17 @@ export class Navigator implements OnDestroy {
         currentArtworkIndex: this.currentItineraryStepIndex(),
         artworkId: targetArtId,
       });
+    } else if (changed) {
+      const targetArtId = this.activeVisitService.isSingleArtworkMode()
+        ? (this.itinerary()[0]?.id || (this.itinerary()[0] as any)?._id)
+        : undefined;
+      this.executeCommand({
+        itemAction: 'EXPLAIN_ITEM',
+        currentArtworkIndex: this.currentItineraryStepIndex(),
+        artworkId: targetArtId,
+      });
+    } else if (this.wasPlayingBeforeSettings) {
+      this.startAudio();
     }
   }
 

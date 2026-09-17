@@ -76,7 +76,7 @@ class NavigatorRequestDTO {
 class NavigatorResponseDTO {
   constructor(result = '', audio = null, error = null) {
     if (typeof result === 'string') {
-      this.text = result;
+      this.text = Sanitizer.sanitizeOutputText(result);
       this.currentArtworkIndex = null;
       this.itemAction = null;
       this.targetStepIndex = null;
@@ -89,7 +89,7 @@ class NavigatorResponseDTO {
       this.language = null;
       this.length = null;
     } else {
-      this.text = result?.text || result?.description || '';
+      this.text = Sanitizer.sanitizeOutputText(result?.text || result?.description || '');
       this.currentArtworkIndex = result?.currentArtworkIndex !== undefined ? result.currentArtworkIndex : null;
       this.itemAction = result?.itemAction || null;
       this.targetStepIndex = result?.targetStepIndex !== undefined ? result.targetStepIndex : null;

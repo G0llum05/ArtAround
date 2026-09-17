@@ -114,7 +114,7 @@ class LLMService {
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione item:\x1b[0m`, prompt);
       // TODO CHECK qua si DEVONO mettere dei controlli sui promtp che vengono fatti. Potrebbero esserci lingue sbagliate o lunghezze sbagliate
       const generated = await this._callLLMHandler(prompt);
-      return Sanitizer.cleanTextForVoice(generated);
+      return Sanitizer.sanitizeOutputText(generated);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione item fallita, utilizzo fallback mock:', err.message);
       return this._mockAdaptedItem(artworkContext.title, tone, length, language, existingSimilarItem);
@@ -125,7 +125,7 @@ class LLMService {
   static async nonItemPOI(museumName, POI, language, tone) {
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
       // TODO
-      return Sanitizer.cleanTextForVoice(`Il ${POI} nel museo ${museumName} è un punto di interesse importante.`);
+      return Sanitizer.sanitizeOutputText(`Il ${POI} nel museo ${museumName} è un punto di interesse importante.`);
     }
 
     try {
@@ -137,10 +137,10 @@ class LLMService {
       });
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione info POI:\x1b[0m`, prompt);
       const generated = await this._callLLMHandler(prompt);
-      return Sanitizer.cleanTextForVoice(generated);
+      return Sanitizer.sanitizeOutputText(generated);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione info POI fallita, utilizzo fallback mock:', err.message);
-      return Sanitizer.cleanTextForVoice(`Il ${POI} nel museo ${museumName} è un punto di interesse importante.`);
+      return Sanitizer.sanitizeOutputText(`Il ${POI} nel museo ${museumName} è un punto di interesse importante.`);
     }
   }
 
@@ -149,7 +149,7 @@ class LLMService {
     const artistName = artist?.name ? `${artist.name} ${artist.surname || ''}`.trim() : (typeof artist === 'string' ? artist : 'Autore');
 
     if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return Sanitizer.cleanTextForVoice(`L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`);
+      return Sanitizer.sanitizeOutputText(`L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`);
     }
 
     try {
@@ -164,10 +164,10 @@ class LLMService {
 
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione info artista:\x1b[0m`, prompt);
       const generated = await this._callLLMHandler(prompt);
-      return Sanitizer.cleanTextForVoice(generated);
+      return Sanitizer.sanitizeOutputText(generated);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione info artista fallita, utilizzo fallback mock:', err.message);
-      return Sanitizer.cleanTextForVoice(`L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`);
+      return Sanitizer.sanitizeOutputText(`L'artista ${artistName} è l'autore dell'opera "${artworkContext?.title || 'Opera'}".`);
     }
   }
 
@@ -189,7 +189,7 @@ class LLMService {
 
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione info museo/visita:\x1b[0m`, prompt);
       const generated = await this._callLLMHandler(prompt);
-      return Sanitizer.cleanTextForVoice(generated);
+      return Sanitizer.sanitizeOutputText(generated);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione info museo fallita, utilizzo fallback mock:', err.message);
       return this._mockMuseumInfo(userQuery, museumContext, visitContext, language);
@@ -213,7 +213,7 @@ class LLMService {
 
       console.log(`\x1b[36m[DEBUG AI] Prompt generazione culture info:\x1b[0m`, prompt);
       const generated = await this._callLLMHandler(prompt);
-      return Sanitizer.cleanTextForVoice(generated);
+      return Sanitizer.sanitizeOutputText(generated);
     } catch (err) {
       console.warn('[LLMService] Chiamata LLM generazione culture info fallita, utilizzo fallback mock:', err.message);
       return this._mockCultureInfo(userQuery, artworkContext, language);

@@ -88,7 +88,7 @@ mkt-home-input-fields:has(.mkt-drawer-open) {
   justify-content: center;
   gap: var(--spacing-xs);
   background-color: var(--surface);
-  color: var(--on-surface);
+  color: var(--on-surface-variant);
   border: 0.0625rem solid var(--outline-variant);
   border-radius: var(--radius-full);
   padding: 0 var(--spacing-md);

@@ -48,7 +48,7 @@ class NavigatorRequestDTO {
       size: file.size
     } : null;
 
-    this.itemAction = body.itemAction || (body.targetStepIndex !== undefined || body.stepOffset !== undefined ? 'JUMP_ITEM' : (this.artworkId && !body.userQuery && !body.targetPoiType && !body.targetArtist ? 'EXPLAIN_ITEM' : null));
+    this.itemAction = body.itemAction || (body.targetStepIndex !== undefined || body.stepOffset !== undefined ? 'JUMP_ITEM' : (this.artworkId && !body.userQuery && !body.targetPoiType && !body.targetArtist ? 'EXPLAIN_ITEM' : (body.actionType === 'ITEM_ACTION' ? 'EXPLAIN_ITEM' : null)));
 
     this.targetStepIndex = body.targetStepIndex !== undefined ? body.targetStepIndex : null;
     this.stepOffset = body.stepOffset !== undefined ? body.stepOffset : null;

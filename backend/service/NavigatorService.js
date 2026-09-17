@@ -160,20 +160,29 @@ class NavigatorService {
       language = Sanitizer.sanitizeLanguage(response.language) || language;
     }
 
-    if (response.itemAction === 'TELL_ME_LESS') {
-      if (!response.length || response.length >= length) {
+    let effectiveItemAction = response.itemAction || null;
+    const requestedLength = response.length ? Sanitizer.sanitizeLength(response.length) : null;
+
+    if (response.itemAction === 'TELL_ME_LESS' || (requestedLength && requestedLength < length)) {
+      effectiveItemAction = 'TELL_ME_LESS';
+      if (!requestedLength || requestedLength >= length) {
         length = length > 30 ? 30 : 15;
       } else {
-        length = Sanitizer.sanitizeLength(response.length) || (length > 30 ? 30 : 15);
+        length = requestedLength;
       }
-    } else if (response.itemAction === 'TELL_ME_MORE') {
-      if (!response.length || response.length <= length) {
+    } else if (response.itemAction === 'TELL_ME_MORE' || (requestedLength && requestedLength > length)) {
+      effectiveItemAction = 'TELL_ME_MORE';
+      if (!requestedLength || requestedLength <= length) {
         length = length < 30 ? 30 : 60;
       } else {
-        length = Sanitizer.sanitizeLength(response.length) || (length < 30 ? 30 : 60);
+        length = requestedLength;
       }
-    } else if (response.length) {
-      length = Sanitizer.sanitizeLength(response.length) || length;
+    } else if (requestedLength) {
+      length = requestedLength;
+    }
+
+    if (response.actionType === 'ITEM_ACTION' && !effectiveItemAction) {
+      effectiveItemAction = 'EXPLAIN_ITEM';
     }
 
     if (response.tone) {
@@ -190,7 +199,7 @@ class NavigatorService {
       currentArtworkIndex: currentArtworkIndex || 0,
       actionType: response.actionType,
       audioFile: null,
-      itemAction: response.itemAction || null,
+      itemAction: effectiveItemAction,
       targetStepIndex: response.targetStepIndex !== undefined ? response.targetStepIndex : null,
       stepOffset: response.stepOffset !== undefined ? response.stepOffset : null,
       targetPoiType: response.targetPoiType || null,
@@ -217,6 +226,10 @@ class NavigatorService {
   }
 
   static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null, targetStepIndex = null, stepOffset = null, isGroup = false) {
+    if (!itemAction) {
+      itemAction = 'EXPLAIN_ITEM';
+    }
+
     let effectiveLength = Sanitizer.sanitizeLength(length) || 30;
     length = effectiveLength;
 

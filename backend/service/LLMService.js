@@ -283,6 +283,37 @@ class LLMService {
         if (!validActionTypes.includes(parsed.actionType)) {
           parsed.actionType = 'UNKNOWN_ACTION';
         }
+        if (parsed.actionType === 'ITEM_ACTION' && !parsed.itemAction) {
+          const isTellMeLess =
+            inputTextLower.includes('dimmi di meno') ||
+            inputTextLower.includes('meno') ||
+            inputTextLower.includes('accorcia') ||
+            inputTextLower.includes('riduci') ||
+            inputTextLower.includes('breve') ||
+            inputTextLower.includes('troppo lung') ||
+            (parsed.length && length && parsed.length < length);
+
+          const isTellMeMore =
+            inputTextLower.includes('dimmi di più') ||
+            inputTextLower.includes('approfondisci') ||
+            inputTextLower.includes('più dettagli') ||
+            inputTextLower.includes('continua') ||
+            (parsed.length && length && parsed.length > length);
+
+          if (isTellMeLess) {
+            parsed.itemAction = 'TELL_ME_LESS';
+            if (!parsed.length || (length && parsed.length >= length)) {
+              parsed.length = (length && length > 30) ? 30 : 15;
+            }
+          } else if (isTellMeMore) {
+            parsed.itemAction = 'TELL_ME_MORE';
+            if (!parsed.length || (length && parsed.length <= length)) {
+              parsed.length = (length && length < 30) ? 30 : 60;
+            }
+          } else {
+            parsed.itemAction = 'EXPLAIN_ITEM';
+          }
+        }
         if (!parsed.userQuery && (parsed.actionType === 'MUSEUM_INFO' || parsed.actionType === 'CULTURE_INFO')) {
           parsed.userQuery = inputText;
         }

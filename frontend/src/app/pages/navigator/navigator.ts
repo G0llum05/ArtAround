@@ -151,7 +151,9 @@ export class Navigator implements OnDestroy {
   private commandAbortController: AbortController | null = null;
   private playPromise: Promise<void> | null = null;
   private wasPlayingBeforeMap = false;
+  private wasPlayingBeforeSettings = false;
   private isVoiceUpdatingSettings = false;
+  private isInitialSettingsPending = false;
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private currentAudio: HTMLAudioElement | null = null;
@@ -230,7 +232,7 @@ export class Navigator implements OnDestroy {
         debounceTime(400), // Aspetta mezzo secondo di inattività
       )
       .subscribe(() => {
-        if (!this.isVoiceUpdatingSettings) {
+        if (!this.isVoiceUpdatingSettings && !this.isInitialSettingsPending) {
           this.executeCommand({ itemAction: 'EXPLAIN_ITEM' });
         }
       });
@@ -243,6 +245,7 @@ export class Navigator implements OnDestroy {
       let initialStep = 0;
       if (params['openSettings'] === 'true' || params['openSettings'] === true) {
         this.isSettingsOpen.set(true);
+        this.isInitialSettingsPending = true;
       }
       if (params['step'] !== undefined && params['step'] !== null) {
         const parsed = parseInt(params['step'], 10);
@@ -278,7 +281,9 @@ export class Navigator implements OnDestroy {
           this.itinerary(),
           initialStep,
         );
-        this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: initialStep });
+        if (!this.isInitialSettingsPending) {
+          this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: initialStep });
+        }
       }
       if (params['sessionCode']) {
         const code = params['sessionCode'].toUpperCase().trim();
@@ -483,7 +488,9 @@ export class Navigator implements OnDestroy {
             initialStep >= 0 && initialStep < loadedArtworks.length ? initialStep : 0;
           this.activeVisitService.setActiveVisit(vId, this.museumId(), loadedArtworks, validStep);
           this.currentItineraryStepIndex.set(validStep);
-          this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: validStep });
+          if (!this.isInitialSettingsPending) {
+            this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: validStep });
+          }
         },
         error: (err) => {
           console.warn('Caricamento dati visita non riuscito, uso itinerario di fallback:', err);
@@ -496,7 +503,9 @@ export class Navigator implements OnDestroy {
             validStep,
           );
           this.currentItineraryStepIndex.set(validStep);
-          this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: validStep });
+          if (!this.isInitialSettingsPending) {
+            this.executeCommand({ itemAction: 'EXPLAIN_ITEM', currentArtworkIndex: validStep });
+          }
         },
       });
   }
@@ -542,11 +551,13 @@ export class Navigator implements OnDestroy {
         this.museumId.set(mId);
         this.loadMuseumData(mId);
       }
-      this.executeCommand({
-        itemAction: 'EXPLAIN_ITEM',
-        currentArtworkIndex: 0,
-        artworkId: artId,
-      });
+      if (!this.isInitialSettingsPending) {
+        this.executeCommand({
+          itemAction: 'EXPLAIN_ITEM',
+          currentArtworkIndex: 0,
+          artworkId: artId,
+        });
+      }
       return;
     }
 
@@ -618,11 +629,13 @@ export class Navigator implements OnDestroy {
                 this.museumId.set(mId);
                 this.loadMuseumData(mId);
               }
-              this.executeCommand({
-                itemAction: 'EXPLAIN_ITEM',
-                currentArtworkIndex: 0,
-                artworkId: artId,
-              });
+              if (!this.isInitialSettingsPending) {
+                this.executeCommand({
+                  itemAction: 'EXPLAIN_ITEM',
+                  currentArtworkIndex: 0,
+                  artworkId: artId,
+                });
+              }
             }
           },
           error: (err) => {
@@ -636,11 +649,13 @@ export class Navigator implements OnDestroy {
               ) || DUMMY_ITINERARY_ARTWORKS[0];
             this.activeVisitService.setVirtualSingleArtworkVisit(fallback);
             this.itinerary.set([fallback]);
-            this.executeCommand({
-              itemAction: 'EXPLAIN_ITEM',
-              currentArtworkIndex: 0,
-              artworkId: fallback.id,
-            });
+            if (!this.isInitialSettingsPending) {
+              this.executeCommand({
+                itemAction: 'EXPLAIN_ITEM',
+                currentArtworkIndex: 0,
+                artworkId: fallback.id,
+              });
+            }
           },
         });
     }
@@ -1245,7 +1260,24 @@ export class Navigator implements OnDestroy {
   }
 
   openSettings(): void {
+    this.wasPlayingBeforeSettings = this.isPlaying();
+    this.pauseAudio();
     this.isSettingsOpen.set(true);
+  }
+
+  closeSettings(): void {
+    this.isSettingsOpen.set(false);
+    if (this.isInitialSettingsPending) {
+      this.isInitialSettingsPending = false;
+      const targetArtId = this.activeVisitService.isSingleArtworkMode()
+        ? (this.itinerary()[0]?.id || (this.itinerary()[0] as any)?._id)
+        : undefined;
+      this.executeCommand({
+        itemAction: 'EXPLAIN_ITEM',
+        currentArtworkIndex: this.currentItineraryStepIndex(),
+        artworkId: targetArtId,
+      });
+    }
   }
 
   openMap(): void {

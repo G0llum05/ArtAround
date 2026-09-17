@@ -33,7 +33,7 @@
     <!-- settings -->
     @if(isSettingsOpen()) {
       <app-navigator-settings
-        (closeSettings)="isSettingsOpen.set(false)"
+        (closeSettings)="closeSettings()"
         [(settings)]="currentSettings"
       >
       </app-navigator-settings>

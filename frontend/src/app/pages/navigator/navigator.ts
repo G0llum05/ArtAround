@@ -400,7 +400,7 @@ export class Navigator implements OnDestroy {
             this.currentMuseum.set(data);
           }
         },
-        error: () => {},
+        error: () => { },
       });
   }
 
@@ -410,7 +410,7 @@ export class Navigator implements OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => this.availableQuizzes.set(res.data || []),
-        error: () => {},
+        error: () => { },
       });
 
     this.messages.set([
@@ -609,10 +609,10 @@ export class Navigator implements OnDestroy {
                   formattedImages.length > 0
                     ? { images: formattedImages }
                     : {
-                        images: [
-                          { url: '/assets/images/place_holder.jpg', orientation: 'landscape' },
-                        ],
-                      },
+                      images: [
+                        { url: '/assets/images/place_holder.jpg', orientation: 'landscape' },
+                      ],
+                    },
               };
               this.activeVisitService.setVirtualSingleArtworkVisit(formattedArtwork);
               this.itinerary.set([formattedArtwork]);
@@ -620,8 +620,8 @@ export class Navigator implements OnDestroy {
               const mId =
                 typeof formattedArtwork.museum === 'object' && formattedArtwork.museum !== null
                   ? (formattedArtwork.museum as any)._id ||
-                    (formattedArtwork.museum as any).id ||
-                    ''
+                  (formattedArtwork.museum as any).id ||
+                  ''
                   : typeof formattedArtwork.museum === 'string'
                     ? formattedArtwork.museum
                     : '';
@@ -740,7 +740,7 @@ export class Navigator implements OnDestroy {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       try {
         this.mediaRecorder.stop();
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
@@ -768,13 +768,13 @@ export class Navigator implements OnDestroy {
               audio.currentTime = 0;
               audio.removeAttribute('src');
               audio.load();
-            } catch (e) {}
+            } catch (e) { }
           })
           .catch(() => {
             try {
               audio.removeAttribute('src');
               audio.load();
-            } catch (e) {}
+            } catch (e) { }
           });
         this.playPromise = null;
       } else {
@@ -783,7 +783,7 @@ export class Navigator implements OnDestroy {
           audio.currentTime = 0;
           audio.removeAttribute('src');
           audio.load();
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   }
@@ -798,7 +798,7 @@ export class Navigator implements OnDestroy {
               this.currentAudio?.pause();
             }
           })
-          .catch(() => {});
+          .catch(() => { });
       } else {
         this.currentAudio.pause();
       }
@@ -827,7 +827,7 @@ export class Navigator implements OnDestroy {
     if (savedTime > 0 && (!dur || savedTime < dur - 0.5)) {
       try {
         audio.currentTime = savedTime;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     this.isPlaying.set(true);
@@ -838,7 +838,7 @@ export class Navigator implements OnDestroy {
         if (this.isDestroyed || this.currentAudio !== audio) {
           try {
             audio.pause();
-          } catch (e) {}
+          } catch (e) { }
           return;
         }
         this.isPlaying.set(true);
@@ -1040,8 +1040,7 @@ export class Navigator implements OnDestroy {
             if (audioData) {
               this.lastAudioUrl = audioData;
               if (!this.isDestroyed && !abortController.signal.aborted) {
-                this.initAudioElement(audioData);
-                this.isPlaying.set(false)
+                this.playAudioSource(audioData);
               }
             }
           } else if (chunk.type === 'ERROR') {
@@ -1105,7 +1104,7 @@ export class Navigator implements OnDestroy {
         const newTime = percent * dur;
         try {
           this.currentAudio.currentTime = newTime;
-        } catch (e) {}
+        } catch (e) { }
         this.audioCurrentTime.set(newTime);
       }
     }
@@ -1191,7 +1190,7 @@ export class Navigator implements OnDestroy {
           if (this.isDestroyed || this.currentAudio !== audio) {
             try {
               audio.pause();
-            } catch (e) {}
+            } catch (e) { }
             return;
           }
           this.isPlaying.set(true);

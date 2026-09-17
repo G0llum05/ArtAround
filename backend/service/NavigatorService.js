@@ -164,6 +164,12 @@ class NavigatorService {
       } else {
         length = Sanitizer.sanitizeLength(response.length) || (length > 30 ? 30 : 15);
       }
+    } else if (response.itemAction === 'TELL_ME_MORE') {
+      if (!response.length || response.length <= length) {
+        length = length < 30 ? 30 : 60;
+      } else {
+        length = Sanitizer.sanitizeLength(response.length) || (length < 30 ? 30 : 60);
+      }
     } else if (response.length) {
       length = Sanitizer.sanitizeLength(response.length) || length;
     }
@@ -212,6 +218,8 @@ class NavigatorService {
 
     if (itemAction === 'TELL_ME_LESS') {
       length = length > 30 ? 30 : 15;
+    } else if (itemAction === 'TELL_ME_MORE') {
+      length = length < 30 ? 30 : 60;
     }
 
     if (!visitId && artworkId) {
@@ -341,27 +349,31 @@ class NavigatorService {
       throw new Error(`Opera con ID "${step.artwork}" non trovata.`);
     }
 
-    if (tellMeMore && step.tellMeMore && length >= 60) {
+    if (tellMeMore && step.tellMeMore) {
       const tellMeMoreItem = await Item.findById(step.tellMeMore).exec();
       if (tellMeMoreItem) {
         return tellMeMoreItem;
       }
     }
 
-    for (const stepItemId of step.items) {
-      // controllo se c'è item giusto già ritornato nella struttura
-      const stepItem = await Item.findById(stepItemId).exec();
-      if (stepItem && stepItem.tone === tone && stepItem.language === language && stepItem.length === length) {
-        return stepItem;
+    // Se non è tellMeMore, cerchiamo un item già pronto con tono, lingua e lunghezza corrispondenti
+    if (!tellMeMore) {
+      for (const stepItemId of step.items) {
+        // controllo se c'è item giusto già ritornato nella struttura
+        const stepItem = await Item.findById(stepItemId).exec();
+        if (stepItem && stepItem.tone === tone && stepItem.language === language && stepItem.length === length) {
+          return stepItem;
+        }
+      }
+      // controllo per item non messi da esterni nella visita
+      const matchingItem = await this.getItem(artwork, tone, language, length);
+      if (matchingItem) {
+        return matchingItem;
       }
     }
-    // controllo per item non messi da esterni nella visita
-    const matchingItem = await this.getItem(artwork, tone, language, length);
-    if (matchingItem) {
-      return matchingItem;
-    }
 
-    // Se item non trovato ricicliamo il testo esistente di item sinonimi
+    // Se tellMeMore (e non c'era step.tellMeMore) oppure nessun item trovato,
+    // esegue SEMPRE la richiesta all'LLM per generare la spiegazione approfondita con durata aumentata
     const rawExistingSimilarItem = this.getAvailableContentIfExists(artwork, tone, language, length);
     const existingSimilarItem = ItemMapper.toItemLLMRequestDTO(rawExistingSimilarItem);
 
@@ -392,11 +404,15 @@ class NavigatorService {
       throw new Error(`Opera con ID "${artworkId}" non trovata.`);
     }
 
-    const matchingItem = await this.getItem(artwork, tone, language, length);
-    if (matchingItem) {
-      return matchingItem;
+    // Se non è tellMeMore, cerca un item compatibile già esistente
+    if (!tellMeMore) {
+      const matchingItem = await this.getItem(artwork, tone, language, length);
+      if (matchingItem) {
+        return matchingItem;
+      }
     }
 
+    // Se tellMeMore (richiesta approfondimento) o nessun item esistente, chiama per forza l'LLM
     const rawExistingSimilarItem = this.getAvailableContentIfExists(artwork, tone, language, length);
     const existingSimilarItem = ItemMapper.toItemLLMRequestDTO(rawExistingSimilarItem);
     const artworkContext = ArtworkMapper.toArtworkLLMRequestDTO(artwork);

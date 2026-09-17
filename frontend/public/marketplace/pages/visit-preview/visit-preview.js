@@ -333,11 +333,19 @@ export class MktVisitPreview extends HTMLElement {
 
         let returnRoute = '';
         try {
-          returnRoute = sessionStorage.getItem('mkt_return_route') || '';
+          returnRoute = (sessionStorage.getItem('mkt_return_route') || '').split('?')[0].replace(/\/+$/, '');
         } catch (e) {}
 
         const fromMuseum =
           returnRoute.includes('/museum/') || returnRoute.startsWith('/marketplace/museum');
+
+        const fromVisitsSection =
+          returnRoute === '/marketplace/visit/search' || returnRoute.endsWith('/visit/search');
+
+        const fromDirectMarketplace =
+          returnRoute === '/marketplace' || returnRoute === '' || !fromVisitsSection;
+
+        const shouldOpenSettings = fromMuseum || fromDirectMarketplace;
 
         const navEvent = new CustomEvent('angular-navigate', {
           detail: {
@@ -345,7 +353,7 @@ export class MktVisitPreview extends HTMLElement {
             queryParams: {
               visitId: visitId,
               ...(validMuseumId ? { museumId: validMuseumId } : {}),
-              ...(fromMuseum ? { openSettings: 'true' } : {}),
+              ...(shouldOpenSettings ? { openSettings: 'true' } : {}),
             },
           },
           bubbles: true,

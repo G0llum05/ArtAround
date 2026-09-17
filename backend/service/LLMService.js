@@ -278,7 +278,6 @@ class LLMService {
       // response: actionType, itemAction/targetPoiType/targetArtist, userQuery, lingua se cambia, lunghezza se cambia, tono se cambia
       const response = await this._callLLMHandler(prompt);
       const parsed = this._cleanAndParseJSON(response);
-      console.log(`\x1b[36m[DEBUG AI] Prompt parsing intento:\x1b[0m`, parsed);
       if (parsed && parsed.actionType) {
         const validActionTypes = ['ITEM_ACTION', 'MUSEUM_INFO', 'CULTURE_INFO', 'NON_ITEM_ACTION', 'UNKNOWN_ACTION'];
         if (!validActionTypes.includes(parsed.actionType)) {
@@ -441,14 +440,98 @@ class LLMService {
       tone = 'technical';
     }
 
+    // Voice commands: Tell me less / Dimmi di meno
+    if (
+      textLower.includes('dimmi di meno') ||
+      textLower.includes('spiegami di meno') ||
+      textLower.includes('parlami di meno') ||
+      textLower.includes('meno dettagli') ||
+      textLower.includes('meno info') ||
+      textLower.includes('meno approfondit') ||
+      textLower.includes('troppo lung')
+    ) {
+      const curLen = context?.length || 30;
+      const newLen = curLen > 30 ? 30 : 15;
+      return { actionType: 'ITEM_ACTION', itemAction: 'TELL_ME_LESS', targetPoiType: null, targetArtist: null, language, length: length || newLen, tone };
+    }
+
+    // Voice commands: Tell me more / Dimmi di più
+    if (
+      textLower.includes('dimmi di più') ||
+      textLower.includes('maggiori info') ||
+      textLower.includes('approfondisci') ||
+      textLower.includes('più dettagli') ||
+      textLower.includes('continua')
+    ) {
+      const curLen = context?.length || 30;
+      const newLen = curLen < 30 ? 30 : 60;
+      return { actionType: 'ITEM_ACTION', itemAction: 'TELL_ME_MORE', targetPoiType: null, targetArtist: null, language, length: length || newLen, tone };
+    }
+
+    // Voice commands: Jumps between artworks (relative & absolute)
+    const numWords = {
+      'un': 1, 'uno': 1, 'una': 1, '1': 1,
+      'due': 2, '2': 2,
+      'tre': 3, '3': 3,
+      'quattro': 4, '4': 4,
+      'cinque': 5, '5': 5,
+      'sei': 6, '6': 6,
+      'sette': 7, '7': 7,
+      'otto': 8, '8': 8,
+      'nove': 9, '9': 9,
+      'dieci': 10, '10': 10
+    };
+
+    const relBackMatch = textLower.match(/(?:indietro\s+di\s+(\d+|un[oa]?|due|tre|quattro|cinque|sei|sette|otto|nove|dieci))|(?:(\d+|un[oa]?|due|tre|quattro|cinque|sei|sette|otto|nove|dieci)\s+(?:opere?|tappe?|quadri?|passi?)\s+indietro)/i);
+    if (relBackMatch) {
+      const token = relBackMatch[1] || relBackMatch[2];
+      const offset = numWords[token] || parseInt(token, 10) || 1;
+      return { actionType: 'ITEM_ACTION', itemAction: 'JUMP_ITEM', targetStepIndex: null, stepOffset: -offset, targetPoiType: null, targetArtist: null, language, length, tone };
+    }
+
+    const relForwardMatch = textLower.match(/(?:avanti\s+di\s+(\d+|un[oa]?|due|tre|quattro|cinque|sei|sette|otto|nove|dieci))|(?:(\d+|un[oa]?|due|tre|quattro|cinque|sei|sette|otto|nove|dieci)\s+(?:opere?|tappe?|quadri?|passi?)\s+avanti)/i);
+    if (relForwardMatch) {
+      const token = relForwardMatch[1] || relForwardMatch[2];
+      const offset = numWords[token] || parseInt(token, 10) || 1;
+      return { actionType: 'ITEM_ACTION', itemAction: 'JUMP_ITEM', targetStepIndex: null, stepOffset: offset, targetPoiType: null, targetArtist: null, language, length, tone };
+    }
+
+    if (textLower.match(/(?:vai|salta|passa|porta(?:mi)?)\s+(?:all['’]|alla\s+)?ultim[ao]/i) || textLower.includes('ultima opera') || textLower.includes('all\'ultima') || textLower.includes('alla fine')) {
+      return { actionType: 'ITEM_ACTION', itemAction: 'JUMP_ITEM', targetStepIndex: 'LAST', stepOffset: null, targetPoiType: null, targetArtist: null, language, length, tone };
+    }
+
+    if (textLower.match(/(?:vai|salta|passa|porta(?:mi)?)\s+(?:alla\s+)?penultim[ao]/i) || textLower.includes('penultima opera')) {
+      return { actionType: 'ITEM_ACTION', itemAction: 'JUMP_ITEM', targetStepIndex: 'PENULTIMATE', stepOffset: null, targetPoiType: null, targetArtist: null, language, length, tone };
+    }
+
+    if (textLower.match(/(?:vai|salta|passa|porta(?:mi)?)\s+(?:all['’]|alla\s+)?prim[ao]/i) || textLower.includes('prima opera') || textLower.includes('all\'inizio') || textLower.includes('dall\'inizio')) {
+      return { actionType: 'ITEM_ACTION', itemAction: 'JUMP_ITEM', targetStepIndex: 0, stepOffset: null, targetPoiType: null, targetArtist: null, language, length, tone };
+    }
+
+    const ordinals = {
+      'prim': 0, 'second': 1, 'terz': 2, 'quart': 3, 'quint': 4,
+      'sest': 5, 'settim': 6, 'ottav': 7, 'non': 8, 'decim': 9
+    };
+    for (const [stem, idx] of Object.entries(ordinals)) {
+      if (textLower.match(new RegExp(`(?:vai|salta|passa|porta(?:mi)?)\\s+(?:all['’]|alla\\s+)?${stem}[oa]`, 'i')) ||
+          textLower.match(new RegExp(`${stem}[oa]\\s+(?:opera|tappa|quadro)`, 'i'))) {
+        return { actionType: 'ITEM_ACTION', itemAction: 'JUMP_ITEM', targetStepIndex: idx, stepOffset: null, targetPoiType: null, targetArtist: null, language, length, tone };
+      }
+    }
+
+    const numJumpMatch = textLower.match(/(?:vai|salta|passa)\s+(?:all['’]|a\s+)?(?:opera|tappa|quadro|numero)?\s*(\d+)/i);
+    if (numJumpMatch) {
+      const parsedNum = parseInt(numJumpMatch[1], 10);
+      if (!isNaN(parsedNum) && parsedNum > 0) {
+        return { actionType: 'ITEM_ACTION', itemAction: 'JUMP_ITEM', targetStepIndex: parsedNum - 1, stepOffset: null, targetPoiType: null, targetArtist: null, language, length, tone };
+      }
+    }
+
     if (textLower.includes('prossim') || textLower.includes('avanti') || textLower.includes('dopo') || textLower.includes('successiv') || textLower.includes('seguente')) {
       return { actionType: 'ITEM_ACTION', itemAction: 'NEXT_ITEM', targetPoiType: null, targetArtist: null, language, length, tone };
     }
     if (textLower.includes('indietro') || textLower.includes('prima') || textLower.includes('precedent')) {
       return { actionType: 'ITEM_ACTION', itemAction: 'PREVIOUS_ITEM', targetPoiType: null, targetArtist: null, language, length, tone };
-    }
-    if (textLower.includes('dimmi di più') || textLower.includes('maggiori info') || textLower.includes('continua')) {
-      return { actionType: 'ITEM_ACTION', itemAction: 'TELL_ME_MORE', targetPoiType: null, targetArtist: null, language, length, tone };
     }
 
     // POI Parsing

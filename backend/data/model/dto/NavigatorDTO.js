@@ -48,7 +48,10 @@ class NavigatorRequestDTO {
       size: file.size
     } : null;
 
-    this.itemAction = body.itemAction || (this.artworkId && !body.userQuery && !body.targetPoiType && !body.targetArtist ? 'EXPLAIN_ITEM' : null);
+    this.itemAction = body.itemAction || (body.targetStepIndex !== undefined || body.stepOffset !== undefined ? 'JUMP_ITEM' : (this.artworkId && !body.userQuery && !body.targetPoiType && !body.targetArtist ? 'EXPLAIN_ITEM' : null));
+
+    this.targetStepIndex = body.targetStepIndex !== undefined ? body.targetStepIndex : null;
+    this.stepOffset = body.stepOffset !== undefined ? body.stepOffset : null;
 
     this.targetPoiType = body.targetPoiType || null;
     this.targetArtist = body.targetArtist || null;
@@ -63,7 +66,7 @@ class NavigatorRequestDTO {
   _determineActionType(body, file) {
     if (file) return 'AUDIO_ACTION';
     if (body.actionType) return body.actionType;
-    if (body.itemAction || (body.artworkId && !body.targetPoiType && !body.targetArtist && !body.userQuery && !body.query && !body.question)) return 'ITEM_ACTION';
+    if (body.itemAction || body.targetStepIndex !== undefined || body.stepOffset !== undefined || (body.artworkId && !body.targetPoiType && !body.targetArtist && !body.userQuery && !body.query && !body.question)) return 'ITEM_ACTION';
     if (body.targetPoiType || body.targetArtist) return 'NON_ITEM_ACTION';
     if (body.userQuery || body.query || body.question) return 'CULTURE_INFO';
     return 'ERROR';
@@ -76,6 +79,8 @@ class NavigatorResponseDTO {
       this.text = result;
       this.currentArtworkIndex = null;
       this.itemAction = null;
+      this.targetStepIndex = null;
+      this.stepOffset = null;
       this.targetArtist = null;
       this.targetArtwork = null;
       this.artwork = null;
@@ -87,6 +92,8 @@ class NavigatorResponseDTO {
       this.text = result?.text || result?.description || '';
       this.currentArtworkIndex = result?.currentArtworkIndex !== undefined ? result.currentArtworkIndex : null;
       this.itemAction = result?.itemAction || null;
+      this.targetStepIndex = result?.targetStepIndex !== undefined ? result.targetStepIndex : null;
+      this.stepOffset = result?.stepOffset !== undefined ? result.stepOffset : null;
       this.targetArtist = result?.targetArtist || null;
       this.targetArtwork = result?.targetArtwork || null;
       this.artwork = result?.artwork || null;

@@ -26,6 +26,8 @@ class NavigatorService {
       actionType,
       audioFile,
       itemAction,
+      targetStepIndex,
+      stepOffset,
       targetPoiType,
       targetArtist,
       userQuery,
@@ -57,8 +59,8 @@ class NavigatorService {
       }
     }
 
-    if (isGroup && !isTeacher) {
-      if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
+    if (isGroup) {
+      if (itemAction === 'JUMP_ITEM' || (!isTeacher && (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM'))) {
         return {
           text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
           currentArtworkIndex: currentArtworkIndex || 0,
@@ -74,7 +76,7 @@ class NavigatorService {
       case 'AUDIO_ACTION':
         return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, isGroup, isTeacher, onTranscription, artworkId);
       case 'ITEM_ACTION':
-        return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId);
+        return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId, targetStepIndex, stepOffset, isGroup);
       case 'NON_ITEM_ACTION':
         return await this.nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language, artworkId);
       case 'MUSEUM_INFO':
@@ -130,7 +132,7 @@ class NavigatorService {
       throw new Error('Parsing dell\'intento fallito o intento non riconosciuto.');
     }
 
-    if (!visitId && artworkId && (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM')) {
+    if (!visitId && artworkId && (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM' || response.itemAction === 'JUMP_ITEM')) {
       return {
         text: NavigatorMessages.getMessage('single_artwork_no_tour', language),
         currentArtworkIndex: 0,
@@ -141,8 +143,8 @@ class NavigatorService {
       };
     }
 
-    if (isGroup && !isTeacher) {
-      if (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM') {
+    if (isGroup) {
+      if (response.itemAction === 'JUMP_ITEM' || (!isTeacher && (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM'))) {
         return {
           text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
           currentArtworkIndex: currentArtworkIndex || 0,
@@ -189,6 +191,8 @@ class NavigatorService {
       actionType: response.actionType,
       audioFile: null,
       itemAction: response.itemAction || null,
+      targetStepIndex: response.targetStepIndex !== undefined ? response.targetStepIndex : null,
+      stepOffset: response.stepOffset !== undefined ? response.stepOffset : null,
       targetPoiType: response.targetPoiType || null,
       targetArtist: response.targetArtist || null,
       userQuery: response.userQuery || transcribedText,
@@ -212,7 +216,7 @@ class NavigatorService {
     }
   }
 
-  static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null) {
+  static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null, targetStepIndex = null, stepOffset = null, isGroup = false) {
     let effectiveLength = Sanitizer.sanitizeLength(length) || 30;
     length = effectiveLength;
 
@@ -223,7 +227,7 @@ class NavigatorService {
     }
 
     if (!visitId && artworkId) {
-      if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM') {
+      if (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM' || itemAction === 'JUMP_ITEM') {
         return {
           text: NavigatorMessages.getMessage('single_artwork_no_tour', language),
           currentArtworkIndex: 0,
@@ -254,6 +258,17 @@ class NavigatorService {
         targetArtwork: artworkId,
         artwork: artworkData,
         imageUrl: artworkData?.assets?.images?.[0]?.url || null
+      };
+    }
+
+    if (isGroup && itemAction === 'JUMP_ITEM') {
+      return {
+        text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
+        currentArtworkIndex: currentArtworkIndex || 0,
+        itemAction: 'EXPLAIN_ITEM',
+        tone: tone,
+        language: language,
+        length: length
       };
     }
 
@@ -288,6 +303,34 @@ class NavigatorService {
           };
         }
         targetIndex = currentArtworkIndex - 1;
+        break;
+
+      case 'JUMP_ITEM':
+        if (targetStepIndex !== null && targetStepIndex !== undefined) {
+          if (typeof targetStepIndex === 'string') {
+            const normalized = targetStepIndex.toUpperCase().trim();
+            if (normalized === 'LAST') {
+              targetIndex = steps.length - 1;
+            } else if (normalized === 'FIRST') {
+              targetIndex = 0;
+            } else if (normalized === 'PENULTIMATE') {
+              targetIndex = Math.max(0, steps.length - 2);
+            } else {
+              const parsed = parseInt(targetStepIndex, 10);
+              if (!isNaN(parsed)) {
+                targetIndex = parsed;
+              }
+            }
+          } else if (typeof targetStepIndex === 'number' && !isNaN(targetStepIndex)) {
+            targetIndex = targetStepIndex;
+          }
+        } else if (stepOffset !== null && stepOffset !== undefined) {
+          const parsedOffset = parseInt(stepOffset, 10);
+          if (!isNaN(parsedOffset)) {
+            targetIndex = currentArtworkIndex + parsedOffset;
+          }
+        }
+        targetIndex = Math.max(0, Math.min(steps.length - 1, targetIndex));
         break;
 
       case 'EXPLAIN_ITEM':
@@ -342,7 +385,6 @@ class NavigatorService {
     if (!step || !step.artwork) {
       throw new Error(`Nessun step valido trovato per l'indice ${targetIndex} nella visita "${visitId}".`);
     }
-    console.log(`\n\x1b[34m🎨 [DEBUG SERVICE] Opera corrente: "${step}"\x1b[0m\n`);
 
     const artwork = await Artwork.findById(step.artwork).populate('defaultItems').exec();
     if (!artwork) {

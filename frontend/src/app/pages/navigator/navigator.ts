@@ -1040,7 +1040,8 @@ export class Navigator implements OnDestroy {
             if (audioData) {
               this.lastAudioUrl = audioData;
               if (!this.isDestroyed && !abortController.signal.aborted) {
-                this.playAudioSource(audioData);
+                this.initAudioElement(audioData);
+                this.isPlaying.set(false)
               }
             }
           } else if (chunk.type === 'ERROR') {

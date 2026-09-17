@@ -155,46 +155,65 @@ class ResponsiveVoiceService {
   async synthesizeAudioBuffer(text, lang = 'it') {
     const cleanedText = Sanitizer.cleanTextForVoice(text);
     const client = this.getClient();
+    
     if (client) {
       try {
         const voiceName = this.getVoiceForLanguage(lang);
-        const trimmedText = cleanedText.substring(0, 500);
+        
+        // Suddividiamo il testo in frasi/chunk per evitare il limite dei 500 caratteri
+        const rawSentences = cleanedText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanedText];
+        const chunks = [];
+        let currentChunk = '';
 
-        console.log(`[ResponsiveVoiceService] Avvio sintesi TTS: voice="${voiceName}", lang="${lang}", testo (${trimmedText.length} chars): "${trimmedText.substring(0, 60)}..."`);
+        for (const sentence of rawSentences) {
+          const trimmedSentence = sentence.trim();
+          if (!trimmedSentence) continue;
 
-        const synthetizedAudio = await client.synthesize({
-          text: trimmedText,
-          voice: voiceName,
-          format: 'mp3'
-        });
-
-        if (synthetizedAudio) {
-          const buffer = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
-          if (buffer && buffer.length > 0) {
-            console.log(`[ResponsiveVoiceService] Sintesi completata con successo (${buffer.length} bytes, formato=${synthetizedAudio.format || 'mp3'})`);
-            return buffer;
+          if ((currentChunk + ' ' + trimmedSentence).trim().length <= 400) {
+            currentChunk = (currentChunk + ' ' + trimmedSentence).trim();
+          } else {
+            if (currentChunk) chunks.push(currentChunk);
+            currentChunk = trimmedSentence;
           }
         }
+        if (currentChunk) chunks.push(currentChunk);
+
+        console.log(`[ResponsiveVoiceService] Avvio sintesi TTS in ${chunks.length} chunk(s): voice="${voiceName}"`);
+
+        // Richiediamo l'audio per ogni chunk in parallelo o sequenza
+        const audioBuffers = await Promise.all(
+          chunks.map(async (chunk) => {
+            const synthetizedAudio = await client.synthesize({
+              text: chunk,
+              voice: voiceName,
+              format: 'mp3'
+            });
+            if (synthetizedAudio && synthetizedAudio.blob) {
+              return Buffer.from(await synthetizedAudio.blob.arrayBuffer());
+            }
+            return Buffer.alloc(0);
+          })
+        );
+
+        const finalBuffer = Buffer.concat(audioBuffers);
+        if (finalBuffer && finalBuffer.length > 0) {
+          console.log(`[ResponsiveVoiceService] Sintesi completa multi-chunk riuscita (${finalBuffer.length} bytes)`);
+          return finalBuffer;
+        }
+
       } catch (err) {
-        console.warn('[ResponsiveVoiceService] Errore ResponsiveVoice:', {
-          message: err.message,
-          name: err.name,
-          status: err.status,
-          statusText: err.statusText,
-          errors: err.errors,
-          body: err.body
-        });
+        console.warn('[ResponsiveVoiceService] Errore ResponsiveVoice multi-chunk:', err.message);
         console.warn('[ResponsiveVoiceService] Provo fallback Google TTS...');
       }
     } else {
-      console.warn('[ResponsiveVoiceService] Client non inizializzato (mancano API_KEY o SECRET), uso fallback Google TTS.');
+      console.warn('[ResponsiveVoiceService] Client non inizializzato, uso fallback Google TTS.');
     }
 
     return await this.synthesizeGoogleTTS(cleanedText, lang);
   }
-
   /**
-   * Genera la sintesi vocale e la ritorna come Base64 Data URL (data:audio/mp3;base64,... o data:audio/wav;base64,...).
+   * Genera la sintesi vocale e la ritorna come Base64 Data URL (data:audio/mp3;base64,...),
+   * suddividendo il testo in chunk per evitare limiti di lunghezza.
    */
   async synthesizeAudioBase64(text, lang = 'it') {
     if (!text || !text.trim()) return null;
@@ -206,27 +225,51 @@ class ResponsiveVoiceService {
     if (client) {
       try {
         const voiceName = this.getVoiceForLanguage(lang);
-        const trimmedText = cleanedText.substring(0, 500);
+        
+        // Suddividiamo il testo in frasi/chunk per evitare il limite dei caratteri per singola chiamata
+        const rawSentences = cleanedText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanedText];
+        const chunks = [];
+        let currentChunk = '';
 
-        console.log(`[ResponsiveVoiceService] Avvio sintesi Base64: voice="${voiceName}", lang="${lang}", testo (${trimmedText.length} chars): "${trimmedText.substring(0, 60)}..."`);
+        for (const sentence of rawSentences) {
+          const trimmedSentence = sentence.trim();
+          if (!trimmedSentence) continue;
 
-        const synthetizedAudio = await client.synthesize({
-          text: trimmedText,
-          voice: voiceName,
-          format: 'mp3'
-        });
-
-        if (synthetizedAudio) {
-          const buffer = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
-          if (buffer && buffer.length > 0) {
-            const format = synthetizedAudio.format || 'mp3';
-            const mime = format === 'wav' ? 'audio/wav' : format === 'ogg' ? 'audio/ogg' : 'audio/mp3';
-            console.log(`[ResponsiveVoiceService] Sintesi Base64 completata con successo (${buffer.length} bytes, mime=${mime})`);
-            return `data:${mime};base64,${buffer.toString('base64')}`;
+          if ((currentChunk + ' ' + trimmedSentence).trim().length <= 400) {
+            currentChunk = (currentChunk + ' ' + trimmedSentence).trim();
+          } else {
+            if (currentChunk) chunks.push(currentChunk);
+            currentChunk = trimmedSentence;
           }
         }
+        if (currentChunk) chunks.push(currentChunk);
+
+        console.log(`[ResponsiveVoiceService] Avvio sintesi Base64 in ${chunks.length} chunk(s): voice="${voiceName}", lang="${lang}"`);
+
+        // 2. Richiediamo l'audio per ogni chunk
+        const audioBuffers = await Promise.all(
+          chunks.map(async (chunk) => {
+            const synthetizedAudio = await client.synthesize({
+              text: chunk,
+              voice: voiceName,
+              format: 'mp3'
+            });
+            if (synthetizedAudio && synthetizedAudio.blob) {
+              return Buffer.from(await synthetizedAudio.blob.arrayBuffer());
+            }
+            return Buffer.alloc(0);
+          })
+        );
+
+        // 3. Uniamo i buffer MP3 dei vari chunk in un unico buffer finale
+        const finalBuffer = Buffer.concat(audioBuffers);
+        if (finalBuffer && finalBuffer.length > 0) {
+          console.log(`[ResponsiveVoiceService] Sintesi Base64 multi-chunk completata con successo (${finalBuffer.length} bytes)`);
+          return `data:audio/mp3;base64,${finalBuffer.toString('base64')}`;
+        }
+
       } catch (err) {
-        console.warn('[ResponsiveVoiceService] Errore ResponsiveVoice Base64:', {
+        console.warn('[ResponsiveVoiceService] Errore ResponsiveVoice Base64 multi-chunk:', {
           message: err.message,
           name: err.name,
           status: err.status,

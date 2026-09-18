@@ -19,6 +19,7 @@ export class MktVisitEditor extends HTMLElement {
       selectedArtwork: null,
     };
     this.userId = null;
+    this._isSubmitting = false;
   }
 
   get durationInHours() {
@@ -679,10 +680,11 @@ export class MktVisitEditor extends HTMLElement {
   }
 
   setupGlobalListeners() {
-    // 3. LOGICA PULSANTE SALVA BOZZA
+    // LOGICA PULSANTE SALVA BOZZA
     const btnDraft = this.querySelector('#btn-draft');
     if (btnDraft) {
       btnDraft.addEventListener('click', () => {
+        if (this._isSubmitting) return;
         localStorage.setItem('mkt-visit-draft', JSON.stringify(this.state));
         alert('Bozza salvata con successo! Potrai riprenderla in qualsiasi momento.');
       });
@@ -691,7 +693,19 @@ export class MktVisitEditor extends HTMLElement {
     const btnPublish = this.querySelector('#btn-publish');
     if (btnPublish) {
       btnPublish.addEventListener('click', async () => {
+        if (this._isSubmitting) return;
+
+        if (!this.state.museumId) {
+          alert('Seleziona un museo prima di pubblicare la visita.');
+          return;
+        }
+
         const finalVisitArray = this.state.visit.filter((v) => v.artworkId !== null);
+        if (finalVisitArray.length === 0) {
+          alert('Inserisci almeno un\'opera nella visita prima di pubblicare.');
+          return;
+        }
+
         const activeUserId = this.getEffectiveUserId();
 
         if (!activeUserId) {
@@ -707,6 +721,12 @@ export class MktVisitEditor extends HTMLElement {
           this.dispatchEvent(navEvent);
           return;
         }
+
+        this._isSubmitting = true;
+        btnPublish.disabled = true;
+        if (btnDraft) btnDraft.disabled = true;
+        const originalText = btnPublish.textContent;
+        btnPublish.textContent = 'Pubblicazione in corso...';
 
         const visit = {
           museumId: this.state.museumId,
@@ -770,6 +790,13 @@ export class MktVisitEditor extends HTMLElement {
         } catch (error) {
           console.error('Eccezione durante il salvataggio:', error);
           alert(`Si è verificato un errore critico durante la pubblicazione.`);
+        } finally {
+          this._isSubmitting = false;
+          if (btnPublish) {
+            btnPublish.disabled = false;
+            btnPublish.textContent = originalText;
+          }
+          if (btnDraft) btnDraft.disabled = false;
         }
       });
     }
@@ -825,9 +852,13 @@ export class MktVisitEditor extends HTMLElement {
       museumSelector.addEventListener('cleared', () => handleMuseumChange(null));
     }
 
-    this.addEventListener('artwork-selected', (e) => {
+    if (this._handleArtworkSelected) {
+      this.removeEventListener('artwork-selected', this._handleArtworkSelected);
+    }
+    this._handleArtworkSelected = (e) => {
       this.state.selectedArtwork = e.detail;
       this.updateDropzonesSelectionState();
-    });
+    };
+    this.addEventListener('artwork-selected', this._handleArtworkSelected);
   }
 }

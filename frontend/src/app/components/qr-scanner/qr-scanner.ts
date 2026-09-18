@@ -27,7 +27,9 @@ import { QrService } from '../../services/qr.service';
 
       <zxing-scanner
         (scanSuccess)="onCodeResult($any($event))"
-        [formats]="allowedFormats">
+        [formats]="allowedFormats"
+        [tryHarder]="true"
+        >
       </zxing-scanner>
 
       <div class="scanner-manual-fallback">

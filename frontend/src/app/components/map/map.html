@@ -8,7 +8,7 @@
     <header class="panel-header">
       <div>
         <h2 class="panel-title" id="map-modal-title">Mappa del Museo</h2>
-        <p class="panel-subtitle">Visualizza il percorso e le sale</p>
+        <p class="panel-subtitle">{{ museum()?.name || 'Visualizza il percorso e le sale' }}</p>
       </div>
       <button type="button" class="close-btn" (click)="close()" aria-label="Chiudi mappa del museo" tabindex="0">
         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
@@ -17,12 +17,35 @@
       </button>
     </header>
 
-    <div class="map-content" tabindex="0" aria-label="Area visualizzazione mappa">
-      <img
-        [src]="imageUrl()"
-        [alt]="'Mappa del museo ' + (museum()?.name || 'Museo')"
-        class="map-image"
-      >
+    <div class="map-viewport" #mapViewport tabindex="0" aria-label="Area visualizzazione mappa zoomabile">
+      <!-- Pulsanti di controllo zoom -->
+      <div class="map-controls">
+        <button type="button" class="control-btn" (click)="zoomIn()" title="Ingrandisci" aria-label="Ingrandisci">
+          <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+          </svg>
+        </button>
+        <button type="button" class="control-btn" (click)="zoomOut()" title="Rimpicciolisci" aria-label="Rimpicciolisci">
+          <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+            <path d="M200-440v-80h560v80H200Z"/>
+          </svg>
+        </button>
+        <button type="button" class="control-btn" (click)="resetZoom()" title="Reimposta vista" aria-label="Reimposta vista">
+          <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+            <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="panzoom-wrapper" #panzoomElement>
+        <img
+          [src]="imageUrl()"
+          [alt]="'Mappa del museo ' + (museum()?.name || 'Museo')"
+          class="map-image"
+          (load)="onImageLoad()"
+          draggable="false"
+        >
+      </div>
     </div>
 
   </div>

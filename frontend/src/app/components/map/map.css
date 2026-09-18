@@ -11,20 +11,21 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 1rem;
+  padding: var(--spacing-md);
   box-sizing: border-box;
 }
 
 /* --- PANNELLO PRINCIPALE DELLA MODALE --- */
 .map-panel {
-  background-color: var(--surface, #fff);
-  border-radius: 16px;
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 90vw; /* Leggermente più largo per dare spazio alla mappa */
+  max-width: 90vw;
   max-height: 92vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border: 1px solid var(--outline-variant);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
@@ -33,33 +34,35 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--outline-variant, #e0e0e0);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--outline-variant);
   flex-shrink: 0;
 }
 
 .panel-title {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--on-surface, #333);
-  font-family: var(--font-sans, sans-serif);
+  font-size: var(--headline-md-size);
+  font-weight: var(--headline-md-weight);
+  line-height: var(--headline-md-line);
+  color: var(--on-surface);
+  font-family: var(--font-serif);
 }
 
 .panel-subtitle {
-  margin: 4px 0 0 0;
-  font-size: 0.85rem;
-  color: var(--on-surface-variant, #666);
-  font-family: var(--font-sans, sans-serif);
+  margin: var(--spacing-xs) 0 0 0;
+  font-size: var(--body-md-size);
+  line-height: var(--body-md-line);
+  color: var(--on-surface-variant);
+  font-family: var(--font-sans);
 }
 
 /* --- PULSANTE CHIUDI (X) --- */
 .close-btn {
   background-color: var(--surface-variant);
-  border: none;
+  border: 1px solid var(--outline-variant);
   cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,29 +71,82 @@
 }
 
 .close-btn:hover {
-  background-color: var(--primary, #f0f0f0);
-  color: var(--on-primary, #000);
+  background-color: var(--primary);
+  color: var(--on-primary);
 }
 
-/* --- CONTENUTO INTERNO (Gestito tramite ng-content) --- */
-.map-content {
-  padding: 1rem;
-  overflow: auto; /* Permette lo scroll se l'immagine è enorme */
+/* --- VIEWPORT DELLA MAPPA CON PANZOOM --- */
+.map-viewport {
+  position: relative;
+  width: 100%;
+  height: 75vh;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-grow: 1;
-  width: 100%;
-  box-sizing: border-box;
+  background-color: var(--background);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  outline: none;
 }
 
-/* --- CLASSE DI SUPPORTO PER LE IMMAGINI INSERITE NEL CONTENUTO --- */
+.map-viewport:active {
+  cursor: grabbing;
+}
+
+.panzoom-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+}
+
+/* --- IMMAGINE MAPPA --- */
 .map-image {
-  width: 100%;          /* Occupa tutta la larghezza disponibile */
-  height: auto;         /* Mantiene perfettamente le proporzioni originali */
-  max-height: 75vh;     /* Impedisce all'immagine di uscire dallo schermo in altezza */
-  object-fit: contain;  /* Assicura che l'intera immagine sia visibile senza ritagli */
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   display: block;
-  margin: auto;
-  border-radius: var(--radius-md, 8px);
+  user-select: none;
+  -webkit-user-drag: none;
+  border-radius: var(--radius-md);
+}
+
+/* --- PULSANTI DI CONTROLLO ZOOM --- */
+.map-controls {
+  position: absolute;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  z-index: 10;
+}
+
+.control-btn {
+  background-color: var(--surface);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.control-btn:hover {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
 }

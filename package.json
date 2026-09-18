@@ -24,6 +24,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@panzoom/panzoom": "^4.6.2",
     "@responsivevoice/api-client": "^2.0.5",
     "@uppy/core": "^5.2.0",
     "@uppy/drag-drop": "^5.1.0",

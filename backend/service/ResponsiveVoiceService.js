@@ -75,6 +75,76 @@ class ResponsiveVoiceService {
   }
 
   /**
+   * Suddivide in modo robusto e completo un testo lungo in chunk di dimensione massima desiderata,
+   * preservando i confini delle frasi (. ! ?), delle clausole (, ; :) o delle parole.
+   * Garantisce che l'intero testo dall'inizio alla fine sia suddiviso senza perdite.
+   */
+  splitTextIntoChunks(text, maxChars = 350) {
+    if (!text || typeof text !== 'string') return [];
+    const clean = text.trim();
+    if (!clean) return [];
+
+    if (clean.length <= maxChars) {
+      return [clean];
+    }
+
+    const rawSentences = clean.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [clean];
+    const chunks = [];
+    let currentChunk = '';
+
+    for (let sentence of rawSentences) {
+      sentence = sentence.trim();
+      if (!sentence) continue;
+
+      if (sentence.length > maxChars) {
+        if (currentChunk) {
+          chunks.push(currentChunk);
+          currentChunk = '';
+        }
+
+        const subParts = sentence.match(/[^,;:]+[,;:]+|[^,;:]+$/g) || [sentence];
+        for (let sub of subParts) {
+          sub = sub.trim();
+          if (!sub) continue;
+
+          if (sub.length > maxChars) {
+            const words = sub.split(/\s+/);
+            for (const word of words) {
+              if (!word) continue;
+              if ((currentChunk + ' ' + word).trim().length <= maxChars) {
+                currentChunk = (currentChunk + ' ' + word).trim();
+              } else {
+                if (currentChunk) chunks.push(currentChunk);
+                currentChunk = word;
+              }
+            }
+          } else {
+            if ((currentChunk + ' ' + sub).trim().length <= maxChars) {
+              currentChunk = (currentChunk + ' ' + sub).trim();
+            } else {
+              if (currentChunk) chunks.push(currentChunk);
+              currentChunk = sub;
+            }
+          }
+        }
+      } else {
+        if ((currentChunk + ' ' + sentence).trim().length <= maxChars) {
+          currentChunk = (currentChunk + ' ' + sentence).trim();
+        } else {
+          if (currentChunk) chunks.push(currentChunk);
+          currentChunk = sentence;
+        }
+      }
+    }
+
+    if (currentChunk) {
+      chunks.push(currentChunk);
+    }
+
+    return chunks;
+  }
+
+  /**
    * Sintesi vocale tramite Google TTS (Fallback gratuito e senza API Key)
    */
   async synthesizeGoogleTTS(text, lang = 'it') {
@@ -89,45 +159,14 @@ class ResponsiveVoiceService {
     else cleanLang = 'it';
 
     const cleanText = Sanitizer.cleanTextForVoice(text);
-
     if (!cleanText) return Buffer.alloc(0);
 
-    // Suddivide il testo in frasi/chunk di massimo 150 caratteri (limite API Google)
-    const rawSentences = cleanText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanText];
-    const chunks = [];
-
-    let currentChunk = '';
-    for (const sentence of rawSentences) {
-      const trimmedSentence = sentence.trim();
-      if (!trimmedSentence) continue;
-
-      if ((currentChunk + ' ' + trimmedSentence).trim().length <= 150) {
-        currentChunk = (currentChunk + ' ' + trimmedSentence).trim();
-      } else {
-        if (currentChunk) chunks.push(currentChunk);
-        if (trimmedSentence.length > 150) {
-          const words = trimmedSentence.split(' ');
-          let subChunk = '';
-          for (const w of words) {
-            if ((subChunk + ' ' + w).trim().length <= 150) {
-              subChunk = (subChunk + ' ' + w).trim();
-            } else {
-              if (subChunk) chunks.push(subChunk);
-              subChunk = w;
-            }
-          }
-          currentChunk = subChunk;
-        } else {
-          currentChunk = trimmedSentence;
-        }
-      }
-    }
-    if (currentChunk) chunks.push(currentChunk);
-
-    const limitedChunks = chunks.slice(0, 6);
+    // Suddivide il testo in chunk di max 150 caratteri (limite API Google) garantendo la copertura totale fino all'ultimo carattere
+    const chunks = this.splitTextIntoChunks(cleanText, 150);
+    console.log(`[ResponsiveVoiceService] Google TTS: elaborazione di ${chunks.length} chunk(s) (testo totale: ${cleanText.length} caratteri)`);
 
     const audioBuffers = await Promise.all(
-      limitedChunks.map(async (chunk) => {
+      chunks.map(async (chunk, index) => {
         const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${cleanLang}&q=${encodeURIComponent(chunk)}&textlen=${chunk.length}`;
         const response = await fetch(url, {
           headers: {
@@ -137,7 +176,7 @@ class ResponsiveVoiceService {
         });
 
         if (!response.ok) {
-          throw new Error(`Google TTS Error: status ${response.status}`);
+          throw new Error(`Google TTS Error su chunk ${index + 1}/${chunks.length}: status ${response.status}`);
         }
 
         const audioArrayBuffer = await response.arrayBuffer();
@@ -154,33 +193,17 @@ class ResponsiveVoiceService {
    */
   async synthesizeAudioBuffer(text, lang = 'it') {
     const cleanedText = Sanitizer.cleanTextForVoice(text);
+    if (!cleanedText) return Buffer.alloc(0);
+
     const client = this.getClient();
     
     if (client) {
       try {
         const voiceName = this.getVoiceForLanguage(lang);
-        
-        // Suddividiamo il testo in frasi/chunk per evitare il limite dei 500 caratteri
-        const rawSentences = cleanedText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanedText];
-        const chunks = [];
-        let currentChunk = '';
+        const chunks = this.splitTextIntoChunks(cleanedText, 350);
 
-        for (const sentence of rawSentences) {
-          const trimmedSentence = sentence.trim();
-          if (!trimmedSentence) continue;
+        console.log(`[ResponsiveVoiceService] Avvio sintesi TTS in ${chunks.length} chunk(s): voice="${voiceName}", caratteri totali: ${cleanedText.length}`);
 
-          if ((currentChunk + ' ' + trimmedSentence).trim().length <= 400) {
-            currentChunk = (currentChunk + ' ' + trimmedSentence).trim();
-          } else {
-            if (currentChunk) chunks.push(currentChunk);
-            currentChunk = trimmedSentence;
-          }
-        }
-        if (currentChunk) chunks.push(currentChunk);
-
-        console.log(`[ResponsiveVoiceService] Avvio sintesi TTS in ${chunks.length} chunk(s): voice="${voiceName}"`);
-
-        // Richiediamo l'audio per ogni chunk in parallelo o sequenza
         const audioBuffers = await Promise.all(
           chunks.map(async (chunk) => {
             const synthetizedAudio = await client.synthesize({
@@ -211,6 +234,7 @@ class ResponsiveVoiceService {
 
     return await this.synthesizeGoogleTTS(cleanedText, lang);
   }
+
   /**
    * Genera la sintesi vocale e la ritorna come Base64 Data URL (data:audio/mp3;base64,...),
    * suddividendo il testo in chunk per evitare limiti di lunghezza.
@@ -225,43 +249,31 @@ class ResponsiveVoiceService {
     if (client) {
       try {
         const voiceName = this.getVoiceForLanguage(lang);
-        
-        // Suddividiamo il testo in frasi/chunk per evitare il limite dei caratteri per singola chiamata
-        const rawSentences = cleanedText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanedText];
-        const chunks = [];
-        let currentChunk = '';
+        const chunks = this.splitTextIntoChunks(cleanedText, 350);
 
-        for (const sentence of rawSentences) {
-          const trimmedSentence = sentence.trim();
-          if (!trimmedSentence) continue;
+        console.log(`[ResponsiveVoiceService] Avvio sintesi Base64 in ${chunks.length} chunk(s): voice="${voiceName}", lang="${lang}", caratteri: ${cleanedText.length}`);
 
-          if ((currentChunk + ' ' + trimmedSentence).trim().length <= 400) {
-            currentChunk = (currentChunk + ' ' + trimmedSentence).trim();
-          } else {
-            if (currentChunk) chunks.push(currentChunk);
-            currentChunk = trimmedSentence;
-          }
-        }
-        if (currentChunk) chunks.push(currentChunk);
-
-        console.log(`[ResponsiveVoiceService] Avvio sintesi Base64 in ${chunks.length} chunk(s): voice="${voiceName}", lang="${lang}"`);
-
-        // 2. Richiediamo l'audio per ogni chunk
+        // Richiediamo l'audio per ogni chunk garantendo la copertura completa
         const audioBuffers = await Promise.all(
-          chunks.map(async (chunk) => {
+          chunks.map(async (chunk, index) => {
+            const isLastChunk = index === chunks.length - 1;
             const synthetizedAudio = await client.synthesize({
               text: chunk,
               voice: voiceName,
               format: 'mp3'
             });
             if (synthetizedAudio && synthetizedAudio.blob) {
-              return Buffer.from(await synthetizedAudio.blob.arrayBuffer());
+              const buf = Buffer.from(await synthetizedAudio.blob.arrayBuffer());
+              if (isLastChunk) {
+                console.log(`[ResponsiveVoiceService] Raggiunta e sintetizzata la fine del testo (Chunk finale ${index + 1}/${chunks.length})`);
+              }
+              return buf;
             }
             return Buffer.alloc(0);
           })
         );
 
-        // 3. Uniamo i buffer MP3 dei vari chunk in un unico buffer finale
+        // Uniamo i buffer MP3 dei vari chunk in un unico buffer finale
         const finalBuffer = Buffer.concat(audioBuffers);
         if (finalBuffer && finalBuffer.length > 0) {
           console.log(`[ResponsiveVoiceService] Sintesi Base64 multi-chunk completata con successo (${finalBuffer.length} bytes)`);

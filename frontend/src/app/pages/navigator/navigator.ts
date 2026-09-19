@@ -651,7 +651,7 @@ export class Navigator implements OnDestroy {
   }
 
   // Sottotitoli
-  currentSubtitle = signal<string>('Nel dipinto possiamo notare i dettagli delle vesti dorate...');
+  currentSubtitle = signal<string>('Caricamento in corso...');
 
   // Itinerario
   currentItineraryStepIndex = signal<number>(0);

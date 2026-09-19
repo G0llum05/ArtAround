@@ -82,7 +82,7 @@
             type="text"
             class="pin-input"
             [class.input-error]="errorMessage()"
-            placeholder="Codice PIN (es. ART492)"
+            placeholder="Codice PIN del gruppo"
             [ngModel]="pinCode()"
             (ngModelChange)="pinCode.set($event); errorMessage.set(null)"
             name="pinCode"

@@ -18,6 +18,17 @@ class VisitController {
     }
   }
 
+  static async getVisitsWithMoreThanTenArtworks(req, res) {
+    try {
+      const minArtworks = parseInt(req.query.min, 10) || 10;
+      const visits = await VisitService.getVisitsWithMoreThanTenArtworks(minArtworks);
+      const visitDTOs = visits.map(visit => VisitMapper.toVisitResponsePresentation(visit));
+      res.status(200).json(visitDTOs);
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving visits with more than 10 artworks', error: error.message });
+    }
+  }
+
   // TODO CHECK la risposta ha un modello aggiornato che va allinato qua perchè i dati probabilmente non lo sono e le immagini anche che in getALL non sono implementate
   static async getMarketplaceFeed(req, res) {
     try {

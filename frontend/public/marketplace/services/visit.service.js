@@ -67,6 +67,21 @@ export class VisitService {
       }
     }
 
+    static async getVisitsWithMoreThanTenArtworks() {
+      try {
+        const response = await fetch(`${this.apiUrl}/more-than-10-artworks`,{
+          method: "GET",
+        });
+        if(!response.ok) {
+          throw new Error(response.statusText);
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     static async postView(visitId) {
       try{
         const response = await fetch(`${this.apiUrl}/${visitId}/view`, {

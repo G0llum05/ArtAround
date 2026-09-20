@@ -39,6 +39,26 @@ class VisitService {
     return visit;
   }
 
+  /**
+   * Restituisce tutte le visite che contengono più di 10 opere (steps.length > 10).
+   * @param {number} minArtworks - Soglia minima di opere (default 10)
+   * @returns {Promise<Array>} Lista delle visite che soddisfano il criterio
+   */
+  static async getVisitsWithMoreThanTenArtworks(minArtworks = 10) {
+    return await Visit.find({
+      $expr: {
+        $geq: [{ $size: { $ifNull: ['$steps', []] } }, minArtworks]
+      }
+    })
+      .populate('creator', 'name surname email')
+      .populate({
+        path: 'steps.artwork',
+        select: 'title author artists startYear endYear assets location',
+        populate: { path: 'artists' }
+      })
+      .lean();
+  }
+
   /*
     * Crea una nuova visita nel database e ritorna id
     * @param {Object} request - { museumId, title, description, price, license, duration, isDisabledFriendly, assets = { images: [] }, visit : [ artworkId, itemId, description, tellMeMore, length, language]  }

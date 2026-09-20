@@ -16,6 +16,10 @@ router.get('/feed', VisitController.getMarketplaceFeed);
 // GET /homePresentation
 router.get('/homePresentation', VisitController.getVisitHomePresentation);
 
+// GET /more-than-10-artworks
+// Restituisce tutte le visite con più di 10 opere (supporta anche ?min=N)
+router.get('/more-than-10-artworks', VisitController.getVisitsWithMoreThanTenArtworks);
+
 // GET /:id
 router.get('/:id', VisitController.getVisitById);
 

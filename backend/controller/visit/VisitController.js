@@ -20,7 +20,7 @@ class VisitController {
 
   static async getVisitsWithMoreThanTenArtworks(req, res) {
     try {
-      const minArtworks = parseInt(req.query.min, 10) || 10;
+      const minArtworks = 10;
       const visits = await VisitService.getVisitsWithMoreThanTenArtworks(minArtworks);
       const visitDTOs = visits.map(visit => VisitMapper.toVisitResponsePresentation(visit));
       res.status(200).json(visitDTOs);

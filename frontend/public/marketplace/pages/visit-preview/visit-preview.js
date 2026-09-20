@@ -36,8 +36,6 @@ export class MktVisitPreview extends HTMLElement {
       this.render();
     }
 
-    console.log(this.state);
-
     if (!this.hasViewed && this.visitId && this.visitId !== 'undefined') {
       this.hasViewed = true;
       try {

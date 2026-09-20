@@ -22,6 +22,7 @@ export class MktHome extends HTMLElement {
     this.allTop10Visits = [];
     this.allVisits = [];
     this.allMuseums = [];
+    this.visitWithMoreThan10Artworks = [];
   }
 
   async connectedCallback() {
@@ -32,6 +33,12 @@ export class MktHome extends HTMLElement {
       this.allTop10Visits = await VisitService.getTop10VisitPresentation() || [];
     } catch(error) {
       console.error("Errore nel recupero della top 10", error);
+    }
+
+    try {
+      this.visitWithMoreThan10Artworks = await VisitService.getVisitsWithMoreThanTenArtworks() || [];
+    } catch(error) {
+      console.error("Errore nel recupero delle visite con più di 10 opere", error);
     }
 
     try {
@@ -174,11 +181,13 @@ export class MktHome extends HTMLElement {
 
   updateAllTracks() {
     const museumsSection = this.querySelector('#mkt-museums-section');
+    const moreThan10Section = this.querySelector('#mkt-more-than10-section');
     const top10Section = this.querySelector('#mkt-top10-section');
     const allVisitsSection = this.querySelector('#mkt-all-visits-section');
 
     const museumsTrack = this.querySelector('#mkt-museums-track');
     const top10visitsTrack = this.querySelector('#mkt-top10-visits-track');
+    const moreThan10Track = this.querySelector('#mkt-more-than10-visits-track');
     const allVisitsTrack = this.querySelector('#mkt-all-visits-track');
 
     if (museumsSection) {
@@ -187,12 +196,18 @@ export class MktHome extends HTMLElement {
     if (top10Section) {
       top10Section.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
     }
+    if (moreThan10Section) {
+      top10Section.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
+    }
     if (allVisitsSection) {
       allVisitsSection.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
     }
 
     if (museumsTrack && this.filters.scope !== 'visits') {
       museumsTrack.innerHTML = this.getMuseumsHtml();
+    }
+    if (moreThan10Track && this.filters.scope !== 'museums') {
+      top10visitsTrack.innerHTML = this.getFilteredVisitsHtml(this.visitWithMoreThan10Artworks);
     }
     if (top10visitsTrack && this.filters.scope !== 'museums') {
       top10visitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allTop10Visits);
@@ -252,6 +267,14 @@ export class MktHome extends HTMLElement {
           <h2 class="mkt-category-title">I Nostri Musei</h2>
           <div class="mkt-horizontal-track" id="mkt-museums-track">
             ${this.getMuseumsHtml()}
+          </div>
+        </section>
+
+        <!-- VISITE CON PIU DI 10 OPERE -->
+        <section class="mkt-category-section" id="mkt-more-than10-section">
+          <h2 class="mkt-category-title">Visite Complete</h2>
+          <div class="mkt-horizontal-track" id="mkt-more-than10-visits-track">
+            ${this.getFilteredVisitsHtml(this.visitWithMoreThan10Artworks)}
           </div>
         </section>
 

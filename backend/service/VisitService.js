@@ -47,7 +47,7 @@ class VisitService {
   static async getVisitsWithMoreThanTenArtworks(minArtworks = 10) {
     return await Visit.find({
       $expr: {
-        $geq: [{ $size: { $ifNull: ['$steps', []] } }, minArtworks]
+        $gt: [{ $size: { $ifNull: ['$steps', []] } }, minArtworks]
       }
     })
       .populate('creator', 'name surname email')

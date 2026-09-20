@@ -197,7 +197,7 @@ export class MktHome extends HTMLElement {
       top10Section.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
     }
     if (moreThan10Section) {
-      top10Section.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
+      moreThan10Track.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
     }
     if (allVisitsSection) {
       allVisitsSection.style.display = this.filters.scope === 'museums' ? 'none' : 'flex';
@@ -207,7 +207,7 @@ export class MktHome extends HTMLElement {
       museumsTrack.innerHTML = this.getMuseumsHtml();
     }
     if (moreThan10Track && this.filters.scope !== 'museums') {
-      top10visitsTrack.innerHTML = this.getFilteredVisitsHtml(this.visitWithMoreThan10Artworks);
+      moreThan10Track.innerHTML = this.getFilteredVisitsHtml(this.visitWithMoreThan10Artworks);
     }
     if (top10visitsTrack && this.filters.scope !== 'museums') {
       top10visitsTrack.innerHTML = this.getFilteredVisitsHtml(this.allTop10Visits);

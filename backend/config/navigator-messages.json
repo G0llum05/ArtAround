@@ -19,6 +19,16 @@
     "cn": "在本次团体参观中，路线由老师带领。您可以向我提问关于当前艺术品的问题，或咨询博物馆的服务设施。",
     "ru": "В этой групповой экскурсии переход между экспонатами координирует преподаватель. Вы можете задать мне вопросы о текущем произведении искусства или узнать об услугах музея."
   },
+  "group_teacher_multiskip_restricted": {
+    "it": "In questa visita di gruppo non è possibile effettuare il multiskip da comando vocale. Puoi avanzare o tornare indietro di una tappa alla volta.",
+    "en": "In this group tour, multiskip via voice command is not allowed. You can move forward or backward one stop at a time.",
+    "es": "En esta visita grupal no es posible realizar multiskip mediante comando de voz. Puedes avanzar o retroceder una etapa a la vez.",
+    "fr": "Dans cette visite de groupe, le saut multiple d'œuvres par commande vocale n'est pas autorisé. Vous pouvez avancer ou reculer d'une étape à la fois.",
+    "de": "Bei dieser Gruppenführung ist das Überspringen mehrerer Stationen per Sprachbefehl nicht möglich. Sie können jeweils eine Station vor- oder zurückgehen.",
+    "pt": "Nesta visita de grupo não é possível efetuar o multiskip através de comando de voz. Pode avançar ou retroceder uma etapa de cada vez.",
+    "cn": "在本次团体参观中，无法通过语音指令跳过多处展品。您可以逐一前往上一处或下一处展品。",
+    "ru": "В этой групповой экскурсии пропуск нескольких этапов с помощью голосовой команды недоступен. Вы можете переходить вперед или назад на один шаг за раз."
+  },
   "single_artwork_no_tour": {
     "it": "Stai consultando questa singola opera al di fuori di un itinerario. Puoi chiedermi maggiori approfondimenti o dettagli sull'autore.",
     "en": "You are currently viewing this artwork individually outside a tour. You can ask for more details or information about the artist.",

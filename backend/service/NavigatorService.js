@@ -60,9 +60,19 @@ class NavigatorService {
     }
 
     if (isGroup) {
-      if (itemAction === 'JUMP_ITEM' || (!isTeacher && (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM'))) {
+      if (!isTeacher && (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM' || itemAction === 'JUMP_ITEM')) {
         return {
           text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
+          currentArtworkIndex: currentArtworkIndex || 0,
+          itemAction: 'EXPLAIN_ITEM',
+          tone,
+          language,
+          length
+        };
+      }
+      if (isTeacher && itemAction === 'JUMP_ITEM') {
+        return {
+          text: NavigatorMessages.getMessage('group_teacher_multiskip_restricted', language),
           currentArtworkIndex: currentArtworkIndex || 0,
           itemAction: 'EXPLAIN_ITEM',
           tone,
@@ -76,7 +86,7 @@ class NavigatorService {
       case 'AUDIO_ACTION':
         return await this.audioActionHandler(audioFile, museumId, visitId, currentArtworkIndex, tone, length, language, isGroup, isTeacher, onTranscription, artworkId);
       case 'ITEM_ACTION':
-        return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId, targetStepIndex, stepOffset, isGroup);
+        return await this.itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId, targetStepIndex, stepOffset, isGroup, isTeacher);
       case 'NON_ITEM_ACTION':
         return await this.nonItemActionHandler(targetPoiType, targetArtist, museumId, visitId, currentArtworkIndex, tone, length, language, artworkId);
       case 'MUSEUM_INFO':
@@ -144,9 +154,19 @@ class NavigatorService {
     }
 
     if (isGroup) {
-      if (response.itemAction === 'JUMP_ITEM' || (!isTeacher && (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM'))) {
+      if (!isTeacher && (response.itemAction === 'NEXT_ITEM' || response.itemAction === 'PREVIOUS_ITEM' || response.itemAction === 'JUMP_ITEM')) {
         return {
           text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
+          currentArtworkIndex: currentArtworkIndex || 0,
+          itemAction: 'EXPLAIN_ITEM',
+          tone,
+          language,
+          length
+        };
+      }
+      if (isTeacher && response.itemAction === 'JUMP_ITEM') {
+        return {
+          text: NavigatorMessages.getMessage('group_teacher_multiskip_restricted', language),
           currentArtworkIndex: currentArtworkIndex || 0,
           itemAction: 'EXPLAIN_ITEM',
           tone,
@@ -225,7 +245,7 @@ class NavigatorService {
     }
   }
 
-  static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null, targetStepIndex = null, stepOffset = null, isGroup = false) {
+  static async itemActionHandler(itemAction, visitId, currentArtworkIndex, tone, length, language, artworkId = null, targetStepIndex = null, stepOffset = null, isGroup = false, isTeacher = false) {
     if (!itemAction) {
       itemAction = 'EXPLAIN_ITEM';
     }
@@ -274,15 +294,27 @@ class NavigatorService {
       };
     }
 
-    if (isGroup && itemAction === 'JUMP_ITEM') {
-      return {
-        text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
-        currentArtworkIndex: currentArtworkIndex || 0,
-        itemAction: 'EXPLAIN_ITEM',
-        tone: tone,
-        language: language,
-        length: length
-      };
+    if (isGroup) {
+      if (!isTeacher && (itemAction === 'NEXT_ITEM' || itemAction === 'PREVIOUS_ITEM' || itemAction === 'JUMP_ITEM')) {
+        return {
+          text: NavigatorMessages.getMessage('group_student_navigation_restricted', language),
+          currentArtworkIndex: currentArtworkIndex || 0,
+          itemAction: 'EXPLAIN_ITEM',
+          tone: tone,
+          language: language,
+          length: length
+        };
+      }
+      if (isTeacher && itemAction === 'JUMP_ITEM') {
+        return {
+          text: NavigatorMessages.getMessage('group_teacher_multiskip_restricted', language),
+          currentArtworkIndex: currentArtworkIndex || 0,
+          itemAction: 'EXPLAIN_ITEM',
+          tone: tone,
+          language: language,
+          length: length
+        };
+      }
     }
 
     let targetIndex = currentArtworkIndex;

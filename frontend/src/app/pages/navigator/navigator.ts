@@ -1030,8 +1030,14 @@ export class Navigator implements OnDestroy {
             }
           } else if (chunk.type === 'ERROR') {
             this.isLoading.set(false);
-            const errMsg = chunk.error || 'Errore durante la comunicazione con il server.';
+            const errMsg = chunk.error || chunk.data?.text || "Si è verificato un errore, riprova.";
             this.messages.update((msgs) => [...msgs, { sender: 'ai', text: errMsg }]);
+            this.currentSubtitle.set(errMsg);
+            const audioData = chunk.data?.audio || (chunk as any).audio;
+            if (audioData && !this.isDestroyed && !abortController.signal.aborted) {
+              this.lastAudioUrl = audioData;
+              this.playAudioSource(audioData);
+            }
           }
         },
         abortController.signal,
@@ -1041,8 +1047,9 @@ export class Navigator implements OnDestroy {
         return;
       }
       this.isLoading.set(false);
-      const errMsg = err?.message || 'Errore di connessione con il navigatore.';
+      const errMsg = "Si è verificato un errore, riprova.";
       this.messages.update((msgs) => [...msgs, { sender: 'ai', text: errMsg }]);
+      this.currentSubtitle.set(errMsg);
     } finally {
       if (this.commandAbortController === abortController) {
         this.commandAbortController = null;
@@ -1235,6 +1242,9 @@ export class Navigator implements OnDestroy {
         this.isDictating.update((v) => !v);
       } catch (err) {
         console.error('Impossibile accedere al microfono:', err);
+        const errMsg = 'Si è verificato un errore, riprova.';
+        this.messages.update((msgs) => [...msgs, { sender: 'ai', text: errMsg }]);
+        this.currentSubtitle.set(errMsg);
       }
     } else {
       if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {

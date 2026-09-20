@@ -1,13 +1,13 @@
 {
   "generic_error": {
-    "it": "Si è verificato un errore. Per favore, riprova.",
-    "en": "An error occurred. Please try again.",
-    "es": "Se ha producido un error. Por favor, inténtalo de nuevo.",
-    "fr": "Une erreur s'est produite. Veuillez réessayer.",
-    "de": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-    "pt": "Ocorreu um erro. Por favor, tente novamente.",
+    "it": "Si è verificato un errore, riprova.",
+    "en": "An error occurred, please try again.",
+    "es": "Se ha producido un error, inténtalo de nuevo.",
+    "fr": "Une erreur s'est produite, veuillez réessayer.",
+    "de": "Es ist ein Fehler aufgetreten, bitte versuchen Sie es erneut.",
+    "pt": "Ocorreu um erro, por favor tente novamente.",
     "cn": "发生错误，请重试。",
-    "ru": "Произошла ошибка. Пожалуйста, попробуйте снова."
+    "ru": "Произошла ошибка, попробуйте снова."
   },
   "group_student_navigation_restricted": {
     "it": "In questa visita di gruppo la navigazione tra le tappe è guidata dal docente. Puoi farmi domande sull'opera corrente o chiedere informazioni sui servizi del museo.",

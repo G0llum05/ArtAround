@@ -57,10 +57,20 @@ class NavigatorController {
       console.error('[NavigatorController Error]:', err);
       const lang = req.body?.language || 'it';
       const userFacingError = NavigatorMessages.getMessage('generic_error', lang);
+      let audioBase64 = null;
+      try {
+        audioBase64 = await ResponsiveVoiceService.synthesizeAudioBase64(userFacingError, lang);
+      } catch (ttsErr) {
+        console.warn('[NavigatorController] Errore generazione audio TTS per errore:', ttsErr.message);
+      }
       res.write(JSON.stringify({
         type: 'ERROR',
         success: false,
         error: userFacingError,
+        data: {
+          text: userFacingError,
+          audio: audioBase64
+        },
         technicalDetails: err.message
       }) + '\n');
       res.end();

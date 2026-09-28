@@ -97,9 +97,11 @@ export class MktMuseumHome extends HTMLElement {
                 <strong>Capacità massima:</strong> ${this.museumData.maxCapacity || 'Non conosciuta'}
               </span>
               <span> </span>
+              <!--
               <span class="mkt-capacity-item">
                 <strong>Capacità attuale:</strong> ${this.museumData.actualCapacity || 'sconosciuta'}
               </span>
+              -->
             </div>
           </div>
           ${this.museumData.accessibility.disableFriendly ? `
